@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 from datetime import datetime, timezone
 from typing import Any
@@ -19,6 +20,67 @@ from typing import Any
 from workers.contracts.inter_agent import HarvestPayload
 
 log = logging.getLogger("zayron_x_harvester")
+
+# ---------------------------------------------------------------------------
+# Dynamic Target Matrix Calibration Loading
+# ---------------------------------------------------------------------------
+
+TARGETS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "targets.json",
+)
+
+
+def load_calibration_targets() -> dict[str, list[str]]:
+    """Load and clean target sources from targets.json for agent calibration."""
+    try:
+        if os.path.exists(TARGETS_PATH):
+            with open(TARGETS_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception as exc:
+        log.warning("Failed to load targets.json calibration matrix: %s", exc)
+    return {"telegram_channels": [], "darkweb_onion_links": [], "osint_rss": []}
+
+
+TARGETS_MATRIX = load_calibration_targets()
+
+
+def is_tier1_source(source: str) -> bool:
+    """Verify if the source is part of the 35 Tier-1 CTI channels."""
+    if not source:
+        return False
+
+    normalized_source = source.strip().lower()
+
+    # Remove t.me prefix or at-sign if present for Telegram matching
+    cleaned_source = (
+        normalized_source.replace("https://t.me/", "")
+        .replace("http://t.me/", "")
+        .replace("@", "")
+        .strip()
+    )
+
+    # 1. Check Telegram channels
+    for chan in TARGETS_MATRIX.get("telegram_channels", []):
+        if cleaned_source == chan.lower():
+            return True
+
+    # 2. Check RSS links
+    for rss in TARGETS_MATRIX.get("osint_rss", []):
+        url_match = re.search(r"\((https?://.*?)\)", rss)
+        url = url_match.group(1) if url_match else rss
+        if cleaned_source in url.lower() or url.lower() in normalized_source:
+            return True
+
+    # 3. Check Darkweb Onion Links
+    for onion in TARGETS_MATRIX.get("darkweb_onion_links", []):
+        url_match = re.search(r"\((http://.*?\.onion)\)", onion)
+        url = url_match.group(1) if url_match else onion
+        if cleaned_source in url.lower() or url.lower() in normalized_source:
+            return True
+
+    return False
+
 
 # ---------------------------------------------------------------------------
 # System Prompt — Extraction & Translation Directive
@@ -64,12 +126,34 @@ OUTPUT FORMAT (strict JSON, no markdown fences):
 
 
 def build_harvest_prompt(raw_text: str, source_channel: str) -> str:
-    """Construct the user message for the Harvester agent."""
-    return (
+    """Construct the user message for the Harvester agent.
+
+    Dynamically injects target calibration instructions if source matches
+    one of our 35 Tier-1 CTI matrices.
+    """
+    prompt = (
         f"SOURCE: {source_channel}\n"
         f"RAW INTELLIGENCE INPUT:\n{raw_text[:6000]}\n\n"
         f"Execute all extraction directives. Output strict JSON."
     )
+
+    # Apply calibration instructions depending on source trust verification
+    if is_tier1_source(source_channel):
+        prompt += (
+            "\n\n[CALIBRATION DIRECTIVE: TIER-1 SOURCE VERIFIED]\n"
+            "This source is verified as a ZAYRON-X Tier-1 CTI Channel. "
+            "Prioritize surgical extraction of CVEs, APT aliases, functional IoC indicators, "
+            "and malware family signatures. Ensure high-fidelity translation."
+        )
+    else:
+        prompt += (
+            "\n\n[CALIBRATION DIRECTIVE: UNVERIFIED FEED SOURCE]\n"
+            "This feed source is not listed in our elite targets.json matrix. "
+            "Proceed with caution. Perform translation and classification, but strictly "
+            "avoid extracting speculative indicators or general noise."
+        )
+
+    return prompt
 
 
 def parse_harvest_response(
@@ -92,6 +176,12 @@ def parse_harvest_response(
     except json.JSONDecodeError:
         log.warning("Harvester returned invalid JSON — falling back to passthrough")
         parsed = {}
+
+    # Perform runtime audit alignment logging based on targets.json calibration
+    if is_tier1_source(source_channel):
+        log.info("Successfully harvested validated Tier-1 intelligence from %s", source_channel)
+    else:
+        log.warning("Harvested feed from unaligned source %s — flagging for downstream review", source_channel)
 
     return HarvestPayload(
         raw_text=raw_text,
