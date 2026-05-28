@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Process \"D:\\\\Desktop\\\\ZAYRON\\zayron-security\\\\index.html\")",
+      "mcp__supabase__list_organizations",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__get_publishable_keys",
+      "mcp__supabase__execute_sql",
+      "PowerShell(python -m py_compile \"D:\\\\Desktop\\\\ZAYRON\\zayron-security\\\\cve_worker.py\"; Write-Host \"Syntax OK\")",
+      "PowerShell(Get-Command *)",
+      "PowerShell($py = \"C:\\\\Users\\\\aabus\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python314\\\\python.exe\"; & $py -m pip --version)",
+      "PowerShell($py = \"C:\\\\Users\\\\aabus\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python314\\\\python.exe\"; & $py -m pip install aiohttp feedparser openai supabase 2>&1 | Select-Object -Last 20)",
+      "PowerShell($py = \"C:\\\\Users\\\\aabus\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python314\\\\python.exe\"; & $py -c \"import ast; ast.parse\\(open\\('D:\\\\Desktop\\\\ZAYRON\\zayron-security\\\\cti_ingestion_engine.py'\\).read\\(\\)\\); print\\('Syntax OK'\\)\")",
+      "PowerShell($py = \"C:\\\\Users\\\\aabus\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python314\\\\python.exe\"; & $py -c \"import ast; ast.parse\\(open\\('D:/Desktop/ZAYRON/zayron-security/cti_ingestion_engine.py', encoding='utf-8'\\).read\\(\\)\\); print\\('Syntax OK'\\)\")",
+      "mcp__supabase__get_advisors",
+      "Bash(bunx tsc *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(Get-ChildItem -Recurse -Depth 0 -Name)",
+      "Bash(Sort-Object)",
+      "PowerShell($env:DATABASE_URL = 'postgresql://postgres.xdfndojvqazffcjngglr:Ay%2320941699@aws-0-eu-central-1.pooler.supabase.com:6543/postgres'; Set-Location 'D:\\\\Desktop\\\\zayron-app\\\\gerasys-online'; bunx drizzle-kit push)",
+      "PowerShell($env:DATABASE_URL = 'postgresql://postgres.xdfndojvqazffcjngglr:Ay%2320941699@db.xdfndojvqazffcjngglr.supabase.co:5432/postgres'; Set-Location 'D:\\\\Desktop\\\\zayron-app\\\\gerasys-online'; bunx drizzle-kit push)",
+      "PowerShell($env:DATABASE_URL = 'postgresql://postgres:Ay%2320941699@db.xdfndojvqazffcjngglr.supabase.co:5432/postgres'; Set-Location 'D:\\\\Desktop\\\\zayron-app\\\\gerasys-online'; bunx drizzle-kit push)",
+      "PowerShell($env:DATABASE_URL = 'postgresql://postgres.xdfndojvqazffcjngglr:Ay%2320941699@aws-0-eu-central-1.pooler.supabase.com:5432/postgres'; Set-Location 'D:\\\\Desktop\\\\zayron-app\\\\gerasys-online'; bunx drizzle-kit push)",
+      "PowerShell(bun *)",
+      "PowerShell($headers = @{ \"apikey\" = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZm5kb2p2cWF6ZmZjam5nZ2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDQ0MDQsImV4cCI6MjA5MzgyMDQwNH0.UGitfLsGYqQIATh6qK-uT-ZsTXpf7zFArE3QvR9JEYw\"; \"Authorization\" = \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZm5kb2p2cWF6ZmZjam5nZ2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDQ0MDQsImV4cCI6MjA5MzgyMDQwNH0.UGitfLsGYqQIATh6qK-uT-ZsTXpf7zFArE3QvR9JEYw\" }; try { $r = Invoke-WebRequest -Uri \"https://xdfndojvqazffcjngglr.supabase.co/rest/v1/analysts?select=count\" -Headers $headers -TimeoutSec 10; Write-Host $r.Content } catch { Write-Host \"Status: $\\($_.Exception.Response.StatusCode.value__\\) $\\($_.Exception.Message\\)\" })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\Desktop\\\\zayron-app\\\\gerasys-online\\\\app\" -Recurse -Directory | ForEach-Object { $_.FullName.Replace\\(\"D:\\\\Desktop\\\\zayron-app\\\\gerasys-online\\\\\", \"\"\\) })",
+      "Bash(bun x *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

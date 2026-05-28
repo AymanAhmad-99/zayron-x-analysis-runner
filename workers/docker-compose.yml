@@ -1,0 +1,63 @@
+version: "3.9"
+
+# ============================================================================
+# ZAYRON-X Multi-Agent Production Orchestration — Docker Compose Blueprint
+# ============================================================================
+
+services:
+  # ──────────────────────────────────────────────
+  # Service: zayron_crew (CrewAI Ensemble)
+  # ──────────────────────────────────────────────
+  zayron_crew:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_crew_daemon
+    restart: always
+    depends_on:
+      tor_proxy:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      - TOR_PROXY=socks5://tor_proxy:9050
+      - PYTHONPATH=/app
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_PRO_MODEL=${GEMINI_PRO_MODEL}
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+        reservations:
+          memory: 1G
+
+  # ──────────────────────────────────────────────
+  # Service: tor_proxy (Isolated SOCKS5 Tor Egress)
+  # ──────────────────────────────────────────────
+  tor_proxy:
+    image: peterdavehello/tor-socks-proxy:latest
+    container_name: zayron_tor_proxy
+    restart: always
+    ports:
+      - "127.0.0.1:9050:9050"
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "9050"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+networks:
+  zayron_net:
+    driver: bridge
+    internal: false # Allow external API egress (Gemini, Supabase) via SOCKS5

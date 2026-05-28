@@ -1,0 +1,20 @@
+.vercel
+
+# ═══════════════════════════════════════════════════
+# ZAYRON-X — Root-level security exclusions
+# ═══════════════════════════════════════════════════
+
+# Environment files (NEVER commit credentials)
+.env
+.env.local
+.env.*.local
+*.env
+
+# SQL credential/schema files that may contain secrets
+supabase_schema_setup.sql
+supabase_rls_patch.sql
+
+# Python artifacts
+__pycache__/
+*.pyc
+.venv/

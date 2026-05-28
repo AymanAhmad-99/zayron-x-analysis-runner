@@ -1,0 +1,7 @@
+﻿{
+  "mcpServers": {
+    "supabase": {
+      "serverUrl": "https://mcp.supabase.com/mcp?project_ref=xdfndojvqazffcjngglr&features=database%2Cdevelopment%2Cstorage%2Caccount%2Cfunctions"
+    }
+  }
+}

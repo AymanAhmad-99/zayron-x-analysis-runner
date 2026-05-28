@@ -1,0 +1,43 @@
+# ============================================================================
+# ZAYRON-X Multi-Agent Ingestion Daemon — Optimized Production Dockerfile
+# ============================================================================
+
+# Stage 1: Build dependencies in isolated cache layer
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+# Install dependencies into custom user space
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Stage 2: Final runtime container (minimal footprint)
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy python libraries from builder stage
+COPY --from=builder /root/.local /root/.local
+
+# Ensure local pip binaries are on PATH
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH=/app
+
+# Copy codebase (monorepo structure)
+# NOTE: This Dockerfile is designed to be built from the workspace root context:
+# docker build -t zayron-crew -f workers/Dockerfile.workers .
+COPY shared /app/shared
+COPY workers /app/workers
+
+# Run the Crew orchestrator daemon
+ENTRYPOINT ["python", "-m", "workers.omni_crew"]

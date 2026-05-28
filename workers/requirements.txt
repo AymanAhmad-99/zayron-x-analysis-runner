@@ -1,0 +1,24 @@
+# ============================================================================
+# ZAYRON-X 5-Agent Crew Intelligence Pipeline — Python Dependencies (2027)
+# ============================================================================
+
+# Core Multi-Agent Orchestration & AI SDKs
+crewai==0.80.2
+crewai-tools==0.14.0
+google-generativeai==0.8.3
+
+# Asynchronous HTTP Operations & Network Routing
+aiohttp==3.9.5
+aiohttp-socks==0.8.4
+yarl==1.9.4
+multidict==6.0.5
+
+# Data Validation, Parsing & Serialization
+pydantic==2.7.1
+pydantic-core==2.18.2
+
+# System & Environment Utilities
+python-dotenv==1.0.1
+psutil==5.9.8
+setuptools==69.5.1
+wheel==0.43.0
