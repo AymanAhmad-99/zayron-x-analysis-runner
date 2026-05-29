@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd gerasys-online && bun run build",
+  "installCommand": "cd gerasys-online && bun install",
+  "outputDirectory": "gerasys-online/.next"
+}

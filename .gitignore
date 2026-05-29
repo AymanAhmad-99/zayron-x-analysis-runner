@@ -1,8 +1,12 @@
-.vercel
+# ═══════════════════════════════════════════════════
+# ZAYRON-X — Root-level exclusions
+# ═══════════════════════════════════════════════════
 
-# ═══════════════════════════════════════════════════
-# ZAYRON-X — Root-level security exclusions
-# ═══════════════════════════════════════════════════
+# Vercel & Next build outputs
+.vercel
+.next/
+.turbo/
+node_modules/
 
 # Environment files (NEVER commit credentials)
 .env
@@ -30,18 +34,13 @@ __pycache__/
 *.tar.gz
 *.zip
 
-# Java crash logs (should never be in a Python/TS project)
+# Java crash logs
 hs_err_pid*.log
 replay_pid*.log
 
 # SQLite dedup databases (runtime artifact)
 *.db
 *.db-journal
-
-# Node.js
-node_modules/
-.next/
-.turbo/
 
 # OS artifacts
 .DS_Store
