@@ -220,6 +220,22 @@ def build_weaver_prompt(
     nist_block = ", ".join(compliance.nist_csf_functions[:8]) or "None mapped"
     gdpr_block = ", ".join(compliance.gdpr_articles) or "Not applicable"
 
+    # ═══════════════════════════════════════════════════════════════
+    # GOOGLE TRENDS & AI SEARCH (SGE) SEMANTIC KEYWORDS (2027)
+    # ═══════════════════════════════════════════════════════════════
+    trends_keywords = [
+        "post-quantum cryptography (PQC) transition roadmaps",
+        "AI security posture management (AISPM) compliance",
+        "SGE-optimized zero trust threat intelligence reports",
+        "NIS2 active operational resilience frameworks",
+        "zero-trust architecture AD Golden Ticket protection",
+        "supply chain vulnerability management and SBOM audits",
+        "LLM agent jailbreak and prompt injection mitigations",
+        "cloud-native active directory golden ticket detection",
+        "incident response forensic remediation ROI"
+    ]
+    trends_block = "\n".join(f"  - {kw}" for kw in trends_keywords)
+
     return (
         f"═══ UPSTREAM INTELLIGENCE PACKAGE ═══\n\n"
         f"CATEGORY: {validated.harvest.preliminary_category}\n"
@@ -251,9 +267,14 @@ def build_weaver_prompt(
         f"Regulatory Fine Ceiling: €{financial.regulatory_fine_ceiling:,.0f}\n"
         f"Affected Orgs: ~{financial.affected_org_estimate:,}\n"
         f"Mitigation ROI: {financial.mitigation_roi}\n\n"
+        f"═══ GOOGLE TRENDS & AI SEARCH (SGE) SEMANTIC KEYWORDS (2027) ═══\n"
+        f"{trends_block}\n\n"
         f"═══ SOURCE INTELLIGENCE ═══\n"
         f"{validated.harvest.translated_text[:5000]}\n\n"
         f"Synthesize a complete 1500+ word Executive SITREP using ALL data above. "
+        f"OPERATIONAL DIRECTIVE: You MUST inject the SGE/Google Trends semantic keywords listed above "
+        f"naturally into the report sections (especially KEY TAKEAWAYS, TECHNICAL DEEP-DIVE, and REMEDIATION) "
+        f"to maximize SGE/LLM discoverability and SEO rankings without keyword stuffing. "
         f"Output strict JSON. ENFORCE the Anti-FUD Law."
     )
 

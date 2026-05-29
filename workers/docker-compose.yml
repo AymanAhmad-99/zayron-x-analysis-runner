@@ -1,13 +1,18 @@
 version: "3.9"
 
 # ============================================================================
-# ZAYRON-X Multi-Agent Production Orchestration — Docker Compose Blueprint
+# ZAYRON-X Production Orchestration — Docker Compose (Military-Grade Segregation)
+#
+# Layers:
+#   1. Ingestors (zayron_radar, zayron_rss, zayron_darkweb) — Lightweight collectors
+#   2. Agent Processing Core (zayron_crew) — Decoupled 5-Agent Pipeline
+#   3. Network Security Egress Gateway (tor_proxy) — Hardened SOCKS5 + ControlPort
 # ============================================================================
 
 services:
-  # ──────────────────────────────────────────────
-  # Service: zayron_crew (CrewAI Ensemble)
-  # ──────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 1. AI CORE AGENT PROCESSING ENGINE
+  # ──────────────────────────────────────────────────────────────────────────
   zayron_crew:
     build:
       context: ..
@@ -24,6 +29,8 @@ services:
       - PYTHONPATH=/app
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_PRO_MODEL=${GEMINI_PRO_MODEL}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
     networks:
       - zayron_net
     deploy:
@@ -33,16 +40,152 @@ services:
           memory: 4G
         reservations:
           memory: 1G
+    healthcheck:
+      test: ["CMD", "python", "-c", "import workers.config; print('Crew Engine OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
 
-  # ──────────────────────────────────────────────
-  # Service: tor_proxy (Isolated SOCKS5 Tor Egress)
-  # ──────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # 2. INGESTION DAEMON: TELEGRAM RADAR COLLECTOR
+  # ──────────────────────────────────────────────────────────────────────────
+  zayron_radar:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_radar_daemon
+    restart: always
+    depends_on:
+      tor_proxy:
+        condition: service_healthy
+    entrypoint: ["python", "-m", "workers.ingestors.radar_engine"]
+    env_file:
+      - ../.env
+    environment:
+      - TOR_PROXY=socks5://tor_proxy:9050
+      - PYTHONPATH=/app
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('Radar Collector OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 3. INGESTION DAEMON: WEB & RSS THREAT FEED COLLECTOR
+  # ──────────────────────────────────────────────────────────────────────────
+  zayron_rss:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_rss_daemon
+    restart: always
+    entrypoint: ["python", "-m", "workers.ingestors.rss_ingestor", "--loop"]
+    env_file:
+      - ../.env
+    environment:
+      - PYTHONPATH=/app
+      - RSS_POLL_INTERVAL=15
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('RSS Collector OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 4. INGESTION DAEMON: DARK WEB CRAWLER & HARVESTER
+  # ──────────────────────────────────────────────────────────────────────────
+  zayron_darkweb:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_darkweb_daemon
+    restart: always
+    depends_on:
+      tor_proxy:
+        condition: service_healthy
+    entrypoint: ["python", "-m", "workers.ingestors.darkweb_ingestor"]
+    env_file:
+      - ../.env
+    environment:
+      - TOR_PROXY=socks5h://tor_proxy:9050
+      - PYTHONPATH=/app
+      - DARKWEB_POLL_INTERVAL=300
+      - CIRCUIT_ROTATION_THRESHOLD=10
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('Darkweb Collector OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # 5. SECURE TOR NETWORK EGRESS GATEWAY
+  # ──────────────────────────────────────────────────────────────────────────
   tor_proxy:
     image: peterdavehello/tor-socks-proxy:latest
     container_name: zayron_tor_proxy
     restart: always
-    ports:
-      - "127.0.0.1:9050:9050"
+    environment:
+      # Open ControlPort inside the container for dynamic circuit rotation
+      - TOR_CONTROL_PORT=9051
     networks:
       - zayron_net
     deploy:
@@ -56,8 +199,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
 
 networks:
   zayron_net:
     driver: bridge
-    internal: false # Allow external API egress (Gemini, Supabase) via SOCKS5
+    internal: false  # Allow external API connections (Gemini, Supabase endpoints)

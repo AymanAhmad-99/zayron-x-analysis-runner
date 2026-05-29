@@ -8,7 +8,12 @@
 .env
 .env.local
 .env.*.local
+.env.production
 *.env
+workers/.env.production
+
+# MCP secrets (NEVER commit)
+.mcp-secrets
 
 # SQL credential/schema files that may contain secrets
 supabase_schema_setup.sql
@@ -18,3 +23,26 @@ supabase_rls_patch.sql
 __pycache__/
 *.pyc
 .venv/
+*.egg-info/
+
+# Archives and binaries
+*.tar
+*.tar.gz
+*.zip
+
+# Java crash logs (should never be in a Python/TS project)
+hs_err_pid*.log
+replay_pid*.log
+
+# SQLite dedup databases (runtime artifact)
+*.db
+*.db-journal
+
+# Node.js
+node_modules/
+.next/
+.turbo/
+
+# OS artifacts
+.DS_Store
+Thumbs.db

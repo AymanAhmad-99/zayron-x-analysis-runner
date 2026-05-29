@@ -52,6 +52,18 @@ from typing import Any
 
 import aiohttp
 
+# Graceful Google API Exception importing
+try:
+    from google.api_core import exceptions as google_exceptions
+except ImportError:
+    class DummyException(Exception):
+        pass
+
+    class google_exceptions:
+        ResourceExhausted = DummyException
+        RetryError = DummyException
+        GoogleAPICallError = DummyException
+
 # ---------------------------------------------------------------------------
 # Path setup — ensure project root is importable
 # ---------------------------------------------------------------------------
@@ -167,24 +179,78 @@ class GeminiClient:
         max_output_tokens: int = 4096,
         temperature: float = 0.2,
     ) -> str:
-        """Generate a response from the specified Gemini model."""
+        """Generate a response from the specified Gemini model with backoff and model fallback."""
         if not self._initialized:
             raise RuntimeError("Gemini SDK not initialized")
 
-        def _call() -> str:
-            model = self._genai.GenerativeModel(
-                model_name=model_name,
-                system_instruction=system_prompt,
-                generation_config=self._genai.GenerationConfig(
-                    max_output_tokens=max_output_tokens,
-                    temperature=temperature,
-                    response_mime_type="application/json",
-                ),
-            )
-            response = model.generate_content(user_message)
-            return response.text or ""
+        backoff_delays = [30, 60, 120]
+        current_model = model_name
 
-        return await asyncio.to_thread(_call)
+        while True:
+            attempt = 0
+            while True:
+                try:
+                    def _call() -> str:
+                        model = self._genai.GenerativeModel(
+                            model_name=current_model,
+                            system_instruction=system_prompt,
+                            generation_config=self._genai.GenerationConfig(
+                                max_output_tokens=max_output_tokens,
+                                temperature=temperature,
+                                response_mime_type="application/json",
+                            ),
+                        )
+                        response = model.generate_content(user_message)
+                        return response.text or ""
+
+                    return await asyncio.to_thread(_call)
+
+                except (google_exceptions.ResourceExhausted, google_exceptions.RetryError) as exc:
+                    if attempt < len(backoff_delays):
+                        delay = backoff_delays[attempt]
+                        attempt += 1
+                        log.warning(
+                            "Google API rate limit / retry error (%s) on model %s. "
+                            "Waiting %d seconds before re-attempting (Attempt %d/%d)...",
+                            exc.__class__.__name__,
+                            current_model,
+                            delay,
+                            attempt,
+                            len(backoff_delays),
+                        )
+                        await asyncio.sleep(delay)
+                    else:
+                        log.error(
+                            "Google API rate limit / retry error persisted after backoff on model %s.",
+                            current_model
+                        )
+                        if current_model == GEMINI_PRO_MODEL and GEMINI_FLASH_MODEL != GEMINI_PRO_MODEL:
+                            log.warning(
+                                "Gracefully downgrading from Pro (%s) to Flash (%s) to avoid halting the pipeline.",
+                                current_model,
+                                GEMINI_FLASH_MODEL,
+                            )
+                            current_model = GEMINI_FLASH_MODEL
+                            break
+                        else:
+                            raise exc
+
+                except google_exceptions.GoogleAPICallError as exc:
+                    log.error(
+                        "Google API Call Error on model %s: %s",
+                        current_model,
+                        exc
+                    )
+                    if current_model == GEMINI_PRO_MODEL and GEMINI_FLASH_MODEL != GEMINI_PRO_MODEL:
+                        log.warning(
+                            "Blocked or failed with Pro (%s). Downgrading immediately to Flash (%s).",
+                            current_model,
+                            GEMINI_FLASH_MODEL,
+                        )
+                        current_model = GEMINI_FLASH_MODEL
+                        break
+                    else:
+                        raise exc
 
 
 # ---------------------------------------------------------------------------
@@ -553,21 +619,30 @@ async def main_loop() -> None:
     client = GeminiClient(api_key=GEMINI_API_KEY)
 
     cycle = 0
-    async with aiohttp.ClientSession(
-        timeout=aiohttp.ClientTimeout(total=30),
-    ) as http_session:
-        while True:
+    while True:
+        try:
             cycle += 1
             log.info("═══ Crew cycle %d starting ═══", cycle)
 
-            try:
+            async with aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=30),
+            ) as http_session:
                 stats = await crew_cycle(client, http_session)
-            except Exception as exc:
-                log.critical("Crew cycle %d crashed: %s", cycle, exc)
-                stats = {"errors": 1}
 
             log.info("Sleeping %d min until next cycle...", CREW_POLL_INTERVAL_MIN)
             await asyncio.sleep(CREW_POLL_INTERVAL_MIN * 60)
+        except Exception as exc:
+            log.critical(
+                "CRITICAL UNHANDLED ERROR IN OMNI-CREW DAEMON CYCLE %d: %s",
+                cycle,
+                exc,
+                exc_info=True,
+            )
+            log.warning(
+                "Initiating 60-second cooling period before daemon resurrection..."
+            )
+            await asyncio.sleep(60)
+            continue
 
 
 # ---------------------------------------------------------------------------

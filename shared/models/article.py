@@ -77,20 +77,17 @@ class ArticleInsert(BaseModel):
     @field_validator("category")
     @classmethod
     def validate_category(cls, v: str) -> str:
-        """Normalize to known categories."""
-        VALID = {
-            "Threat Intelligence", "Vulnerability Research", "OSINT",
-            "Cyber Crime", "Malware Analysis", "Ransomware", "Malware",
-            "APT Activity", "Nation State", "Advanced Persistent Threat",
-            "Open Source Intelligence", "Tools", "Security Tools",
-            "Supply Chain Security", "Cloud Security", "AI Security",
-            "ICS/OT Security", "Data Breach", "Phishing",
-        }
-        cleaned = v.strip()
-        for valid in sorted(VALID, key=len, reverse=True):
-            if cleaned.lower() == valid.lower():
-                return valid
-        return cleaned if cleaned else "Threat Intelligence"
+        """Normalize and strictly map to ZayronCategory Enum."""
+        cleaned = v.strip().lower()
+        if "tool" in cleaned:
+            return "Tools"
+        elif "exploit" in cleaned or "vuln" in cleaned or "cve" in cleaned:
+            return "Exploits"
+        elif "leak" in cleaned or "breach" in cleaned:
+            return "Leaks"
+        else:
+            return "Intel"
+
 
     def to_supabase_dict(self) -> dict[str, Any]:
         """Export as a dict suitable for Supabase REST API POST.
@@ -138,7 +135,19 @@ class ArticleSITREP(BaseModel):
     gdpr_impact: str | None = None
     ai_image_prompt: str | None = None
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, v: str) -> str:
+        """Normalize and strictly map to ZayronCategory Enum."""
+        cleaned = v.strip().lower()
+        if "tool" in cleaned:
+            return "Tools"
+        elif "exploit" in cleaned or "vuln" in cleaned or "cve" in cleaned:
+            return "Exploits"
+        elif "leak" in cleaned or "breach" in cleaned:
+            return "Leaks"
+        else:
+            return "Intel"
 
     @field_validator("content")
     @classmethod

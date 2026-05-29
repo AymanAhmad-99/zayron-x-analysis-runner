@@ -1,0 +1,549 @@
+# ZAYRON-X Structural Audit & Cleanup Plan
+
+> **Scope:** Full codebase — root `d:\Desktop\zayron-app\`
+> **Date:** 2026-05-28
+> **Approach:** Read-only analysis. No files modified or deleted.
+
+---
+
+# المرحلة الأولى: التحليل الهيكلي
+
+## 1. نظام الوكلاء — كيف يعمل حالياً
+
+المشروع يحتوي على **أربعة محركات Python مستقلة** في الجذر، بالإضافة إلى **نظام الوكلاء المنظم** داخل `workers/`. هذا هو مصدر التداخل الرئيسي.
+
+### المحركات الموجودة
+
+| المحرك | الملف | الدور | محرك الذكاء | الحالة |
+|--------|-------|-------|------------|--------|
+| **Radar** | [radar-engine.py](file:///d:/Desktop/zayron-app/radar-engine.py) | يسحب من قنوات تيليغرام عبر HTTP/MTProto، يزيل التكرار بـ SQLite، يدخل البيانات الخام إلى `raw_feeds` | لا يستخدم AI | **Ingestor — يبقى** |
+| **CTI Engine** | [cti_ingestion_engine.py](file:///d:/Desktop/zayron-app/cti_ingestion_engine.py) | يسحب من RSS (BleepingComputer, HackerNews, DarkReading)، يحلل بـ GPT-4o، يولد صور DALL-E 3، يكتب مباشرة في `articles` | OpenAI GPT-4o | **Legacy — متعارض** |
+| **DeepSeek Engine** | [engine_articles.py](file:///d:/Desktop/zayron-app/engine_articles.py) | يقرأ من `raw_feeds` (pending)، يحلل بـ DeepSeek، يكتب في `articles` | DeepSeek Chat | **Legacy — متعارض** |
+| **CVE Worker** | [cve_worker.py](file:///d:/Desktop/zayron-app/cve_worker.py) | يسحب CVEs من NVD API، يكتب في جدول `cves` | لا يستخدم AI | **مستقل — يبقى** |
+| **Omni-Crew** | [workers/omni_crew.py](file:///d:/Desktop/zayron-app/workers/omni_crew.py) | يقرأ من `raw_feeds` (pending) → 5 وكلاء Gemini → يكتب في `articles` | Gemini Pro + Flash | **Production — يبقى** |
+
+### المشكلة الهندسية الجوهرية
+
+**ثلاثة محركات تتنافس على نفس المورد:**
+
+```
+raw_feeds (status='pending')
+    ├── engine_articles.py (DeepSeek)     ← يقرأ pending ويكتب articles
+    ├── workers/omni_crew.py (Gemini)     ← يقرأ pending ويكتب articles  ← PRODUCTION
+    └── cti_ingestion_engine.py (GPT-4o)  ← يتجاوز raw_feeds تماماً ويكتب مباشرة
+```
+
+`engine_articles.py` و `omni_crew.py` يتنافسان على نفس الصفوف في `raw_feeds`. إذا عملا معاً:
+- يقرأ كلاهما نفس الـ `pending` feeds
+- ينتجان مقالات مكررة
+- أو يفشل أحدهما لأن الآخر غيّر الحالة
+
+`cti_ingestion_engine.py` يتجاوز `raw_feeds` كلياً — يسحب RSS مباشرة ويكتب في `articles` بدون المرور بنظام الطابور. هذا يكسر مبدأ الـ Single Pipeline.
+
+---
+
+## 2. خارطة تدفق البيانات — الحالة الفعلية
+
+```mermaid
+graph TD
+    subgraph "المصادر"
+        TG["قنوات تيليغرام (35+ قناة)"]
+        RSS["RSS Feeds (3 مصادر)"]
+        NVD["NVD API (NIST)"]
+    end
+
+    subgraph "Ingestion Layer"
+        RADAR["radar-engine.py<br/>HTTP/MTProto + SQLite Dedup"]
+        CTI["cti_ingestion_engine.py<br/>feedparser + GPT-4o"]
+        CVE["cve_worker.py<br/>urllib + NVD"]
+    end
+
+    subgraph "Supabase"
+        RF[("raw_feeds<br/>status: pending")]
+        ART[("articles")]
+        CVES[("cves")]
+    end
+
+    subgraph "Processing Layer — CONFLICT ZONE"
+        ENG["engine_articles.py<br/>DeepSeek AI"]
+        OMNI["workers/omni_crew.py<br/>5-Agent Gemini Pipeline"]
+    end
+
+    subgraph "Presentation"
+        VERCEL["Next.js (gerasys-online)<br/>Vercel ISR"]
+    end
+
+    TG --> RADAR
+    RADAR --> RF
+    RSS --> CTI
+    CTI -->|"BYPASSES raw_feeds"| ART
+    NVD --> CVE
+    CVE --> CVES
+
+    RF -->|"CONFLICT"| ENG
+    RF -->|"CONFLICT"| OMNI
+    ENG --> ART
+    OMNI --> ART
+    ART --> VERCEL
+    CVES --> VERCEL
+```
+
+### تدفق البيانات المصحح المطلوب
+
+```mermaid
+graph TD
+    subgraph "المصادر"
+        TG["Telegram Channels"]
+        RSS["RSS Feeds"]
+        NVD["NVD API"]
+    end
+
+    subgraph "Ingestion (Stage 1)"
+        RADAR["radar-engine.py<br/>Telegram → raw_feeds"]
+        RSS_ING["RSS Ingestor<br/>(from cti_ingestion_engine)<br/>RSS → raw_feeds"]
+        CVE["cve_worker.py<br/>NVD → cves"]
+    end
+
+    subgraph "Supabase"
+        RF[("raw_feeds<br/>pending queue")]
+        ART[("articles")]
+        CVES[("cves")]
+    end
+
+    subgraph "Processing (Stage 2) — SINGLE PIPELINE"
+        OMNI["workers/omni_crew.py<br/>5-Agent Gemini Crew"]
+    end
+
+    subgraph "Presentation"
+        VERCEL["Next.js Frontend"]
+    end
+
+    TG --> RADAR --> RF
+    RSS --> RSS_ING --> RF
+    NVD --> CVE --> CVES
+    RF --> OMNI --> ART
+    ART --> VERCEL
+    CVES --> VERCEL
+```
+
+---
+
+## 3. تصنيف الملفات: هياكل أساسية مقابل نفايات رقمية
+
+### الهياكل الأساسية (Core Assets) — يجب أن تبقى
+
+| الملف/المجلد | السبب الهندسي |
+|-------------|---------------|
+| [workers/omni_crew.py](file:///d:/Desktop/zayron-app/workers/omni_crew.py) | المعالج الرئيسي — 5 وكلاء Gemini مع backoff + fallback |
+| [workers/config.py](file:///d:/Desktop/zayron-app/workers/config.py) | مصدر الحقيقة الوحيد للإعدادات |
+| [workers/persistence.py](file:///d:/Desktop/zayron-app/workers/persistence.py) | طبقة الكتابة في Supabase مع optimistic locking |
+| [workers/agents/](file:///d:/Desktop/zayron-app/workers/agents) | الوكلاء الخمسة: harvester, validator, compliance, quant, weaver |
+| [workers/contracts/](file:///d:/Desktop/zayron-app/workers/contracts) | عقود البيانات بين الوكلاء (Pydantic) |
+| [workers/Dockerfile.workers](file:///d:/Desktop/zayron-app/workers/Dockerfile.workers) | بناء حاوية الإنتاج |
+| [workers/docker-compose.yml](file:///d:/Desktop/zayron-app/workers/docker-compose.yml) | تنسيق الحاويات |
+| [workers/requirements.txt](file:///d:/Desktop/zayron-app/workers/requirements.txt) | تبعيات Python |
+| [workers/targets.json](file:///d:/Desktop/zayron-app/workers/targets.json) | قائمة القنوات المستهدفة |
+| [workers/__init__.py](file:///d:/Desktop/zayron-app/workers/__init__.py) | حزمة Python |
+| [shared/](file:///d:/Desktop/zayron-app/shared) | نماذج Pydantic المشتركة (ArticleInsert, CVERecord, IoC) |
+| [radar-engine.py](file:///d:/Desktop/zayron-app/radar-engine.py) | محرك السحب الأساسي من تيليغرام — **يحتاج نقل** |
+| [cve_worker.py](file:///d:/Desktop/zayron-app/cve_worker.py) | عامل CVE مستقل — **يحتاج نقل** |
+| [.env.example](file:///d:/Desktop/zayron-app/.env.example) | توثيق المتغيرات البيئية |
+| [.gitignore](file:///d:/Desktop/zayron-app/.gitignore) | تكوين Git |
+| [gerasys-online/](file:///d:/Desktop/zayron-app/gerasys-online) | تطبيق Next.js — الواجهة الأمامية |
+
+### النفايات الرقمية (Legacy/Trash) — يجب حذفها
+
+| الملف | الحجم | السبب الهندسي للحذف |
+|------|-------|---------------------|
+| [cti_ingestion_engine.py](file:///d:/Desktop/zayron-app/cti_ingestion_engine.py) | 39 KB | **متعارض مع omni_crew**: يتجاوز `raw_feeds` ويكتب مباشرة في `articles`. يستخدم GPT-4o (غير متوافق مع Gemini pipeline). يكرر وظائف الـ harvester + persistence. **مصدر تلوث البيانات الأول.** |
+| [engine_articles.py](file:///d:/Desktop/zayron-app/engine_articles.py) | 34 KB | **متعارض مع omni_crew**: يقرأ من نفس `raw_feeds?status=pending` بدون optimistic locking. يستخدم DeepSeek (محرك AI ثالث). يسبب سباق بيانات (race condition). |
+| [MASTER_DOSSIER](file:///d:/Desktop/zayron-app/MASTER_DOSSIER) | 21 KB | وثيقة تحليلية سابقة. ليست كوداً. لا مكان لها في الـ repo. |
+| [X_System_Architecture_Document](file:///d:/Desktop/zayron-app/X_System_Architecture_Document) | 33 KB | وثيقة هندسية سابقة مع docker-compose قديم (`unless-stopped`). |
+| [ZAYRON-X_FULL_SYSTEM_AUDIT_2026-05-14.md](file:///d:/Desktop/zayron-app/ZAYRON-X_FULL_SYSTEM_AUDIT_2026-05-14.md) | 62 KB | تدقيق قديم. وثائق لا تنتمي لمجلد المصدر. |
+| [ZAYRON-X_SYSTEM_ARCHITECTURE_AUDIT.md](file:///d:/Desktop/zayron-app/ZAYRON-X_SYSTEM_ARCHITECTURE_AUDIT.md) | 53 KB | تدقيق قديم. |
+| [report](file:///d:/Desktop/zayron-app/report) | 32 KB | تقرير تقييم سابق. ليس كوداً. |
+| [zayron_x_end](file:///d:/Desktop/zayron-app/zayron_x_end) | 62 KB | "مخطط معماري مثالي" لم يُنفذ — كود Python/TypeScript نظري بدون ملف. يحتوي على كلمات مرور مكشوفة. |
+| [zayron.tar](file:///d:/Desktop/zayron-app/zayron.tar) | 1.04 MB | أرشيف ثنائي. لا مكان له في Git. |
+| [hs_err_pid9796.log](file:///d:/Desktop/zayron-app/hs_err_pid9796.log) | 67 KB | ملف crash log لـ Java HotSpot. لا علاقة له بالمشروع. |
+| [replay_pid9796.log](file:///d:/Desktop/zayron-app/replay_pid9796.log) | 761 KB | ملف Java replay. نفايات نظام التشغيل. |
+| [article.html](file:///d:/Desktop/zayron-app/article.html) | 19 KB | ملف HTML ثابت — prototype قديم للواجهة. |
+| [index.html](file:///d:/Desktop/zayron-app/index.html) | 113 KB | ملف HTML ثابت — prototype قديم. الواجهة الحقيقية هي Next.js. |
+| [supabase_gating_migration.sql](file:///d:/Desktop/zayron-app/supabase_gating_migration.sql) | 10 KB | هجرة SQL مفككة. يجب أن تكون في `migrations/` أو تُحذف بعد التطبيق. |
+| [supabase_rls_patch.sql](file:///d:/Desktop/zayron-app/supabase_rls_patch.sql) | 13 KB | رقعة RLS مفككة. |
+| [supabase_rls_patch_checklist.md](file:///d:/Desktop/zayron-app/supabase_rls_patch_checklist.md) | 3.4 KB | قائمة تحقق لمرة واحدة. |
+| [supabase_schema_setup.sql](file:///d:/Desktop/zayron-app/supabase_schema_setup.sql) | 16 KB | إعداد المخطط الأولي. مُطبق فعلاً. |
+| [__pycache__/](file:///d:/Desktop/zayron-app/__pycache__) | متغير | bytecode مؤقت. يجب أن يكون في `.gitignore`. |
+| [.mcp-secrets](file:///d:/Desktop/zayron-app/.mcp-secrets) | 168 B | أسرار MCP — **لا يجب أن يكون في الـ repo أبداً.** |
+| [.mcp.json](file:///d:/Desktop/zayron-app/.mcp.json) | 199 B | تكوين MCP محلي — لا ينتمي للمشروع. |
+| [workers/.env.production](file:///d:/Desktop/zayron-app/workers/.env.production) | 2.9 KB | **خطر أمني**: ملف بيئة إنتاج في الـ repo. يجب أن يكون في `.gitignore`. |
+| [workers/verify_imports.py](file:///d:/Desktop/zayron-app/workers/verify_imports.py) | 2.4 KB | سكربت اختبار مؤقت. يجب أن يكون في `tests/`. |
+
+### إجمالي التنظيف
+
+| الفئة | العدد | الحجم التقريبي |
+|-------|------|---------------|
+| ملفات يجب حذفها | 19 ملف | ~1.35 MB |
+| مجلدات يجب حذفها | 1 (`__pycache__/`) | متغير |
+| ملفات يجب نقلها | 2 (`radar-engine.py`, `cve_worker.py`) | ~39 KB |
+| **صافي التوفير** | **~21 ملف محذوف** | **~1.4 MB + أرشيف 1 MB** |
+
+---
+
+# المرحلة الثانية: خطة التنظيف
+
+## 1. الهيكل النهائي المقترح
+
+```
+zayron-app/
+├── .env.example                    # توثيق المتغيرات فقط
+├── .gitignore                      # محدث
+├── shared/                         # نماذج Pydantic المشتركة (بدون تغيير)
+│   ├── __init__.py
+│   └── models/
+│       ├── __init__.py
+│       ├── article.py
+│       ├── cve.py
+│       └── ioc.py
+├── workers/                        # كل كود Python هنا
+│   ├── __init__.py
+│   ├── config.py                   # مصدر الحقيقة الوحيد
+│   ├── omni_crew.py                # المعالج الرئيسي
+│   ├── persistence.py              # طبقة الكتابة
+│   ├── agents/                     # الوكلاء الخمسة
+│   │   ├── __init__.py
+│   │   ├── harvester.py
+│   │   ├── validator.py
+│   │   ├── compliance.py
+│   │   ├── quant.py
+│   │   └── weaver.py
+│   ├── contracts/                  # عقود البيانات
+│   │   ├── __init__.py
+│   │   └── inter_agent.py
+│   ├── ingestors/                  # ← مجلد جديد: محركات السحب
+│   │   ├── __init__.py
+│   │   ├── radar_engine.py         # ← منقول من الجذر (radar-engine.py)
+│   │   └── cve_worker.py           # ← منقول من الجذر
+│   ├── targets.json
+│   ├── requirements.txt
+│   ├── Dockerfile.workers
+│   └── docker-compose.yml
+├── gerasys-online/                 # Next.js Frontend (بدون تغيير)
+└── docs/                           # ← مجلد جديد (اختياري)
+    ├── MASTER_DOSSIER.md           # ← منقول من الجذر
+    └── architecture.md             # ← منقول من الجذر
+```
+
+### مبادئ الهيكل الجديد
+
+1. **فصل السحب عن المعالجة**: مجلد `ingestors/` للمحركات التي تسحب البيانات الخام → `raw_feeds`. مجلد `agents/` + `omni_crew.py` للمعالجة الذكية.
+
+2. **تدفق أحادي الاتجاه**: كل البيانات تمر عبر `raw_feeds` → `omni_crew` → `articles`. لا توجد طرق مختصرة.
+
+3. **لا تكرار**: محرك AI واحد فقط (Gemini) يقرأ من `raw_feeds`. لا DeepSeek. لا GPT-4o.
+
+## 2. إعادة تأهيل `cti_ingestion_engine.py`
+
+> [!IMPORTANT]
+> **لا نحذف `cti_ingestion_engine.py` كلياً.** نأخذ منه الجزء المفيد (سحب RSS) وندمجه في `workers/ingestors/rss_ingestor.py`.
+
+الأجزاء المطلوبة من `cti_ingestion_engine.py`:
+- `FeedSource` dataclass + `FEED_SOURCES` list (3 مصادر RSS)
+- `fetch_feed()` + `fetch_all_feeds()` — سحب RSS غير متزامن
+- `parse_feed()` — تحويل XML → بيانات هيكلية
+
+الأجزاء المحذوفة:
+- كل كود GPT-4o (`analyze_article`, `CTI_SYSTEM_PROMPT`)
+- كل كود DALL-E 3 (`generate_image`, `upload_image_to_supabase_storage`)
+- الكتابة المباشرة في `articles` — يجب أن تكتب في `raw_feeds` فقط
+
+> [!WARNING]
+> **قرار حاسم:** هل تريد الاحتفاظ بوظيفة سحب RSS كمحرك منفصل (`rss_ingestor.py`)، أم نعتمد على `radar-engine.py` فقط لتيليغرام ونضيف له دعم RSS؟
+
+---
+
+# المرحلة الثالثة: بروتوكول البناء
+
+## 1. أوامر تنظيف السيرفر (Linux)
+
+```bash
+# ═══ إيقاف كل شيء ═══
+docker compose -f workers/docker-compose.yml down --remove-orphans
+docker stop $(docker ps -aq) 2>/dev/null || true
+
+# ═══ تنظيف حاويات وصور قديمة ═══
+docker system prune -af --volumes
+
+# ═══ حذف النفايات الرقمية من المشروع ═══
+rm -f cti_ingestion_engine.py
+rm -f engine_articles.py
+rm -f MASTER_DOSSIER
+rm -f X_System_Architecture_Document
+rm -f ZAYRON-X_FULL_SYSTEM_AUDIT_2026-05-14.md
+rm -f ZAYRON-X_SYSTEM_ARCHITECTURE_AUDIT.md
+rm -f report
+rm -f zayron_x_end
+rm -f zayron.tar
+rm -f hs_err_pid9796.log
+rm -f replay_pid9796.log
+rm -f article.html
+rm -f index.html
+rm -f supabase_gating_migration.sql
+rm -f supabase_rls_patch.sql
+rm -f supabase_rls_patch_checklist.md
+rm -f supabase_schema_setup.sql
+rm -f .mcp-secrets
+rm -f .mcp.json
+rm -f workers/.env.production
+rm -rf __pycache__
+rm -rf workers/__pycache__
+rm -rf workers/agents/__pycache__
+rm -rf workers/contracts/__pycache__
+rm -rf shared/__pycache__
+rm -rf shared/models/__pycache__
+
+# ═══ نقل المحركات إلى مكانها الصحيح ═══
+mkdir -p workers/ingestors
+mv radar-engine.py workers/ingestors/radar_engine.py
+mv cve_worker.py workers/ingestors/cve_worker.py
+touch workers/ingestors/__init__.py
+
+# ═══ إعادة بناء ونشر ═══
+docker compose -f workers/docker-compose.yml build --no-cache
+docker compose -f workers/docker-compose.yml up -d
+```
+
+## 2. Docker Compose المثالي
+
+```yaml
+version: "3.9"
+
+# ═══════════════════════════════════════════════════
+# ZAYRON-X Production Orchestration — Isolated Services
+# ═══════════════════════════════════════════════════
+
+services:
+  # ──── Service 1: Omni-Crew (AI Processing Pipeline) ────
+  zayron_crew:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_crew_daemon
+    restart: always
+    depends_on:
+      tor_proxy:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      - TOR_PROXY=socks5://tor_proxy:9050
+      - PYTHONPATH=/app
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "python", "-c", "import workers.config; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # ──── Service 2: Radar Engine (Telegram Ingestor) ────
+  zayron_radar:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_radar_daemon
+    restart: always
+    depends_on:
+      tor_proxy:
+        condition: service_healthy
+    entrypoint: ["python", "-m", "workers.ingestors.radar_engine"]
+    env_file:
+      - ../.env
+    environment:
+      - TOR_PROXY=socks5://tor_proxy:9050
+      - PYTHONPATH=/app
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('radar_alive')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  # ──── Service 3: Tor Proxy (Isolated SOCKS5 Egress) ────
+  tor_proxy:
+    image: peterdavehello/tor-socks-proxy:latest
+    container_name: zayron_tor_proxy
+    restart: always
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "9050"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+networks:
+  zayron_net:
+    driver: bridge
+    internal: false  # يسمح بالخروج إلى Gemini API و Supabase
+```
+
+### الفروقات عن الملف الحالي
+
+| العنصر | الحالي | المقترح |
+|--------|--------|---------|
+| عدد الخدمات | 2 (crew + tor) | 3 (crew + radar + tor) |
+| Radar | يعمل خارج Docker | معزول في حاوية مستقلة |
+| Healthcheck للـ crew | غير موجود | `python -c "import workers.config"` |
+| Healthcheck للـ radar | غير موجود | `python -c "print('radar_alive')"` |
+| تدوير السجلات | غير محدد | `json-file` مع `max-size: 50m` |
+| منافذ Tor المكشوفة | `127.0.0.1:9050:9050` | **محذوفة** — لا حاجة لكشف Tor خارج الشبكة الداخلية |
+
+## 3. ضمان العمل 24/7 بدون تدخل بشري
+
+### طبقات الحماية المتعددة
+
+**الطبقة 1 — Python (داخل التطبيق):**
+تم تطبيقها سابقاً في هذه المحادثة:
+- `while True:` مع `try...except Exception` يمتص أي خطأ
+- فترة تبريد 60 ثانية قبل الاستئناف
+- Exponential backoff (30s → 60s → 120s) لأخطاء Google API
+- Fallback من Gemini Pro إلى Gemini Flash تلقائياً
+- `ClientSession` يُعاد إنشاؤه كل دورة (يصلح أعطال الاتصال)
+
+**الطبقة 2 — Docker (`restart: always`):**
+- إذا انهار Python process بالكامل (OOM kill, segfault, kernel panic):
+  - Docker يعيد تشغيل الحاوية فوراً (خلال ~3 ثوانٍ)
+  - لا يتطلب تدخل بشري
+
+**الطبقة 3 — SystemD (على مستوى نظام التشغيل):**
+
+```ini
+# /etc/systemd/system/zayron-docker.service
+[Unit]
+Description=ZAYRON-X Docker Compose Stack
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/zayron-app/workers
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable zayron-docker.service
+sudo systemctl start zayron-docker.service
+```
+
+**الطبقة 4 — المراقبة الخارجية (Uptime Monitoring):**
+
+أضف healthcheck endpoint بسيط:
+```python
+# يمكن إضافة HTTP healthcheck بسيط في المستقبل
+# لكن الطبقات الثلاث أعلاه كافية لضمان 24/7
+```
+
+### تسلسل الاسترداد
+
+```
+الخطأ يحدث
+    │
+    ├── خطأ API (429, 500, safety block)
+    │   └── الطبقة 1: backoff + fallback + continue
+    │
+    ├── خطأ اتصال (Tor down, Supabase timeout)
+    │   └── الطبقة 1: ClientSession جديد + 60s cooling + continue
+    │
+    ├── خطأ كارثي (unhandled exception)
+    │   └── الطبقة 1: master try/except + 60s cooling + continue
+    │
+    ├── انهيار العملية (OOM kill, segfault)
+    │   └── الطبقة 2: Docker restart: always → إعادة تشغيل فورية
+    │
+    └── انهيار Docker نفسه (نادر)
+        └── الطبقة 3: SystemD → يعيد تشغيل docker compose
+```
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **قرار #1:** هل تريد الاحتفاظ بسحب RSS كمحرك مستقل (`rss_ingestor.py`)؟ أم نكتفي بتيليغرام فقط كمصدر ونحذف كل كود RSS؟
+
+> [!IMPORTANT]
+> **قرار #2:** الوثائق الكبيرة (MASTER_DOSSIER, report, zayron_x_end) — هل تريد نقلها إلى مجلد `docs/` بدلاً من حذفها نهائياً؟
+
+> [!IMPORTANT]
+> **قرار #3:** ملف `workers/.env.production` يحتوي على أسرار حقيقية. هل تم بالفعل نشره على Git؟ إذا نعم، يجب تدوير كل المفاتيح فوراً (Gemini API key, Supabase service key).
+
+---
+
+## Verification Plan
+
+### بعد التنظيف
+```bash
+# التحقق من صحة الاستيراد
+python -m workers.verify_imports
+
+# التحقق من البنية
+python -m py_compile workers/omni_crew.py
+python -m py_compile workers/ingestors/radar_engine.py
+python -m py_compile workers/ingestors/cve_worker.py
+
+# تشغيل دورة واحدة
+python -m workers.omni_crew --once
+
+# بناء Docker
+docker compose -f workers/docker-compose.yml build --no-cache
+
+# تشغيل كامل
+docker compose -f workers/docker-compose.yml up -d
+docker compose -f workers/docker-compose.yml ps
+docker compose -f workers/docker-compose.yml logs -f --tail=50
+```
