@@ -536,7 +536,7 @@ async def crew_cycle(
             await mark_feed_status(http_session, feed_id, "skipped")
             continue
 
-        log.info("═══ Processing feed %s from %s ═══", feed_id[:8], source)
+        log.info("═══ Processing feed %s from %s ═══", str(feed_id)[:8], source)
 
         try:
             sitrep = await run_crew(client, raw_text, source)
