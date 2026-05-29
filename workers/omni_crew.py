@@ -554,7 +554,7 @@ async def crew_cycle(
                 continue
 
             # Persist to articles table
-            success = await persist_sitrep(http_session, sitrep, raw_text)
+            success = await persist_sitrep(http_session, sitrep, raw_text, source_channel=source)
 
             if success:
                 stats["articles_generated"] += 1

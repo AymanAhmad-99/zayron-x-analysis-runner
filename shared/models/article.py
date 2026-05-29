@@ -50,6 +50,12 @@ class ArticleInsert(BaseModel):
     regulatory_risk: str | None = None
     mitigation_impact: str | None = None
     yara_rule: str | None = None
+    image_tag: str | None = None
+    fbr_score: float | None = None
+    mitre_ttps: list[str] = Field(default_factory=list)
+    iocs_json: str | None = None
+    source_channel: str | None = None
+    cvss_v4_score: float | None = None
     published_at: str | None = None  # ISO 8601 string for display ordering
 
     @field_validator("slug")

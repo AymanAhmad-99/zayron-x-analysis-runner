@@ -12,6 +12,7 @@ Handles:
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import os
 import random
@@ -203,6 +204,7 @@ async def persist_sitrep(
     session: aiohttp.ClientSession,
     sitrep: ExecutiveSITREP,
     source_content: str,
+    source_channel: str | None = None,
 ) -> bool:
     """Persist a validated ExecutiveSITREP to the articles table.
 
@@ -210,10 +212,31 @@ async def persist_sitrep(
     schema compliance before writing.
     """
     try:
+        # Determine dynamic image tag for Unsplash query based on content keyword
+        content_lower = sitrep.content.lower()
+        image_tag = "cybersecurity"
+        if "ransomware" in content_lower or "leak" in content_lower:
+            image_tag = "ransomware"
+        elif "exploit" in content_lower or "zero-day" in content_lower or "cve" in content_lower:
+            image_tag = "exploit"
+        elif "phishing" in content_lower or "credential" in content_lower:
+            image_tag = "phishing"
+        elif "database" in content_lower or "sql" in content_lower:
+            image_tag = "database"
+        elif "malware" in content_lower or "trojan" in content_lower or "backdoor" in content_lower:
+            image_tag = "malware"
+        elif sitrep.category:
+            image_tag = sitrep.category.lower()
+
+        # Serialize indicators of compromise (IoCs) to JSON string
+        iocs_json = None
+        if sitrep.iocs:
+            iocs_json = json.dumps(sitrep.iocs)
+
         insert = ArticleInsert(
             title=sitrep.title,
             slug=generate_slug(sitrep.title),
-            author=pick_author(),
+            author="ZAYRON-X Intelligence Unit",  # ALWAYS exactly this
             category=sitrep.category,
             content=sitrep.content,
             excerpt=sitrep.executive_summary[:500] if sitrep.executive_summary else "",
@@ -224,6 +247,12 @@ async def persist_sitrep(
             regulatory_risk=sitrep.regulatory_risk,
             mitigation_impact=sitrep.mitigation_impact,
             yara_rule=sitrep.yara_rule,
+            image_tag=image_tag,
+            fbr_score=sitrep.fbr_score,
+            mitre_ttps=sitrep.mitre_attack_ttps,
+            iocs_json=iocs_json,
+            source_channel=source_channel,
+            cvss_v4_score=sitrep.cvss_v4_score,
         )
         row = insert.to_supabase_dict()
     except Exception as exc:
