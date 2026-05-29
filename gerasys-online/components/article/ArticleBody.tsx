@@ -1,0 +1,162 @@
+"use client";
+
+import { useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
+import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
+
+interface ArticleBodyProps {
+  content: string;
+}
+
+export function ArticleBody({ content }: ArticleBodyProps) {
+  const { gateAction } = useSecurityGating();
+
+  // Intercept raw selection copy vectors (Ctrl+C selection bypass defense)
+  useEffect(() => {
+    const handleCopy = (e: ClipboardEvent) => {
+      const selection = window.getSelection();
+      if (!selection) return;
+      const text = selection.toString().trim();
+      
+      const isRuleText = 
+        text.includes("rule ") || 
+        text.includes("logsource:") || 
+        text.includes("detection:") ||
+        text.includes("threat_status:") ||
+        text.includes("indicator:");
+
+      if (isRuleText) {
+        e.preventDefault();
+        gateAction(() => {
+          navigator.clipboard.writeText(text);
+        });
+      }
+    };
+    document.addEventListener("copy", handleCopy);
+    return () => document.removeEventListener("copy", handleCopy);
+  }, [gateAction]);
+
+  return (
+    <div className="prose-zayron max-w-none text-neutral-800">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeSlug]}
+        components={{
+          img: ({ src, alt, ...props }) => (
+            <img
+              src={src}
+              alt={alt ?? ""}
+              className="rounded-lg max-w-full h-auto my-6 shadow-md border border-neutral-200/50"
+              loading="lazy"
+              {...props}
+            />
+          ),
+          a: ({ href, children, ...props }) => (
+            <a
+              href={href}
+              target={href?.startsWith("http") ? "_blank" : undefined}
+              rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="text-[#733DD9] hover:text-[#5f2ebd] underline font-bold transition-colors"
+              {...props}
+            >
+              {children}
+            </a>
+          ),
+          h1: ({ children }) => (
+            <h1 className="text-lg font-black uppercase text-neutral-900 mt-8 mb-4 border-b border-neutral-200 pb-2 tracking-tight">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-base font-black uppercase text-neutral-950 mt-6 mb-3 tracking-tight">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-sm font-bold uppercase text-neutral-800 mt-4 mb-2 tracking-tight">
+              {children}
+            </h3>
+          ),
+          p: ({ children }) => (
+            <p className="text-sm text-neutral-700 leading-relaxed mb-4">
+              {children}
+            </p>
+          ),
+          ul: ({ children }) => (
+            <ul className="list-disc pl-5 mb-5 space-y-2 text-neutral-700">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="list-decimal pl-5 mb-5 space-y-2 text-neutral-700">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => (
+            <li className="text-sm pl-1 leading-relaxed">
+              {children}
+            </li>
+          ),
+          // Custom Code / Pre component to intercept YARA / Sigma rules copy action
+          code: ({ inline, className, children, ...props }: any) => {
+            const match = /language-(\w+)/.exec(className || "");
+            const lang = match ? (match[1]?.toLowerCase() || "") : "";
+            const codeString = String(children).replace(/\n$/, "");
+            
+            const isRule = 
+              ["yara", "sigma", "yaml", "rules", "plaintext", "json", "bash", "shell"].includes(lang) ||
+              codeString.includes("rule ") || 
+              codeString.includes("logsource:") || 
+              codeString.includes("detection:") ||
+              codeString.startsWith("{") ||
+              codeString.includes("ioc") ||
+              codeString.includes("sha256");
+
+            if (!inline && isRule) {
+              return (
+                <div className="my-6 border border-neutral-800/30 bg-neutral-950 rounded-xl overflow-hidden font-mono text-xs text-neutral-200">
+                  <div className="flex justify-between items-center px-4 py-2.5 border-b border-neutral-800 bg-[#16161a] select-none">
+                    <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider font-mono">
+                      ZX-{lang ? lang.toUpperCase() : "CTI"} DETECTION RULE PAYLOAD
+                    </span>
+                    <button
+                      onClick={() => {
+                        gateAction(() => {
+                          navigator.clipboard.writeText(codeString);
+                          alert("[SUCCESS] Autogenerated YARA / Sigma detection rule compiled and copied to clipboard successfully.");
+                        });
+                      }}
+                      className="px-3 py-1.5 text-[9px] font-bold text-white bg-[#733DD9] hover:bg-[#5f2ebd] transition-colors rounded-lg font-mono cursor-pointer active:scale-95"
+                    >
+                      COPY RULE
+                    </button>
+                  </div>
+                  <pre className="p-4 overflow-x-auto m-0 bg-neutral-950/80 leading-relaxed scrollbar-thin text-neutral-300">
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  </pre>
+                </div>
+              );
+            }
+            return inline ? (
+              <code className="px-1.5 py-0.5 rounded bg-neutral-100 text-[#733DD9] border border-neutral-200/60 font-mono text-[11px] mx-0.5 break-all font-semibold" {...props}>
+                {children}
+              </code>
+            ) : (
+              <pre className="my-4 p-4 bg-neutral-900 text-neutral-100 rounded-xl overflow-x-auto font-mono text-xs border border-neutral-800 leading-relaxed scrollbar-thin">
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              </pre>
+            );
+          }
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
+}

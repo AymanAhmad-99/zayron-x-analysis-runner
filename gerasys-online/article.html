@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZAYRON-X — Intelligence Dossier</title>
+<meta name="description" content="Classified intelligence dossier — ZAYRON-X">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZAYRON-X — Intelligence Dossier">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
+
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1A1A1A;
+  --bg-card: #141414;
+  --border-color: #2A2A2A;
+  --border-accent: #B87333;
+  --text-primary: #E8E6E3;
+  --text-secondary: #9C9A96;
+  --text-muted: #6B6965;
+  --accent-copper: #B87333;
+  --accent-gold: #D4A847;
+  --accent-red: #DC2626;
+  --accent-orange: #EA580C;
+  --accent-green: #22C55E;
+  --accent-blue: #3B82F6;
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+  --font-ui: -apple-system, 'Segoe UI', sans-serif;
+  --max-width: 960px;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-copper); }
+
+/* ===== LOADING / ERROR STATES ===== */
+.loading-screen {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; gap: 24px;
+}
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-copper);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.error-screen {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; gap: 16px;
+  padding: 24px;
+}
+.error-screen h1 {
+  font-family: var(--font-display);
+  font-size: 32px; color: var(--accent-red);
+}
+.error-screen p {
+  font-family: var(--font-ui);
+  font-size: 14px; color: var(--text-secondary);
+}
+.error-screen a {
+  color: var(--accent-copper);
+  text-decoration: none;
+  border: 1px solid var(--accent-copper);
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  margin-top: 16px;
+  transition: all 0.3s;
+}
+.error-screen a:hover {
+  background: var(--accent-copper);
+  color: var(--bg-primary);
+}
+
+/* ===== TOP BAR ===== */
+.top-bar {
+  background: #050505;
+  border-bottom: 1px solid var(--border-color);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.top-bar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+.top-bar-brand {
+  color: var(--accent-copper);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.top-bar-right {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ===== CLASSIFICATION BANNER ===== */
+.classification-banner {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent, transparent 20px,
+    rgba(184,115,51,0.03) 20px, rgba(184,115,51,0.03) 40px
+  );
+  border-bottom: 1px solid var(--accent-copper);
+  padding: 12px 0;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  background-color: rgba(10, 10, 10, 0.85);
+}
+.classification-banner span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent-copper);
+  text-transform: uppercase;
+}
+.classification-banner span::before,
+.classification-banner span::after {
+  content: ' ◆ ';
+  color: var(--accent-gold);
+  font-size: 6px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.dossier-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ===== META HEADER ===== */
+.dossier-header {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-color);
+}
+.dossier-category {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-copper);
+  border: 1px solid rgba(184,115,51,0.3);
+  padding: 4px 12px;
+  border-radius: 3px;
+  margin-bottom: 16px;
+}
+.dossier-title {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+.dossier-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text-secondary);
+  align-items: center;
+}
+.dossier-meta .separator {
+  color: var(--text-muted);
+}
+.dossier-author {
+  color: var(--accent-copper);
+  font-weight: 600;
+}
+.dossier-executive {
+  background: var(--bg-secondary);
+  border-left: 3px solid var(--accent-copper);
+  padding: 20px 24px;
+  margin-bottom: 40px;
+  border-radius: 0 4px 4px 0;
+}
+.dossier-executive p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+/* ===== MARKDOWN CONTENT STYLES ===== */
+.dossier-content {
+  color: var(--text-primary);
+}
+
+/* ---- Headings ---- */
+.dossier-content h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin: 48px 0 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212,168,71,0.2);
+  letter-spacing: -0.02em;
+}
+.dossier-content h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent-copper);
+  margin: 36px 0 16px;
+}
+.dossier-content h4 {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 28px 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.dossier-content h5 {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 24px 0 10px;
+}
+
+/* ---- Paragraphs ---- */
+.dossier-content p {
+  margin-bottom: 20px;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+/* ---- Links ---- */
+.dossier-content a {
+  color: var(--accent-copper);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(184,115,51,0.3);
+  transition: text-decoration-color 0.2s;
+}
+.dossier-content a:hover {
+  text-decoration-color: var(--accent-copper);
+}
+
+/* ---- Bold / Italic ---- */
+.dossier-content strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.dossier-content em {
+  color: var(--text-secondary);
+}
+
+/* ---- Lists ---- */
+.dossier-content ul,
+.dossier-content ol {
+  margin: 0 0 20px 24px;
+  line-height: 1.8;
+}
+.dossier-content li {
+  margin-bottom: 8px;
+}
+.dossier-content li > ul,
+.dossier-content li > ol {
+  margin-bottom: 0;
+}
+.dossier-content ul li::marker {
+  color: var(--accent-copper);
+}
+.dossier-content ol li::marker {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+/* ---- Blockquotes ---- */
+.dossier-content blockquote {
+  border-left: 3px solid var(--accent-copper);
+  margin: 24px 0;
+  padding: 12px 20px;
+  background: var(--bg-secondary);
+  border-radius: 0 4px 4px 0;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+.dossier-content blockquote p {
+  margin-bottom: 0;
+}
+
+/* ---- Horizontal Rule ---- */
+.dossier-content hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 40px 0;
+}
+
+/* ---- Inline Code ---- */
+.dossier-content code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--bg-tertiary);
+  color: var(--accent-orange);
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid rgba(234,88,12,0.15);
+}
+
+/* ---- Code Blocks (IoCs, Sigma rules, YARA) ---- */
+.dossier-content pre {
+  background: #0D0D0D;
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-copper);
+  border-radius: 0 6px 6px 0;
+  padding: 20px;
+  margin: 24px 0;
+  overflow-x: auto;
+  position: relative;
+}
+.dossier-content pre code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #D4D4D4;
+  background: none;
+  padding: 0;
+  border: none;
+}
+
+/* ---- Tables (IoC tables, comparison tables) ---- */
+.dossier-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.dossier-content thead {
+  background: var(--bg-tertiary);
+}
+.dossier-content thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  border-bottom: 2px solid rgba(212,168,71,0.3);
+}
+.dossier-content tbody td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: top;
+}
+.dossier-content tbody tr {
+  transition: background 0.15s;
+}
+.dossier-content tbody tr:hover {
+  background: rgba(184,115,51,0.04);
+}
+.dossier-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---- Task Lists ---- */
+.dossier-content input[type="checkbox"] {
+  accent-color: var(--accent-copper);
+  margin-right: 8px;
+}
+
+/* ===== CLASSIFICATION FOOTER ===== */
+.dossier-footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.dossier-footer .classification-note {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+.dossier-footer .back-link {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--accent-copper);
+  text-decoration: none;
+  padding: 8px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+.dossier-footer .back-link:hover {
+  border-color: var(--accent-copper);
+  background: rgba(184,115,51,0.06);
+}
+
+/* ===== MITRE TTP BADGES ===== */
+.ttp-section {
+  margin: 40px 0;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+.ttp-section h3 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
+}
+.ttp-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ttp-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 3px;
+  background: rgba(184,115,51,0.08);
+  border: 1px solid rgba(184,115,51,0.2);
+  color: var(--accent-copper);
+  transition: all 0.2s;
+}
+.ttp-badge:hover {
+  background: rgba(184,115,51,0.15);
+  border-color: var(--accent-copper);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .dossier-title { font-size: 28px; }
+  .dossier-container { padding: 24px 16px 60px; }
+  .dossier-content p { font-size: 15px; }
+  .dossier-content h2 { font-size: 22px; }
+  .dossier-content h3 { font-size: 18px; }
+  .dossier-content table { font-size: 11px; }
+  .dossier-content thead th { padding: 8px 10px; }
+  .dossier-content tbody td { padding: 6px 10px; }
+  .dossier-content pre { padding: 14px; }
+  .dossier-content pre code { font-size: 11px; }
+}
+@media (max-width: 480px) {
+  .dossier-title { font-size: 22px; }
+  .dossier-executive { padding: 16px; }
+  .dossier-meta { font-size: 12px; }
+}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23B87333'/%3E%3Cpath d='M16 6l10 5v5c0 6-4 12-10 14C10 28 6 22 6 16v-5l10-5z' fill='%23F5F0E8' opacity='0.9'/%3E%3Cpath d='M16 9l7 3.5v3.5c0 4.2-2.8 8.4-7 9.8-4.2-1.4-7-5.6-7-9.8v-3.5L16 9z' fill='%23B87333'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- Loading State -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Decrypting dossier</div>
+</div>
+
+<!-- Error State -->
+<div id="errorScreen" class="error-screen" style="display:none;">
+  <h1>ACCESS DENIED</h1>
+  <p id="errorMessage">Dossier not found or unavailable.</p>
+  <a href="/">Return to ZAYRON-X</a>
+</div>
+
+<!-- Dossier Content (hidden until loaded) -->
+<div id="dossierContent" style="display:none;">
+
+<!-- Top Bar -->
+<header class="top-bar">
+  <div class="top-bar-inner">
+    <span class="top-bar-brand">ZAYRON-X</span>
+    <span style="color:var(--text-muted);">—</span>
+    <span>CLASSIFIED INTELLIGENCE DOSSIER</span>
+    <span class="top-bar-right" id="dossierDate"></span>
+  </div>
+</header>
+
+<!-- Classification Banner -->
+<div class="classification-banner">
+  <span>TLP:AMBER — Limited Distribution</span>
+</div>
+
+<article class="dossier-container" id="dossierBody">
+  <!-- Meta header populated by JS -->
+  <header class="dossier-header" id="dossierHeader"></header>
+
+  <!-- Executive Summary -->
+  <div class="dossier-executive" id="dossierExec"></div>
+
+  <!-- MITRE ATT&CK TTPs -->
+  <div class="ttp-section" id="ttpSection">
+    <h3>MITRE ATT&amp;CK Techniques</h3>
+    <div class="ttp-badges" id="ttpBadges"></div>
+  </div>
+
+  <!-- Full Markdown Content -->
+  <div class="dossier-content" id="dossierContentBody"></div>
+</article>
+
+<!-- Footer -->
+<footer class="dossier-container">
+  <div class="dossier-footer">
+    <span class="classification-note">TLP:AMBER — ZAYRON-X Intelligence Division</span>
+    <a href="/" class="back-link">← Return to Dispatch</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var SUPABASE_URL = 'https://xdfndojvqazffcjngglr.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZm5kb2p2cWF6ZmZjam5nZ2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDQ0MDQsImV4cCI6MjA5MzgyMDQwNH0.UGitfLsGYqQIATh6qK-uT-ZsTXpf7zFArE3QvR9JEYw';
+
+  var $ = function(id) { return document.getElementById(id); };
+
+  // Parse article ID from URL
+  var params = new URLSearchParams(window.location.search);
+  var articleId = params.get('id');
+
+  if (!articleId) {
+    $('loadingScreen').style.display = 'none';
+    $('errorScreen').style.display = 'flex';
+    $('errorMessage').textContent = 'No dossier ID specified in request.';
+    return;
+  }
+
+  function timeAgo(dateStr) {
+    var diff = Date.now() - new Date(dateStr).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 60) return mins + ' min ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    var days = Math.floor(hrs / 24);
+    return days + 'd ago';
+  }
+
+  function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+    });
+  }
+
+  function getInitials(name) {
+    return name.split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+  }
+
+  // Initialize Supabase
+  var supabase = null;
+  try {
+    supabase = supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) {
+    $('loadingScreen').style.display = 'none';
+    $('errorScreen').style.display = 'flex';
+    $('errorMessage').textContent = 'Failed to initialize intelligence database connection.';
+    return;
+  }
+
+  (async function loadDossier() {
+    try {
+      // Fetch the article by ID
+      var res = await supabase
+        .from('articles')
+        .select('*')
+        .eq('id', articleId)
+        .single();
+
+      if (res.error) throw res.error;
+      var article = res.data;
+      if (!article) throw new Error('Article not found');
+
+      // --- Populate header ---
+      var header = $('dossierHeader');
+      header.innerHTML =
+        '<div class="dossier-category">' + escHtml(article.category || 'Threat Intelligence') + '</div>' +
+        '<h1 class="dossier-title">' + escHtml(article.title) + '</h1>' +
+        '<div class="dossier-meta">' +
+          '<span class="dossier-author">' + escHtml(article.author || 'ZAYRON ANALYST') + '</span>' +
+          '<span class="separator">·</span>' +
+          '<span>' + formatDate(article.created_at) + '</span>' +
+          '<span class="separator">·</span>' +
+          '<span>' + (article.read_time || '?') + ' min read</span>' +
+          '<span class="separator">·</span>' +
+          '<span>REF: GER-' + String(article.id).padStart(6, '0') + '</span>' +
+        '</div>';
+
+      // --- Executive summary ---
+      var execEl = $('dossierExec');
+      if (article.excerpt) {
+        execEl.innerHTML = '<p>' + escHtml(article.excerpt) + '</p>';
+      } else {
+        execEl.style.display = 'none';
+      }
+
+      // --- Render markdown content ---
+      var contentEl = $('dossierContentBody');
+      if (article.content) {
+        // Configure marked for security
+        marked.setOptions({
+          breaks: true,
+          gfm: true,
+          pedantic: false
+        });
+        contentEl.innerHTML = marked.parse(article.content);
+      } else {
+        contentEl.innerHTML = '<p style="color:var(--text-muted);">No briefing content available for this dossier.</p>';
+      }
+
+      // --- MITRE ATT&CK TTPs ---
+      var ttpSection = $('ttpSection');
+      if (article.mitre_attack_ttps && Array.isArray(article.mitre_attack_ttps) && article.mitre_attack_ttps.length > 0) {
+        var badgesEl = $('ttpBadges');
+        badgesEl.innerHTML = '';
+        article.mitre_attack_ttps.forEach(function(ttp) {
+          var badge = document.createElement('span');
+          badge.className = 'ttp-badge';
+          badge.textContent = ttp;
+          badgesEl.appendChild(badge);
+        });
+      } else {
+        ttpSection.style.display = 'none';
+      }
+
+      // --- Date in top bar ---
+      var dateEl = $('dossierDate');
+      if (dateEl) {
+        dateEl.textContent = new Date().toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        }).toUpperCase();
+      }
+
+      // --- Show dossier, hide loading ---
+      $('loadingScreen').style.display = 'none';
+      $('dossierContent').style.display = 'block';
+
+    } catch(err) {
+      console.error('Dossier load error:', err);
+      $('loadingScreen').style.display = 'none';
+      $('errorScreen').style.display = 'flex';
+      $('errorMessage').textContent = err.message || 'Failed to retrieve intelligence dossier.';
+    }
+  })();
+
+  function escHtml(s) {
+    if (typeof s !== 'string') return '';
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export function proxy(request: NextRequest) {
+  const auth = request.headers.get("authorization");
+
+  const user = process.env.ADMIN_USER;
+  const pass = process.env.ADMIN_PASSWORD;
+
+  // If credentials are not configured, deny all admin access
+  if (!user || !pass) {
+    return new NextResponse("Admin access not configured", { status: 500 });
+  }
+
+  if (auth) {
+    const [scheme, encoded] = auth.split(" ");
+    if (scheme === "Basic" && encoded) {
+      const decoded = atob(encoded);
+      const [providedUser, providedPass] = decoded.split(":");
+      if (providedUser === user && providedPass === pass) {
+        return NextResponse.next();
+      }
+    }
+  }
+
+  return new NextResponse("Authentication required", {
+    status: 401,
+    headers: { "WWW-Authenticate": 'Basic realm="ZAYRON SECURITY Admin"' },
+  });
+}
+
+export const config = {
+  matcher: "/admin/:path*",
+};

@@ -1,0 +1,90 @@
+import type { CVE } from "@/lib/db/schema";
+import Link from "next/link";
+import { ArrowUpRight } from "@/lib/icons";
+import { SeverityBadge } from "@/components/cve/SeverityBadge";
+
+interface CvePanelProps {
+  cves: CVE[];
+  totalCount: number;
+}
+
+export function CvePanel({ cves, totalCount }: CvePanelProps) {
+  if (cves.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center mb-5">
+          <span className="text-lg font-bold text-[#733DD9]">CVE</span>
+        </div>
+        <h3 className="text-lg font-semibold text-[#0F172A] mb-2">
+          Vulnerability index loading
+        </h3>
+        <p className="text-[0.85rem] text-[#94A3B8] max-w-md leading-relaxed">
+          CVE records will appear here once the vulnerability ingestion pipeline is connected to the NVD data source.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-[1.1rem] font-semibold text-[#0F172A]">Vulnerability Index</h2>
+          <p className="text-[0.78rem] text-[#94A3B8] mt-0.5">
+            {totalCount.toLocaleString()} vulnerabilities tracked across global infrastructure
+          </p>
+        </div>
+        <Link href="/cve" className="text-[0.75rem] font-medium text-[#733DD9] hover:text-[#5B21B6] transition-colors duration-300 flex items-center gap-1">
+          View all <ArrowUpRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-neutral-100 bg-neutral-50/50 text-[9px] uppercase tracking-wider text-[#050505] font-bold font-mono">
+                <th className="py-5 px-6">CVE ID</th>
+                <th className="py-5 px-6 hidden md:table-cell">Description</th>
+                <th className="py-5 px-6">Severity</th>
+                <th className="py-5 px-6 text-right hidden sm:table-cell">CVSS</th>
+                <th className="py-5 px-6 hidden lg:table-cell">Vendor</th>
+              </tr>
+            </thead>
+            <tbody className="text-xs">
+              {cves.map((cve) => (
+                <tr key={cve.id} className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50/30 transition-colors duration-200 group">
+                  <td className="py-5 px-6">
+                    <Link href={`/cve/${cve.cveId}`} className="text-[0.82rem] font-mono font-semibold text-[#0F172A] group-hover:text-[#733DD9] transition-colors duration-300">
+                      {cve.cveId}
+                    </Link>
+                  </td>
+                  <td className="py-5 px-6 hidden md:table-cell">
+                    <p className="text-[0.8rem] text-[#64748B] line-clamp-1 max-w-md">
+                      {cve.title || cve.description || "—"}
+                    </p>
+                  </td>
+                  <td className="py-5 px-6">
+                    <SeverityBadge severity={cve.severity} />
+                  </td>
+                  <td className="py-5 px-6 text-right hidden sm:table-cell">
+                    <span className="text-[0.82rem] font-mono font-medium text-[#334155]">
+                      {cve.cvssScore ? Number(cve.cvssScore).toFixed(1) : "—"}
+                    </span>
+                  </td>
+                  <td className="py-5 px-6 hidden lg:table-cell">
+                    <span className="text-[0.78rem] text-[#94A3B8]">
+                      {cve.vendor || "—"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}

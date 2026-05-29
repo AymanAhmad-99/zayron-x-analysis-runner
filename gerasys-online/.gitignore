@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build output
+.next/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Drizzle
+drizzle/meta/
+drizzle/snapshots/
+
+.vercel
+.env*.local
+
+# MCP / Secrets
+.mcp-secrets
+../.mcp-secrets
+../.cursor/mcp.json

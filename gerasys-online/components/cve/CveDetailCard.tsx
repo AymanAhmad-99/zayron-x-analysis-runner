@@ -1,0 +1,115 @@
+import { type CVE } from "@/lib/db/schema";
+import { SeverityBadge } from "@/components/cve/SeverityBadge";
+import { formatDate } from "@/lib/utils/formatDate";
+
+interface CveDetailCardProps {
+  cve: CVE;
+}
+
+export function CveDetailCard({ cve }: CveDetailCardProps) {
+  return (
+    <article className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-sm">
+      <div className="p-6 lg:p-8">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+          <div>
+            <h1 className="font-mono text-2xl lg:text-3xl font-bold text-[#0F172A]">
+              {cve.cveId}
+            </h1>
+            {cve.title && (
+              <p className="text-[#475569] mt-1 font-ui">{cve.title}</p>
+            )}
+          </div>
+          <SeverityBadge severity={cve.severity} />
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6 p-4 bg-[#F1F5F9] rounded-lg border border-[#E2E8F0]">
+          <div>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#475569] font-ui">
+              CVSS Score
+            </span>
+            <p className="font-mono text-xl font-bold text-[#0F172A] mt-1">
+              {cve.cvssScore ?? "—"}
+            </p>
+          </div>
+          <div>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#475569] font-ui">
+              Exploitability
+            </span>
+            <p className="font-mono text-xl font-bold text-[#0F172A] mt-1">
+              —
+            </p>
+          </div>
+          <div>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#475569] font-ui">
+              Impact
+            </span>
+            <p className="font-mono text-xl font-bold text-[#0F172A] mt-1">
+              —
+            </p>
+          </div>
+          <div>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#475569] font-ui">
+              Status
+            </span>
+            <p className="font-mono text-sm font-semibold text-[#0F172A] mt-1">
+              {cve.status ?? "Unknown"}
+            </p>
+          </div>
+          {cve.vendor && (
+            <div>
+              <span className="text-[10px] uppercase tracking-wider font-bold text-[#475569] font-ui">
+                Vendor
+              </span>
+              <p className="font-mono text-sm font-semibold text-[#0F172A] mt-1">
+                {cve.vendor}
+              </p>
+            </div>
+          )}
+          <div>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-[#475569] font-ui">
+              Published
+            </span>
+            <p className="font-mono text-sm font-semibold text-[#0F172A] mt-1">
+              {cve.publishedDate ? formatDate(cve.publishedDate) : "—"}
+            </p>
+          </div>
+        </div>
+
+        {cve.description && (
+          <div>
+            <h2 className="font-display text-lg font-bold text-[#0F172A] mb-3">
+              Description
+            </h2>
+            <p className="text-sm text-[#334155] leading-relaxed font-body">
+              {cve.description}
+            </p>
+          </div>
+        )}
+
+        {cve.affectedProduct && (
+          <div className="mt-6">
+            <h2 className="font-display text-lg font-bold text-[#0F172A] mb-3">
+              Affected Product
+            </h2>
+            <p className="text-sm text-[#0F172A] font-mono bg-[#F1F5F9] border border-[#E2E8F0] px-3 py-2 rounded-lg">
+              {cve.affectedProduct}
+            </p>
+          </div>
+        )}
+
+        {cve.cvssVector && (
+          <div className="mt-6">
+            <h2 className="font-display text-lg font-bold text-[#0F172A] mb-3">
+              CVSS Vector
+            </h2>
+            <code className="text-xs bg-[#0F172A] text-[#E2E8F0] px-3 py-2 rounded-lg block overflow-x-auto font-mono">
+              {cve.cvssVector}
+            </code>
+          </div>
+        )}
+
+        {/* MITRE ATT&CK Tactics — column not yet populated in production */}
+      </div>
+    </article>
+  );
+}

@@ -1,0 +1,2594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZAYRON SECURITY — Cyber Intelligence & IT Security Publication</title>
+<meta name="description" content="Premier cybersecurity intelligence platform. Real-time CVE tracking, threat analysis, nation-state activity, and expert security tool reviews. Trusted by Fortune 500 CISOs.">
+<meta name="keywords" content="cybersecurity, threat intelligence, CVE, malware analysis, APT, nation-state attacks, infosec">
+<meta property="og:title" content="ZAYRON SECURITY — Cyber Intelligence Platform">
+<meta property="og:description" content="Real-time threat intelligence, CVE tracking, and expert cybersecurity analysis. Trusted by security professionals worldwide.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&h=630&fit=crop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ZAYRON SECURITY — Cyber Intelligence">
+<meta name="twitter:description" content="Real-time threat intelligence and expert cybersecurity analysis.">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&h=630&fit=crop">
+
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+/* ===== GOOGLE FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500;1,8..60,600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --color-cream: #F5F0E8;
+  --color-warm-white: #FAFAF7;
+  --color-obsidian: #0D0D0D;
+  --color-charcoal: #1A1A1A;
+  --color-espresso: #2C1810;
+  --color-copper: #B87333;
+  --color-bronze: #8B6914;
+  --color-gold: #D4A847;
+  --color-stone: #8C8074;
+  --color-border: #E2D9CC;
+  --color-red: #DC2626;
+  --color-orange: #EA580C;
+  --color-yellow: #CA8A04;
+  --color-green: #16A34A;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-ui: 'DM Sans', -apple-system, sans-serif;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 128px;
+
+  --max-width: 1320px;
+  --grid-gap: 24px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 24px;
+}
+
+/* ===== CUSTOM CURSOR ===== */
+.cursor-dot {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--color-copper);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-dot.hovered {
+  width: 28px; height: 28px;
+  background: var(--color-gold);
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ===== STAGGERED HERO FADE ===== */
+.hero-fade { opacity: 0; animation: heroFadeIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.hero-fade-1 { animation-delay: 0.1s; }
+.hero-fade-2 { animation-delay: 0.25s; }
+.hero-fade-3 { animation-delay: 0.4s; }
+.hero-fade-4 { animation-delay: 0.55s; }
+.hero-fade-5 { animation-delay: 0.7s; }
+
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== BODY ===== */
+body {
+  font-family: var(--font-body); color: var(--color-obsidian);
+  background: var(--color-cream); overflow-x: hidden;
+  cursor: none;
+}
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-lg); }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
+::-webkit-scrollbar-thumb { background: var(--color-copper); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-bronze); }
+
+/* ===== SECTION BASE ===== */
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--space-xl); padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--color-border);
+}
+.section-header h2 {
+  font-family: var(--font-display); font-size: 32px; font-weight: 700;
+  color: var(--color-charcoal); position: relative;
+  padding-left: var(--space-md);
+}
+.section-header h2::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--color-copper); border-radius: 2px;
+}
+.section-header .view-all {
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-copper);
+  transition: color 0.3s;
+}
+.section-header .view-all:hover { color: var(--color-gold); }
+
+/* ===================================================
+   SECTION 1: TOP UTILITY BAR
+   =================================================== */
+.top-bar {
+  background: var(--color-obsidian); height: 36px;
+  display: flex; align-items: center;
+  font-family: var(--font-mono); font-size: 11px;
+  color: #888; position: relative; z-index: 100;
+  overflow: hidden;
+}
+.top-bar-inner {
+  max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-lg);
+  display: flex; align-items: center; width: 100%; height: 100%;
+  gap: var(--space-lg);
+}
+.top-bar-brand {
+  white-space: nowrap; font-weight: 500;
+  color: var(--color-border); letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.top-bar-ticker {
+  flex: 1; overflow: hidden; position: relative;
+  height: 100%; display: flex; align-items: center;
+}
+.ticker-track {
+  display: flex; gap: 0;
+  white-space: nowrap; animation: tickerScroll 40s linear infinite;
+  will-change: transform;
+}
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 24px; color: #ccc; position: relative;
+}
+.ticker-item::after {
+  content: '◆'; color: var(--color-copper); font-size: 6px; margin-left: 8px;
+}
+.ticker-item .cve { color: var(--color-gold); font-weight: 600; }
+.ticker-item .cvss-critical { color: var(--color-red); }
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.top-bar-right {
+  display: flex; align-items: center; gap: var(--space-md);
+  flex-shrink: 0;
+}
+.top-bar-date { color: #666; }
+.threat-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--color-copper); font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.threat-badge .dot {
+  width: 6px; height: 6px; background: var(--color-copper);
+  border-radius: 50%; animation: threatPulse 2s ease-in-out infinite;
+}
+@keyframes threatPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(184,115,51,0.6); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(184,115,51,0); }
+}
+
+/* ===================================================
+   SECTION 2: MAIN NAV HEADER
+   =================================================== */
+.main-header {
+  background: var(--color-warm-white);
+  border-bottom: 2px solid var(--color-copper);
+  position: sticky; top: 0; z-index: 90;
+  transition: box-shadow 0.3s;
+  will-change: transform;
+}
+.main-header.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+.header-inner {
+  max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-lg);
+  display: flex; align-items: center; height: 72px;
+  gap: var(--space-xl);
+}
+.logo {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-display); font-size: 26px; font-weight: 900;
+  color: var(--color-obsidian); flex-shrink: 0;
+  letter-spacing: -0.06em;
+}
+.logo svg { width: 32px; height: 32px; }
+.nav-links {
+  display: flex; gap: 0; list-style: none;
+  flex: 1; justify-content: center;
+}
+.nav-links > li { position: relative; }
+.nav-links > li > a {
+  display: block; padding: 24px 16px;
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--color-obsidian); position: relative;
+  transition: color 0.3s;
+}
+.nav-links > li > a::after {
+  content: ''; position: absolute; bottom: 0; left: 50%;
+  width: 0; height: 2px; background: var(--color-copper);
+  transition: width 0.3s ease, left 0.3s ease;
+}
+.nav-links > li > a:hover::after,
+.nav-links > li > a:focus-visible::after {
+  width: 100%; left: 0;
+}
+.nav-links > li > a:hover { color: var(--color-copper); }
+
+/* Mega Dropdown */
+.mega-dropdown {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(8px);
+  background: var(--color-warm-white); min-width: 560px;
+  padding: var(--space-lg); border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.1);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+  z-index: 50; display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--space-md); border-top: 2px solid var(--color-copper);
+}
+.nav-links > li:hover .mega-dropdown,
+.nav-links > li:focus-within .mega-dropdown {
+  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+}
+.mega-dropdown-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  transition: background 0.2s; font-family: var(--font-ui);
+  font-size: 13px; color: var(--color-charcoal);
+}
+.mega-dropdown-item:hover { background: rgba(184,115,51,0.08); }
+.mega-dropdown-item .md-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(184,115,51,0.1); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.mega-dropdown-item .md-title { font-weight: 600; font-size: 13px; }
+.mega-dropdown-item .md-desc { font-size: 11px; color: var(--color-stone); margin-top: 2px; }
+
+.header-actions {
+  display: flex; align-items: center; gap: var(--space-md);
+  flex-shrink: 0;
+}
+.search-box {
+  display: flex; align-items: center;
+  background: var(--color-cream); border-radius: 20px;
+  padding: 0 14px; height: 36px;
+  border: 1px solid var(--color-border);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.search-box:focus-within {
+  border-color: var(--color-copper); box-shadow: 0 0 0 3px rgba(184,115,51,0.1);
+}
+.search-box input {
+  border: none; background: none; outline: none;
+  font-family: var(--font-ui); font-size: 13px;
+  color: var(--color-obsidian); width: 130px;
+}
+.search-box input::placeholder { color: var(--color-stone); }
+.search-box .search-icon {
+  color: var(--color-stone); font-size: 14px; margin-right: 6px;
+}
+.subscribe-btn {
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  background: var(--color-copper); color: white;
+  border: none; padding: 10px 22px; border-radius: 999px;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+  will-change: transform;
+}
+.subscribe-btn:hover {
+  transform: scale(1.03); background: var(--color-gold);
+  box-shadow: 0 6px 20px rgba(184,115,51,0.3);
+}
+
+/* Mobile Nav Toggle */
+.nav-toggle {
+  display: none; flex-direction: column; gap: 4px;
+  background: none; border: none; cursor: pointer;
+  padding: 8px;
+}
+.nav-toggle span {
+  width: 22px; height: 2px; background: var(--color-obsidian);
+  transition: all 0.3s; display: block;
+}
+
+/* ===================================================
+   SECTION 3: HERO
+   =================================================== */
+.hero {
+  padding: var(--space-2xl) 0 var(--space-xl);
+}
+.hero-grid {
+  display: grid; grid-template-columns: 65% 35%;
+  gap: var(--space-xl); align-items: start;
+}
+.hero-primary { position: relative; }
+.breaking-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--color-red); color: white;
+  font-family: var(--font-ui); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  padding: 5px 14px; border-radius: 3px; margin-bottom: var(--space-md);
+  animation: breakingGlow 2s ease-in-out infinite;
+}
+@keyframes breakingGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+}
+.hero-primary h1 {
+  font-family: var(--font-display); font-size: 52px; font-weight: 700;
+  line-height: 1.08; color: var(--color-charcoal);
+  margin-bottom: var(--space-md);
+}
+.hero-subhead {
+  font-family: var(--font-body); font-size: 18px; line-height: 1.5;
+  color: var(--color-stone); margin-bottom: var(--space-lg);
+  max-width: 90%;
+}
+.hero-meta {
+  display: flex; align-items: center; gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-ui); font-size: 13px; color: var(--color-stone);
+}
+.hero-meta .author-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-copper), var(--color-gold));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 600; font-size: 14px;
+  font-family: var(--font-ui); flex-shrink: 0;
+}
+.hero-meta .author-name { font-weight: 600; color: var(--color-charcoal); }
+.hero-image-wrap {
+  position: relative; border-radius: var(--radius-lg);
+  overflow: hidden; margin-bottom: var(--space-lg);
+  height: 340px;
+}
+.hero-image-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.hero-image-wrap:hover img { transform: scale(1.04); }
+.hero-image-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(184,115,51,0.15), transparent 60%);
+  pointer-events: none;
+}
+.read-more-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--color-obsidian); padding: 12px 0;
+  border-bottom: 2px solid var(--color-copper);
+  transition: color 0.3s, border-color 0.3s;
+}
+.read-more-btn:hover { color: var(--color-copper); border-color: var(--color-gold); }
+.read-more-btn .arrow { transition: transform 0.3s; }
+.read-more-btn:hover .arrow { transform: translateX(6px); }
+
+/* Hero Secondary */
+.hero-secondary { display: flex; flex-direction: column; gap: 0; }
+.hero-secondary-story {
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid var(--color-border);
+  display: grid; grid-template-columns: 90px 1fr; gap: var(--space-md);
+  align-items: start; cursor: pointer;
+  transition: opacity 0.3s;
+}
+.hero-secondary-story:last-child { border-bottom: none; }
+.hero-secondary-story:hover { opacity: 0.8; }
+.hero-secondary-story .ss-thumb {
+  width: 90px; height: 68px; border-radius: var(--radius-sm);
+  object-fit: cover; background: var(--color-border);
+}
+.hero-secondary-story .ss-category {
+  display: inline-block;
+  font-family: var(--font-ui); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 2px 8px; border-radius: 2px; margin-bottom: 6px;
+}
+.ss-cat-ransomware { background: rgba(220,38,38,0.1); color: var(--color-red); }
+.ss-cat-exploit { background: rgba(234,88,12,0.1); color: var(--color-orange); }
+.ss-cat-nationstate { background: rgba(184,115,51,0.1); color: var(--color-copper); }
+.hero-secondary-story h3 {
+  font-family: var(--font-display); font-size: 15px; font-weight: 600;
+  line-height: 1.3; margin-bottom: 4px;
+}
+.hero-secondary-story .ss-meta {
+  font-family: var(--font-ui); font-size: 11px; color: var(--color-stone);
+}
+
+/* ===================================================
+   SECTION 4: LIVE THREAT TICKER
+   =================================================== */
+.threat-ticker {
+  background: var(--color-espresso); padding: 14px 0;
+  overflow: hidden; position: relative;
+}
+.threat-ticker-inner {
+  display: flex; align-items: center; gap: var(--space-md);
+  font-family: var(--font-mono); color: white;
+}
+.threat-ticker-label {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--color-red); padding: 4px 14px; border-radius: 3px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; flex-shrink: 0;
+}
+.threat-ticker-label .live-dot {
+  width: 6px; height: 6px; background: white; border-radius: 50%;
+  animation: threatPulse 1.5s ease-in-out infinite;
+}
+.threat-ticker-scroll {
+  flex: 1; overflow: hidden;
+}
+.threat-ticker-track {
+  display: flex; gap: 0; white-space: nowrap;
+  animation: tickerScroll 50s linear infinite;
+  will-change: transform;
+}
+.threat-ticker-track:hover { animation-play-state: paused; }
+.threat-ticker-item {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 0 30px; font-size: 13px; color: rgba(255,255,255,0.85);
+}
+.threat-ticker-item .ticker-sep {
+  color: var(--color-copper); font-size: 8px;
+}
+
+/* ===================================================
+   SECTION 5: FEATURED INTELLIGENCE GRID
+   =================================================== */
+.featured { padding: var(--space-3xl) 0; }
+.featured-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: var(--grid-gap);
+}
+.featured-card {
+  background: var(--color-warm-white); border-radius: var(--radius-md);
+  overflow: hidden; border: 1px solid var(--color-border);
+  border-left: 3px solid transparent;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.35s,
+              border-color 0.35s;
+  will-change: transform;
+}
+.featured-card { cursor: pointer; }
+.featured-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+  border-left-color: var(--color-copper);
+}
+.featured-card-image {
+  height: 200px; overflow: hidden; position: relative;
+}
+.featured-card-image img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.featured-card:hover .featured-card-image img { transform: scale(1.05); }
+.featured-card-body { padding: var(--space-lg); }
+.fc-category {
+  display: inline-block;
+  font-family: var(--font-ui); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 3px 10px; border-radius: 2px; margin-bottom: var(--space-sm);
+}
+.fc-cat-apt { background: rgba(220,38,38,0.1); color: var(--color-red); }
+.fc-cat-rce { background: rgba(234,88,12,0.1); color: var(--color-orange); }
+.fc-cat-ai { background: rgba(212,168,71,0.15); color: var(--color-bronze); }
+.fc-cat-malware { background: rgba(184,115,51,0.1); color: var(--color-copper); }
+.fc-cat-nation { background: rgba(22,163,74,0.1); color: var(--color-green); }
+.featured-card-body h3 {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  line-height: 1.25; margin-bottom: var(--space-sm);
+  color: var(--color-charcoal);
+}
+.featured-card-body p {
+  font-family: var(--font-body); font-size: 14px; line-height: 1.5;
+  color: var(--color-stone); margin-bottom: var(--space-md);
+}
+.fc-meta {
+  display: flex; align-items: center; gap: var(--space-sm);
+  font-family: var(--font-ui); font-size: 12px; color: var(--color-stone);
+  margin-bottom: var(--space-md);
+}
+.fc-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.fc-tags span {
+  font-family: var(--font-mono); font-size: 10px;
+  padding: 3px 8px; border-radius: 3px;
+  background: rgba(184,115,51,0.06); color: var(--color-stone);
+  border: 1px solid var(--color-border);
+}
+
+/* ===================================================
+   SECTION 6: TWIN COLUMN
+   =================================================== */
+.twin-column { padding: var(--space-3xl) 0; }
+.twin-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+}
+.twin-col h2 {
+  font-family: var(--font-display); font-size: 26px; font-weight: 700;
+  margin-bottom: var(--space-lg); color: var(--color-charcoal);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+.latest-list { list-style: none; }
+.latest-item {
+  display: grid; grid-template-columns: 60px 1fr;
+  gap: var(--space-md); padding: var(--space-md) 0;
+  border-bottom: 1px solid rgba(226,217,204,0.5);
+  align-items: start;
+}
+.latest-item:last-child { border-bottom: none; }
+.latest-item .number {
+  font-family: var(--font-display); font-size: 48px; font-weight: 700;
+  line-height: 1; color: rgba(184,115,51,0.15);
+}
+.latest-item .li-category {
+  font-family: var(--font-ui); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--color-copper); margin-bottom: 4px;
+}
+.latest-item h3 {
+  font-family: var(--font-display); font-size: 16px; font-weight: 600;
+  line-height: 1.3; margin-bottom: 4px;
+  transition: color 0.3s;
+}
+.latest-item { cursor: pointer; }
+.latest-item:hover h3 { color: var(--color-copper); }
+.latest-item .li-time {
+  font-family: var(--font-ui); font-size: 11px; color: var(--color-stone);
+}
+/* Trending */
+.trending-card {
+  background: var(--color-warm-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: var(--space-lg);
+}
+.trending-item {
+  display: grid; grid-template-columns: 36px 1fr auto;
+  gap: var(--space-md); padding: var(--space-md) 0;
+  border-bottom: 1px solid rgba(226,217,204,0.4);
+  align-items: center;
+}
+.trending-item:last-child { border-bottom: none; }
+.trending-item .tr-rank {
+  font-family: var(--font-display); font-size: 22px; font-weight: 700;
+  color: var(--color-copper); text-align: center;
+}
+.trending-item .tr-title {
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+  line-height: 1.3;
+}
+.trending-item .tr-stats {
+  text-align: right; font-family: var(--font-ui);
+  font-size: 11px; color: var(--color-stone); white-space: nowrap;
+}
+.trending-item .tr-arrow {
+  color: var(--color-red); font-size: 12px;
+}
+
+/* ===================================================
+   SECTION 7: CVE TRACKER
+   =================================================== */
+.cve-tracker {
+  background: var(--color-obsidian); padding: var(--space-3xl) 0;
+  position: relative; overflow: hidden;
+}
+.cve-tracker::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px
+  );
+  pointer-events: none;
+}
+.cve-tracker .section-header h2 { color: var(--color-gold); }
+.cve-tracker .section-header h2::before { background: var(--color-gold); }
+.cve-tracker .view-all { color: var(--color-gold); }
+.cve-table-wrap { overflow-x: auto; }
+.cve-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-mono); font-size: 13px;
+}
+.cve-table thead th {
+  text-align: left; padding: 10px 16px;
+  color: var(--color-gold); font-weight: 500;
+  border-bottom: 1px solid rgba(212,168,71,0.2);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 11px;
+}
+.cve-table tbody td {
+  padding: 10px 16px; color: rgba(255,255,255,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.cve-table tbody tr { transition: background 0.2s; }
+.cve-table tbody tr:hover { background: rgba(184,115,51,0.06); }
+.cve-table tbody tr:last-child td { border-bottom: none; }
+.sev-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 9999px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; background: transparent; border: 1px solid currentColor;
+}
+.sev-critical { color: #DC2626; }
+.sev-high { color: #EA580C; }
+.sev-medium { color: #D97706; }
+.sev-low { color: #16A34A; }
+.status-active { color: #86EFAC; }
+.status-patched { color: #94A3B8; }
+.status-monitored { color: var(--color-gold); }
+.cve-cta {
+  text-align: center; margin-top: var(--space-xl);
+}
+.cve-cta a {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 13px; color: var(--color-gold);
+  border: 1px solid rgba(212,168,71,0.3); padding: 12px 28px;
+  border-radius: 6px; transition: all 0.3s;
+}
+.cve-cta a:hover {
+  border-color: var(--color-gold); background: rgba(212,168,71,0.06);
+}
+/* Terminal cursor */
+.term-cursor {
+  position: absolute; bottom: 24px; right: 32px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.2);
+}
+.term-cursor .cursor-blink {
+  width: 8px; height: 14px; background: var(--color-green);
+  animation: cursorBlink 1s step-end infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ===================================================
+   SECTION 8: TOOL SPOTLIGHT
+   =================================================== */
+.tool-spotlight { padding: var(--space-3xl) 0; }
+.tool-subtitle {
+  font-family: var(--font-body); font-size: 15px; color: var(--color-stone);
+  margin-top: -16px; margin-bottom: var(--space-xl);
+}
+.tool-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap);
+}
+.tool-card {
+  background: var(--color-warm-white); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: var(--space-lg);
+  text-align: center; transition: all 0.35s;
+  will-change: transform;
+}
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.06);
+}
+.tool-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(184,115,51,0.12), rgba(184,115,51,0.04));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto var(--space-md); font-size: 22px;
+  border: 1px solid rgba(184,115,51,0.15);
+}
+.tool-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
+.tool-card .tool-cat {
+  font-family: var(--font-ui); font-size: 11px; color: var(--color-copper);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: var(--space-sm);
+}
+.tool-stars {
+  font-family: var(--font-ui); font-size: 12px; color: var(--color-gold);
+  margin-bottom: var(--space-sm);
+}
+.tool-card p {
+  font-family: var(--font-body); font-size: 13px; color: var(--color-stone);
+  line-height: 1.5; margin-bottom: var(--space-md);
+}
+.tool-gh {
+  font-family: var(--font-mono); font-size: 11px; color: var(--color-stone);
+  margin-bottom: var(--space-md);
+}
+.tool-review-btn {
+  font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--color-copper); border: 1px solid var(--color-copper);
+  padding: 8px 20px; border-radius: 999px;
+  display: inline-block; transition: all 0.3s;
+}
+.tool-review-btn:hover { background: var(--color-copper); color: white; }
+.tool-tags {
+  display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+  margin-top: var(--space-md);
+}
+.tool-tags span {
+  font-family: var(--font-mono); font-size: 9px; padding: 2px 7px;
+  border-radius: 2px; background: rgba(184,115,51,0.06);
+  color: var(--color-stone);
+}
+
+/* ===================================================
+   SECTION 9: CATEGORIES SHOWCASE
+   =================================================== */
+.categories-showcase { padding: var(--space-3xl) 0; }
+.cat-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: var(--grid-gap);
+}
+.cat-block {
+  background: var(--color-warm-white); border: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-copper);
+  padding: var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  text-align: left; cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative; overflow: hidden;
+}
+.cat-block::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--color-copper); transform: scaleY(0);
+  transform-origin: bottom; transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 0;
+}
+.cat-block:hover::before { transform: scaleY(1); }
+.cat-block > * { position: relative; z-index: 1; }
+.cat-block .cat-count {
+  font-family: var(--font-display); font-size: 42px; font-weight: 700;
+  color: var(--color-copper); line-height: 1;
+  transition: color 0.35s;
+}
+.cat-block:hover .cat-count { color: white; }
+.cat-block .cat-name {
+  font-family: var(--font-display); font-size: 18px; font-weight: 600;
+  color: var(--color-charcoal); margin: var(--space-sm) 0;
+  transition: color 0.35s;
+}
+.cat-block:hover .cat-name { color: white; }
+.cat-block p {
+  font-family: var(--font-body); font-size: 13px; color: var(--color-stone);
+  line-height: 1.4; margin-bottom: var(--space-md);
+  transition: color 0.35s;
+}
+.cat-block:hover p { color: rgba(255,255,255,0.7); }
+.cat-block .cat-explore {
+  font-family: var(--font-ui); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px; color: var(--color-copper);
+  transition: color 0.35s;
+}
+.cat-block:hover .cat-explore { color: white; }
+
+/* ===================================================
+   SECTION 10: ANALYST TEAM
+   =================================================== */
+.analyst-section { padding: var(--space-3xl) 0; background: var(--color-warm-white); }
+.analyst-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap);
+}
+.analyst-card {
+  background: var(--color-cream); padding: var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-md); text-align: center;
+  border: 1px solid var(--color-border);
+  transition: transform 0.35s, box-shadow 0.35s;
+  will-change: transform;
+  position: relative; overflow: hidden;
+}
+.analyst-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, var(--color-copper), var(--color-gold));
+  opacity: 0; transition: opacity 0.3s;
+}
+.analyst-card:hover::after { opacity: 1; }
+.analyst-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.06); }
+.analyst-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  margin: 0 auto var(--space-md);
+  border: 2px solid var(--color-copper); padding: 3px;
+  display: flex; align-items: center; justify-content: center;
+}
+.analyst-avatar .avatar-inner {
+  width: 100%; height: 100%; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  color: white;
+}
+.analyst-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
+.analyst-card .analyst-title {
+  font-family: var(--font-ui); font-size: 11px; color: var(--color-copper);
+  text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: var(--space-sm);
+}
+.analyst-specs {
+  display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+  margin-bottom: var(--space-sm);
+}
+.analyst-specs span {
+  font-family: var(--font-mono); font-size: 9px; padding: 2px 8px;
+  background: rgba(184,115,51,0.08); color: var(--color-stone);
+  border-radius: 2px;
+}
+.analyst-articles {
+  font-family: var(--font-ui); font-size: 12px; color: var(--color-stone);
+  margin-bottom: var(--space-sm);
+}
+.analyst-social { display: flex; gap: 10px; justify-content: center; }
+.analyst-social a {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(184,115,51,0.08); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 12px; color: var(--color-stone);
+  transition: all 0.3s;
+}
+.analyst-social a:hover { background: var(--color-copper); color: white; }
+
+/* ===================================================
+   SECTION 11: NEWSLETTER
+   =================================================== */
+.newsletter-section { display: grid; grid-template-columns: 1fr 1fr; }
+.newsletter-signup {
+  background: var(--color-obsidian); color: white;
+  padding: var(--space-3xl) var(--space-2xl);
+}
+.newsletter-signup h2 {
+  font-family: var(--font-display); font-size: 32px; font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+.newsletter-signup .nl-sub {
+  font-family: var(--font-body); font-size: 15px;
+  color: rgba(255,255,255,0.5); margin-bottom: var(--space-lg);
+}
+.nl-form { display: flex; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.nl-form input {
+  flex: 1; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05); border-radius: 6px;
+  font-family: var(--font-ui); font-size: 14px; color: white;
+  outline: none; transition: border-color 0.3s;
+}
+.nl-form input::placeholder { color: rgba(255,255,255,0.3); }
+.nl-form input:focus { border-color: var(--color-copper); }
+.nl-form button {
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  background: var(--color-copper); color: white; border: none;
+  padding: 14px 28px; border-radius: 6px;
+  cursor: pointer; transition: all 0.3s;
+  white-space: nowrap;
+}
+.nl-form button:hover { background: var(--color-gold); }
+.nl-privacy {
+  font-family: var(--font-ui); font-size: 11px; color: rgba(255,255,255,0.3);
+}
+.weekly-digest {
+  background: var(--color-cream); padding: var(--space-3xl) var(--space-2xl);
+}
+.weekly-digest h2 {
+  font-family: var(--font-display); font-size: 26px; font-weight: 700;
+  color: var(--color-charcoal); margin-bottom: var(--space-sm);
+}
+.weekly-digest .digest-sub {
+  font-family: var(--font-body); font-size: 14px; color: var(--color-stone);
+  margin-bottom: var(--space-lg);
+}
+.digest-items { list-style: none; margin-bottom: var(--space-lg); }
+.digest-items li {
+  display: flex; gap: 10px; padding: 10px 0;
+  font-family: var(--font-body); font-size: 14px; color: var(--color-charcoal);
+  border-bottom: 1px solid rgba(226,217,204,0.5);
+}
+.digest-items li::before {
+  content: '→'; color: var(--color-copper); font-weight: 700;
+  flex-shrink: 0;
+}
+.digest-archive {
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--color-copper); transition: color 0.3s;
+}
+.digest-archive:hover { color: var(--color-gold); }
+
+/* ===================================================
+   SECTION 12: TABBED CATEGORY CONTENT
+   =================================================== */
+.tabbed-section { padding: var(--space-3xl) 0; background: var(--color-warm-white); }
+.tabs-nav {
+  display: flex; gap: 0; border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-xl); overflow-x: auto;
+}
+.tab-btn {
+  font-family: var(--font-ui); font-size: 13px; font-weight: 500;
+  padding: 12px 24px; background: none; border: none;
+  color: var(--color-stone); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--color-charcoal); }
+.tab-btn.active {
+  color: var(--color-copper); border-bottom-color: var(--color-copper);
+  font-weight: 600;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.tab-scroll {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap);
+}
+.tab-article {
+  background: var(--color-cream); border-radius: var(--radius-md);
+  overflow: hidden; border: 1px solid var(--color-border);
+  transition: transform 0.35s, box-shadow 0.35s;
+  will-change: transform;
+}
+.tab-article { cursor: pointer; }
+.tab-article:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.06); }
+.tab-article img {
+  width: 100%; height: 160px; object-fit: cover;
+  transition: transform 0.5s; will-change: transform;
+}
+.tab-article:hover img { transform: scale(1.05); }
+.tab-article-body { padding: var(--space-md); }
+.tab-article-body h4 {
+  font-family: var(--font-display); font-size: 15px; font-weight: 600;
+  line-height: 1.25; margin-bottom: 6px;
+}
+.tab-article-body .tab-meta {
+  font-family: var(--font-ui); font-size: 11px; color: var(--color-stone);
+}
+
+/* ===================================================
+   SECTION 13: STATISTICS BAND
+   =================================================== */
+.stats-band {
+  background: var(--color-copper); padding: var(--space-2xl) 0;
+  color: white;
+}
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xl); text-align: center;
+}
+.stat-item .stat-number {
+  font-family: var(--font-display); font-size: 48px; font-weight: 700;
+  line-height: 1; margin-bottom: var(--space-sm);
+}
+.stat-item .stat-label {
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  opacity: 0.85;
+}
+
+/* ===================================================
+   SECTION 14: FOOTER
+   =================================================== */
+.site-footer {
+  background: var(--color-obsidian); color: rgba(255,255,255,0.7);
+  padding: var(--space-3xl) 0 0;
+}
+.footer-top {
+  display: grid; grid-template-columns: 2fr 3fr;
+  gap: var(--space-2xl); padding-bottom: var(--space-2xl);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.footer-brand .footer-logo {
+  font-family: var(--font-display); font-size: 28px; font-weight: 900;
+  color: white; display: flex; align-items: center; gap: 12px;
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.06em;
+}
+.footer-brand p {
+  font-family: var(--font-body); font-size: 14px; line-height: 1.6;
+  max-width: 320px;
+}
+.footer-links-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-xl);
+}
+.footer-col h4 {
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: white; margin-bottom: var(--space-md);
+}
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 8px; }
+.footer-col ul a {
+  font-family: var(--font-ui); font-size: 13px;
+  color: rgba(255,255,255,0.5); transition: color 0.3s;
+}
+.footer-col ul a:hover { color: var(--color-copper); }
+.footer-middle {
+  padding: var(--space-xl) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; gap: var(--space-xl); flex-wrap: wrap;
+}
+.footer-tweet {
+  flex: 1; min-width: 280px;
+  display: flex; gap: var(--space-md);
+  font-family: var(--font-ui); font-size: 13px;
+}
+.footer-tweet .ft-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--color-copper); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: white;
+}
+.footer-tweet .ft-text { line-height: 1.5; }
+.footer-tweet .ft-text .ft-handle { color: var(--color-copper); font-weight: 600; }
+.footer-tweet .ft-time {
+  font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px;
+}
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-lg) 0; flex-wrap: wrap; gap: var(--space-md);
+  font-family: var(--font-ui); font-size: 12px;
+  color: rgba(255,255,255,0.4);
+}
+.footer-social { display: flex; gap: var(--space-sm); }
+.footer-social a {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); display: flex;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.4); font-size: 13px;
+  transition: all 0.3s;
+}
+.footer-social a:hover { background: var(--color-copper); color: white; }
+.footer-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px; font-size: 10px; font-family: var(--font-mono);
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 1024px) {
+  .hero-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .hero-primary h1 { font-size: 38px; }
+  .featured-grid { grid-template-columns: repeat(2, 1fr); }
+  .tool-grid { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .analyst-grid { grid-template-columns: repeat(2, 1fr); }
+  .tab-scroll { grid-template-columns: repeat(2, 1fr); }
+  .footer-links-grid { grid-template-columns: repeat(3, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-xl); }
+  .newsletter-section { grid-template-columns: 1fr; }
+  .mega-dropdown { min-width: 400px; }
+  .nav-links > li > a { padding: 24px 10px; font-size: 11px; }
+}
+
+@media (max-width: 768px) {
+  .top-bar-brand span { display: none; }
+  .top-bar-date { display: none; }
+  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  .search-box { display: none; }
+  .header-inner { height: 60px; }
+  .logo { font-size: 20px; }
+  .hero-primary h1 { font-size: 30px; }
+  .hero-subhead { font-size: 16px; max-width: 100%; }
+  .hero-image-wrap { height: 220px; }
+  .featured-grid { grid-template-columns: 1fr; }
+  .twin-grid { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .tool-grid { grid-template-columns: 1fr; }
+  .analyst-grid { grid-template-columns: 1fr; }
+  .tab-scroll { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid .stat-number { font-size: 36px; }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-links-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .newsletter-signup, .weekly-digest { padding: var(--space-xl) var(--space-lg); }
+  .nl-form { flex-direction: column; }
+  .section-header h2 { font-size: 24px; }
+  .cve-table { font-size: 11px; }
+  .cve-table thead th, .cve-table tbody td { padding: 10px 8px; }
+  .threat-badge .label-text { display: none; }
+  .hero-secondary-story { grid-template-columns: 70px 1fr; }
+  .hero-secondary-story .ss-thumb { width: 70px; height: 54px; }
+  .term-cursor { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hero-primary h1 { font-size: 24px; }
+  .hero-image-wrap { height: 180px; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid .stat-number { font-size: 28px; }
+  .footer-links-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23B87333'/%3E%3Cpath d='M16 6l10 5v5c0 6-4 12-10 14C10 28 6 22 6 16v-5l10-5z' fill='%23F5F0E8' opacity='0.9'/%3E%3Cpath d='M16 9l7 3.5v3.5c0 4.2-2.8 8.4-7 9.8-4.2-1.4-7-5.6-7-9.8v-3.5L16 9z' fill='%23B87333'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- ============================================
+     TOP UTILITY BAR
+     ============================================ -->
+<header class="top-bar" role="banner">
+  <div class="top-bar-inner">
+    <div class="top-bar-brand">ZAYRON SECURITY <span>— Cyber Intelligence Since 2025</span></div>
+    <div class="top-bar-ticker" aria-label="Latest intelligence headlines">
+      <div class="ticker-track">
+        <span class="ticker-item"><span class="cve">CVE-2025-4821</span> — Critical RCE in Apache HTTP Server <span class="cvss-critical">| CVSS 9.8</span></span>
+        <span class="ticker-item">Ransomware group 'VoidLock' targets EU financial sector</span>
+        <span class="ticker-item"><span class="cve">CVE-2025-4902</span> — Zero-Day in VMware vCenter exploited in wild <span class="cvss-critical">| CVSS 9.0</span></span>
+        <span class="ticker-item">CISA adds 3 new Known Exploited Vulnerabilities to catalog</span>
+        <span class="ticker-item"><span class="cve">CVE-2025-4738</span> — Critical RCE in Fortinet FortiOS <span class="cvss-critical">| CVSS 9.4</span></span>
+        <span class="ticker-item">APT29 targets diplomatic missions in Eastern Europe</span>
+        <span class="ticker-item"><span class="cve">CVE-2025-5012</span> — Chrome V8 sandbox escape disclosed <span class="cvss-critical">| CVSS 8.6</span></span>
+        <span class="ticker-item">New infostealer campaign targets DevOps pipelines</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="ticker-item"><span class="cve">CVE-2025-4821</span> — Critical RCE in Apache HTTP Server <span class="cvss-critical">| CVSS 9.8</span></span>
+        <span class="ticker-item">Ransomware group 'VoidLock' targets EU financial sector</span>
+        <span class="ticker-item"><span class="cve">CVE-2025-4902</span> — Zero-Day in VMware vCenter exploited in wild <span class="cvss-critical">| CVSS 9.0</span></span>
+        <span class="ticker-item">CISA adds 3 new Known Exploited Vulnerabilities to catalog</span>
+        <span class="ticker-item"><span class="cve">CVE-2025-4738</span> — Critical RCE in Fortinet FortiOS <span class="cvss-critical">| CVSS 9.4</span></span>
+        <span class="ticker-item">APT29 targets diplomatic missions in Eastern Europe</span>
+        <span class="ticker-item"><span class="cve">CVE-2025-5012</span> — Chrome V8 sandbox escape disclosed <span class="cvss-critical">| CVSS 8.6</span></span>
+        <span class="ticker-item">New infostealer campaign targets DevOps pipelines</span>
+      </div>
+    </div>
+    <div class="top-bar-right">
+      <span class="top-bar-date" id="currentDate"></span>
+      <span class="threat-badge"><span class="dot"></span><span class="label-text">THREAT LEVEL: ELEVATED</span></span>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================
+     MAIN NAV HEADER
+     ============================================ -->
+<nav class="main-header" id="mainHeader" role="navigation" aria-label="Main navigation">
+  <div class="header-inner">
+    <a href="/" class="logo" aria-label="ZAYRON-X Home" style="letter-spacing:-0.06em; font-weight:900; color:#050505;">
+      ZAYRON<span style="color:#733DD9;">-X</span>
+    </a>
+
+    <ul class="nav-links">
+      <li>
+        <a href="#" aria-haspopup="true">Intelligence</a>
+        <div class="mega-dropdown" role="menu">
+          <a href="#" class="mega-dropdown-item" role="menuitem">
+            <span class="md-icon">📡</span>
+            <div><div class="md-title">Threat Briefings</div><div class="md-desc">Daily situational reports</div></div>
+          </a>
+          <a href="#" class="mega-dropdown-item" role="menuitem">
+            <span class="md-icon">🌍</span>
+            <div><div class="md-title">Nation-State Activity</div><div class="md-desc">State-sponsored campaigns</div></div>
+          </a>
+          <a href="#" class="mega-dropdown-item" role="menuitem">
+            <span class="md-icon">🔬</span>
+            <div><div class="md-title">Malware Analysis</div><div class="md-desc">Deep-dive reverse engineering</div></div>
+          </a>
+          <a href="#" class="mega-dropdown-item" role="menuitem">
+            <span class="md-icon">📊</span>
+            <div><div class="md-title">Threat Reports</div><div class="md-desc">Quarterly intelligence summaries</div></div>
+          </a>
+          <a href="#" class="mega-dropdown-item" role="menuitem">
+            <span class="md-icon">🕵️</span>
+            <div><div class="md-title">APT Research</div><div class="md-desc">Advanced persistent threat groups</div></div>
+          </a>
+          <a href="#" class="mega-dropdown-item" role="menuitem">
+            <span class="md-icon">⚡</span>
+            <div><div class="md-title">Zero-Day Coverage</div><div class="md-desc">Emerging vulnerability intel</div></div>
+          </a>
+        </div>
+      </li>
+      <li><a href="#" aria-haspopup="true">Vulnerabilities</a>
+        <div class="mega-dropdown" role="menu">
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">🛡️</span><div><div class="md-title">CVE Database</div><div class="md-desc">Searchable vulnerability index</div></div></a>
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">📋</span><div><div class="md-title">Patch Tuesday</div><div class="md-desc">Monthly Microsoft analysis</div></div></a>
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">⚠️</span><div><div class="md-title">Exploit Predictions</div><div class="md-desc">Likelihood assessments</div></div></a>
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">🔧</span><div><div class="md-title">Mitigation Guides</div><div class="md-desc">Actionable remediation steps</div></div></a>
+        </div>
+      </li>
+      <li><a href="#" aria-haspopup="true">Tools</a>
+        <div class="mega-dropdown" role="menu">
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">🔍</span><div><div class="md-title">Reconnaissance</div><div class="md-desc">OSINT & enumeration tools</div></div></a>
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">💥</span><div><div class="md-title">Exploitation</div><div class="md-desc">Penetration testing frameworks</div></div></a>
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">📡</span><div><div class="md-title">Network Security</div><div class="md-desc">Traffic analysis & monitoring</div></div></a>
+          <a href="#" class="mega-dropdown-item" role="menuitem"><span class="md-icon">🩸</span><div><div class="md-title">Red Teaming</div><div class="md-desc">Adversary simulation suites</div></div></a>
+        </div>
+      </li>
+      <li><a href="#">Malware</a></li>
+      <li><a href="#">AI Security</a></li>
+      <li><a href="#">Nation-State</a></li>
+      <li><a href="#">Research</a></li>
+      <li><a href="#">CVE Tracker</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+
+    <div class="header-actions">
+      <button class="search-btn" aria-label="Search intelligence database" style="background: none; border: none; cursor: pointer; color: var(--color-stone); transition: color 0.3s; margin-right: 12px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.color='var(--color-copper)'" onmouseout="this.style.color='var(--color-stone)'">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+      <button class="subscribe-btn" aria-label="Subscribe to premium intelligence">Subscribe</button>
+      <button class="nav-toggle" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================
+     HERO SECTION
+     ============================================ -->
+<section class="hero" aria-label="Breaking intelligence">
+  <div class="container hero-grid">
+    <!-- Primary -->
+    <article class="hero-primary">
+      <span class="breaking-badge hero-fade hero-fade-1">🔴 Breaking</span>
+      <h1 class="hero-fade hero-fade-2">Chinese APT Group 'RedDragon' Compromises Global Telecom Infrastructure in Supply Chain Attack</h1>
+      <p class="hero-subhead hero-fade hero-fade-2">Sophisticated operation targets SS7 protocols and 5G core networks across 14 carriers in Southeast Asia and Europe. Analysis of the implant reveals ties to previous espionage campaigns.</p>
+      <div class="hero-meta hero-fade hero-fade-3">
+        <div class="author-avatar">MK</div>
+        <div>
+          <span class="author-name">Marcus Kovac</span>
+          <span>— Threat Intelligence Lead</span>
+        </div>
+        <span>·</span>
+        <span>May 8, 2026</span>
+        <span>·</span>
+        <span>14 min read</span>
+      </div>
+      <div class="hero-image-wrap hero-fade hero-fade-4">
+        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=860&h=340&fit=crop" alt="Network security visualization" loading="lazy">
+        <div class="hero-image-overlay"></div>
+      </div>
+      <a href="#" class="read-more-btn hero-fade hero-fade-5">Read Full Analysis <span class="arrow">→</span></a>
+    </article>
+
+    <!-- Secondary -->
+    <aside class="hero-secondary hero-fade hero-fade-3" aria-label="More top stories">
+      <article class="hero-secondary-story">
+        <img class="ss-thumb" src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=90&h=68&fit=crop" alt="" loading="lazy">
+        <div>
+          <span class="ss-category ss-cat-ransomware">Ransomware</span>
+          <h3>VoidLock Ransomware Group Claims Attack on European Energy Grid Operator</h3>
+          <span class="ss-meta">Elena Voss · 32 min ago</span>
+        </div>
+      </article>
+      <article class="hero-secondary-story">
+        <img class="ss-thumb" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=90&h=68&fit=crop" alt="" loading="lazy">
+        <div>
+          <span class="ss-category ss-cat-exploit">Exploit</span>
+          <h3>CVE-2025-4902: Critical vCenter Server Vulnerability Under Active Exploitation</h3>
+          <span class="ss-meta">Anika Patel · 2h ago</span>
+        </div>
+      </article>
+      <article class="hero-secondary-story">
+        <img class="ss-thumb" src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=90&h=68&fit=crop" alt="" loading="lazy">
+        <div>
+          <span class="ss-category ss-cat-nationstate">Nation-State</span>
+          <h3>North Korean Lazarus Group Launders $1.2B in Crypto Through DeFi Protocols</h3>
+          <span class="ss-meta">James Whitfield · 4h ago</span>
+        </div>
+      </article>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================
+     LIVE THREAT TICKER
+     ============================================ -->
+<section class="threat-ticker" aria-label="Live threat intelligence feed">
+  <div class="container threat-ticker-inner">
+    <div class="threat-ticker-label"><span class="live-dot"></span> LIVE</div>
+    <div class="threat-ticker-scroll">
+      <div class="threat-ticker-track">
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-4821 — Critical RCE in Apache HTTP Server <strong style="color:#FCA5A5;">| CVSS 9.8</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> Ransomware group 'VoidLock' targets EU financial sector <strong style="color:#FDBA74;">| CVSS 8.2</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CISA adds 3 new KEVs to catalog</span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-4902 — Zero-Day in VMware vCenter exploited in wild <strong style="color:#FCA5A5;">| CVSS 9.0</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-4738 — Critical RCE in Fortinet FortiOS <strong style="color:#FCA5A5;">| CVSS 9.4</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> APT29 targets diplomatic missions in Eastern Europe</span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-5012 — Chrome V8 sandbox escape disclosed <strong style="color:#FDBA74;">| CVSS 8.6</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> New infostealer campaign targets CI/CD pipelines</span>
+        <!-- Duplicate -->
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-4821 — Critical RCE in Apache HTTP Server <strong style="color:#FCA5A5;">| CVSS 9.8</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> Ransomware group 'VoidLock' targets EU financial sector <strong style="color:#FDBA74;">| CVSS 8.2</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CISA adds 3 new KEVs to catalog</span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-4902 — Zero-Day in VMware vCenter exploited in wild <strong style="color:#FCA5A5;">| CVSS 9.0</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-4738 — Critical RCE in Fortinet FortiOS <strong style="color:#FCA5A5;">| CVSS 9.4</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> APT29 targets diplomatic missions in Eastern Europe</span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> CVE-2025-5012 — Chrome V8 sandbox escape disclosed <strong style="color:#FDBA74;">| CVSS 8.6</strong></span>
+        <span class="threat-ticker-item"><span class="ticker-sep">◆</span> New infostealer campaign targets CI/CD pipelines</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     FEATURED INTELLIGENCE GRID
+     ============================================ -->
+<section class="featured" aria-label="Featured intelligence">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Featured Intelligence</h2>
+      <a href="#" class="view-all">View All →</a>
+    </div>
+    <div class="featured-grid">
+      <article class="featured-card reveal reveal-delay-1">
+        <div class="featured-card-image">
+          <img src="https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=400&h=200&fit=crop" alt="" loading="lazy">
+        </div>
+        <div class="featured-card-body">
+          <span class="fc-category fc-cat-apt">APT Group Profile</span>
+          <h3>APT29 (Cozy Bear) Evolves Tactics: Cloud-Native Persistence Mechanisms</h3>
+          <p>Russian state-sponsored actors have shifted to OAuth-based persistence targeting Microsoft 365 and AWS environments.</p>
+          <div class="fc-meta">
+            <span>Dmitri Volkov</span><span>·</span><span>May 7</span><span>·</span><span>22 min</span>
+          </div>
+          <div class="fc-tags">
+            <span>#APT29</span><span>#CloudSecurity</span><span>#Russia</span>
+          </div>
+        </div>
+      </article>
+      <article class="featured-card reveal reveal-delay-2">
+        <div class="featured-card-image">
+          <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=200&fit=crop" alt="" loading="lazy">
+        </div>
+        <div class="featured-card-body">
+          <span class="fc-category fc-cat-rce">Zero-Day Analysis</span>
+          <h3>CVE-2025-4821: Deep Dive Into Apache HTTP Server Heap Overflow Exploit Chain</h3>
+          <p>A critical use-after-free leading to RCE — full technical analysis of the exploit chain and detection strategies.</p>
+          <div class="fc-meta">
+            <span>Sarah Chen</span><span>·</span><span>May 6</span><span>·</span><span>18 min</span>
+          </div>
+          <div class="fc-tags">
+            <span>#RCE</span><span>#Apache</span><span>#ExploitDev</span>
+          </div>
+        </div>
+      </article>
+      <article class="featured-card reveal reveal-delay-3">
+        <div class="featured-card-image">
+          <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&h=200&fit=crop" alt="" loading="lazy">
+        </div>
+        <div class="featured-card-body">
+          <span class="fc-category fc-cat-ai">AI Security</span>
+          <h3>Prompt Injection in Production: Attacking LLM-Integrated Enterprise Workflows</h3>
+          <p>Real-world prompt injection techniques targeting GPT-4 and Claude-powered customer support and code generation pipelines.</p>
+          <div class="fc-meta">
+            <span>Aiko Tanaka</span><span>·</span><span>May 5</span><span>·</span><span>15 min</span>
+          </div>
+          <div class="fc-tags">
+            <span>#LLM</span><span>#PromptInjection</span><span>#GenAI</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     TWIN COLUMN — Latest + Trending
+     ============================================ -->
+<section class="twin-column" aria-label="Latest reports and trending stories">
+  <div class="container twin-grid">
+    <div class="twin-col reveal">
+      <h2>Latest Reports</h2>
+      <ol class="latest-list">
+        <li class="latest-item">
+          <span class="number">01</span>
+          <div>
+            <div class="li-category">Nation-State</div>
+            <h3>Iranian APT 'Charming Kitten' Deploys New 'Hypershell' Backdoor Against Israeli Critical Infrastructure</h3>
+            <span class="li-time">3 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">02</span>
+          <div>
+            <div class="li-category">Vulnerability</div>
+            <h3>CVE-2025-4938: Critical Authentication Bypass in Palo Alto Networks PAN-OS</h3>
+            <span class="li-time">5 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">03</span>
+          <div>
+            <div class="li-category">Malware</div>
+            <h3>New 'StealthVector' Malware Evades EDR Using Direct Syscall Hooking and ETW Patching</h3>
+            <span class="li-time">7 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">04</span>
+          <div>
+            <div class="li-category">Research</div>
+            <h3>Breaking Bcrypt: Cost-Factor Reduction Attack on Legacy Implementations</h3>
+            <span class="li-time">9 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">05</span>
+          <div>
+            <div class="li-category">Tools</div>
+            <h3>BloodHound CE v6.0 Released: New Attack Path Detection for Azure Arc and Entra ID</h3>
+            <span class="li-time">12 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">06</span>
+          <div>
+            <div class="li-category">AI Security</div>
+            <h3>Model Extraction Attack Recovers 87% of Proprietary Weights from Cloud-Hosted LLMs</h3>
+            <span class="li-time">14 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">07</span>
+          <div>
+            <div class="li-category">Nation-State</div>
+            <h3>Chinese 'Volt Typhoon' Maintains Persistence in US Critical Infrastructure 18 Months Post-Disclosure</h3>
+            <span class="li-time">18 hours ago</span>
+          </div>
+        </li>
+        <li class="latest-item">
+          <span class="number">08</span>
+          <div>
+            <div class="li-category">Vulnerability</div>
+            <h3>CVE-2025-5019: Pre-Auth RCE in VMware Aria Operations — Proof of Concept Released</h3>
+            <span class="li-time">22 hours ago</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="twin-col reveal reveal-delay-2">
+      <h2>Trending This Week</h2>
+      <div class="trending-card">
+        <div class="trending-item">
+          <span class="tr-rank">1</span>
+          <span class="tr-title">RedDragon Telecom Supply Chain Attack</span>
+          <span class="tr-stats">🔥 84K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">2</span>
+          <span class="tr-title">CVE-2025-4821 Apache HTTP RCE Analysis</span>
+          <span class="tr-stats">🔥 62K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">3</span>
+          <span class="tr-title">Lazarus $1.2B DeFi Heist Breakdown</span>
+          <span class="tr-stats">🔥 51K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">4</span>
+          <span class="tr-title">VoidLock Ransomware — Energy Sector</span>
+          <span class="tr-stats">🔥 47K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">5</span>
+          <span class="tr-title">LLM Prompt Injection Enterprise Threats</span>
+          <span class="tr-stats">🔥 39K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">6</span>
+          <span class="tr-title">CVE-2025-4902 vCenter Zero-Day Exploit</span>
+          <span class="tr-stats">🔥 33K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">7</span>
+          <span class="tr-title">BloodHound CE v6.0 Release Coverage</span>
+          <span class="tr-stats">🔥 28K <span class="tr-arrow">↑</span></span>
+        </div>
+        <div class="trending-item">
+          <span class="tr-rank">8</span>
+          <span class="tr-title">Charming Kitten Hypershell Backdoor</span>
+          <span class="tr-stats">🔥 24K <span class="tr-arrow">↑</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     CVE INTELLIGENCE TRACKER
+     ============================================ -->
+<section class="cve-tracker" aria-label="Live CVE vulnerability tracker">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Live CVE Tracker</h2>
+      <a href="#" class="view-all">View Full Database →</a>
+    </div>
+    <div class="cve-table-wrap reveal">
+      <table class="cve-table">
+        <thead>
+          <tr>
+            <th>CVE ID</th>
+            <th>Severity</th>
+            <th>CVSS</th>
+            <th>Product</th>
+            <th>Published</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-4821</a></td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>9.8</td>
+            <td>Apache HTTP Server</td>
+            <td>2025-05-06</td>
+            <td><span class="status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-4738</a></td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>9.4</td>
+            <td>Fortinet FortiOS</td>
+            <td>2025-05-04</td>
+            <td><span class="status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-4902</a></td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>9.0</td>
+            <td>VMware vCenter Server</td>
+            <td>2025-05-03</td>
+            <td><span class="status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-4938</a></td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>8.8</td>
+            <td>Palo Alto PAN-OS</td>
+            <td>2025-05-02</td>
+            <td><span class="status-monitored">Monitored</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-5012</a></td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>8.6</td>
+            <td>Google Chrome (V8)</td>
+            <td>2025-05-01</td>
+            <td><span class="status-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-5019</a></td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>9.1</td>
+            <td>VMware Aria Operations</td>
+            <td>2025-04-30</td>
+            <td><span class="status-patched">Patching</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-4622</a></td>
+            <td><span class="sev-badge sev-medium">Medium</span></td>
+            <td>6.5</td>
+            <td>Microsoft Exchange Server</td>
+            <td>2025-04-28</td>
+            <td><span class="status-patched">Patched</span></td>
+          </tr>
+          <tr>
+            <td><a href="#" style="color:var(--color-gold);">CVE-2025-4708</a></td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>7.5</td>
+            <td>Atlassian Confluence</td>
+            <td>2025-04-26</td>
+            <td><span class="status-monitored">Monitored</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cve-cta reveal">
+      <a href="#">View Full CVE Database →</a>
+    </div>
+    <div class="term-cursor" aria-hidden="true">
+      <span>_</span>
+      <span class="cursor-blink"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     TOOL SPOTLIGHT
+     ============================================ -->
+<section class="tool-spotlight" aria-label="Security tool reviews">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Tool Spotlight</h2>
+      <a href="#" class="view-all">All Tools →</a>
+    </div>
+    <p class="tool-subtitle reveal">Curated Security Tools Reviewed by Experts</p>
+    <div class="tool-grid">
+      <div class="tool-card reveal reveal-delay-1">
+        <div class="tool-icon">🕸️</div>
+        <span class="tool-cat">Network Mapper</span>
+        <h3>Nmap 7.95</h3>
+        <div class="tool-stars">★★★★★ 4.8/5</div>
+        <p>Industry-standard network discovery and security scanning utility with NSE scripting engine.</p>
+        <div class="tool-gh">★ 3.2k GitHub stars</div>
+        <a href="#" class="tool-review-btn">View Review</a>
+        <div class="tool-tags">
+          <span>#recon</span><span>#network</span><span>#OSINT</span>
+        </div>
+      </div>
+      <div class="tool-card reveal reveal-delay-2">
+        <div class="tool-icon">💥</div>
+        <span class="tool-cat">Exploitation</span>
+        <h3>Metasploit 6.5</h3>
+        <div class="tool-stars">★★★★★ 4.7/5</div>
+        <p>Penetration testing framework with 3,000+ modules covering exploit, payload, and post-exploitation.</p>
+        <div class="tool-gh">★ 5.8k GitHub stars</div>
+        <a href="#" class="tool-review-btn">View Review</a>
+        <div class="tool-tags">
+          <span>#exploit</span><span>#pentest</span><span>#offensive</span>
+        </div>
+      </div>
+      <div class="tool-card reveal reveal-delay-3">
+        <div class="tool-icon">🔍</div>
+        <span class="tool-cat">Proxy Suite</span>
+        <h3>Burp Suite Pro 2025</h3>
+        <div class="tool-stars">★★★★★ 4.6/5</div>
+        <p>Advanced web application security testing platform with automated scanner and collaborator client.</p>
+        <div class="tool-gh">★ 4.1k GitHub stars</div>
+        <a href="#" class="tool-review-btn">View Review</a>
+        <div class="tool-tags">
+          <span>#webapp</span><span>#pentest</span><span>#proxy</span>
+        </div>
+      </div>
+      <div class="tool-card reveal reveal-delay-4">
+        <div class="tool-icon">📡</div>
+        <span class="tool-cat">Threat Hunter</span>
+        <h3>Velociraptor 0.73</h3>
+        <div class="tool-stars">★★★★☆ 4.5/5</div>
+        <p>Open-source endpoint visibility, triage, and response platform with VQL query engine.</p>
+        <div class="tool-gh">★ 2.9k GitHub stars</div>
+        <a href="#" class="tool-review-btn">View Review</a>
+        <div class="tool-tags">
+          <span>#DFIR</span><span>#EDR</span><span>#hunting</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     CATEGORIES SHOWCASE
+     ============================================ -->
+<section class="categories-showcase" aria-label="Content categories">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Explore by Category</h2>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-block reveal reveal-delay-1">
+        <div class="cat-count">847</div>
+        <h3 class="cat-name">Vulnerabilities</h3>
+        <p>CVE analyses, zero-day disclosures, and patch intelligence.</p>
+        <span class="cat-explore">Explore →</span>
+      </div>
+      <div class="cat-block reveal reveal-delay-2">
+        <div class="cat-count">412</div>
+        <h3 class="cat-name">Malware</h3>
+        <p>Reverse engineering reports, sample analysis, and threat profiles.</p>
+        <span class="cat-explore">Explore →</span>
+      </div>
+      <div class="cat-block reveal reveal-delay-3">
+        <div class="cat-count">186</div>
+        <h3 class="cat-name">APT Groups</h3>
+        <p>Nation-state actor profiles, TTP breakdowns, and campaign timelines.</p>
+        <span class="cat-explore">Explore →</span>
+      </div>
+      <div class="cat-block reveal reveal-delay-4">
+        <div class="cat-count">124</div>
+        <h3 class="cat-name">Tools & Frameworks</h3>
+        <p>Security tool reviews, comparisons, and expert configuration guides.</p>
+        <span class="cat-explore">Explore →</span>
+      </div>
+      <div class="cat-block reveal reveal-delay-5">
+        <div class="cat-count">98</div>
+        <h3 class="cat-name">AI in Security</h3>
+        <p>LLM security, adversarial ML, and AI-powered defense strategies.</p>
+        <span class="cat-explore">Explore →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     ANALYST TEAM
+     ============================================ -->
+<section class="analyst-section" aria-label="Our intelligence analysts">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Our Intelligence Analysts</h2>
+      <a href="#" class="view-all">Meet the Team →</a>
+    </div>
+    <div class="analyst-grid">
+      <div class="analyst-card reveal reveal-delay-1">
+        <div class="analyst-avatar">
+          <div class="avatar-inner" style="background:linear-gradient(135deg,#B87333,#D4A847);">MK</div>
+        </div>
+        <h3>Marcus Kovac</h3>
+        <div class="analyst-title">Threat Intelligence Lead</div>
+        <div class="analyst-specs">
+          <span>APT</span><span>CTI</span><span>Exploit</span>
+        </div>
+        <div class="analyst-articles">247 articles published</div>
+        <div class="analyst-social">
+          <a href="#" aria-label="Twitter" title="@mkovac_intel">𝕏</a>
+          <a href="#" aria-label="LinkedIn" title="LinkedIn">in</a>
+        </div>
+      </div>
+      <div class="analyst-card reveal reveal-delay-2">
+        <div class="analyst-avatar">
+          <div class="avatar-inner" style="background:linear-gradient(135deg,#2C1810,#B87333);">SC</div>
+        </div>
+        <h3>Sarah Chen</h3>
+        <div class="analyst-title">Senior Vulnerability Researcher</div>
+        <div class="analyst-specs">
+          <span>Reverse Eng</span><span>Zero-Day</span><span>RCE</span>
+        </div>
+        <div class="analyst-articles">203 articles published</div>
+        <div class="analyst-social">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+      <div class="analyst-card reveal reveal-delay-3">
+        <div class="analyst-avatar">
+          <div class="avatar-inner" style="background:linear-gradient(135deg,#8B6914,#D4A847);">AT</div>
+        </div>
+        <h3>Aiko Tanaka</h3>
+        <div class="analyst-title">AI Security Research Lead</div>
+        <div class="analyst-specs">
+          <span>LLM</span><span>MLSec</span><span>Red Team</span>
+        </div>
+        <div class="analyst-articles">156 articles published</div>
+        <div class="analyst-social">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+      <div class="analyst-card reveal reveal-delay-4">
+        <div class="analyst-avatar">
+          <div class="avatar-inner" style="background:linear-gradient(135deg,#1A1A1A,#B87333);">JW</div>
+        </div>
+        <h3>James Whitfield</h3>
+        <div class="analyst-title">Nation-State Threats Analyst</div>
+        <div class="analyst-specs">
+          <span>Geopolitics</span><span>CNE</span><span>OSINT</span>
+        </div>
+        <div class="analyst-articles">189 articles published</div>
+        <div class="analyst-social">
+          <a href="#" aria-label="Twitter">𝕏</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     NEWSLETTER + THREAT DIGEST
+     ============================================ -->
+<section class="newsletter-section" aria-label="Newsletter and weekly digest">
+  <div class="newsletter-signup reveal">
+    <h2>Join 12,000+ Security Professionals</h2>
+    <p class="nl-sub">Get breaking intelligence delivered to your inbox every morning. Zero spam, high signal.</p>
+    <form class="nl-form" onsubmit="event.preventDefault();alert('Thank you for subscribing to ZAYRON ONTAP.');">
+      <input type="email" placeholder="Enter your work email..." aria-label="Email address" required>
+      <button type="submit">Subscribe</button>
+    </form>
+    <p class="nl-privacy">🔒 Your data is encrypted in transit and at rest. Unsubscribe anytime.</p>
+  </div>
+  <div class="weekly-digest reveal reveal-delay-2">
+    <h2>Weekly Threat Digest</h2>
+    <p class="digest-sub">This week's edition — May 5, 2026</p>
+    <ul class="digest-items">
+      <li>RedDragon supply chain attack analysis — full implant reverse engineering and IOCs</li>
+      <li>CVE-2025-4821 Apache HTTP Server — weaponization analysis and detection rules</li>
+      <li>VoidLock ransomware-as-a-service — infrastructure mapping and affiliate tracking</li>
+    </ul>
+    <a href="#" class="digest-archive">View Archive →</a>
+  </div>
+</section>
+
+<!-- ============================================
+     TABBED CATEGORY CONTENT
+     ============================================ -->
+<section class="tabbed-section" aria-label="Recent articles by category">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Recent Coverage</h2>
+    </div>
+    <div class="tabs-nav reveal" role="tablist" aria-label="Article categories">
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="all">All</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="vulns">Vulnerabilities</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="tools">Tools</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="nationstate">Nation-State</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ai">AI</button>
+    </div>
+
+    <!-- All Tab -->
+    <div class="tab-content active" id="tab-all" role="tabpanel">
+      <div class="tab-scroll">
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Dissecting the RedDragon Implant: A Technical Autopsy</h4>
+            <span class="tab-meta">Marcus Kovac · 3h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>CVE-2025-4821: Weaponization and Detection Bypass Techniques</h4>
+            <span class="tab-meta">Sarah Chen · 6h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Burp Suite vs ZAP: 2025 Web App Testing Showdown</h4>
+            <span class="tab-meta">Dmitri Volkov · 8h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Lazarus Group's Blockchain Exploitation Playbook</h4>
+            <span class="tab-meta">James Whitfield · 12h ago</span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Vulnerabilities Tab -->
+    <div class="tab-content" id="tab-vulns" role="tabpanel">
+      <div class="tab-scroll">
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>CVE-2025-4821: Deep Dive Into the Apache HTTP Server Heap Overflow</h4>
+            <span class="tab-meta">Sarah Chen · 6h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>CVE-2025-4902: VMware vCenter Authentication Bypass Analysis</h4>
+            <span class="tab-meta">Anika Patel · 2d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Patch Tuesday May 2026: 14 Critical Vulnerabilities Addressed</h4>
+            <span class="tab-meta">Team · 3d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>CVE-2025-4938: PAN-OS Authentication Bypass Technical Write-Up</h4>
+            <span class="tab-meta">Sarah Chen · 4d ago</span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Tools Tab -->
+    <div class="tab-content" id="tab-tools" role="tabpanel">
+      <div class="tab-scroll">
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Burp Suite vs ZAP: 2025 Web App Testing Showdown</h4>
+            <span class="tab-meta">Dmitri Volkov · 8h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>BloodHound CE v6.0: Graph-Based AD/Azure Attack Path Analysis</h4>
+            <span class="tab-meta">Team · 1d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Velociraptor 0.73: VQL-Based Threat Hunting at Scale</h4>
+            <span class="tab-meta">Aiko Tanaka · 2d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Sliver vs Cobalt Strike: C2 Framework Comparison for Red Teams</h4>
+            <span class="tab-meta">Marcus Kovac · 3d ago</span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Nation-State Tab -->
+    <div class="tab-content" id="tab-nationstate" role="tabpanel">
+      <div class="tab-scroll">
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Lazarus Group's Blockchain Exploitation Playbook</h4>
+            <span class="tab-meta">James Whitfield · 12h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Dissecting the RedDragon Implant: A Technical Autopsy</h4>
+            <span class="tab-meta">Marcus Kovac · 3h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>APT29 Cloud Persistence: OAuth Abuse in Microsoft 365</h4>
+            <span class="tab-meta">Dmitri Volkov · 5d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Charming Kitten's Hypershell Backdoor: Full Analysis</h4>
+            <span class="tab-meta">James Whitfield · 6d ago</span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- AI Tab -->
+    <div class="tab-content" id="tab-ai" role="tabpanel">
+      <div class="tab-scroll">
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Prompt Injection in Production: Attacking LLM Workflows</h4>
+            <span class="tab-meta">Aiko Tanaka · 4h ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Model Extraction: Recovering 87% of Cloud-Hosted LLM Weights</h4>
+            <span class="tab-meta">Aiko Tanaka · 1d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Guardrails for GenAI: Enterprise LLM Security Architecture</h4>
+            <span class="tab-meta">Team · 2d ago</span>
+          </div>
+        </article>
+        <article class="tab-article">
+          <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=160&fit=crop" alt="" loading="lazy">
+          <div class="tab-article-body">
+            <h4>Adversarial Attacks on RAG Pipelines: A Taxonomy</h4>
+            <span class="tab-meta">Aiko Tanaka · 4d ago</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     STATISTICS BAND
+     ============================================ -->
+<section class="stats-band" aria-label="Platform statistics">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-number" data-target="2847" data-counted="false">0</div>
+        <div class="stat-label">Articles Published</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-number" data-target="847" data-counted="false">0</div>
+        <div class="stat-label">CVEs Tracked</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-number" data-target="124" data-counted="false">0</div>
+        <div class="stat-label">Tools Reviewed</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-number" data-target="89" data-counted="false">0</div>
+        <div class="stat-label">Monthly Readers (K)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo" style="letter-spacing:-0.06em; font-weight:900; color:#FFFFFF;">
+          ZAYRON<span style="color:#733DD9;">-X</span>
+        </div>
+        <p>The premier intelligence platform for cybersecurity professionals. Real-time threat analysis, CVE tracking, and expert tool reviews trusted by Fortune 500 security teams worldwide.</p>
+      </div>
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <h4>Intelligence</h4>
+          <ul>
+            <li><a href="#">Threat Briefings</a></li>
+            <li><a href="#">Nation-State</a></li>
+            <li><a href="#">Malware Analysis</a></li>
+            <li><a href="#">APT Research</a></li>
+            <li><a href="#">Zero-Day Coverage</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <ul>
+            <li><a href="#">Tool Reviews</a></li>
+            <li><a href="#">Comparisons</a></li>
+            <li><a href="#">Config Guides</a></li>
+            <li><a href="#">GitHub Projects</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">CVE Database</a></li>
+            <li><a href="#">White Papers</a></li>
+            <li><a href="#">Webinars</a></li>
+            <li><a href="#">Glossary</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Analysts</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">Responsible Disclosure</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-middle">
+      <div class="footer-tweet">
+        <div class="ft-avatar">𝕏</div>
+        <div class="ft-text">
+          <span class="ft-handle">@zayron_intel</span> New RedDragon analysis is live — the most sophisticated telecom supply chain attack we've documented. Full IoC package included for defenders. <span class="ft-time">12h ago</span>
+        </div>
+      </div>
+      <div class="footer-tweet">
+        <div class="ft-avatar">𝕏</div>
+        <div class="ft-text">
+          <span class="ft-handle">@zayron_intel</span> CVE-2025-4821 just dropped with a CVSS 9.8. Our team has the technical analysis and detection rules ready. Subscribe for early access. <span class="ft-time">2d ago</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; 2026 ZAYRON SECURITY. All rights reserved.</span>
+      <div class="footer-social" aria-label="Social media links">
+        <a href="#" aria-label="Twitter">𝕏</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+        <a href="#" aria-label="GitHub">⌂</a>
+        <a href="#" aria-label="RSS Feed">⎊</a>
+      </div>
+      <span class="footer-badge">🔒 Secured with TLS 1.3</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+(function() {
+  'use strict';
+
+  /* ==============================================
+     SUPA BASE CONFIG
+     ============================================== */
+  var SUPABASE_URL = 'https://xdfndojvqazffcjngglr.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZm5kb2p2cWF6ZmZjam5nZ2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDQ0MDQsImV4cCI6MjA5MzgyMDQwNH0.UGitfLsGYqQIATh6qK-uT-ZsTXpf7zFArE3QvR9JEYw';
+
+  var CATEGORY_IMAGES = {
+    'Nation-State': 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=860&h=340&fit=crop',
+    'Ransomware': 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=860&h=340&fit=crop',
+    'Vulnerability': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=860&h=340&fit=crop',
+    'APT': 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=860&h=340&fit=crop',
+    'AI Security': 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=860&h=340&fit=crop',
+    'Malware': 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=860&h=340&fit=crop',
+    'default': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=860&h=340&fit=crop'
+  };
+
+  var THUMB_IMAGES = {
+    'Nation-State': 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=90&h=68&fit=crop',
+    'Ransomware': 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=90&h=68&fit=crop',
+    'Vulnerability': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=90&h=68&fit=crop',
+    'APT': 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=90&h=68&fit=crop',
+    'AI Security': 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=90&h=68&fit=crop',
+    'Malware': 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=90&h=68&fit=crop',
+    'default': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=90&h=68&fit=crop'
+  };
+
+  var CARD_IMAGES = {
+    'Nation-State': 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400&h=200&fit=crop',
+    'Ransomware': 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=200&fit=crop',
+    'Vulnerability': 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=200&fit=crop',
+    'APT': 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=400&h=200&fit=crop',
+    'AI Security': 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&h=200&fit=crop',
+    'Malware': 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=200&fit=crop',
+    'default': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop'
+  };
+
+  var SEVERITY_CLASSES = { Critical: 'sev-critical', High: 'sev-high', Medium: 'sev-medium', Low: 'sev-low' };
+  var CVSS_COLORS = { Critical: '#FCA5A5', High: '#FDBA74', Medium: '#FDE68A', Low: '#86EFAC' };
+
+  function getInitials(name) {
+    return name.split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+  }
+
+  function timeAgo(dateStr) {
+    var diff = Date.now() - new Date(dateStr).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 60) return mins + ' min ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    var days = Math.floor(hrs / 24);
+    return days + 'd ago';
+  }
+
+  function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function excerpt(text, len) {
+    return text.length > len ? text.substring(0, len) + '...' : text;
+  }
+
+  /* ==============================================
+     SUPA FETCH
+     ============================================== */
+  var supabaseClient = null;
+  try {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) {}
+
+  async function fetchArticles() {
+    if (!supabaseClient) return [];
+    var res = await supabaseClient.from('articles').select('*').order('created_at', { ascending: false });
+    return res.data || [];
+  }
+
+  async function fetchCVEs() {
+    if (!supabaseClient) return [];
+    var res = await supabaseClient.from('cves').select('*').order('published_date', { ascending: false });
+    return res.data || [];
+  }
+
+  /* ==============================================
+     RENDERERS
+     ============================================== */
+  function renderHeroPrimary(a) {
+    var hero = document.querySelector('.hero-primary');
+    if (!hero) return;
+    hero.innerHTML =
+      '<a href="article.html?id=' + a.id + '" class="card-link-wrapper" style="text-decoration:none; color:inherit; display:block;">' +
+        '<span class="breaking-badge">&#x1F534; Breaking</span>' +
+        '<h1>' + escHtml(a.title) + '</h1>' +
+        '<p class="hero-subhead">' + escHtml(a.content.substring(0, 240)) + '...</p>' +
+        '<div class="hero-meta">' +
+          '<div class="author-avatar">' + getInitials(a.author) + '</div>' +
+          '<div>' +
+            '<span class="author-name">' + escHtml(a.author) + '</span>' +
+          '</div>' +
+          '<span>·</span>' +
+          '<span>' + formatDate(a.created_at) + '</span>' +
+          '<span>·</span>' +
+          '<span>' + a.read_time + ' min read</span>' +
+        '</div>' +
+        '<div class="hero-image-wrap">' +
+          '<img src="' + (CATEGORY_IMAGES[a.category] || CATEGORY_IMAGES.default) + '" alt="">' +
+          '<div class="hero-image-overlay"></div>' +
+        '</div>' +
+      '</a>';
+  }
+
+  function renderHeroSecondary(articles) {
+    var container = document.querySelector('.hero-secondary');
+    if (!container || !articles.length) return;
+    container.innerHTML = '';
+    articles.forEach(function(a) {
+      var catSlug = a.category.toLowerCase().replace(/\s+/g, '');
+      var catClass = 'ss-cat-nationstate';
+      if (catSlug.indexOf('ransom') > -1) catClass = 'ss-cat-ransomware';
+      else if (catSlug.indexOf('vuln') > -1 || catSlug.indexOf('cve') > -1) catClass = 'ss-cat-exploit';
+      else if (catSlug.indexOf('nation') > -1 || catSlug.indexOf('state') > -1) catClass = 'ss-cat-nationstate';
+      var art = document.createElement('article');
+      art.className = 'hero-secondary-story';
+      art.innerHTML =
+        '<a href="article.html?id=' + a.id + '" class="card-link-wrapper" style="text-decoration:none; color:inherit; display:block;">' +
+          '<img class="ss-thumb" src="' + (THUMB_IMAGES[a.category] || THUMB_IMAGES.default) + '" alt="" loading="lazy">' +
+          '<div>' +
+            '<span class="ss-category ' + catClass + '">' + escHtml(a.category) + '</span>' +
+            '<h3>' + escHtml(a.title) + '</h3>' +
+            '<span class="ss-meta">' + escHtml(a.author) + ' · ' + timeAgo(a.created_at) + '</span>' +
+          '</div>' +
+        '</a>';
+      container.appendChild(art);
+    });
+    // Rebind cursor hover
+    bindCursorHover(container.querySelectorAll('.hero-secondary-story'));
+  }
+
+  function renderFeatured(articles) {
+    var grid = document.querySelector('.featured-grid');
+    if (!grid || !articles.length) return;
+    grid.innerHTML = '';
+    articles.forEach(function(a, i) {
+      var card = document.createElement('article');
+      card.className = 'featured-card reveal reveal-delay-' + (i + 1);
+      card.innerHTML =
+        '<a href="article.html?id=' + a.id + '" class="card-link-wrapper" style="text-decoration:none; color:inherit; display:block;">' +
+          '<div class="featured-card-image">' +
+            '<img src="' + (CARD_IMAGES[a.category] || CARD_IMAGES.default) + '" alt="" loading="lazy">' +
+          '</div>' +
+          '<div class="featured-card-body">' +
+            '<span class="fc-category ' + getFcCatClass(a.category) + '">' + escHtml(a.category) + '</span>' +
+            '<h3>' + escHtml(a.title) + '</h3>' +
+            '<p>' + excerpt(escHtml(a.content), 120) + '</p>' +
+            '<div class="fc-meta">' +
+              '<span>' + escHtml(a.author) + '</span><span>·</span><span>' + formatDate(a.created_at) + '</span><span>·</span><span>' + a.read_time + ' min</span>' +
+            '</div>' +
+            '<div class="fc-tags">' +
+              '<span>#' + escHtml(a.category.replace(/\s+/g, '')) + '</span><span>#CyberIntel</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>';
+      grid.appendChild(card);
+    });
+    // Re-observe reveals
+    observeReveals();
+    bindCursorHover(grid.querySelectorAll('.featured-card'));
+  }
+
+  function renderLatest(articles) {
+    var list = document.querySelector('.latest-list');
+    if (!list || !articles.length) return;
+    list.innerHTML = '';
+    articles.forEach(function(a, i) {
+      var li = document.createElement('li');
+      li.className = 'latest-item';
+      li.innerHTML =
+        '<a href="article.html?id=' + a.id + '" class="card-link-wrapper" style="text-decoration:none; color:inherit; display:block;">' +
+          '<span class="number">' + String(i + 1).padStart(2, '0') + '</span>' +
+          '<div>' +
+            '<div class="li-category">' + escHtml(a.category) + '</div>' +
+            '<h3>' + escHtml(a.title) + '</h3>' +
+            '<span class="li-time">' + timeAgo(a.created_at) + '</span>' +
+          '</div>' +
+        '</a>';
+      list.appendChild(li);
+    });
+  }
+
+  function renderCveTable(cves) {
+    var tbody = document.querySelector('.cve-table tbody');
+    if (!tbody || !cves.length) return;
+    tbody.innerHTML = '';
+    cves.forEach(function(c) {
+      var tr = document.createElement('tr');
+      var sevClass = SEVERITY_CLASSES[c.severity] || 'sev-medium';
+      var statusClass = 'status-active';
+      var statusText = 'Active';
+      tr.innerHTML =
+        '<td><a href="#" style="color:var(--color-gold);">' + escHtml(c.cve_id) + '</a></td>' +
+        '<td><span class="sev-badge ' + sevClass + '">' + escHtml(c.severity) + '</span></td>' +
+        '<td>' + c.cvss_score + '</td>' +
+        '<td>' + escHtml(c.product) + '</td>' +
+        '<td>' + formatDate(c.published_date) + '</td>' +
+        '<td><span class="' + statusClass + '">' + statusText + '</span></td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderTickers(cves) {
+    // Top bar ticker
+    var track = document.querySelector('.ticker-track');
+    if (track && cves.length) {
+      var html = '';
+      // Double the items for seamless loop
+      var items = cves.concat(cves);
+      items.forEach(function(c) {
+        var sevColor = CVSS_COLORS[c.severity] || '#FCA5A5';
+        html += '<span class="ticker-item"><span class="cve">' + escHtml(c.cve_id) + '</span> — ' + escHtml(c.product) + ' <span class="cvss-critical" style="color:' + sevColor + '">| CVSS ' + c.cvss_score + '</span></span>';
+      });
+      track.innerHTML = html;
+    }
+
+    // Threat ticker
+    var threatTrack = document.querySelector('.threat-ticker-track');
+    if (threatTrack && cves.length) {
+      var html2 = '';
+      var items2 = cves.concat(cves);
+      items2.forEach(function(c) {
+        var sevColor = CVSS_COLORS[c.severity] || '#FCA5A5';
+        html2 += '<span class="threat-ticker-item"><span class="ticker-sep">◆</span> ' + escHtml(c.cve_id) + ' — ' + escHtml(c.product) + ' <strong style="color:' + sevColor + ';">| CVSS ' + c.cvss_score + '</strong></span>';
+      });
+      threatTrack.innerHTML = html2;
+    }
+  }
+
+  function renderTabs(articles) {
+    var tabMap = { all: articles, vulns: [], tools: [], nationstate: [], ai: [] };
+    articles.forEach(function(a) {
+      var cat = a.category.toLowerCase();
+      if (cat.indexOf('vuln') > -1 || cat.indexOf('cve') > -1) tabMap.vulns.push(a);
+      else if (cat.indexOf('tool') > -1) tabMap.tools.push(a);
+      else if (cat.indexOf('nation') > -1 || cat.indexOf('state') > -1) tabMap.nationstate.push(a);
+      else if (cat.indexOf('ai') > -1) tabMap.ai.push(a);
+    });
+
+    var tabContentIds = ['tab-all', 'tab-vulns', 'tab-tools', 'tab-nationstate', 'tab-ai'];
+    tabContentIds.forEach(function(id) {
+      var panel = document.getElementById(id);
+      if (!panel) return;
+      var key = id.replace('tab-', '');
+      var items = tabMap[key] || [];
+      var scroll = panel.querySelector('.tab-scroll');
+      if (!scroll) return;
+      scroll.innerHTML = '';
+      items.slice(0, 4).forEach(function(a) {
+        var art = document.createElement('article');
+        art.className = 'tab-article';
+        art.innerHTML =
+          '<a href="article.html?id=' + a.id + '" class="card-link-wrapper" style="text-decoration:none; color:inherit; display:block;">' +
+            '<img src="' + (CARD_IMAGES[a.category] || CARD_IMAGES.default) + '" alt="" loading="lazy">' +
+            '<div class="tab-article-body">' +
+              '<h4>' + escHtml(a.title) + '</h4>' +
+              '<span class="tab-meta">' + escHtml(a.author) + ' · ' + timeAgo(a.created_at) + '</span>' +
+            '</div>' +
+          '</a>';
+        scroll.appendChild(art);
+      });
+    });
+    // If tabs are empty, keep static content (no-op since we append to empty scroll)
+  }
+
+  function renderStats(articles, cves) {
+    var statEls = document.querySelectorAll('.stat-number');
+    if (!statEls.length) return;
+    var targets = [articles.length, cves.length, 124, 89];
+    statEls.forEach(function(el, i) {
+      if (i < targets.length) el.setAttribute('data-target', targets[i]);
+    });
+  }
+
+  function getFcCatClass(cat) {
+    var c = cat.toLowerCase();
+    if (c.indexOf('apt') > -1 || c.indexOf('nation') > -1) return 'fc-cat-apt';
+    if (c.indexOf('vuln') > -1 || c.indexOf('rce') > -1) return 'fc-cat-rce';
+    if (c.indexOf('ai') > -1) return 'fc-cat-ai';
+    if (c.indexOf('malware') > -1 || c.indexOf('ransom') > -1) return 'fc-cat-malware';
+    return 'fc-cat-nation';
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  /* ==============================================
+     MAIN INIT
+     ============================================== */
+  (async function init() {
+    try {
+      var [articles, cves] = await Promise.all([fetchArticles(), fetchCVEs()]);
+      if (articles.length > 0) {
+        renderHeroPrimary(articles[0]);
+        renderHeroSecondary(articles.slice(1, 4));
+        renderFeatured(articles.slice(0, 3));
+        renderLatest(articles);
+        renderTabs(articles);
+      }
+      if (cves.length > 0) {
+        renderCveTable(cves);
+        renderTickers(cves);
+      }
+      renderStats(articles, cves);
+    } catch(e) {
+      console.warn('Supabase fetch error, using static content:', e);
+    }
+
+    // ===== UI CODE (unchanged) =====
+    // --- Date ---
+    var dateEl = document.getElementById('currentDate');
+    if (dateEl) {
+      var now = new Date();
+      dateEl.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+    }
+
+    // --- Custom Cursor ---
+    var cursor = document.getElementById('cursorDot');
+    if (cursor) {
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+      document.addEventListener('mouseenter', function() { cursor.style.display = 'block'; });
+      document.addEventListener('mouseleave', function() { cursor.style.display = 'none'; });
+      bindCursorHover(document.querySelectorAll('a, button, .featured-card, .tool-card, .tab-article, .cat-block, .analyst-card'));
+    }
+
+    // --- Sticky Header ---
+    var header = document.getElementById('mainHeader');
+    window.addEventListener('scroll', function() {
+      header.classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
+
+    // --- Mobile Nav ---
+    var navToggle = document.querySelector('.nav-toggle');
+    var navLinks = document.querySelector('.nav-links');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', function() {
+        var isOpen = navLinks.style.display === 'flex';
+        navLinks.style.display = isOpen ? 'none' : 'flex';
+        if (!isOpen) {
+          navLinks.style.flexDirection = 'column';
+          navLinks.style.position = 'absolute';
+          navLinks.style.top = '60px';
+          navLinks.style.left = '0';
+          navLinks.style.right = '0';
+          navLinks.style.background = '#FAFAF7';
+          navLinks.style.padding = '16px';
+          navLinks.style.borderBottom = '2px solid #B87333';
+          navLinks.style.zIndex = '80';
+          navLinks.style.gap = '0';
+        }
+      });
+    }
+
+    // --- Tab System ---
+    var tabBtns = document.querySelectorAll('.tab-btn');
+    var tabContents = {};
+    document.querySelectorAll('.tab-content').forEach(function(tc) { tabContents[tc.id] = tc; });
+    tabBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var tabId = 'tab-' + btn.getAttribute('data-tab');
+        tabBtns.forEach(function(b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        Object.keys(tabContents).forEach(function(key) {
+          tabContents[key].classList.toggle('active', key === tabId);
+        });
+      });
+    });
+
+    // --- Scroll Reveal ---
+    observeReveals();
+
+    // --- Count-Up ---
+    var statNumbers = document.querySelectorAll('.stat-number');
+    if ('IntersectionObserver' in window && statNumbers.length) {
+      var countObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            if (el.getAttribute('data-counted') === 'true') return;
+            el.setAttribute('data-counted', 'true');
+            var target = parseInt(el.getAttribute('data-target'), 10);
+            var duration = 2000;
+            var startTime = performance.now();
+            function animate(currentTime) {
+              var elapsed = currentTime - startTime;
+              var progress = Math.min(elapsed / duration, 1);
+              var eased = 1 - Math.pow(1 - progress, 3);
+              el.textContent = Math.round(eased * target).toLocaleString();
+              if (progress < 1) requestAnimationFrame(animate);
+              else el.textContent = target.toLocaleString();
+            }
+            requestAnimationFrame(animate);
+            countObserver.unobserve(el);
+          }
+        });
+      }, { threshold: 0.5 });
+      statNumbers.forEach(function(el) { countObserver.observe(el); });
+    } else if (statNumbers.length) {
+      statNumbers.forEach(function(el) {
+        el.textContent = parseInt(el.getAttribute('data-target'), 10).toLocaleString();
+      });
+    }
+  })();
+
+  /* ===== SHARED HELPERS ===== */
+  function bindCursorHover(elements) {
+    var cursor = document.getElementById('cursorDot');
+    if (!cursor) return;
+    elements.forEach(function(el) {
+      el.addEventListener('mouseenter', function() { cursor.classList.add('hovered'); });
+      el.addEventListener('mouseleave', function() { cursor.classList.remove('hovered'); });
+    });
+  }
+
+  function observeReveals() {
+    var revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      revealEls.forEach(function(el) { observer.observe(el); });
+    } else {
+      revealEls.forEach(function(el) { el.classList.add('visible'); });
+    }
+  }
+
+})();
+</script>
+</body>
+</html>
