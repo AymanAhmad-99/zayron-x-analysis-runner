@@ -292,10 +292,16 @@ def parse_weaver_response(
     (retries are handled by the caller in omni_crew.py).
     """
     try:
-        cleaned = llm_output.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-            cleaned = re.sub(r"\s*```$", "", cleaned)
+        # ═══════════════════════════════════════════════════════════════
+        # ZERO-TRUST JSON EXTRACTION: Find the first { and the last }
+        # ═══════════════════════════════════════════════════════════════
+        start_idx = llm_output.find('{')
+        end_idx = llm_output.rfind('}')
+        
+        if start_idx != -1 and end_idx != -1:
+            cleaned = llm_output[start_idx:end_idx+1]
+        else:
+            cleaned = llm_output.strip()
 
         parsed = json.loads(cleaned)
     except json.JSONDecodeError:
