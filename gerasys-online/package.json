@@ -17,6 +17,7 @@
     "deploy:prod": "bun --env-file=.env.local scripts/deploy-vercel.ts --prod"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.19.11",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/postcss": "4.1.4",
