@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils/formatDate";

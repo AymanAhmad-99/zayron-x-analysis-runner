@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { getCVEs, getCVECount, getCVEsBySeverity } from "@/lib/db/queries/cves";
 import { getCachedOrFetch } from "@/lib/cache/redis-client";
 
-// Enforce execution on the high-performance Vercel/Cloudflare Edge Runtime
-export const runtime = "edge";
 
 export async function GET(request: Request) {
   try {

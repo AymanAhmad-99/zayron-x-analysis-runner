@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import { getAllArticleSlugs, getCategoriesWithCounts } from "@/lib/db/queries/articles";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zayron-x.com";

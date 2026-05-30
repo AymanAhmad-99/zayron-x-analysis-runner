@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import { getRecentArticles } from "@/lib/db/queries/articles";
 import { NextResponse } from "next/server";
 

@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import type { MetadataRoute } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zayron-x.com";

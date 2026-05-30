@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import { getDarkwebFeeds } from "@/lib/db/queries/rawFeeds";
 import { Terminal, ShieldAlert, Activity, RefreshCw } from "@/lib/icons";
 
