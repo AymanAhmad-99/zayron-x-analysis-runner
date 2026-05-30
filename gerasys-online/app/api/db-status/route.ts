@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { getArticleCount } from "@/lib/db/queries/articles";
 import { getCVECount } from "@/lib/db/queries/cves";

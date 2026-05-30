@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { searchArticles } from "@/lib/db/queries/articles";
 import { searchCVEs } from "@/lib/db/queries/cves";

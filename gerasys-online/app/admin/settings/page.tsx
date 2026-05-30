@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import type { Metadata } from "next";
 import { Settings as SettingsIcon, Key, Database, Globe, Cpu, Bell } from "@/lib/icons";
 

@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import type { Metadata } from "next";
 import { AnalystTeam } from "@/components/homepage/AnalystTeam";
 import { getAnalysts } from "@/lib/db/queries/analysts";

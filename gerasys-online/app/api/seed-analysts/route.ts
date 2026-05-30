@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { analysts } from "@/lib/db/schema";
