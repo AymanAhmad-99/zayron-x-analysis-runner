@@ -16,7 +16,7 @@ function isAdminAuthenticated(request: NextRequest): boolean {
 
   try {
     const b64 = authHeader.slice(6);
-    const decoded = Buffer.from(b64, "base64").toString("utf-8");
+    const decoded = atob(b64);
     const [user, ...passParts] = decoded.split(":");
     const pass = passParts.join(":");
     return user === adminUser && pass === adminPass;
@@ -31,8 +31,8 @@ export async function middleware(request: NextRequest) {
   /* ── Protect Premium CTI API routes ── */
   if (pathname.startsWith("/api/remediate") || pathname.startsWith("/api/download-sitrep")) {
     const supabase = createServerClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!,
+      process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() {
