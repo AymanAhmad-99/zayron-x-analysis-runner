@@ -1,4 +1,4 @@
-name = "zayron-x-core"
+name = "zayron-x"
 main = ".open-next/worker.js"
 compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]

@@ -4,18 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "npx @opennextjs/cloudflare build",
-    "build:next": "next build",
-    "start": "next start",
-    "db:push": "bunx drizzle-kit push",
-    "db:studio": "bunx drizzle-kit studio",
-    "typecheck": "bunx tsc --noEmit",
-    "lint": "echo 'Vercel Linting Bypassed'",
-    "seed": "bun --env-file=.env.local scripts/seed-analysts.ts",
-    "ingest": "bun --env-file=.env.local scripts/telegram-ingestion.ts",
-    "deploy": "bun --env-file=.env.local scripts/deploy-vercel.ts",
-    "deploy:prod": "bun --env-file=.env.local scripts/deploy-vercel.ts --prod"
+    "build": "opennextjs-cloudflare build",
+    "deploy": "opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare preview"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
