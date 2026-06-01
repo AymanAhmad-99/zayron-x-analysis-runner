@@ -1,13 +1,8 @@
 name = "zayron-x-core"
-compatibility_date = "2024-12-01"
-pages_build_output_dir = ".open-next/assets"
+main = ".open-next/worker.js"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
-compatibility_flags = [
-  "nodejs_compat"
-]
-
-[vars]
-NEXT_PUBLIC_SITE_NAME = "ZAYRON SECURITY"
-NEXT_PUBLIC_SITE_URL = "https://zayron-x-core.pages.dev"
-NEXT_PUBLIC_SUPABASE_URL = "https://xdfndojvqazffcjngglr.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZm5kb2p2cWF6ZmZjam5nZ2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDQ0MDQsImV4cCI6MjA5MzgyMDQwNH0.UGitfLsGYqQIATh6qK-uT-ZsTXpf7zFArE3QvR9JEYw"
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
