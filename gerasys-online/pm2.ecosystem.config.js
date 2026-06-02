@@ -20,7 +20,7 @@ module.exports = {
     {
       name: 'telegram-radar',
       script: 'python3',
-      args: 'radar-engine.py',
+      args: 'workers/legacy/radar-engine.py',
       cwd: '/var/www/zayron',
       cron_restart: '*/15 * * * *',
       autorestart: false,
@@ -35,7 +35,7 @@ module.exports = {
     {
       name: 'article-engine',
       script: 'python3',
-      args: 'engine_articles.py',
+      args: 'workers/legacy/engine_articles.py',
       cwd: '/var/www/zayron',
       cron_restart: '*/5 * * * *',
       autorestart: false,
@@ -50,7 +50,7 @@ module.exports = {
     {
       name: 'cti-ingestion',
       script: 'python3',
-      args: 'cti_ingestion_engine.py',
+      args: 'workers/legacy/cti_ingestion_engine.py',
       cwd: '/var/www/zayron',
       cron_restart: '0 */3 * * *',
       autorestart: false,
@@ -65,7 +65,7 @@ module.exports = {
     {
       name: 'cve-worker',
       script: 'python3',
-      args: 'cve_worker.py',
+      args: 'workers/legacy/cve_worker.py',
       cwd: '/var/www/zayron',
       cron_restart: '0 */6 * * *',
       autorestart: false,

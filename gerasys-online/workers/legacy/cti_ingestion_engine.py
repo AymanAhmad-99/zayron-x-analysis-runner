@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
+⚠️  LEGACY — MOVED FROM PROJECT ROOT TO workers/legacy/ ON 2026-06-02
+
 cti_ingestion_engine.py — ZAYRON-X Elite Cyber Threat Intelligence Pipeline
+
+This file was relocated from the project root as part of the DeepTrace-2027
+security audit cleanup. The active ingestion pipeline is now workers/omni_crew.py.
 
 Nation-state grade asynchronous ingestion engine with AI-powered analysis,
 image generation, and multi-table dispatch to Supabase.

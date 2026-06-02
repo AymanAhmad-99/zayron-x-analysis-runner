@@ -10,11 +10,16 @@ export async function GET(
     const article = await getArticleBySlug(slug);
     if (!article) {
       return NextResponse.json(
-        { error: "Article not found" },
-        { status: 404 }
+        { error: 'Article not found' },
+        { status: 404, headers: { 'Cache-Control': 'no-store' } },
       );
     }
-    return NextResponse.json(article);
+    return NextResponse.json(article, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=600',
+        'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=600',
+      },
+    });
   } catch (error) {
     console.error("API /articles/[slug] error:", error);
     return NextResponse.json(

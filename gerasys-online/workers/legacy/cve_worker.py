@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
+⚠️  LEGACY — MOVED FROM PROJECT ROOT TO workers/legacy/ ON 2026-06-02
+
 cve_worker.py — ZAYRON-X CVE Intelligence Worker
+
+This file was relocated from the project root as part of the DeepTrace-2027
+security audit cleanup.
 
 Fetches latest CVEs from the NIST NVD API and upserts them into the
 Supabase `cves` table. Supports CVSS v4.0 extraction when available.

@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import type { Metadata } from "next";
 import { AnalystTeam } from "@/components/homepage/AnalystTeam";
 import { getAnalysts } from "@/lib/db/queries/analysts";

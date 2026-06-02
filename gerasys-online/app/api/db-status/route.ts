@@ -11,16 +11,27 @@ export async function GET() {
       getCVECount(),
     ]);
 
-    return NextResponse.json({
-      connected: true,
-      articleCount,
-      cveCount,
-    });
+    return NextResponse.json(
+      {
+        connected: true,
+        articleCount,
+        cveCount,
+      },
+      {
+        headers: { 'Cache-Control': 'no-store' },
+      },
+    );
   } catch {
-    return NextResponse.json({
-      connected: false,
-      articleCount: 0,
-      cveCount: 0,
-    });
+    return NextResponse.json(
+      {
+        connected: false,
+        articleCount: 0,
+        cveCount: 0,
+      },
+      {
+        status: 500,
+        headers: { 'Cache-Control': 'no-store' },
+      },
+    );
   }
 }

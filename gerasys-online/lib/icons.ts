@@ -120,3 +120,13 @@ export { default as Play }             from "lucide-react/dist/esm/icons/play.js
 export { default as Download }         from "lucide-react/dist/esm/icons/download.js";
 export { default as CheckCircle2 }     from "lucide-react/dist/esm/icons/check-circle-2.js";
 export { default as Terminal }         from "lucide-react/dist/esm/icons/terminal.js";
+
+// Phase 3 — Dark mode + UX
+export { default as Moon }             from "lucide-react/dist/esm/icons/moon.js";
+export { default as Sun }              from "lucide-react/dist/esm/icons/sun.js";
+export { default as Monitor }          from "lucide-react/dist/esm/icons/monitor.js";
+export { default as ArrowUp }          from "lucide-react/dist/esm/icons/arrow-up.js";
+export { default as HelpCircle }       from "lucide-react/dist/esm/icons/help-circle.js";
+export { default as Brain }            from "lucide-react/dist/esm/icons/brain.js";
+export { default as Cloud }            from "lucide-react/dist/esm/icons/cloud.js";
+export { default as LogOut }           from "lucide-react/dist/esm/icons/log-out.js";

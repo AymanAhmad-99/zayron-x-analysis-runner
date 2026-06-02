@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     if (!query) {
       return NextResponse.json(
         { error: "Query parameter 'q' is required" },
-        { status: 400 }
+        { status: 400, headers: { 'Cache-Control': 'no-store' } },
       );
     }
 
@@ -52,13 +52,19 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       { articles, cves, query },
-      { headers: { "X-RateLimit-Remaining": String(remaining) } }
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+          'CDN-Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+          'X-RateLimit-Remaining': String(remaining),
+        },
+      },
     );
   } catch (error) {
     console.error("API /search error:", error);
     return NextResponse.json(
       { error: "Search failed" },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } },
     );
   }
 }

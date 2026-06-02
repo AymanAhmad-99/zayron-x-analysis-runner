@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
+⚠️  LEGACY — MOVED FROM PROJECT ROOT TO workers/legacy/ ON 2026-06-02
+
 engine_articles.py — ZAYRON-X DeepSeek AI Article Generation Engine
+
+This file was relocated from the project root as part of the DeepTrace-2027
+security audit cleanup.
 
 God-Tier threat intelligence article generator powered by DeepSeek AI.
 Takes raw Telegram feeds from the radar pipeline and transforms them into

@@ -7,4 +7,7 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
+  // Enable strict mode for production safety
+  strict: true,
+  verbose: true,
 });

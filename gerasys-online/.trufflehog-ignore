@@ -1,0 +1,56 @@
+# truffleHog ignore patterns — files/paths excluded from secrets scanning
+# These files contain known false positives or are not production code.
+
+# Environment example files (template values, not real secrets)
+.env.example
+.env.local.example
+
+# Generated/compiled output
+.next/
+.open-next/
+dist/
+build/
+node_modules/
+
+# Lockfiles (scanned separately by dependency-audit)
+bun.lockb
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Test fixtures with mock secrets
+__tests__/fixtures/
+__tests__/mocks/
+**/*.test.ts
+**/*.spec.ts
+**/*.test.tsx
+
+# Documentation and markdown (these reference secret names but not values)
+**/*.md
+!PROMPT_*.md
+!docs/SECURITY_POSTURE_2027.md
+
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+*.avif
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# Cloudflare Workers artifacts
+.wrangler/
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# Playwright
+playwright-report/
+test-results/

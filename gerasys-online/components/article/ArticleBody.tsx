@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import Image from "next/image";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
@@ -13,16 +14,15 @@ interface ArticleBodyProps {
 export function ArticleBody({ content }: ArticleBodyProps) {
   const { gateAction } = useSecurityGating();
 
-  // Intercept raw selection copy vectors (Ctrl+C selection bypass defense)
   useEffect(() => {
     const handleCopy = (e: ClipboardEvent) => {
       const selection = window.getSelection();
       if (!selection) return;
       const text = selection.toString().trim();
-      
-      const isRuleText = 
-        text.includes("rule ") || 
-        text.includes("logsource:") || 
+
+      const isRuleText =
+        text.includes("rule ") ||
+        text.includes("logsource:") ||
         text.includes("detection:") ||
         text.includes("threat_status:") ||
         text.includes("indicator:");
@@ -45,13 +45,16 @@ export function ArticleBody({ content }: ArticleBodyProps) {
         rehypePlugins={[rehypeSlug]}
         components={{
           img: ({ src, alt, ...props }) => (
-            <img
-              src={src}
-              alt={alt ?? ""}
-              className="rounded-lg max-w-full h-auto my-6 shadow-md border border-neutral-200/50"
-              loading="lazy"
-              {...props}
-            />
+            <span className="relative block my-6 rounded-lg overflow-hidden shadow-md border border-neutral-200/50" style={{ aspectRatio: "16/9" }}>
+              <Image
+                src={src ?? ""}
+                alt={alt ?? ""}
+                fill
+                sizes="(max-width: 768px) 100vw, 680px"
+                className="object-cover"
+                {...props}
+              />
+            </span>
           ),
           a: ({ href, children, ...props }) => (
             <a
@@ -99,16 +102,15 @@ export function ArticleBody({ content }: ArticleBodyProps) {
               {children}
             </li>
           ),
-          // Custom Code / Pre component to intercept YARA / Sigma rules copy action
           code: ({ inline, className, children, ...props }: any) => {
             const match = /language-(\w+)/.exec(className || "");
             const lang = match ? (match[1]?.toLowerCase() || "") : "";
             const codeString = String(children).replace(/\n$/, "");
-            
-            const isRule = 
+
+            const isRule =
               ["yara", "sigma", "yaml", "rules", "plaintext", "json", "bash", "shell"].includes(lang) ||
-              codeString.includes("rule ") || 
-              codeString.includes("logsource:") || 
+              codeString.includes("rule ") ||
+              codeString.includes("logsource:") ||
               codeString.includes("detection:") ||
               codeString.startsWith("{") ||
               codeString.includes("ioc") ||

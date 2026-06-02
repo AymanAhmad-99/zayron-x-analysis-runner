@@ -3,17 +3,20 @@
 /* =====================================================
    ZAYRON-X 2027 — FLUID-INTELLIGENCE DESIGN SYSTEM
    Elite Silicon Valley Sovereign Tech Aesthetic
+   With full dark mode + WCAG 2.2 AA compliance
    ===================================================== */
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-accent:       #733DD9; /* Cyber-Violet */
   --color-dark:         #050505; /* Ultra-Deep Black */
   --color-white-sand:   #FAFAFA;
-  
+
   --color-navy:         #050505;
   --color-navy-light:   #121212;
   --color-electric:     #733DD9;
-  
+
   --color-severity-critical: #050505;
   --color-severity-high:     #733DD9;
   --color-severity-medium:   #404040;
@@ -52,12 +55,22 @@
     color: #050505;
   }
 
+  .dark html, html.dark {
+    background: #020617;
+    color: #f1f5f9;
+  }
+
   body {
     background: #FFFFFF;
     color: #050505;
     font-family: var(--font-sans);
     font-size: 1rem;
     line-height: 1.6;
+  }
+
+  .dark body, body.dark {
+    background: #020617;
+    color: #f1f5f9;
   }
 
   ::selection { background: #733DD9; color: #FFFFFF; }
@@ -67,7 +80,42 @@
   ::-webkit-scrollbar-thumb { background: #E5E5E5; border-radius: 99px; }
   ::-webkit-scrollbar-thumb:hover { background: #733DD9; }
 
-  :focus-visible { outline: 2px solid #733DD9; outline-offset: 2px; }
+  .dark ::-webkit-scrollbar-thumb { background: #334155; }
+  .dark ::-webkit-scrollbar-thumb:hover { background: #733DD9; }
+
+  /* WCAG 2.2 AA focus indicators — minimum 3:1 contrast ratio */
+  :focus-visible {
+    outline: 2px solid #733DD9;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Skip to content link — visually hidden until focused */
+  .skip-to-content {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    z-index: 200;
+  }
+  .skip-to-content:focus {
+    top: 0;
+  }
+}
+
+/* ─── RTL Support ─── */
+
+[dir="rtl"] .ltr-only {
+  display: none;
+}
+
+[dir="rtl"] .prose-zayron {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .prose-zayron blockquote {
+  border-left: none;
+  border-right: 2px solid #733DD9;
 }
 
 /* ─── Fluid Components ─── */
@@ -79,6 +127,11 @@
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
     border-radius: 6px;
+  }
+
+  .dark .skeleton {
+    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+    background-size: 200% 100%;
   }
 
   /* Liquid Glass Panels */
@@ -95,6 +148,15 @@
     transform: translateY(-2px);
   }
 
+  .dark .fluid-glass {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .dark .fluid-glass:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+  }
+
   /* Fluid Buttons */
   .btn-fluid {
     background: #733DD9;
@@ -106,6 +168,12 @@
     background: #FFFFFF;
     color: #733DD9;
     box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.12);
+  }
+
+  .dark .btn-fluid:hover {
+    background: #020617;
+    color: #733DD9;
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -119,8 +187,8 @@
   line-height: 1.85;
   font-family: var(--font-sans);
 
-  h1, h2, h3, h4 { font-family: var(--font-sans); color: #050505; font-weight: 800; line-height: 1.25; tracking: -0.02em; }
-  h2 { font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-b: 1px solid rgba(5, 5, 5, 0.06); }
+  h1, h2, h3, h4 { font-family: var(--font-sans); color: #050505; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; }
+  h2 { font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(5, 5, 5, 0.06); }
   h3 { font-size: 1.2rem; margin-top: 2rem; margin-bottom: 0.75rem; }
   p  { margin-bottom: 1.5rem; }
   a  { color: #733DD9; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; transition: opacity 0.2s ease; &:hover { opacity: 0.8; } }
@@ -137,4 +205,37 @@
   tbody td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(5, 5, 5, 0.04); color: #171717; }
   tbody tr:hover { background: #FAFAFA; }
   img { margin: 2rem 0; max-width: 100%; border-radius: 6px; border: 1px solid rgba(5, 5, 5, 0.05); }
+}
+
+/* Dark prose */
+.dark .prose-zayron,
+.prose-zayron.dark {
+  color: #cbd5e1;
+
+  h1, h2, h3, h4 { color: #f8fafc; }
+  h2 { border-bottom-color: rgba(255, 255, 255, 0.08); }
+  p { color: #cbd5e1; }
+  a { color: #a78bfa; }
+  strong { color: #f1f5f9; }
+  blockquote { color: #94a3b8; background: #0f172a; border-left-color: #733DD9; }
+  pre { background: #0f172a; color: #e2e8f0; }
+  code:not(pre code) { background: #1e293b; color: #e2e8f0; }
+  hr { border-top-color: rgba(255, 255, 255, 0.08); }
+  thead th { border-bottom-color: rgba(255, 255, 255, 0.1); }
+  tbody td { border-bottom-color: rgba(255, 255, 255, 0.04); color: #cbd5e1; }
+  tbody tr:hover { background: #0f172a; }
+  img { border-color: rgba(255, 255, 255, 0.08); }
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

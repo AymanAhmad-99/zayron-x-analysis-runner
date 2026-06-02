@@ -2,14 +2,47 @@ import { updateSession } from "@/lib/supabase/middleware";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { randomBytes } from "node:crypto";
+import { checkRateLimit, loginLimiter, registerLimiter, getClientIp } from "@/lib/cache/ratelimit";
+
+/* ──────────────────────────────────────────────────────────
+   CSP Nonce Generator — per-request unique nonce
+   Injects the nonce into both the CSP header (via request
+   headers passthrough) and the response headers so that
+   inline <script nonce="..."> tags are allowed.
+   ────────────────────────────────────────────────────────── */
+function generateNonce(): string {
+  return randomBytes(16).toString("base64url");
+}
+
+function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: string): void {
+  // Store nonce on request so Server Components can read it via headers()
+  request.headers.set("x-csp-nonce", nonce);
+
+  // Replace the static CSP placeholder with the actual nonce value
+  const existingCsp = response.headers.get("Content-Security-Policy");
+  if (existingCsp) {
+    const patched = existingCsp.replace(
+      /'strict-dynamic'/,
+      `'nonce-${nonce}' 'strict-dynamic'`,
+    );
+    response.headers.set("Content-Security-Policy", patched);
+  } else {
+    response.headers.set(
+      "Content-Security-Policy",
+      `default-src 'self'; script-src 'self' *.supabase.co 'nonce-${nonce}' 'strict-dynamic'; style-src 'self' fonts.googleapis.com 'nonce-${nonce}'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com; connect-src 'self' *.supabase.co; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'`,
+    );
+  }
+}
 
 /* ── Admin Basic Auth ── */
 function isAdminAuthenticated(request: NextRequest): boolean {
   const adminUser = process.env.ADMIN_USER;
   const adminPass = process.env.ADMIN_PASSWORD;
 
-  // If no credentials configured, skip protection (dev mode)
-  if (!adminUser || !adminPass) return true;
+  // FAIL CLOSED: if credentials are not configured, deny access.
+  // Previously this returned true (dev mode), which was a security risk.
+  if (!adminUser || !adminPass) return false;
 
   const authHeader = request.headers.get("authorization") ?? "";
   if (!authHeader.startsWith("Basic ")) return false;
@@ -28,6 +61,10 @@ function isAdminAuthenticated(request: NextRequest): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Generate per-request nonce for strict CSP
+  const nonce = generateNonce();
+  let response = NextResponse.next({ request });
+
   /* ── Protect Premium CTI API routes ── */
   if (pathname.startsWith("/api/remediate") || pathname.startsWith("/api/download-sitrep")) {
     const supabase = createServerClient(
@@ -35,9 +72,7 @@ export async function middleware(request: NextRequest) {
       process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
+          getAll() { return request.cookies.getAll(); },
           setAll(cookiesToSet) {
             for (const { name, value } of cookiesToSet) {
               request.cookies.set(name, value);
@@ -47,9 +82,7 @@ export async function middleware(request: NextRequest) {
       }
     );
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json(
@@ -68,6 +101,36 @@ export async function middleware(request: NextRequest) {
       return NextResponse.json(
         { error: "Security clearance required. ZAYRON-X node access denied." },
         { status: 401 }
+      );
+    }
+  }
+
+  /* ── Protect /api/seed-analysts with admin-only access ── */
+  if (pathname === "/api/seed-analysts") {
+    if (!isAdminAuthenticated(request)) {
+      return NextResponse.json(
+        { error: "Admin credentials required for database seeding." },
+        { status: 401 }
+      );
+    }
+  }
+
+  /* ── Rate limit /login (5 req/min) and /register (3 req/min) ── */
+  if (pathname === "/login" || pathname === "/register") {
+    const ip = getClientIp(request);
+    const limiter = pathname === "/login" ? loginLimiter : registerLimiter;
+    const { allowed, remaining } = await checkRateLimit(limiter, `${pathname}:${ip}`);
+
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait and try again." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": "60",
+            "X-RateLimit-Remaining": String(remaining),
+          },
+        },
       );
     }
   }
@@ -93,18 +156,16 @@ export async function middleware(request: NextRequest) {
   }
 
   /* ── Supabase session refresh for all other routes ── */
-  return await updateSession(request);
+  response = await updateSession(request);
+
+  // Apply the per-request CSP nonce
+  applyNonceToCsp(request, response, nonce);
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

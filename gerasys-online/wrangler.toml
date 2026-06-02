@@ -3,6 +3,129 @@ main = ".open-next/worker.js"
 compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
-[assets]
-directory = ".open-next/assets"
-binding = "ASSETS"
+# ═══════════════════════════════════════════════════════════════
+# KV NAMESPACE — OpenNext Incremental Cache
+# ═══════════════════════════════════════════════════════════════
+# Create the KV namespace via wrangler CLI, then paste the IDs:
+#   wrangler kv:namespace create ZAYRON_CACHE
+#   wrangler kv:namespace create ZAYRON_CACHE --preview
+# ═══════════════════════════════════════════════════════════════
+kv_namespaces = [
+  { binding = "ZAYRON_CACHE", id = "c5704144e6984dd597e2f000a1e84aa2", preview_id = "834e78268ee0457196ecf48026b06ece" }
+]
+
+# ═══════════════════════════════════════════════════════════════
+# DEFAULT ENVIRONMENT VARS (shared across envs; overridable)
+# ═══════════════════════════════════════════════════════════════
+[vars]
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
+
+# ═══════════════════════════════════════════════════════════════
+# OBSERVABILITY — Workers Logpush to R2
+# ═══════════════════════════════════════════════════════════════
+# When enabled, Worker trace events (exceptions, logs, CPU/Wall
+# time, request metadata) are streamed to the Logpush destination
+# configured in docs/LOGPUSH_SETUP.md.
+# ═══════════════════════════════════════════════════════════════
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+# ═══════════════════════════════════════════════════════════════
+# CLOUDFLARE WORKERS SECRETS — UPLOAD VIA WRANGLER CLI
+# ═══════════════════════════════════════════════════════════════
+# These variables MUST be stored as encrypted secrets, NEVER in
+# wrangler.toml or any committed file. Use the commands below.
+#
+#   wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+#   wrangler secret put DATABASE_URL
+#   wrangler secret put SUPABASE_URL
+#   wrangler secret put SUPABASE_ANON_KEY
+#   wrangler secret put REDIS_URL
+#   wrangler secret put REDIS_TOKEN
+#   wrangler secret put RESEND_API_KEY
+#   wrangler secret put ADMIN_USER
+#   wrangler secret put ADMIN_PASSWORD
+#   wrangler secret put REVALIDATION_SECRET
+#   wrangler secret put NVD_API_KEY
+#   wrangler secret put GEMINI_API_KEY
+#   wrangler secret put TELEGRAM_API_ID
+#   wrangler secret put TELEGRAM_API_HASH
+#   wrangler secret put NEXT_PUBLIC_SENTRY_DSN          # ← NEW: Sentry error reporting
+#   wrangler secret put SENTRY_AUTH_TOKEN               # ← NEW: Sentry source-map uploads
+#
+# For preview environment (append --env preview):
+#   wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env preview
+#   wrangler secret put DATABASE_URL --env preview
+#   ... (repeat for all secrets above)
+#
+# Public-safe variables (can stay in wrangler.toml [vars]):
+#   NEXT_PUBLIC_SUPABASE_URL
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY
+#   NEXT_PUBLIC_SITE_URL
+#   NEXT_PUBLIC_SITE_NAME
+# ═══════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════
+# PRODUCTION ENVIRONMENT
+# ═══════════════════════════════════════════════════════════════
+[env.production]
+name = "zayron-x-production"
+
+# Route traffic from the custom domain to this Worker.
+# If NOT using a custom domain, replace with:
+#   workers_dev = true
+routes = [
+  { pattern = "zayron-x.com", custom_domain = true },
+  { pattern = "www.zayron-x.com", custom_domain = true },
+]
+
+# ── Gradual (Canary) Deployments ────────────────────────────
+# Cloudflare Workers Gradual Deployments roll out new versions
+# in stages.  Each stage serves the new version to a percentage
+# of traffic for a monitoring period before proceeding.
+# If errors are detected (via scripts/canary-health-check.sh),
+# the CI pipeline runs `wrangler rollback` to revert.
+#
+#   Stage 1: 10% of traffic → monitor 5 min
+#   Stage 2: 25% of traffic → monitor 10 min
+#   Stage 3: 50% of traffic → monitor 15 min
+#   Stage 4: 100% of traffic (full rollout)
+#
+# These values are used by `wrangler deploy` when gradual
+# deployments are enabled on the account.
+# ═══════════════════════════════════════════════════════════════
+[env.production.gradual_deployment]
+enabled = true
+stages = [
+  { percentage = 10,  duration_minutes = 5  },
+  { percentage = 25,  duration_minutes = 10 },
+  { percentage = 50,  duration_minutes = 15 },
+  { percentage = 100, duration_minutes = 0  },
+]
+
+# Production KV — OpenNext ISR cache (real namespace ID)
+[[env.production.kv_namespaces]]
+binding = "ZAYRON_CACHE"
+id = "c5704144e6984dd597e2f000a1e84aa2"
+
+[env.production.vars]
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
+
+# ═══════════════════════════════════════════════════════════════
+# PREVIEW ENVIRONMENT
+# ═══════════════════════════════════════════════════════════════
+[env.preview]
+name = "zayron-x-preview"
+workers_dev = true
+
+# Preview KV — OpenNext ISR cache (real preview namespace ID)
+[[env.preview.kv_namespaces]]
+binding = "ZAYRON_CACHE"
+id = "834e78268ee0457196ecf48026b06ece"
+
+[env.preview.vars]
+NEXT_PUBLIC_SITE_URL = "https://preview.zayron-x.workers.dev"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X [PREVIEW]"

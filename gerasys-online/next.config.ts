@@ -1,9 +1,20 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
+/* ── Strict Nonce‑Based CSP ──
+   The nonce is generated per‑request in middleware.ts and passed via
+   the request headers (x-csp-nonce).  Scripts that need inline execution
+   must carry this nonce.  All 'unsafe-inline' occurrences have been removed.
+   ──────────────────────────────────────────────────────────────── */
 const CSP = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline' *.supabase.co`,
-  `style-src 'self' 'unsafe-inline' fonts.googleapis.com`,
+  `script-src 'self' *.supabase.co 'strict-dynamic'`,
+  `style-src 'self' fonts.googleapis.com`,
   `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com`,
   `connect-src 'self' *.supabase.co`,
   `font-src 'self' fonts.gstatic.com`,
@@ -39,7 +50,12 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          { key: "Content-Security-Policy", value: CSP },
+          {
+            key: "Content-Security-Policy",
+            // The nonce placeholder is replaced per-request by middleware
+            // which reads the request header and inlines the actual nonce.
+            value: CSP,
+          },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -49,9 +65,6 @@ const nextConfig: NextConfig = {
       },
     ];
 
-    // Only apply aggressive static-asset caching in production.
-    // In dev, Turbopack rebuilds chunks on every change and the browser must
-    // always fetch the latest version — "immutable" breaks that.
     if (process.env.NODE_ENV === "production") {
       rules.push({
         source: "/_next/static/(.*)",
@@ -75,4 +88,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG ?? 'zayron-x',
+  project: process.env.SENTRY_PROJECT ?? 'zayron-x-web',
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  reactComponentAnnotation: { enabled: true },
+  tunnelRoute: '/api/monitoring',
+  disableLogger: true,
+  automaticVercelMonitors: false,
+}));

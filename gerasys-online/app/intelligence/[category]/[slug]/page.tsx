@@ -12,6 +12,7 @@ import { getArticleBySlug, getRelatedArticles, getTrendingArticles, getAllArticl
 import { getSiloForCategory, getSiloColorClass, type SiloId } from "@/lib/silos";
 import { Shield, Code, Network, ChevronRight } from "@/lib/icons";
 import Link from "next/link";
+import Image from "next/image";
 import { getSmartFallbackImage } from "@/lib/utils/fallbackImages";
 
 const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -310,11 +311,14 @@ export default async function IntelligenceArticlePage({ params }: Props) {
 
             {/* Standalone Featured Image */}
             {articleImage && (
-              <div className="rounded-lg overflow-hidden border border-neutral-100 shadow-sm relative group bg-neutral-50 transition-all duration-300 hover:border-neutral-200">
-                <img
+              <div className="relative rounded-lg overflow-hidden border border-neutral-100 shadow-sm group bg-neutral-50 transition-all duration-300 hover:border-neutral-200" style={{ aspectRatio: "16/9", maxHeight: "500px" }}>
+                <Image
                   src={articleImage}
                   alt={article.title}
-                  className="w-full h-auto object-cover max-h-[500px] transition-transform duration-500 group-hover:scale-[1.02]"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 75vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                  priority
                 />
               </div>
             )}

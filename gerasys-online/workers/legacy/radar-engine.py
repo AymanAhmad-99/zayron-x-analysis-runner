@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
+⚠️  LEGACY — MOVED FROM PROJECT ROOT TO workers/legacy/ ON 2026-06-02
+
 radar-engine.py — ZAYRON-X Global Telegram Intelligence Radar
+
+This file was relocated from the project root as part of the DeepTrace-2027
+security audit cleanup.
 
 Massive parallel intake engine that monitors 60+ Telegram channels, enforces
 strict content deduplication, and dispatches categorized intelligence to

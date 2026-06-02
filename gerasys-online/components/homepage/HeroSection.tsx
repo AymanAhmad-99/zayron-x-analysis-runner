@@ -1,5 +1,6 @@
 import { type Article } from "@/lib/db/schema";
 import Link from "next/link";
+import Image from "next/image";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { formatDate } from "@/lib/utils/formatDate";
 import { getSmartFallbackImage } from "@/lib/utils/fallbackImages";
@@ -14,17 +15,19 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
   return (
     <section className="max-w-7xl mx-auto px-6 pt-10 pb-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
-        {/* Primary — spans 2 columns */}
         {primary && (
           <Link
             href={`/intelligence/${(primary.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${primary.slug}`}
             className="lg:col-span-2 group card-article flex flex-col border-r-0 lg:border-r"
           >
-            <div className="img-intel">
-              <img
+            <div className="img-intel relative">
+              <Image
                 src={getSmartFallbackImage(primary)}
                 alt={primary.title}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 66vw"
+                className="object-cover"
+                priority
               />
             </div>
             <div className="p-6 lg:p-10 flex flex-col flex-1">
@@ -35,7 +38,6 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
               <p className="text-[#444444] mt-4 line-clamp-2 font-body text-base leading-relaxed">
                 {primary.excerpt ?? primary.content.substring(0, 240)}
               </p>
-
               <div className="flex items-center gap-3 mt-auto pt-6 text-xs text-[#666666] font-mono uppercase tracking-wider">
                 <span className="text-black font-bold">{primary.author}</span>
                 <span>//</span>
@@ -50,7 +52,6 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
           </Link>
         )}
 
-        {/* Secondary stack — 1 column, separated by 1px borders */}
         <aside className="flex flex-col">
           {secondary.slice(0, 3).map((article, i) => (
             <Link
@@ -60,12 +61,13 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
                 i < 2 ? "border-b-0" : ""
               }`}
             >
-              <div className="w-20 h-20 shrink-0 overflow-hidden">
-                <img
+              <div className="relative w-20 h-20 shrink-0 overflow-hidden">
+                <Image
                   src={getSmartFallbackImage(article)}
                   alt=""
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                  loading="lazy"
+                  fill
+                  sizes="80px"
+                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                 />
               </div>
               <div className="min-w-0 flex-1">
