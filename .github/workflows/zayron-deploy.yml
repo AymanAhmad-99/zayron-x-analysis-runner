@@ -18,7 +18,7 @@ on:
 
 # ── متغيرات البيئة العامة ──
 env:
-  BUN_VERSION: "1"           # إصدار Bun المستخدم في المشروع
+  BUN_VERSION: "1.3.13"           # إصدار Bun المستخدم في المشروع
   WORKER_ENV: "preview"      # بيئة النشر: preview أو production
 
 jobs:
