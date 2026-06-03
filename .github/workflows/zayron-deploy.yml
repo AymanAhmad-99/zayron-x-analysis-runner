@@ -35,11 +35,11 @@ jobs:
       - name: 📥 سحب الكود المصدري
         uses: actions/checkout@v4
 
-      # ── الخطوة 2: تهيئة بيئة Bun ──
-      - name: ⚡ تهيئة بيئة Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
+      # ── الخطوة 2: تثبيت Bun مباشرة ──
+      - name: ⚡ Install Bun (direct)
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
       # ── الخطوة 3: تثبيت الحزم والاعتماديات ──
       - name: 📦 تثبيت الاعتماديات
