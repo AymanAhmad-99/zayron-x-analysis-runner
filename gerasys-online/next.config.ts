@@ -22,6 +22,7 @@ const CSP = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  output: "standalone",
 
   // Transform lucide-react barrel imports into direct icon-file imports.
   // Without this, Turbopack tries to instantiate all ~1500 icon module
