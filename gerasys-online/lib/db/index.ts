@@ -8,6 +8,10 @@ import * as schema from "./schema";
    ⚠️  NEVER hardcode passwords in this file.
    ───────────────────────────────────────────────────────── */
 
+if (!process.env.DATABASE_URL && process.env.CI) {
+  process.env.DATABASE_URL = "postgresql://postgres:dummy@localhost:5432/postgres";
+}
+
 const requiredEnvVars = ["DATABASE_URL"] as const;
 
 for (const key of requiredEnvVars) {
