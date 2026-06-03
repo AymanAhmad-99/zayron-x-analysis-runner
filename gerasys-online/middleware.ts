@@ -1,8 +1,9 @@
+export const runtime = "experimental-edge";
+
 import { updateSession } from "@/lib/supabase/middleware";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { randomBytes } from "node:crypto";
 import { checkRateLimit, loginLimiter, registerLimiter, getClientIp } from "@/lib/cache/ratelimit";
 
 /* ──────────────────────────────────────────────────────────
@@ -12,7 +13,12 @@ import { checkRateLimit, loginLimiter, registerLimiter, getClientIp } from "@/li
    inline <script nonce="..."> tags are allowed.
    ────────────────────────────────────────────────────────── */
 function generateNonce(): string {
-  return randomBytes(16).toString("base64url");
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode(...arr))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 }
 
 function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: string): void {
@@ -58,7 +64,7 @@ function isAdminAuthenticated(request: NextRequest): boolean {
   }
 }
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Generate per-request nonce for strict CSP

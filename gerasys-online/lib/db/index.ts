@@ -8,7 +8,7 @@ import * as schema from "./schema";
    ⚠️  NEVER hardcode passwords in this file.
    ───────────────────────────────────────────────────────── */
 
-if (!process.env.DATABASE_URL && process.env.CI) {
+if (process.env.CI || !process.env.DATABASE_URL || process.env.DATABASE_URL.includes("[PROJECT_REF]")) {
   process.env.DATABASE_URL = "postgresql://postgres:dummy@localhost:5432/postgres";
 }
 
