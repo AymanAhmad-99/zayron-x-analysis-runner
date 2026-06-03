@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Offline — ZAYRON-X",
-  description: "You are currently offline. Previously visited pages may still be available.",
-  robots: { index: false },
-};
+import Link from "next/link";
 
 export default function OfflinePage() {
   return (
