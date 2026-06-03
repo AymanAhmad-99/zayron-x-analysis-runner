@@ -44,10 +44,10 @@ export function ArticleBody({ content }: ArticleBodyProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug]}
         components={{
-          img: ({ src, alt, ...props }) => (
+          img: ({ src, alt, width, height, ...props }) => (
             <span className="relative block my-6 rounded-lg overflow-hidden shadow-md border border-neutral-200/50" style={{ aspectRatio: "16/9" }}>
               <Image
-                src={src ?? ""}
+                src={typeof src === 'string' ? src : ""}
                 alt={alt ?? ""}
                 fill
                 sizes="(max-width: 768px) 100vw, 680px"
