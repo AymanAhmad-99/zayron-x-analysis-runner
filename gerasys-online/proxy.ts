@@ -58,7 +58,7 @@ function isAdminAuthenticated(request: NextRequest): boolean {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Generate per-request nonce for strict CSP
