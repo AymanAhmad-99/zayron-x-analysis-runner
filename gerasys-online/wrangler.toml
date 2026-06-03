@@ -4,6 +4,13 @@ compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 # ═══════════════════════════════════════════════════════════════
+# STATIC ASSETS — Cloudflare Workers Assets Configuration
+# ═══════════════════════════════════════════════════════════════
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+# ═══════════════════════════════════════════════════════════════
 # KV NAMESPACE — OpenNext Incremental Cache
 # ═══════════════════════════════════════════════════════════════
 # Create the KV namespace via wrangler CLI, then paste the IDs:
