@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
-import bundleAnalyzer from "@next/bundle-analyzer";
 
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
 
 /* ── Strict Nonce‑Based CSP ──
    The nonce is generated per‑request in middleware.ts and passed via
@@ -88,7 +84,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBundleAnalyzer(withSentryConfig(nextConfig, {
+export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG ?? 'zayron-x',
   project: process.env.SENTRY_PROJECT ?? 'zayron-x-web',
   silent: !process.env.CI,
@@ -97,4 +93,4 @@ export default withBundleAnalyzer(withSentryConfig(nextConfig, {
   tunnelRoute: '/api/monitoring',
   disableLogger: true,
   automaticVercelMonitors: false,
-}));
+});
