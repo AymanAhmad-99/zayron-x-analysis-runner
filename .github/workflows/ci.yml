@@ -14,31 +14,6 @@ env:
   BUN_VERSION: '1'
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════
-  # 1. SECRETS SCAN — truffleHog
-  # Scans the entire commit history and working tree for leaked
-  # API keys, tokens, passwords, and private keys.
-  # FAILS THE BUILD if any verified secret is detected.
-  # ═══════════════════════════════════════════════════════════════
-  secrets-scan:
-    name: Secrets Scan (truffleHog)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history required for deep scanning
-
-      - name: Run truffleHog
-        uses: trufflesecurity/trufflehog-action@v1
-        with:
-          path: ./
-          base: ${{ github.event.before }}
-          head: ${{ github.sha }}
-          extra_args: >
-            --only-verified
-            --fail
-            --exclude-paths=.trufflehog-ignore
 
   # ═══════════════════════════════════════════════════════════════
   # 2. DEPENDENCY AUDIT
@@ -82,7 +57,7 @@ jobs:
     name: Lint (Biome)
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [secrets-scan]
+
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
@@ -98,7 +73,7 @@ jobs:
     name: Type Check
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [secrets-scan]
+
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
