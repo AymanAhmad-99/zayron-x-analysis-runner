@@ -69,19 +69,6 @@ function getSectionTitle(siloId: SiloId): string {
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const categories = await getCategoriesWithCounts();
-    return categories
-      .filter((c) => c.category && c.category.trim().length > 0)
-      .map((c) => ({
-        category: c.category.toLowerCase().replace(/\s+/g, "-"),
-      }));
-  } catch {
-    return [];
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
   const label = category

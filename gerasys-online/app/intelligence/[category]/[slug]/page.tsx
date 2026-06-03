@@ -69,18 +69,6 @@ interface Props {
   params: Promise<{ category: string; slug: string }>;
 }
 
-export async function generateStaticParams() {
-  try {
-    const slugs = await getAllArticleSlugs();
-    return slugs.map((s) => ({
-      category: (s.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-"),
-      slug: s.slug,
-    }));
-  } catch {
-    return [];
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   let article: Awaited<ReturnType<typeof getArticleBySlug>> = null;

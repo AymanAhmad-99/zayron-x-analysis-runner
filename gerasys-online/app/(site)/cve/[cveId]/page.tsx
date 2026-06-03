@@ -10,15 +10,6 @@ interface Props {
   params: Promise<{ cveId: string }>;
 }
 
-export async function generateStaticParams() {
-  try {
-    const ids = await getAllCVEIds();
-    return ids.map((cveId) => ({ cveId }));
-  } catch {
-    return [];
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { cveId } = await params;
   let cve: Awaited<ReturnType<typeof getCVEById>> = null;
