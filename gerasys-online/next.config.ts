@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
 
+  // Explicitly declared to silence Turbopack ambiguity warning.
+  // Build uses --webpack (see package.json), so this is a no-op.
+  turbopack: {},
+
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
