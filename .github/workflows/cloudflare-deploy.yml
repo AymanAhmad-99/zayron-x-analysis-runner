@@ -3,13 +3,17 @@ name: ZAYRON-X Cloudflare Edge Deployment
 on:
   push:
     branches:
+      - main
       - production
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Build & Deploy
-    
+    defaults:
+      run:
+        working-directory: gerasys-online
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -31,3 +35,4 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: deploy --env preview
+          workingDirectory: gerasys-online

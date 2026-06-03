@@ -45,3 +45,6 @@ replay_pid*.log
 # OS artifacts
 .DS_Store
 Thumbs.db
+
+# Sentry Config File
+.env.sentry-build-plugin
