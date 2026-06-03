@@ -46,6 +46,12 @@ vi.mock('drizzle-orm/postgres-js', () => ({
               orderBy: vi.fn(() => Promise.resolve(mockSelectResult)),
             })),
           })),
+          groupBy: vi.fn(() => ({
+            orderBy: vi.fn(() => ({
+              limit: vi.fn(() => Promise.resolve(mockSelectResult)),
+              then: vi.fn((cb: any) => cb(mockSelectResult)),
+            })),
+          })),
           limit: vi.fn(() => {
             // Handle .limit(1) → returns single object pattern
             return {
@@ -59,6 +65,7 @@ vi.mock('drizzle-orm/postgres-js', () => ({
             then: vi.fn((cb: any) => cb(mockSelectResult)),
           })),
           groupBy: vi.fn(() => Promise.resolve(mockSelectResult)),
+          then: vi.fn((cb: any) => cb(mockSelectResult)),
         })),
       })),
     })),
@@ -82,11 +89,14 @@ vi.mock('drizzle-orm', () => ({
   eq: vi.fn((a: any, b: any) => ({ type: 'eq', left: a, right: b })),
   desc: vi.fn((col: any) => ({ type: 'desc', column: col })),
   and: vi.fn((...conds: any[]) => ({ type: 'and', conditions: conds })),
-  sql: { type: 'sql' },
+  sql: Object.assign(
+    vi.fn((strings: any, ...values: any[]) => ({ type: 'sql', strings, values })),
+    { type: 'sql' }
+  ),
 }));
 
 beforeAll(() => {
-  process.env.DATABASE_URL = 'postgresql://postgres.mock:mock@localhost:5432/postgres';
+  process.env.DATABASE_URL = 'postgresql://postgres.mock:mock@127.0.0.1:5432/postgres';
 });
 
 beforeEach(() => {

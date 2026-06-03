@@ -11,25 +11,22 @@ import * as schema from "./schema";
 let client: postgres.Sql | null = null;
 let dbInstance: ReturnType<typeof drizzle<typeof schema>> | null = null;
 
-export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
-  get(target, prop, receiver) {
-    if (!dbInstance) {
-      const url = process.env.DATABASE_URL;
-      
-      // Handle build-time / CI / missing env var gracefully
-      if (process.env.CI || !url || url.includes("[PROJECT_REF]")) {
-        const dummyClient = postgres("postgresql://postgres:dummy@localhost:5432/postgres", { max: 1 });
-        dbInstance = drizzle(dummyClient, { schema });
-      } else {
-        client = postgres(url, {
-          prepare: false,     // Required for Supabase / PgBouncer transaction-mode pooler
-          max: process.env.NODE_ENV === "production" ? 1 : 3, // Low connection limit (1 in prod serverless, 3 in dev)
-          idle_timeout: 10,   // Close idle connections after 10s
-          connect_timeout: 5, // Timeout quickly
-        });
-        dbInstance = drizzle(client, { schema });
-      }
+export function getDb() {
+  if (!dbInstance) {
+    const url = process.env.DATABASE_URL;
+
+    // Fail-Fast Rule: if missing, falsy, or invalid (localhost/dummy), throw immediately
+    if (!url || url.includes("dummy") || url.includes("localhost") || url.includes("[PROJECT_REF]")) {
+      throw new Error("FATAL: DATABASE_URL is missing or invalid in the Edge runtime.");
     }
-    return Reflect.get(dbInstance, prop, receiver);
-  },
-});
+
+    client = postgres(url, {
+      prepare: false,     // Required for Supabase / PgBouncer transaction-mode pooler
+      max: 1,             // Maximum 1 connection on the Edge
+      idle_timeout: 5,    // Close idle connections after 5s
+      connect_timeout: 3, // Timeout quickly (3s) to avoid Fatal Hangs
+    });
+    dbInstance = drizzle(client, { schema });
+  }
+  return dbInstance;
+}

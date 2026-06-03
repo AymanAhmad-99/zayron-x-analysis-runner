@@ -14,7 +14,7 @@
  *   The `analysts` table must exist (created via `drizzle-kit push`).
  */
 
-import { db } from "../lib/db";
+import { getDb } from "../lib/db";
 import { analysts } from "../lib/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -201,7 +201,7 @@ async function seed() {
 
   for (const analyst of ANALYST_CORE) {
     // Check if analyst already exists by name
-    const existing = await db
+    const existing = await getDb()
       .select({ id: analysts.id })
       .from(analysts)
       .where(eq(analysts.name, analyst.name))
@@ -213,7 +213,7 @@ async function seed() {
       continue;
     }
 
-    const result = await db
+    const result = await getDb()
       .insert(analysts)
       .values({
         name: analyst.name,

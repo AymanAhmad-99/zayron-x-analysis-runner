@@ -1,9 +1,9 @@
-import { db } from "../index";
+import { getDb } from "../index";
 import { analysts } from "../schema";
 import { desc } from "drizzle-orm";
 
 export async function getAnalysts() {
-  return db
+  return getDb()
     .select()
     .from(analysts)
     .orderBy(desc(analysts.articleCount));

@@ -1,4 +1,4 @@
-import { db } from "../index";
+import { getDb } from "../index";
 import { articles } from "../schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 
@@ -11,7 +11,7 @@ function publishedCondition() {
 
 /* ---- Get single article by slug ---- */
 export async function getArticleBySlug(slug: string) {
-  const result = await db
+  const result = await getDb()
     .select()
     .from(articles)
     .where(and(eq(articles.slug, slug), publishedCondition()))
@@ -21,7 +21,7 @@ export async function getArticleBySlug(slug: string) {
 
 /* ---- Get single article by UUID ---- */
 export async function getArticleById(id: string) {
-  const result = await db
+  const result = await getDb()
     .select()
     .from(articles)
     .where(and(eq(articles.id, id), publishedCondition()))
@@ -32,7 +32,7 @@ export async function getArticleById(id: string) {
 /* ---- Published articles paginated ---- */
 export async function getArticles(page = 1, pageSize = PAGE_SIZE) {
   const offset = (page - 1) * pageSize;
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(publishedCondition())
@@ -43,7 +43,7 @@ export async function getArticles(page = 1, pageSize = PAGE_SIZE) {
 
 /* ---- Featured articles ---- */
 export async function getFeaturedArticles(limit = 6) {
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(and(eq(articles.isFeatured, true), publishedCondition()))
@@ -53,7 +53,7 @@ export async function getFeaturedArticles(limit = 6) {
 
 /* ---- Breaking articles ---- */
 export async function getBreakingArticles(limit = 5) {
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(and(eq(articles.isBreaking, true), publishedCondition()))
@@ -64,7 +64,7 @@ export async function getBreakingArticles(limit = 5) {
 /* ---- Articles by category ---- */
 export async function getArticlesByCategory(category: string, page = 1, pageSize = PAGE_SIZE) {
   const offset = (page - 1) * pageSize;
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(
@@ -80,7 +80,7 @@ export async function getArticlesByCategory(category: string, page = 1, pageSize
 
 /* ---- Trending articles (by views) ---- */
 export async function getTrendingArticles(limit = 5) {
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(publishedCondition())
@@ -90,7 +90,7 @@ export async function getTrendingArticles(limit = 5) {
 
 /* ---- Related articles (same category, exclude current) ---- */
 export async function getRelatedArticles(category: string, excludeSlug: string, limit = 3) {
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(
@@ -106,7 +106,7 @@ export async function getRelatedArticles(category: string, excludeSlug: string, 
 
 /* ---- All categories with counts ---- */
 export async function getCategoriesWithCounts() {
-  const result = await db
+  const result = await getDb()
     .select({
       category: articles.category,
       count: sql<number>`COUNT(*)::int`,
@@ -121,7 +121,7 @@ export async function getCategoriesWithCounts() {
 /* ---- Search articles (full-text via SQL) ---- */
 export async function searchArticles(query: string, limit = 20) {
   const searchQuery = query.trim().replace(/\s+/g, " & ");
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(
@@ -136,7 +136,7 @@ export async function searchArticles(query: string, limit = 20) {
 
 /* ---- Increment view count ---- */
 export async function incrementArticleViews(id: string) {
-  return db
+  return getDb()
     .update(articles)
     .set({ views: sql`${articles.views} + 1` })
     .where(eq(articles.id, id));
@@ -144,7 +144,7 @@ export async function incrementArticleViews(id: string) {
 
 /* ---- Article slugs for static generation ---- */
 export async function getAllArticleSlugs(limit = 1000) {
-  const result = await db
+  const result = await getDb()
     .select({ slug: articles.slug, category: articles.category })
     .from(articles)
     .where(publishedCondition())
@@ -155,7 +155,7 @@ export async function getAllArticleSlugs(limit = 1000) {
 
 /* ---- Total article count ---- */
 export async function getArticleCount() {
-  const result = await db
+  const result = await getDb()
     .select({ count: sql<number>`COUNT(*)::int` })
     .from(articles)
     .where(publishedCondition());
@@ -164,7 +164,7 @@ export async function getArticleCount() {
 
 /* ---- Recent articles (for homepage) ---- */
 export async function getRecentArticles(limit = 10) {
-  return db
+  return getDb()
     .select()
     .from(articles)
     .where(publishedCondition())
@@ -175,7 +175,7 @@ export async function getRecentArticles(limit = 10) {
 /* ---- Admin: all articles (including unpublished) ---- */
 export async function getAllArticlesAdmin(page = 1, pageSize = 50) {
   const offset = (page - 1) * pageSize;
-  return db
+  return getDb()
     .select()
     .from(articles)
     .orderBy(desc(articles.publishedAt))
@@ -201,7 +201,7 @@ type ArticleUpdateData = Pick<
 >;
 
 export async function updateArticle(id: string, data: Partial<ArticleUpdateData>) {
-  return db
+  return getDb()
     .update(articles)
     .set({ ...data, updatedAt: new Date() })
     .where(eq(articles.id, id));
@@ -209,12 +209,12 @@ export async function updateArticle(id: string, data: Partial<ArticleUpdateData>
 
 /* ---- Admin: delete article ---- */
 export async function deleteArticle(id: string) {
-  return db.delete(articles).where(eq(articles.id, id));
+  return getDb().delete(articles).where(eq(articles.id, id));
 }
 
 /* ---- All unique tags with counts ---- */
 export async function getAllTags() {
-  const result = await db
+  const result = await getDb()
     .select({
       tag: sql<string>`unnest(${articles.tags})`,
       count: sql<number>`COUNT(*)::int`,
@@ -246,6 +246,6 @@ type ArticleCreateData = Pick<
 >;
 
 export async function createArticle(data: ArticleCreateData) {
-  const result = await db.insert(articles).values(data).returning();
+  const result = await getDb().insert(articles).values(data).returning();
   return result[0];
 }

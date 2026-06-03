@@ -1,10 +1,10 @@
-import { db } from "../index";
+import { getDb } from "../index";
 import { subscribers, articles } from "../schema";
 import { eq, sql } from "drizzle-orm";
 
 /* ---- Subscriber count ---- */
 export async function getSubscriberCount() {
-  const result = await db
+  const result = await getDb()
     .select({ count: sql<number>`COUNT(*)::int` })
     .from(subscribers)
     .where(eq(subscribers.isActive, true));
@@ -13,7 +13,7 @@ export async function getSubscriberCount() {
 
 /* ---- Total article views ---- */
 export async function getTotalViews() {
-  const result = await db
+  const result = await getDb()
     .select({ total: sql<number>`COALESCE(SUM(${articles.views}), 0)::int` })
     .from(articles);
   return result[0]?.total ?? 0;
@@ -21,7 +21,7 @@ export async function getTotalViews() {
 
 /* ---- Views today (estimated from recent articles) ---- */
 export async function getViewsToday() {
-  const result = await db
+  const result = await getDb()
     .select({ total: sql<number>`COALESCE(SUM(${articles.views}), 0)::int` })
     .from(articles)
     .where(

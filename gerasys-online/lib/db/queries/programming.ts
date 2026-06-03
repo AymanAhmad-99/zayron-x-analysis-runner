@@ -1,10 +1,10 @@
-import { db } from "../index";
+import { getDb } from "../index";
 import { programmingLangs } from "../schema";
 import { eq, desc } from "drizzle-orm";
 
 /* ---- All programming languages ---- */
 export async function getProgrammingLanguages() {
-  return db
+  return getDb()
     .select()
     .from(programmingLangs)
     .orderBy(desc(programmingLangs.articleCount));
@@ -12,7 +12,7 @@ export async function getProgrammingLanguages() {
 
 /* ---- Single language by slug ---- */
 export async function getProgrammingLangBySlug(slug: string) {
-  const result = await db
+  const result = await getDb()
     .select()
     .from(programmingLangs)
     .where(eq(programmingLangs.slug, slug))
@@ -22,7 +22,7 @@ export async function getProgrammingLangBySlug(slug: string) {
 
 /* ---- All language slugs for static generation ---- */
 export async function getAllProgrammingLangSlugs(limit = 100) {
-  const result = await db
+  const result = await getDb()
     .select({ slug: programmingLangs.slug })
     .from(programmingLangs)
     .limit(limit);

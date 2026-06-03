@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { subscribers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { subscribeLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     // Check existing
-    const existing = await db
+    const existing = await getDb()
       .select()
       .from(subscribers)
       .where(eq(subscribers.email, email))
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
         );
       }
       // Re-activate
-      await db
+      await getDb()
         .update(subscribers)
         .set({ isActive: true })
         .where(eq(subscribers.email, email));
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     }
 
     // Create
-    await db.insert(subscribers).values({ email });
+    await getDb().insert(subscribers).values({ email });
     return NextResponse.json(
       { success: true, message: "Successfully subscribed." },
       {

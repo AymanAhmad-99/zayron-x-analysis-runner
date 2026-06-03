@@ -1,15 +1,15 @@
-import { db } from "../index";
+import { getDb } from "../index";
 import { tools } from "../schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 /* ---- All tools ---- */
 export async function getTools() {
-  return db.select().from(tools).orderBy(desc(tools.stars));
+  return getDb().select().from(tools).orderBy(desc(tools.stars));
 }
 
 /* ---- Single tool by slug ---- */
 export async function getToolBySlug(slug: string) {
-  const result = await db
+  const result = await getDb()
     .select()
     .from(tools)
     .where(eq(tools.slug, slug))
@@ -19,7 +19,7 @@ export async function getToolBySlug(slug: string) {
 
 /* ---- Tools by category ---- */
 export async function getToolsByCategory(category: string) {
-  return db
+  return getDb()
     .select()
     .from(tools)
     .where(sql`LOWER(${tools.category}) = LOWER(${category})`)
@@ -28,7 +28,7 @@ export async function getToolsByCategory(category: string) {
 
 /* ---- All tool slugs for static generation ---- */
 export async function getAllToolSlugs(limit = 500) {
-  const result = await db
+  const result = await getDb()
     .select({ slug: tools.slug })
     .from(tools)
     .orderBy(desc(tools.stars))
@@ -38,7 +38,7 @@ export async function getAllToolSlugs(limit = 500) {
 
 /* ---- Top tools by stars ---- */
 export async function getTopTools(limit = 4) {
-  return db
+  return getDb()
     .select()
     .from(tools)
     .orderBy(desc(tools.stars))

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { analysts } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
 
@@ -32,15 +32,15 @@ const ANALYST_CORE = [
 // the DB-level operations are idempotent (clear + re-insert).
 
 export async function POST() {
-  await db.execute(sql`ALTER TABLE analysts ADD COLUMN IF NOT EXISTS nationality text`);
+  await getDb().execute(sql`ALTER TABLE analysts ADD COLUMN IF NOT EXISTS nationality text`);
 
   const results: Array<{ name: string; status: string; id?: string; error?: string }> = [];
 
-  await db.delete(analysts).where(sql`true`);
+  await getDb().delete(analysts).where(sql`true`);
 
   for (const analyst of ANALYST_CORE) {
     try {
-      const inserted = await db
+      const inserted = await getDb()
         .insert(analysts)
         .values({
           name: analyst.name,

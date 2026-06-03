@@ -37,7 +37,7 @@ vi.mock('drizzle-orm/postgres-js', () => ({
 // Ensure DATABASE_URL is set before the db module initializes.
 beforeAll(() => {
   process.env.DATABASE_URL =
-    'postgresql://postgres.mock:mock@localhost:5432/postgres';
+    'postgresql://postgres.mock:mock@127.0.0.1:5432/postgres';
 });
 
 describe('getArticles', () => {
