@@ -8,45 +8,28 @@ import * as schema from "./schema";
    ⚠️  NEVER hardcode passwords in this file.
    ───────────────────────────────────────────────────────── */
 
-if (process.env.CI || !process.env.DATABASE_URL || process.env.DATABASE_URL.includes("[PROJECT_REF]")) {
-  process.env.DATABASE_URL = "postgresql://postgres:dummy@localhost:5432/postgres";
-}
+let client: postgres.Sql | null = null;
+let dbInstance: ReturnType<typeof drizzle<typeof schema>> | null = null;
 
-const requiredEnvVars = ["DATABASE_URL"] as const;
-
-for (const key of requiredEnvVars) {
-  if (!process.env[key]) {
-    throw new Error(
-      `[ZAYRON-X] Missing required environment variable: ${key}. ` +
-      `Ensure .env.local is configured. See .env.local.example for reference.`
-    );
-  }
-}
-
-// Attach pg connection pool client to globalThis to preserve across Next.js dev reloads
-declare global {
-  var _postgresClient: postgres.Sql | undefined;
-}
-
-let client: postgres.Sql;
-
-if (process.env.NODE_ENV === "production") {
-  client = postgres(process.env.DATABASE_URL!, {
-    prepare: false,     // Required for Supabase / PgBouncer transaction-mode pooler
-    max: 8,             // Cap connections per serverless instance
-    idle_timeout: 15,   // Let idle connections persist to allow immediate reuse
-    connect_timeout: 8, // Set a safe connection timeout threshold
-  });
-} else {
-  if (!globalThis._postgresClient) {
-    globalThis._postgresClient = postgres(process.env.DATABASE_URL!, {
-      prepare: false,
-      max: 3,           // Minimize local development connections
-      idle_timeout: 1,  // Clear developer connections quickly
-      connect_timeout: 5,
-    });
-  }
-  client = globalThis._postgresClient;
-}
-
-export const db = drizzle(client, { schema });
+export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+  get(target, prop, receiver) {
+    if (!dbInstance) {
+      const url = process.env.DATABASE_URL;
+      
+      // Handle build-time / CI / missing env var gracefully
+      if (process.env.CI || !url || url.includes("[PROJECT_REF]")) {
+        const dummyClient = postgres("postgresql://postgres:dummy@localhost:5432/postgres", { max: 1 });
+        dbInstance = drizzle(dummyClient, { schema });
+      } else {
+        client = postgres(url, {
+          prepare: false,     // Required for Supabase / PgBouncer transaction-mode pooler
+          max: process.env.NODE_ENV === "production" ? 1 : 3, // Low connection limit (1 in prod serverless, 3 in dev)
+          idle_timeout: 10,   // Close idle connections after 10s
+          connect_timeout: 5, // Timeout quickly
+        });
+        dbInstance = drizzle(client, { schema });
+      }
+    }
+    return Reflect.get(dbInstance, prop, receiver);
+  },
+});
