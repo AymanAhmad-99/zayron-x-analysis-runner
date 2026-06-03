@@ -47,7 +47,7 @@ jobs:
 
       # ── الخطوة 4: بناء المشروع عبر OpenNext ──
       - name: 🔨 بناء المنصة (OpenNext → Cloudflare)
-        run: bun run build
+        run: bunx --bun opennextjs-cloudflare build
 
       # ── الخطوة 5: نشر على Cloudflare Workers ──
       - name: 🚀 نشر على حافة Cloudflare
