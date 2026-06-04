@@ -45,8 +45,8 @@ const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?
 };
 
 interface Props {
-  params: Promise<{ category: string }>;
-  searchParams: Promise<{ page?: string }>;
+  params: Promise<{ category: string }> | { category: string };
+  searchParams?: Promise<{ page?: string }> | { page?: string };
 }
 
 function getSiloHeroClass(siloId: SiloId): string {
@@ -72,18 +72,31 @@ function getSectionTitle(siloId: SiloId): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category } = await params;
-  const label = category
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-  const silo = getSiloForCategory(label);
-  return {
-    title: `${label} — ${silo?.label ?? "Intelligence"} Reports`,
-    description: `Latest ${label} intelligence reports and analysis from ZAYRON-X. ${silo?.description ?? ""}`,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/intelligence/${category}`,
-    },
-  };
+  try {
+    const resolvedParams = await params;
+    const category = resolvedParams?.category;
+    if (!category) {
+      return {
+        title: "Intelligence Reports — ZAYRON-X",
+      };
+    }
+    const label = category
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    const silo = getSiloForCategory(label);
+    return {
+      title: `${label} — ${silo?.label ?? "Intelligence"} Reports`,
+      description: `Latest ${label} intelligence reports and analysis from ZAYRON-X. ${silo?.description ?? ""}`,
+      alternates: {
+        canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/intelligence/${category}`,
+      },
+    };
+  } catch (error) {
+    console.error("EDGE METADATA CRASH AVOIDED:", error);
+    return {
+      title: "Intelligence Reports — ZAYRON-X",
+    };
+  }
 }
 
 /* ─── Zero Intel Report — Oracle White ─── */
@@ -174,9 +187,28 @@ export default async function IntelligenceCategoryPage({
   params,
   searchParams,
 }: Props) {
-  const { category } = await params;
-  const { page: pageStr } = await searchParams;
-  const page = Number(pageStr) || 1;
+  let category = "";
+  try {
+    const resolvedParams = await params;
+    category = resolvedParams?.category || "";
+  } catch (error) {
+    console.error("EDGE PARAMS RESOLVE ERROR AVOIDED:", error);
+  }
+
+  if (!category) {
+    return notFound();
+  }
+
+  let page = 1;
+  try {
+    if (searchParams) {
+      const resolvedSearchParams = await searchParams;
+      const pageStr = resolvedSearchParams?.page;
+      page = Number(pageStr) || 1;
+    }
+  } catch (error) {
+    console.error("EDGE SEARCHPARAMS RESOLVE ERROR AVOIDED:", error);
+  }
 
   const dbCategory = slugToDbCategory(category);
   const displayCategory = formatCategoryDisplay(category);
@@ -194,14 +226,16 @@ export default async function IntelligenceCategoryPage({
     ]);
   } catch (error) {
     console.error(
-      `IntelligenceCategoryPage fetch failed for "${dbCategory}":`,
+      `EDGE DB CRASH AVOIDED: IntelligenceCategoryPage fetch failed for "${dbCategory}":`,
       error
     );
+    articles = [];
+    allTags = [];
   }
 
   /* ─── FALLBACK: Show Zero Intel Report instead of notFound() ─── */
   if (articles.length === 0) {
-    return notFound();
+    return <ZeroIntelReport categoryName={displayCategory} />;
   }
 
   const SiloIcon = silo ? SILO_ICONS[silo.id] : Shield;
