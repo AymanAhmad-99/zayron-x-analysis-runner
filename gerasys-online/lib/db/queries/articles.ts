@@ -136,20 +136,9 @@ export async function searchArticles(query: string, limit = 20) {
   return (data ?? []) as Article[];
 }
 
-/* ---- Increment view count (via RPC or direct update) ---- */
+/* ---- Increment view count (via RPC) ---- */
 export async function incrementArticleViews(id: string) {
-  // Fetch current views and increment.  This is not atomic, but Cloudflare
-  // Workers' concurrency model makes race conditions unlikely for view counts.
-  const { data: current } = await from()
-    .select("views")
-    .eq("id", id)
-    .single();
-
-  const currentViews = (current as Record<string, number> | null)?.views ?? 0;
-
-  return from()
-    .update({ views: currentViews + 1 })
-    .eq("id", id);
+  return getDb().rpc("increment_article_views", { article_id: id });
 }
 
 /* ---- Article slugs for static generation ---- */

@@ -117,3 +117,30 @@ BEGIN
   END IF;
 END
 $$;
+
+-- ─────────────────────────────────────────────
+-- 9. Index on created_at for articles
+-- ─────────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_articles_created_at
+  ON articles (created_at DESC);
+
+-- ─────────────────────────────────────────────
+-- 10. Atomic view count increment function
+-- ─────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION increment_article_views(article_id uuid)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF NOT has_table_privilege(current_setting('role'), 'articles', 'SELECT') THEN
+    RAISE EXCEPTION 'Permission denied';
+  END IF;
+  
+  UPDATE articles
+  SET views = views + 1
+  WHERE id = article_id;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION increment_article_views(uuid) TO anon, authenticated, service_role;

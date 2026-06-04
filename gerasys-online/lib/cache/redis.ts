@@ -63,6 +63,32 @@ export const CACHE_TTL = {
 
 const REDIS_TIMEOUT_MS = 1000;
 
+async function delayIfChaos(): Promise<void> {
+  const latencyStr = process.env.CHAOS_REDIS_LATENCY_MS;
+  if (latencyStr) {
+    const latency = parseInt(latencyStr, 10);
+    if (!isNaN(latency) && latency > 0) {
+      await new Promise((resolve) => setTimeout(resolve, latency));
+    }
+  }
+}
+
+async function redisGet<T>(key: string): Promise<T | null> {
+  if (!redis) return null;
+  await delayIfChaos();
+  return redis.get<T>(key);
+}
+
+async function redisSet<T>(
+  key: string,
+  value: T,
+  options?: { ex?: number; nx?: boolean }
+): Promise<"OK" | null> {
+  if (!redis) return null;
+  await delayIfChaos();
+  return redis.set(key, value as any, options as any);
+}
+
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -82,7 +108,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Read-Through Cache with Circuit Breaker
+// Read-Through Cache with Circuit Breaker & Request Coalescing
 // ═══════════════════════════════════════════════════════════════
 
 export async function getCachedOrFetch<T>(
@@ -100,7 +126,7 @@ export async function getCachedOrFetch<T>(
   // Layer 1: Attempt cache read with strict timeout
   try {
     const cachedData = await withTimeout<T | null>(
-      redis.get<T>(key),
+      redisGet<T>(key),
       REDIS_TIMEOUT_MS,
     );
 
@@ -114,22 +140,62 @@ export async function getCachedOrFetch<T>(
     return fetchFn();
   }
 
-  // Layer 2: Fetch fresh data from source
-  const freshData = await fetchFn();
-
-  // Layer 3: Write back to cache (fire-and-forget — failure is non-fatal)
+  // Cache miss: request coalescing lock to prevent cache stampede
+  const lockKey = `lock:${key}`;
   try {
-    await withTimeout(
-      redis.set(key, JSON.stringify(freshData), { ex: ttlSeconds }),
-      REDIS_TIMEOUT_MS,
+    const acquired = await withTimeout(
+      redisSet(lockKey, 'locked', { nx: true, ex: 5 }),
+      REDIS_TIMEOUT_MS
     );
-  } catch (error: any) {
-    console.warn(
-      `[CACHE WRITE FAILURE] Key: ${key}. Reason: ${error.message || error}`,
-    );
-  }
 
-  return freshData;
+    if (acquired) {
+      // First request (Lock owner): Fetch, populate cache, release lock
+      try {
+        const freshData = await fetchFn();
+        try {
+          await withTimeout(
+            redisSet(key, freshData, { ex: ttlSeconds }),
+            REDIS_TIMEOUT_MS
+          );
+        } catch (writeError: any) {
+          console.warn(
+            `[CACHE WRITE FAILURE] Key: ${key}. Reason: ${writeError.message || writeError}`
+          );
+        }
+        return freshData;
+      } finally {
+        try {
+          await withTimeout(redis.del(lockKey), REDIS_TIMEOUT_MS);
+        } catch (delError) {
+          // Ignore lock deletion failures to prevent blocking execution
+        }
+      }
+    } else {
+      // Concurrent requests (Contenders): Poll cache key every 100ms
+      const pollInterval = 100;
+      const maxRetries = 15; // 1.5 seconds max wait
+      for (let i = 0; i < maxRetries; i++) {
+        await new Promise((resolve) => setTimeout(resolve, pollInterval));
+        try {
+          const cachedData = await withTimeout<T | null>(
+            redisGet<T>(key),
+            REDIS_TIMEOUT_MS
+          );
+          if (cachedData !== null) {
+            return cachedData;
+          }
+        } catch (pollError) {
+          break;
+        }
+      }
+      return fetchFn();
+    }
+  } catch (lockError: any) {
+    console.warn(
+      `[CACHE LOCK FAILURE] Key: ${key}. Reason: ${lockError.message || lockError}`
+    );
+    return fetchFn();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -143,11 +209,11 @@ export async function cacheGet<T>(
 ): Promise<T> {
   if (!redis) return fetchFn();
 
-  const cached = await redis.get<T>(key);
+  const cached = await redisGet<T>(key);
   if (cached !== null) return cached;
 
   const data = await fetchFn();
-  await redis.set(key, JSON.stringify(data), { ex: ttl });
+  await redisSet(key, data, { ex: ttl });
   return data;
 }
 

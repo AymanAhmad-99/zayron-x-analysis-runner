@@ -1,17 +1,13 @@
 import { NextResponse } from "next/server";
 import { incrementArticleViews } from "@/lib/db/queries/articles";
-import { viewsLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
+import { viewsLimiter, checkRateLimit, getClientIp } from "@/lib/cache/ratelimit";
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Rate limit: 30 requests per 60s per IP
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-      request.headers.get("x-real-ip") ??
-      "unknown";
+    const ip = getClientIp(request);
 
     const { allowed } = await checkRateLimit(viewsLimiter, `views:${ip}`);
     if (!allowed) {

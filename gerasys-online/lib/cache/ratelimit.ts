@@ -65,12 +65,23 @@ export async function checkRateLimit(
 
 /**
  * Extracts a stable client identifier from a Request.
- * Prefers X-Forwarded-For, falls back to X-Real-IP, then 'unknown'.
+ * Prefers CF-Connecting-IP, falls back to X-Forwarded-For (split-parsed),
+ * then X-Real-IP, then 'unknown'. Supports CHAOS_STRIP_CF_HEADERS simulation.
  */
 export function getClientIp(request: Request): string {
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    request.headers.get('x-real-ip') ??
-    'unknown'
-  );
+  const stripCf = process.env.CHAOS_STRIP_CF_HEADERS === 'true';
+  const cfConnectingIp = stripCf ? null : request.headers.get('CF-Connecting-IP');
+
+  if (cfConnectingIp) {
+    return cfConnectingIp.trim();
+  }
+
+  const xForwardedFor = request.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    const parts = xForwardedFor.split(',');
+    const ip = parts[0]?.trim();
+    if (ip) return ip;
+  }
+
+  return request.headers.get('x-real-ip')?.trim() ?? 'unknown';
 }

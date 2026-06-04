@@ -26,19 +26,27 @@ function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: st
   request.headers.set("x-csp-nonce", nonce);
 
   // Replace the static CSP placeholder with the actual nonce value
-  const existingCsp = response.headers.get("Content-Security-Policy");
-  if (existingCsp) {
-    const patched = existingCsp.replace(
+  let enforcingCsp = response.headers.get("Content-Security-Policy");
+  if (enforcingCsp) {
+    if (!enforcingCsp.includes("'unsafe-inline'") && enforcingCsp.includes("style-src")) {
+      enforcingCsp = enforcingCsp.replace("style-src", "style-src 'unsafe-inline'");
+    }
+    const patched = enforcingCsp.replace(
       /'strict-dynamic'/,
       `'nonce-${nonce}' 'strict-dynamic'`,
     );
     response.headers.set("Content-Security-Policy", patched);
   } else {
-    response.headers.set(
-      "Content-Security-Policy",
-      `default-src 'self'; script-src 'self' *.supabase.co 'nonce-${nonce}' 'strict-dynamic'; style-src 'self' fonts.googleapis.com 'nonce-${nonce}'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com; connect-src 'self' *.supabase.co; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'`,
-    );
+    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'nonce-${nonce}' 'strict-dynamic'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com; connect-src 'self' *.supabase.co; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'`;
+    response.headers.set("Content-Security-Policy", enforcingCsp);
   }
+
+  // Setup CSP Report-Only alongside enforcing to monitor blocked/unsafe inline style and script attempts
+  const currentCsp = response.headers.get("Content-Security-Policy") ?? "";
+  const reportOnlyCsp = currentCsp
+    .replace(/\b'unsafe-inline'\b/g, "")
+    .trim() + "; report-uri /api/csp-report";
+  response.headers.set("Content-Security-Policy-Report-Only", reportOnlyCsp);
 }
 
 /* ── Admin Basic Auth ── */

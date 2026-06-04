@@ -10,7 +10,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 const CSP = [
   `default-src 'self'`,
   `script-src 'self' *.supabase.co 'strict-dynamic'`,
-  `style-src 'self' fonts.googleapis.com`,
+  `style-src 'self' fonts.googleapis.com 'unsafe-inline'`,
   `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com`,
   `connect-src 'self' *.supabase.co`,
   `font-src 'self' fonts.gstatic.com`,

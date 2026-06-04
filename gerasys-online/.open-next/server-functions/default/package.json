@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "next build --webpack",
+    "build:cf": "opennextjs-cloudflare build --skipNextBuild",
+    "postbuild:cf": "node scripts/patch-handler-fs.cjs",
     "deploy": "opennextjs-cloudflare deploy",
     "preview": "opennextjs-cloudflare preview",
     "lint": "biome check .",

@@ -1,8 +1,32 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+declare global {
+  var sessionRefreshQueue: Map<string, { cookies: any[]; expiry: number }> | undefined;
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+
+  // Apply queued session refresh if exists from failed RSC cookie writes
+  const allReqCookies = request.cookies.getAll();
+  const reqRefreshToken = allReqCookies.find(c => c.name.endsWith('-refresh-token'))?.value;
+  if (reqRefreshToken && (globalThis as any).sessionRefreshQueue) {
+    const queued = (globalThis as any).sessionRefreshQueue.get(reqRefreshToken);
+    if (queued) {
+      if (Date.now() < queued.expiry) {
+        for (const { name, value } of queued.cookies) {
+          request.cookies.set(name, value);
+        }
+        supabaseResponse = NextResponse.next({ request });
+        for (const { name, value, options } of queued.cookies) {
+          supabaseResponse.cookies.set(name, value, options);
+        }
+        console.warn(JSON.stringify({ event: "QUEUED_SESSION_REFRESH_APPLIED", token: reqRefreshToken }));
+      }
+      (globalThis as any).sessionRefreshQueue.delete(reqRefreshToken);
+    }
+  }
 
   const supabase = createServerClient(
     process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!,

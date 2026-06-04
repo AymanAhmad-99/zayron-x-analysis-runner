@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+import { notFound } from "next/navigation";
+
 import type { Metadata } from "next";
 import { ArticleCard } from "@/components/ui/ArticleCard";
 import {
@@ -198,8 +200,8 @@ export default async function IntelligenceCategoryPage({
   }
 
   /* ─── FALLBACK: Show Zero Intel Report instead of notFound() ─── */
-  if (!articles.length) {
-    return <ZeroIntelReport categoryName={displayCategory} />;
+  if (articles.length === 0) {
+    return notFound();
   }
 
   const SiloIcon = silo ? SILO_ICONS[silo.id] : Shield;
