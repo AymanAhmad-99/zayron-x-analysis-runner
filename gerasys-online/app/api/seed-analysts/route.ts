@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { analysts } from "@/lib/db/schema";
-import { sql } from "drizzle-orm";
 
 const ANALYST_CORE = [
   { name: "Viktor Volkov", title: "Lead APT Tracking & Encryption Analyst", bio: "15-year veteran of Russian signals intelligence. Former GRU cryptographic analyst turned private-sector threat hunter.", nationality: "Russia", specializations: ["APT Tracking", "Encryption", "Nation-State Threats", "Signals Intelligence", "Malware Analysis"] },
@@ -28,37 +26,44 @@ const ANALYST_CORE = [
 ];
 
 // This endpoint is protected by middleware.ts — only admin-authenticated
-// requests reach this handler.  The middleware check is the primary gate;
-// the DB-level operations are idempotent (clear + re-insert).
+// requests reach this handler.
 
 export async function POST() {
-  await getDb().execute(sql`ALTER TABLE analysts ADD COLUMN IF NOT EXISTS nationality text`);
+  const db = getDb();
 
   const results: Array<{ name: string; status: string; id?: string; error?: string }> = [];
 
-  await getDb().delete(analysts).where(sql`true`);
+  // Clear existing analysts
+  await db.from("analysts").delete().neq("id", "00000000-0000-0000-0000-000000000000");
 
   for (const analyst of ANALYST_CORE) {
     try {
-      const inserted = await getDb()
-        .insert(analysts)
-        .values({
+      const { data: inserted, error } = await db
+        .from("analysts")
+        .insert({
           name: analyst.name,
           title: analyst.title,
           bio: analyst.bio,
           nationality: analyst.nationality,
           specializations: analyst.specializations,
         })
-        .returning({ id: analysts.id, name: analysts.name });
+        .select("id, name")
+        .single();
 
-      const record = inserted[0];
-      if (record) {
-        results.push({ name: record.name, status: "inserted", id: record.id });
+      if (error) {
+        results.push({ name: analyst.name, status: "failed", error: error.message });
+      } else if (inserted) {
+        const row = inserted as Record<string, unknown>;
+        results.push({ name: String(row.name ?? ""), status: "inserted", id: String(row.id ?? "") });
       } else {
         results.push({ name: analyst.name, status: "failed", error: "No record returned" });
       }
-    } catch (err: any) {
-      results.push({ name: analyst.name, status: "failed", error: err.message });
+    } catch (err: unknown) {
+      results.push({
+        name: analyst.name,
+        status: "failed",
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 

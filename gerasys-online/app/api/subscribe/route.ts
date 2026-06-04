@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { subscribers } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { subscribeLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
 
 export async function POST(request: Request) {
@@ -37,30 +35,41 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check existing
-    const existing = await getDb()
-      .select()
-      .from(subscribers)
-      .where(eq(subscribers.email, email))
-      .limit(1);
+    const db = getDb();
 
-    if (existing[0]) {
-      if (existing[0].isActive) {
+    // Check existing
+    const { data: existing } = await db
+      .from("subscribers")
+      .select("*")
+      .eq("email", email)
+      .limit(1)
+      .single();
+
+    if (existing) {
+      const sub = existing as Record<string, unknown>;
+      if (sub.is_active) {
         return NextResponse.json(
           { error: "Email already subscribed." },
           { status: 409 }
         );
       }
       // Re-activate
-      await getDb()
-        .update(subscribers)
-        .set({ isActive: true })
-        .where(eq(subscribers.email, email));
+      await db
+        .from("subscribers")
+        .update({ is_active: true })
+        .eq("email", email);
       return NextResponse.json({ success: true, message: "Subscription reactivated." });
     }
 
     // Create
-    await getDb().insert(subscribers).values({ email });
+    const { error: insertError } = await db
+      .from("subscribers")
+      .insert({ email });
+
+    if (insertError) {
+      throw insertError;
+    }
+
     return NextResponse.json(
       { success: true, message: "Successfully subscribed." },
       {

@@ -1,30 +1,32 @@
 import { getDb } from "../index";
-import { programmingLangs } from "../schema";
-import { eq, desc } from "drizzle-orm";
+import type { ProgrammingLang } from "../schema";
 
 /* ---- All programming languages ---- */
 export async function getProgrammingLanguages() {
-  return getDb()
-    .select()
-    .from(programmingLangs)
-    .orderBy(desc(programmingLangs.articleCount));
+  const { data } = await getDb()
+    .from("programming_langs")
+    .select("*")
+    .order("article_count", { ascending: false });
+  return (data ?? []) as ProgrammingLang[];
 }
 
 /* ---- Single language by slug ---- */
 export async function getProgrammingLangBySlug(slug: string) {
-  const result = await getDb()
-    .select()
-    .from(programmingLangs)
-    .where(eq(programmingLangs.slug, slug))
-    .limit(1);
-  return result[0] ?? null;
+  const { data, error } = await getDb()
+    .from("programming_langs")
+    .select("*")
+    .eq("slug", slug)
+    .limit(1)
+    .single();
+  if (error) return null;
+  return data as ProgrammingLang | null;
 }
 
 /* ---- All language slugs for static generation ---- */
 export async function getAllProgrammingLangSlugs(limit = 100) {
-  const result = await getDb()
-    .select({ slug: programmingLangs.slug })
-    .from(programmingLangs)
+  const { data } = await getDb()
+    .from("programming_langs")
+    .select("slug")
     .limit(limit);
-  return result.map((r) => r.slug);
+  return ((data ?? []) as Array<{ slug: string }>).map((r) => r.slug);
 }
