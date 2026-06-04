@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   output: "standalone",
 
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: "https://xdfndojvqazffcjngglr.supabase.co",
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkZm5kb2p2cWF6ZmZjam5nZ2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDQ0MDQsImV4cCI6MjA5MzgyMDQwNH0.UGitfLsGYqQIATh6qK-uT-ZsTXpf7zFArE3QvR9JEYw",
+  },
+
   // Transform lucide-react barrel imports into direct icon-file imports.
   // Without this, Turbopack tries to instantiate all ~1500 icon module
   // factories from the barrel re-export and fails with
