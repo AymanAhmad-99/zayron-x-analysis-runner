@@ -42,6 +42,17 @@ const nextConfig: NextConfig = {
   // Build uses --webpack (see package.json), so this is a no-op.
   turbopack: {},
 
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      "node:fs": false,
+      os: false,
+      "node:os": false,
+    };
+    return config;
+  },
+
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

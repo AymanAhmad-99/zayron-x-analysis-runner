@@ -1,6 +1,6 @@
 import type { OpenNextConfig } from '@opennextjs/cloudflare';
 
-const config: OpenNextConfig = {
+const config: any = {
   default: {
     override: {
       wrapper: 'cloudflare-node',
@@ -41,8 +41,6 @@ const config: OpenNextConfig = {
      ────────────────────────────────────────────────────── */
   edgeExternals: [
     'node:crypto',
-    'node:fs',
-    'node:os',
     'node:path',
     'node:child_process',
     'node:module',
