@@ -178,9 +178,13 @@ This is the **guaranteed fix** because Supabase communicates over HTTPS — full
 | File | Change | Hypotheses Addressed |
 |---|---|---|
 | `lib/db/index.ts` | AbortController timeout, cooldown, edge flags, health check | **A** (Primary) |
-| `open-next.config.ts` | Added `node:net`, `node:tls`, `node:dns`, `node:stream`, `node:buffer`, `node:events`, `node:assert` to `edgeExternals` | **B** (Contributing) |
-| `wrangler.toml` | `nodejs_compat` → `nodejs_compat_v2` | **A, B** (Both) |
+| `open-next.config.ts` | Extended `edgeExternals` from 8 → 22 Node.js built‑ins | **B** (Contributing), **node:fs fix** |
+| `wrangler.toml` | `nodejs_compat` → `nodejs_compat_v2`; added `[build.alias]` for `fs`/`os` | **A, B** (Both), **node:fs fix** |
 | `lib/utils/markdown.ts` | Lazy init, size guard, try/catch, graceful degradation | **C** (Defense-in-depth) |
+| `lib/polyfills/fs.ts` | **NEW** — `node:fs` polyfill stub for Workers | **node:fs fix** |
+| `lib/polyfills/os.ts` | **NEW** — `node:os` polyfill stub for Workers | **node:fs fix** |
+| `scripts/verify-worker-build.sh` | **NEW** — CI verification script | **Build validation** |
+| `docs/HANG_FIX_ANALYSIS.md` | Updated with Section 8 (`node:fs` fix) | **Documentation** |
 
 ---
 
@@ -207,6 +211,54 @@ The `connect()` API introduced in 2024 provides a **managed** TCP connection thr
 const socket = connect({ hostname: 'db.example.com', port: 5432 });
 ```
 But `node:net` in v1 doesn't use this — it uses a shim that doesn't map correctly. Only `nodejs_compat_v2` properly bridges `node:net.Socket` to the `connect()` API.
+
+---
+
+## 8. `node:fs` Module Resolution Error (2026‑06‑04)
+
+**Symptom:**
+```
+Uncaught Error: No such module "node:fs". imported from "worker.js" [code: 10021]
+```
+Cloudflare API rejected deployment. This error occurs because the bundled Worker code references `node:fs` — a Node.js core module that DOES NOT EXIST in the Workers V8 runtime.
+
+**Root Cause:**
+The `postgres` npm package (v3.4.5) imports `fs` and `os` at the top level:
+
+- `node_modules/postgres/src/index.js:1` → `import os from 'os'`
+- `node_modules/postgres/src/index.js:2` → `import fs from 'fs'`
+- `node_modules/postgres/src/index.js:132` → `fs.readFile(path, 'utf8', callback)` — only called when SSL `ca` is a file path
+
+The OpenNext edge bundle (`@opennextjs/aws`) externalizes ALL `node:*` modules by default (`external: ["node:*"]` in `createEdgeBundle.js:31`). This means:
+1. `import fs from 'fs'` is NOT bundled/inlined
+2. It's left as a bare import → Workers runtime converts to `node:fs`
+3. Workers runtime has NO `node:fs` module → crashes with code 10021
+
+Cloudflare Workers have no filesystem. Even `nodejs_compat_v2` does not provide an `fs` polyfill because there is no concept of a filesystem in a V8 isolate.
+
+**Fix (3‑Layer Defense):**
+
+1. **Polyfill Stubs** — Created `lib/polyfills/fs.ts` and `lib/polyfills/os.ts`. These export NOOP implementations that throw `ENOSYS` if any method is called (which only happens if you pass file paths to `postgres` SSL config — we use `ssl: 'require'` string, never file paths).
+
+2. **Wrangler Build Aliases** — Added `[build.alias]` in `wrangler.toml` that redirects `fs` → `./lib/polyfills/fs.ts` and `os` → `./lib/polyfills/os.ts` during Wrangler's esbuild step. This ensures the stubs are bundled into the final Worker instead of leaving bare `node:fs` imports.
+
+3. **Complete `edgeExternals`** — Extended the external list in `open-next.config.ts` from 8 modules to 22, covering ALL Node.js built‑ins that don't exist in Workers. This prevents the OpenNext bundler from generating unresolvable imports.
+
+**Verification:**
+```bash
+bash scripts/verify-worker-build.sh
+```
+Scans `.open-next/worker.js` for forbidden module references. Exit code 0 = clean.
+
+**Files Changed:**
+| File | Change |
+|---|---|
+| `lib/polyfills/fs.ts` | NEW — Stub for `node:fs` |
+| `lib/polyfills/os.ts` | NEW — Stub for `node:os` |
+| `wrangler.toml` | Added `[build.alias]` for `fs` and `os` |
+| `open-next.config.ts` | Extended `edgeExternals` from 8 → 22 modules |
+| `scripts/verify-worker-build.sh` | NEW — CI verification script |
+| `docs/HANG_FIX_ANALYSIS.md` | NEW — This section |
 
 ---
 

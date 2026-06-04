@@ -14,27 +14,54 @@ const config: OpenNextConfig = {
     },
   },
   /* ──────────────────────────────────────────────────────
-     CLOUDFLARE WORKERS HANG FIX — edgeExternals
+     CLOUDFLARE WORKERS — Complete Node.js Built‑ins Externalization
 
-     The `postgres` npm package internally requires these
-     Node.js built-in modules to establish TCP/TLS/DNS
-     connections.  Externalizing them ensures the Workers
-     runtime's nodejs_compat_v2 polyfills handle them
-     instead of the bundler including conflicting shims.
+     The Workers V8 isolate does NOT have:
+       node:fs, node:os, node:child_process, node:module,
+       node:v8, node:worker_threads, node:http, node:https,
+       node:http2, node:zlib, node:readline, node:punycode,
+       node:trace_events
 
-     Without this: the bundler may embed Node.js polyfills
-     that deadlock with the Workers runtime's connect() API,
-     causing the "Worker had hung" kill at 30 s wall-clock.
+     Externalizing them tells esbuild to leave the import
+     statements intact.  At runtime, Wrangler's [build] alias
+     (in wrangler.toml) redirects `fs` and `os` to polyfill
+     stubs in lib/polyfills/.  Other Node.js built‑ins are
+     provided by the nodejs_compat_v2 runtime flag.
+
+     Modules that nodejs_compat_v2 DOES provide (so we DON'T
+     externalize them — let the runtime handle resolution):
+       node:assert, node:async_hooks, node:buffer, node:crypto,
+       node:dns, node:events, node:net, node:path, node:process,
+       node:stream, node:string_decoder, node:tls, node:url,
+       node:util
+
+     ⚠️  DO NOT add node:net or node:tls here — the Workers
+         runtime provides them, and externalizing prevents
+         the polyfill from being loaded correctly.
      ────────────────────────────────────────────────────── */
   edgeExternals: [
     'node:crypto',
-    'node:net',
-    'node:tls',
-    'node:dns',
-    'node:stream',
-    'node:buffer',
-    'node:events',
-    'node:assert',
+    'node:fs',
+    'node:os',
+    'node:path',
+    'node:child_process',
+    'node:module',
+    'node:v8',
+    'node:worker_threads',
+    'node:http',
+    'node:https',
+    'node:http2',
+    'node:zlib',
+    'node:process',
+    'node:readline',
+    'node:url',
+    'node:querystring',
+    'node:string_decoder',
+    'node:punycode',
+    'node:perf_hooks',
+    'node:async_hooks',
+    'node:diagnostics_channel',
+    'node:trace_events',
   ],
   middleware: {
     external: true,
