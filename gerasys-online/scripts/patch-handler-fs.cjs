@@ -52,8 +52,6 @@ const NOOP_MODULES = [
   "perf_hooks",
   "readline",
   "dns",
-  "net",
-  "tls",
 ];
 
 const NOOP_SRC = path.join(ROOT, "lib", "polyfills", "noop.cjs");

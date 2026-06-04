@@ -1,7 +1,10 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import { sql } from 'drizzle-orm';
 import * as schema from './schema';
+
+let queryClient: ReturnType<typeof postgres> | undefined;
+let dbInstance: ReturnType<typeof drizzle<typeof schema>> | undefined;
 
 export function maskDatabaseUrl(urlStr: string): string {
   if (!urlStr) return "[EMPTY]";
@@ -15,17 +18,31 @@ export function maskDatabaseUrl(urlStr: string): string {
 }
 
 export function resetDbConnection(): void {
-  // No-op since we are using connectionless HTTP requests.
+  if (queryClient) {
+    try {
+      queryClient.end();
+    } catch {
+      // Swallow
+    }
+  }
+  queryClient = undefined;
+  dbInstance = undefined;
 }
 
 export function getDb() {
-  const dbUrl = process.env.DATABASE_URL;
-  if (!dbUrl) {
-    throw new Error('DATABASE_URL is totally missing.');
+  if (!dbInstance) {
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl || dbUrl.includes("dummy") || dbUrl.includes("localhost") || dbUrl.includes("[PROJECT_REF]")) {
+      throw new Error('DATABASE_URL is missing or invalid in the Edge runtime.');
+    }
+    
+    // Cloudflare edge compatible postgres.js client using nodejs_compat TCP sockets.
+    // We disable prepared statements (prepare: false) as Supabase's Transaction Pooler (Port 6543)
+    // requires this to prevent transaction/session state pollution across connections.
+    queryClient = postgres(dbUrl, { prepare: false });
+    dbInstance = drizzle(queryClient, { schema });
   }
-  // Use HTTP fetch client (neon) strictly. NO Pool. NO WebSockets.
-  const sqlConnection = neon(dbUrl);
-  return drizzle(sqlConnection, { schema });
+  return dbInstance;
 }
 
 // Re-export sql for convenience

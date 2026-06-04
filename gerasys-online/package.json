@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "postgres": "3.4.5",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/postcss": "4.1.4",
@@ -58,7 +59,6 @@
     "@opennextjs/cloudflare": "^1.19.11",
     "@playwright/test": "^1.45.0",
     "@sentry/nextjs": "^8.30.0",
-    "postgres": "3.4.5",
     "@types/node": "22.14.1",
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
