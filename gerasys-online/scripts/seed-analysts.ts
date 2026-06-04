@@ -9,18 +9,12 @@
  * Usage:
  *   bun run scripts/seed-analysts.ts
  *
- * Prerequisites:
- *   SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_URL env vars
- *   must be set. The `analysts` table must exist.
- *
- *   Uses @supabase/supabase-js (HTTP) — no Node.js native modules needed.
+ * Uses Drizzle ORM.
  */
 
 import { getDb } from "../lib/db";
-
-/* ============================================================
- * 21 Global Analyst Personas
- * ============================================================ */
+import { analysts } from "../lib/db/schema";
+import { eq } from "drizzle-orm";
 
 interface AnalystSeed {
   name: string;
@@ -180,56 +174,44 @@ const ANALYST_CORE: AnalystSeed[] = [
   },
 ];
 
-/* ============================================================
- * Seed logic
- * ============================================================ */
-
 async function seed() {
   console.log("=".repeat(60));
   console.log("  ZAYRON-X — Global Analyst Core Seeder");
   console.log("=".repeat(60));
   console.log(`  Personas to seed: ${ANALYST_CORE.length}`);
-  console.log(`  API: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`);
+  console.log(`  DB URL is configured`);
   console.log("=".repeat(60));
 
-  const db = getDb();
   let inserted = 0;
   let skipped = 0;
 
   for (const analyst of ANALYST_CORE) {
     // Check if analyst already exists by name
-    const { data: existing } = await db
-      .from("analysts")
-      .select("id")
-      .eq("name", analyst.name)
-      .limit(1)
-      .single();
+    const existing = await getDb()
+      .select({ id: analysts.id })
+      .from(analysts)
+      .where(eq(analysts.name, analyst.name))
+      .limit(1);
 
-    if (existing) {
-      console.log(`  [SKIP] ${analyst.name} — already exists (${(existing as Record<string, string>).id})`);
+    if (existing.length > 0) {
+      console.log(`  [SKIP] ${analyst.name} — already exists (${existing[0].id})`);
       skipped++;
       continue;
     }
 
-    const { data: result } = await db
-      .from("analysts")
-      .insert({
+    const result = await getDb()
+      .insert(analysts)
+      .values({
         name: analyst.name,
         title: analyst.title,
         bio: analyst.bio,
         nationality: analyst.nationality,
         specializations: analyst.specializations,
       })
-      .select("id, name")
-      .single();
+      .returning({ id: analysts.id, name: analysts.name });
 
-    if (result) {
-      const r = result as Record<string, string>;
-      console.log(`  [OK]   ${r.name} — ${r.id}`);
-      inserted++;
-    } else {
-      console.log(`  [FAIL] ${analyst.name} — no result returned`);
-    }
+    console.log(`  [OK]   ${result[0].name} — ${result[0].id}`);
+    inserted++;
   }
 
   console.log("=".repeat(60));

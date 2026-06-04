@@ -3,21 +3,16 @@ import { describe, it, expect, vi, beforeAll } from 'vitest';
 // Mock the postgres client before any imports that depend on it.
 // Drizzle's postgres-js driver will throw if DATABASE_URL is unset,
 // so we mock the entire module chain.
-vi.mock('postgres', () => {
-  const mockSql = vi.fn(() => mockSql);
-  (mockSql as any).select = vi.fn(() => mockSql);
-  (mockSql as any).from = vi.fn(() => mockSql);
-  (mockSql as any).where = vi.fn(() => mockSql);
-  (mockSql as any).orderBy = vi.fn(() => mockSql);
-  (mockSql as any).limit = vi.fn(() => mockSql);
-  (mockSql as any).offset = vi.fn(() => mockSql);
-  (mockSql as any).groupBy = vi.fn(() => mockSql);
-  (mockSql as any).then = vi.fn((cb: any) => cb([]));
-  mockSql.returnThis = vi.fn(() => mockSql);
-  return { default: vi.fn(() => mockSql) };
-});
+vi.mock('@neondatabase/serverless', () => ({
+  Pool: vi.fn().mockImplementation(() => ({
+    connect: vi.fn(),
+    query: vi.fn(),
+    end: vi.fn(),
+  })),
+  neonConfig: {},
+}));
 
-vi.mock('drizzle-orm/postgres-js', () => ({
+vi.mock('drizzle-orm/neon-serverless', () => ({
   drizzle: vi.fn(() => ({
     select: vi.fn(() => ({
       from: vi.fn(() => ({

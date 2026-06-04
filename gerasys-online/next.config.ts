@@ -121,5 +121,7 @@ export default withSentryConfig(nextConfig, {
   tunnelRoute: '/api/monitoring',
   disableLogger: true,
   automaticVercelMonitors: false,
-  disable: true,
+  unstable_sentryWebpackPluginOptions: {
+    disable: true,
+  },
 });

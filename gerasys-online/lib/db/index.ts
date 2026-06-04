@@ -1,102 +1,166 @@
-import { createClient } from "@supabase/supabase-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { sql } from "drizzle-orm";
+import * as schema from "./schema";
 
 /* ─────────────────────────────────────────────────────────
-   ZAYRON‑X — Edge‑Native Database Layer (Supabase HTTP)
+   ZAYRON‑X — Edge‑Native Database Layer (Neon Serverless WebSocket)
 
-   The `postgres` npm package unconditionally imports `fs`
-   (node_modules/postgres/src/index.js:2), which permanently
-   blocks Cloudflare Workers deployment — the Workers V8
-   isolate has no filesystem.
+   Cloudflare Workers cannot use raw TCP pg or postgres npm packages
+   due to the lacking filesystem and native socket stack in the V8
+   isolate. By utilizing `@neondatabase/serverless` (WebSocket-based),
+   we establish database connectivity safely through WebSockets.
 
-   By using `@supabase/supabase-js` (pure HTTP / fetch‑based),
-   we eliminate every Node.js built‑in dependency from the
-   bundle.  All queries flow through Supabase's PostgREST
-   API at the edge — fully compatible with Cloudflare Workers.
-
-   SECURITY:
-   - Service‑role key bypasses Row‑Level Security (RLS).
-   - This module MUST only be imported from server code.
-   - The anon key is NEVER used for database operations.
+   This module implements connection pooling via a global singleton,
+   safe URL constructor parsing to avoid credential concatenation bugs,
+   and automatic URL masking in failure logs.
    ───────────────────────────────────────────────────────── */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+// Declare global types to store singletons across requests
+interface GlobalDB {
+  _dbPool?: Pool;
+  _dbInstance?: ReturnType<typeof drizzle<typeof schema>>;
+}
 
-/* ── Edge‑safe singleton: no global mutable state ── */
-let _supabase: SupabaseClient | null = null;
+const globalRef = globalThis as unknown as GlobalDB;
 
-function getSupabaseClient(): SupabaseClient {
-  if (!_supabase) {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error(
-        "FATAL: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. " +
-        "These must be set as environment variables (SUPABASE_SERVICE_ROLE_KEY " +
-        "must be a Cloudflare Secret)."
-      );
-    }
-
-    _supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-      auth: { persistSession: false },
-      db: {
-        schema: "public",
-      },
-      global: {
-        headers: {
-          "X-Client-Info": "zayron-x-edge-worker",
-        },
-      },
-    });
+/**
+ * Safely masks the password in a database connection string.
+ */
+export function maskDatabaseUrl(urlStr: string): string {
+  if (!urlStr) return "[EMPTY]";
+  try {
+    const url = new URL(urlStr);
+    url.password = "********";
+    return url.toString();
+  } catch {
+    return "[UNPARSEABLE DATABASE URL]";
   }
-  return _supabase;
 }
 
 /**
- * Returns a Supabase client configured with the service‑role key.
- *
- * All server‑side database operations MUST use this function
- * to obtain the client.  It is edge‑safe (no fs, no net, no tls).
+ * Configures and returns the Edge-compatible database singleton.
  */
 export function getDb() {
-  return getSupabaseClient();
+  if (!globalRef._dbInstance) {
+    const databaseUrl = process.env.DATABASE_URL;
+
+    // Fail-Fast Rule: if missing, invalid, or placeholder, throw immediately
+    if (!databaseUrl || databaseUrl.includes("dummy") || databaseUrl.includes("localhost") || databaseUrl.includes("[PROJECT_REF]")) {
+      throw new Error("FATAL: DATABASE_URL is missing or invalid in the Edge runtime.");
+    }
+
+    try {
+      // Secure URL Parsing using the native URL constructor.
+      // This prevents the username and password/token from concatenating.
+      const parsedUrl = new URL(databaseUrl);
+      const username = parsedUrl.username;
+
+      // Mathematically URL-decode the password in case it contains encoded special characters
+      const password = decodeURIComponent(parsedUrl.password);
+      const host = parsedUrl.hostname;
+      const port = parsedUrl.port ? parseInt(parsedUrl.port, 10) : 5432;
+      const dbName = parsedUrl.pathname.replace(/^\//, "");
+
+      if (dbName !== "postgres") {
+        throw new Error(`Invalid database name: "${dbName}". Path must strictly point to /postgres.`);
+      }
+
+      // Configure connection settings for Neon Serverless Pool.
+      // Set max connection pool size to 1 to prevent pool exhaustion across 10k users/isolates.
+      globalRef._dbPool = new Pool({
+        user: username,
+        password: password,
+        host: host,
+        port: port,
+        database: dbName,
+        max: 1, // Maximum 1 connection per Worker isolate
+        ssl: true, // Force secure SSL connection
+      });
+
+      globalRef._dbInstance = drizzle(globalRef._dbPool, { schema });
+    } catch (err) {
+      console.error(`DB_INIT_FAILED: Unable to create database client for ${maskDatabaseUrl(databaseUrl)}. Cause:`, err);
+      throw new Error(
+        `DB_INIT_FAILED: Unable to create database client. Cause: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+  }
+
+  return globalRef._dbInstance;
 }
 
 /**
- * Resets the client singleton.  Call after a recoverable error
- * if you need to force a fresh HTTP connection pool.
+ * Executes a database query with a hard timeout of 10 seconds.
+ */
+export async function dbQuery<T>(
+  fn: (db: ReturnType<typeof drizzle<typeof schema>>) => Promise<T>,
+  label = "dbQuery"
+): Promise<T> {
+  const db = getDb();
+  const ms = 10_000; // 10 seconds timeout
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, ms);
+
+  // Allow the timer to NOT keep the process alive
+  if (typeof timer === "object" && "unref" in timer) {
+    (timer as unknown as { unref(): void }).unref();
+  }
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    const onAbort = () => {
+      controller.signal.removeEventListener("abort", onAbort);
+      reject(
+        new Error(
+          `DB_OP_TIMEOUT: ${label} did not complete within ${ms}ms.`
+        )
+      );
+    };
+    controller.signal.addEventListener("abort", onAbort, { once: true });
+  });
+
+  try {
+    const result = await Promise.race([fn(db), timeoutPromise]);
+    clearTimeout(timer);
+    return result;
+  } catch (error) {
+    clearTimeout(timer);
+    throw error;
+  }
+}
+
+/**
+ * Resets the connection pool state.
  */
 export function resetDbConnection(): void {
-  _supabase = null;
+  if (globalRef._dbPool) {
+    try {
+      globalRef._dbPool.end();
+    } catch {
+      // Swallow
+    }
+  }
+  globalRef._dbPool = undefined;
+  globalRef._dbInstance = undefined;
 }
 
 /**
- * Lightweight health check — pings the Supabase REST API.
- * Returns true if the database is reachable within the timeout.
+ * Performs a lightweight health check (SELECT 1).
  */
 export async function isDbHealthy(): Promise<boolean> {
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5_000);
-
-    // Use the REST API health endpoint (PostgREST always responds)
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/`,
-      {
-        method: "HEAD",
-        headers: {
-          apikey: SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        },
-        signal: controller.signal,
-      }
-    );
-
-    clearTimeout(timer);
-    return res.ok || res.status === 401; // 401 = reachable but needs auth
+    const db = getDb();
+    await dbQuery(async (d) => {
+      await d.execute(sql`SELECT 1`);
+    }, "healthCheck");
+    return true;
   } catch {
     return false;
   }
 }
 
-// Re-export the Supabase client type for consumers that need it
-export type { SupabaseClient };
+// Re-export sql for convenience
+export { sql };

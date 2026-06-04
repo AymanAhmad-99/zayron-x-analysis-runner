@@ -1,263 +1,318 @@
-import { getDb } from "../index";
+import { getDb, maskDatabaseUrl } from "../index";
+import { articles } from "../schema";
+import { eq, desc, and, sql } from "drizzle-orm";
 import type { Article } from "../schema";
 
 const PAGE_SIZE = 12;
 
-/* ─────────────────────────────────────────────────────────
-   Edge‑native article queries — Supabase HTTP (no fs import)
-   ───────────────────────────────────────────────────────── */
+/* ---- Published articles only (public) ---- */
+function publishedCondition() {
+  return eq(articles.isPublished, true);
+}
 
-function from() {
-  return getDb().from("articles");
+function handleQueryError(error: unknown, functionName: string) {
+  const maskedUrl = maskDatabaseUrl(process.env.DATABASE_URL || "");
+  console.error(`DB Error in ${functionName} (DATABASE_URL: ${maskedUrl}):`, error);
 }
 
 /* ---- Get single article by slug ---- */
 export async function getArticleBySlug(slug: string) {
-  const { data, error } = await from()
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_published", true)
-    .limit(1)
-    .single();
-  if (error) return null;
-  return data as Article | null;
+  try {
+    const result = await getDb()
+      .select()
+      .from(articles)
+      .where(and(eq(articles.slug, slug), publishedCondition()))
+      .limit(1);
+    return result[0] ?? null;
+  } catch (error) {
+    handleQueryError(error, "getArticleBySlug");
+    return null;
+  }
 }
 
 /* ---- Get single article by UUID ---- */
 export async function getArticleById(id: string) {
-  const { data, error } = await from()
-    .select("*")
-    .eq("id", id)
-    .eq("is_published", true)
-    .limit(1)
-    .single();
-  if (error) return null;
-  return data as Article | null;
+  try {
+    const result = await getDb()
+      .select()
+      .from(articles)
+      .where(and(eq(articles.id, id), publishedCondition()))
+      .limit(1);
+    return result[0] ?? null;
+  } catch (error) {
+    handleQueryError(error, "getArticleById");
+    return null;
+  }
 }
 
 /* ---- Published articles paginated ---- */
 export async function getArticles(page = 1, pageSize = PAGE_SIZE) {
-  const offset = (page - 1) * pageSize;
-  const { data } = await from()
-    .select("*")
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .range(offset, offset + pageSize - 1);
-  return (data ?? []) as Article[];
+  try {
+    const offset = (page - 1) * pageSize;
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(publishedCondition())
+      .orderBy(desc(articles.publishedAt))
+      .limit(pageSize)
+      .offset(offset);
+  } catch (error) {
+    handleQueryError(error, "getArticles");
+    return [] as Article[];
+  }
 }
 
 /* ---- Featured articles ---- */
 export async function getFeaturedArticles(limit = 6) {
-  const { data } = await from()
-    .select("*")
-    .eq("is_featured", true)
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as Article[];
+  try {
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(and(eq(articles.isFeatured, true), publishedCondition()))
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+  } catch (error) {
+    handleQueryError(error, "getFeaturedArticles");
+    return [] as Article[];
+  }
 }
 
 /* ---- Breaking articles ---- */
 export async function getBreakingArticles(limit = 5) {
-  const { data } = await from()
-    .select("*")
-    .eq("is_breaking", true)
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as Article[];
+  try {
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(and(eq(articles.isBreaking, true), publishedCondition()))
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+  } catch (error) {
+    handleQueryError(error, "getBreakingArticles");
+    return [] as Article[];
+  }
 }
 
-/* ---- Articles by category (case‑insensitive via ilike) ---- */
+/* ---- Articles by category ---- */
 export async function getArticlesByCategory(category: string, page = 1, pageSize = PAGE_SIZE) {
-  const offset = (page - 1) * pageSize;
-  const { data } = await from()
-    .select("*")
-    .ilike("category", category)
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .range(offset, offset + pageSize - 1);
-  return (data ?? []) as Article[];
+  try {
+    const offset = (page - 1) * pageSize;
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(
+        and(
+          sql`LOWER(${articles.category}) = LOWER(${category})`,
+          publishedCondition()
+        )
+      )
+      .orderBy(desc(articles.publishedAt))
+      .limit(pageSize)
+      .offset(offset);
+  } catch (error) {
+    handleQueryError(error, "getArticlesByCategory");
+    return [] as Article[];
+  }
 }
 
 /* ---- Trending articles (by views) ---- */
 export async function getTrendingArticles(limit = 5) {
-  const { data } = await from()
-    .select("*")
-    .eq("is_published", true)
-    .order("views", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as Article[];
+  try {
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(publishedCondition())
+      .orderBy(desc(articles.views))
+      .limit(limit);
+  } catch (error) {
+    handleQueryError(error, "getTrendingArticles");
+    return [] as Article[];
+  }
 }
 
 /* ---- Related articles (same category, exclude current) ---- */
 export async function getRelatedArticles(category: string, excludeSlug: string, limit = 3) {
-  const { data } = await from()
-    .select("*")
-    .eq("category", category)
-    .neq("slug", excludeSlug)
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as Article[];
+  try {
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(
+        and(
+          sql`${articles.category} = ${category}`,
+          sql`${articles.slug} != ${excludeSlug}`,
+          publishedCondition()
+        )
+      )
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+  } catch (error) {
+    handleQueryError(error, "getRelatedArticles");
+    return [] as Article[];
+  }
 }
 
 /* ---- All categories with counts ---- */
 export async function getCategoriesWithCounts() {
-  const { data } = await from()
-    .select("category")
-    .eq("is_published", true);
-
-  if (!data) return [];
-
-  const counts = new Map<string, number>();
-  for (const row of data) {
-    const cat = (row as Record<string, string>).category;
-    if (cat) counts.set(cat, (counts.get(cat) ?? 0) + 1);
+  try {
+    return await getDb()
+      .select({
+        category: articles.category,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(articles)
+      .where(publishedCondition())
+      .groupBy(articles.category)
+      .orderBy(desc(sql`count`));
+  } catch (error) {
+    handleQueryError(error, "getCategoriesWithCounts");
+    return [] as Array<{ category: string; count: number }>;
   }
-
-  return Array.from(counts.entries())
-    .map(([category, count]) => ({ category, count }))
-    .sort((a, b) => b.count - a.count);
 }
 
-/* ---- Search articles (full‑text via Supabase textSearch) ---- */
+/* ---- Search articles (full-text via SQL) ---- */
 export async function searchArticles(query: string, limit = 20) {
-  // Use Supabase's built-in full-text search on the title column.
-  // This requires a generated tsvector column or FTS index on 'title'.
-  // Fallback: ilike search if textSearch fails.
-  const searchTerm = query.trim().replace(/\s+/g, " & ");
-  const { data } = await from()
-    .select("*")
-    .eq("is_published", true)
-    .or(`title.ilike.%${searchTerm}%,excerpt.ilike.%${searchTerm}%`)
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as Article[];
+  try {
+    const searchQuery = query.trim().replace(/\s+/g, " & ");
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(
+        and(
+          sql`to_tsvector('english', ${articles.title} || ' ' || COALESCE(${articles.excerpt}, '')) @@ to_tsquery('english', ${searchQuery})`,
+          publishedCondition()
+        )
+      )
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+  } catch (error) {
+    handleQueryError(error, "searchArticles");
+    return [] as Article[];
+  }
 }
 
-/* ---- Increment view count (via RPC) ---- */
+/* ---- Increment view count ---- */
 export async function incrementArticleViews(id: string) {
-  return getDb().rpc("increment_article_views", { article_id: id });
+  try {
+    return await getDb()
+      .update(articles)
+      .set({ views: sql`${articles.views} + 1` })
+      .where(eq(articles.id, id));
+  } catch (error) {
+    handleQueryError(error, "incrementArticleViews");
+    return null;
+  }
 }
 
 /* ---- Article slugs for static generation ---- */
 export async function getAllArticleSlugs(limit = 1000) {
-  const { data } = await from()
-    .select("slug, category")
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return ((data ?? []) as Array<{ slug: string; category: string }>).map((r) => ({
-    slug: r.slug,
-    category: r.category,
-  }));
+  try {
+    const result = await getDb()
+      .select({ slug: articles.slug, category: articles.category })
+      .from(articles)
+      .where(publishedCondition())
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+    return result.map((r) => ({ slug: r.slug, category: r.category }));
+  } catch (error) {
+    handleQueryError(error, "getAllArticleSlugs");
+    return [] as Array<{ slug: string; category: string }>;
+  }
 }
 
 /* ---- Total article count ---- */
 export async function getArticleCount() {
-  const { count } = await from()
-    .select("id", { count: "exact", head: true })
-    .eq("is_published", true);
-  return count ?? 0;
+  try {
+    const result = await getDb()
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(articles)
+      .where(publishedCondition());
+    return result[0]?.count ?? 0;
+  } catch (error) {
+    handleQueryError(error, "getArticleCount");
+    return 0;
+  }
 }
 
 /* ---- Recent articles (for homepage) ---- */
 export async function getRecentArticles(limit = 10) {
-  const { data } = await from()
-    .select("*")
-    .eq("is_published", true)
-    .order("published_at", { ascending: false })
-    .limit(limit);
-  return (data ?? []) as Article[];
+  try {
+    return await getDb()
+      .select()
+      .from(articles)
+      .where(publishedCondition())
+      .orderBy(desc(articles.publishedAt))
+      .limit(limit);
+  } catch (error) {
+    handleQueryError(error, "getRecentArticles");
+    return [] as Article[];
+  }
 }
 
 /* ---- Admin: all articles (including unpublished) ---- */
 export async function getAllArticlesAdmin(page = 1, pageSize = 50) {
-  const offset = (page - 1) * pageSize;
-  const { data } = await from()
-    .select("*")
-    .order("published_at", { ascending: false })
-    .range(offset, offset + pageSize - 1);
-  return (data ?? []) as Article[];
+  try {
+    const offset = (page - 1) * pageSize;
+    return await getDb()
+      .select()
+      .from(articles)
+      .orderBy(desc(articles.publishedAt))
+      .limit(pageSize)
+      .offset(offset);
+  } catch (error) {
+    handleQueryError(error, "getAllArticlesAdmin");
+    return [] as Article[];
+  }
 }
 
-/* ---- Admin: update article — explicit column whitelist ---- */
-const ARTICLE_UPDATEABLE_COLUMNS = [
-  "title", "subtitle", "author", "category", "tags", "content",
-  "excerpt", "image_url", "read_time", "is_published", "is_featured",
-  "is_breaking", "financial_exposure", "regulatory_risk", "mitigation_impact",
-  "yara_rule", "image_tag", "fbr_score", "mitre_ttps", "iocs_json",
-  "source_channel", "cvss_v4_score", "published_at",
-] as const;
-
-// Accept camelCase keys from callers — converted to snake_case internally
-type ArticleUpdateData = Record<string, unknown>;
-
-export async function updateArticle(id: string, data: ArticleUpdateData) {
-  // Map camelCase TS fields to snake_case DB columns
-  const dbData: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  for (const [key, value] of Object.entries(data)) {
-    if (value === undefined) continue;
-    // Convert camelCase to snake_case
-    const snakeKey = key.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`);
-    dbData[snakeKey] = value;
+/* ---- Admin: update article - explicit column whitelist ---- */
+export async function updateArticle(id: string, data: Record<string, any>) {
+  try {
+    return await getDb()
+      .update(articles)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(articles.id, id));
+  } catch (error) {
+    handleQueryError(error, "updateArticle");
+    throw error;
   }
-  return from().update(dbData).eq("id", id);
 }
 
 /* ---- Admin: delete article ---- */
 export async function deleteArticle(id: string) {
-  return from().delete().eq("id", id);
+  try {
+    return await getDb().delete(articles).where(eq(articles.id, id));
+  } catch (error) {
+    handleQueryError(error, "deleteArticle");
+    throw error;
+  }
 }
 
 /* ---- All unique tags with counts ---- */
 export async function getAllTags() {
-  const { data } = await from()
-    .select("tags")
-    .eq("is_published", true);
-
-  if (!data) return [];
-
-  const tagCounts = new Map<string, number>();
-  for (const row of data) {
-    const tags = (row as Record<string, string[]>).tags;
-    if (Array.isArray(tags)) {
-      for (const tag of tags) {
-        const trimmed = tag?.trim();
-        if (trimmed) tagCounts.set(trimmed, (tagCounts.get(trimmed) ?? 0) + 1);
-      }
-    }
+  try {
+    const result = await getDb()
+      .select({
+        tag: sql<string>`unnest(${articles.tags})`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(articles)
+      .where(publishedCondition())
+      .groupBy(sql`unnest(${articles.tags})`)
+      .orderBy(desc(sql`count`))
+      .limit(50);
+    return result.filter((r) => r.tag && r.tag.trim().length > 0);
+  } catch (error) {
+    handleQueryError(error, "getAllTags");
+    return [] as Array<{ tag: string; count: number }>;
   }
-
-  return Array.from(tagCounts.entries())
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 50);
 }
 
-/* ---- Admin: create article — explicit column whitelist ---- */
-const ARTICLE_CREATEABLE_COLUMNS = [
-  "title", "slug", "url_hash", "subtitle", "author", "category",
-  "tags", "content", "excerpt", "image_url", "read_time",
-  "is_published", "is_featured", "is_breaking", "financial_exposure",
-  "regulatory_risk", "mitigation_impact", "yara_rule", "image_tag",
-  "fbr_score", "mitre_ttps", "iocs_json", "source_channel",
-  "cvss_v4_score", "published_at",
-] as const;
-
-// Accept camelCase keys from callers — converted to snake_case internally
-type ArticleCreateData = Record<string, unknown>;
-
-export async function createArticle(data: ArticleCreateData) {
-  // Map camelCase TS fields to snake_case DB columns
-  const dbData: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(data)) {
-    if (value === undefined) continue;
-    const snakeKey = key.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`);
-    dbData[snakeKey] = value;
+/* ---- Admin: create article ---- */
+export async function createArticle(data: Record<string, any>) {
+  try {
+    const result = await getDb().insert(articles).values(data as any).returning();
+    return result[0];
+  } catch (error) {
+    handleQueryError(error, "createArticle");
+    throw error;
   }
-  const { data: inserted, error } = await from().insert(dbData).select().single();
-  if (error) throw error;
-  return inserted as Article;
 }

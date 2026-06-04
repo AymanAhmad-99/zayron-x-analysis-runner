@@ -28,11 +28,16 @@ function buildMockChain(finalResult: any = mockSelectResult) {
   return chain;
 }
 
-vi.mock('postgres', () => ({
-  default: vi.fn(() => ({})),
+vi.mock('@neondatabase/serverless', () => ({
+  Pool: vi.fn().mockImplementation(() => ({
+    connect: vi.fn(),
+    query: vi.fn(),
+    end: vi.fn(),
+  })),
+  neonConfig: {},
 }));
 
-vi.mock('drizzle-orm/postgres-js', () => ({
+vi.mock('drizzle-orm/neon-serverless', () => ({
   drizzle: vi.fn(() => ({
     select: vi.fn((_fields?: any) => ({
       from: vi.fn(() => ({
