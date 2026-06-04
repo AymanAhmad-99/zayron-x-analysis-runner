@@ -1,17 +1,21 @@
 name = "zayron-x"
 main = ".open-next/worker.js"
 compatibility_date = "2025-09-23"
-# ── CLOUDFLARE WORKERS HANG FIX ─────────────────────────────
-# nodejs_compat_v2 enables the real connect() API for TCP
-# sockets.  Without it, node:net / node:tls polyfills in v1
-# create promises that never settle, causing the Workers
-# runtime to kill requests at the 30 s wall-clock limit with
-# "Worker had hung and would never generate a response."
+# ── CLOUDFLARE WORKERS COMPAT ────────────────────────────────
+# nodejs_compat provides Workers‑safe polyfills for buffer,
+# crypto, events, path, process, stream, string_decoder, util.
+#
+# We no longer need nodejs_compat_v2 (connect() TCP API)
+# because the database layer migrated from the `postgres`
+# npm package (raw TCP sockets) to @supabase/supabase-js
+# (pure HTTP / fetch).  All other unsupported Node.js built‑ins
+# (fs, os, http, zlib, net, tls, etc.) are stubbed at build
+# time by scripts/patch-handler-fs.cjs.
 #
 # global_fetch_strictly_public prevents fetch() from
 # accessing Cloudflare-internal URLs unless explicitly allowed.
 # ────────────────────────────────────────────────────────────
-compatibility_flags = ["nodejs_compat_v2", "global_fetch_strictly_public"]
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 # ═══════════════════════════════════════════════════════════════
 # KV NAMESPACE — OpenNext Incremental Cache
