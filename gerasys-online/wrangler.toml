@@ -13,20 +13,6 @@ compatibility_date = "2025-09-23"
 # ────────────────────────────────────────────────────────────
 compatibility_flags = ["nodejs_compat_v2", "global_fetch_strictly_public"]
 
-# ── NODE.JS MODULE STUBS ─────────────────────────────────────
-# The `postgres` npm package (v3.4.5) imports `fs` and `os` at
-# the top level. Cloudflare Workers V8 isolates have NO
-# filesystem, so `node:fs` is not available — even with
-# nodejs_compat_v2.  These aliases redirect `fs` and `os` to
-# polyfill stubs that throw ENOSYS if any method is called
-# (which postgres only does if you pass file paths for SSL CA
-# certs — we never do).
-# ────────────────────────────────────────────────────────────
-[build]
-[build.alias]
-"fs" = "./lib/polyfills/fs.ts"
-"os" = "./lib/polyfills/os.ts"
-
 # ═══════════════════════════════════════════════════════════════
 # STATIC ASSETS — Cloudflare Workers Assets Configuration
 # ═══════════════════════════════════════════════════════════════

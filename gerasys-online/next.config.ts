@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
   // "module factory is not available" for icons not in the current chunk.
   experimental: {
     optimizePackageImports: ["lucide-react"],
+    outputFileTracingRoot: process.cwd(),
   },
 
   // Explicitly declared to silence Turbopack ambiguity warning.
