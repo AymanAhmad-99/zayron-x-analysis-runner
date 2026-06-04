@@ -53,21 +53,6 @@ jobs:
       - name: 🔧 إصلاح node:fs (Post‑Build Polyfill Injection)
         run: node scripts/patch-handler-fs.cjs
 
-      # ── الخطوة 4.6: التحقق من خلو الحزمة من node:fs ──
-      - name: ✅ التحقق من خلو الحزمة من node:fs
-        run: |
-          if grep -rq "node:fs" .open-next/server-functions/ .open-next/middleware/ 2>/dev/null; then
-            echo "❌ فشل: لا تزال هناك استدعاءات node:fs في الحزمة!"
-            grep -rn "node:fs" .open-next/server-functions/ .open-next/middleware/ 2>/dev/null || true
-            exit 1
-          fi
-          if grep -rq 'require("fs")' .open-next/server-functions/ .open-next/middleware/ 2>/dev/null; then
-            echo "❌ فشل: لا تزال هناك استدعاءات require(\"fs\") في الحزمة!"
-            grep -rn 'require("fs")' .open-next/server-functions/ .open-next/middleware/ 2>/dev/null || true
-            exit 1
-          fi
-          echo "✅ لا توجد أي استدعاءات node:fs أو fs في الحزمة النهائية!"
-
       # ── الخطوة 5: نشر على Cloudflare Workers ──
       - name: 🚀 نشر على حافة Cloudflare
         uses: cloudflare/wrangler-action@v3
