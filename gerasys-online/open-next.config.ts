@@ -13,7 +13,29 @@ const config: OpenNextConfig = {
       queue: 'dummy',
     },
   },
-  edgeExternals: ['node:crypto'],
+  /* ──────────────────────────────────────────────────────
+     CLOUDFLARE WORKERS HANG FIX — edgeExternals
+
+     The `postgres` npm package internally requires these
+     Node.js built-in modules to establish TCP/TLS/DNS
+     connections.  Externalizing them ensures the Workers
+     runtime's nodejs_compat_v2 polyfills handle them
+     instead of the bundler including conflicting shims.
+
+     Without this: the bundler may embed Node.js polyfills
+     that deadlock with the Workers runtime's connect() API,
+     causing the "Worker had hung" kill at 30 s wall-clock.
+     ────────────────────────────────────────────────────── */
+  edgeExternals: [
+    'node:crypto',
+    'node:net',
+    'node:tls',
+    'node:dns',
+    'node:stream',
+    'node:buffer',
+    'node:events',
+    'node:assert',
+  ],
   middleware: {
     external: true,
     override: {
