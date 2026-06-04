@@ -21,10 +21,11 @@ export function getDb() {
     }
 
     client = postgres(url, {
-      prepare: false,     // Required for Supabase / PgBouncer transaction-mode pooler
       max: 1,             // Maximum 1 connection on the Edge
       idle_timeout: 5,    // Close idle connections after 5s
       connect_timeout: 3, // Timeout quickly (3s) to avoid Fatal Hangs
+      prepare: false,     // Required for Supabase / PgBouncer transaction-mode pooler
+      ssl: 'require',     // CRITICAL: Prevents silent TCP drops from Supabase
     });
     dbInstance = drizzle(client, { schema });
   }
