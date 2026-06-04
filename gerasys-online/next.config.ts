@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   output: "standalone",
+  outputFileTracingRoot: process.cwd(),
 
   env: {
     NEXT_PUBLIC_SUPABASE_URL: "https://xdfndojvqazffcjngglr.supabase.co",
@@ -35,7 +36,6 @@ const nextConfig: NextConfig = {
   // "module factory is not available" for icons not in the current chunk.
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    outputFileTracingRoot: process.cwd(),
   },
 
   // Explicitly declared to silence Turbopack ambiguity warning.
