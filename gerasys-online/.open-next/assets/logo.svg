@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="zxGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="50%" stop-color="#FFC000"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <linearGradient id="zxGlow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="outerGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark cyberpunk background -->
+  <rect width="120" height="120" rx="22" fill="#0B0F19"/>
+  <rect width="120" height="120" rx="22" stroke="#FFD700" stroke-width="1.5" fill="none" opacity="0.5"/>
+
+  <!-- Corner circuit accents -->
+  <path d="M10 30V10h20" stroke="#FFD700" stroke-width="1.2" fill="none" opacity="0.4"/>
+  <path d="M110 30V10H90" stroke="#FFD700" stroke-width="1.2" fill="none" opacity="0.4"/>
+  <path d="M10 90v20h20" stroke="#FFD700" stroke-width="1.2" fill="none" opacity="0.4"/>
+  <path d="M110 90v20H90" stroke="#FFD700" stroke-width="1.2" fill="none" opacity="0.4"/>
+
+  <!-- Diagonal scanlines -->
+  <line x1="0" y1="25" x2="120" y2="25" stroke="#FFD700" stroke-width="0.3" opacity="0.08"/>
+  <line x1="0" y1="45" x2="120" y2="45" stroke="#FFD700" stroke-width="0.3" opacity="0.08"/>
+  <line x1="0" y1="65" x2="120" y2="65" stroke="#FFD700" stroke-width="0.3" opacity="0.08"/>
+  <line x1="0" y1="85" x2="120" y2="85" stroke="#FFD700" stroke-width="0.3" opacity="0.08"/>
+  <line x1="0" y1="105" x2="120" y2="105" stroke="#FFD700" stroke-width="0.3" opacity="0.08"/>
+
+  <!-- Z letter - bold geometric cyberpunk -->
+  <g filter="url(#neonGlow)">
+    <path d="M40 38h48l-48 44h48"
+          stroke="url(#zxGold)"
+          stroke-width="5.5"
+          stroke-linecap="square"
+          stroke-linejoin="miter"
+          fill="none"/>
+    <!-- Z inner detail line -->
+    <path d="M40 38h48l-48 44h48"
+          stroke="#FFF8DC"
+          stroke-width="1"
+          stroke-linecap="square"
+          stroke-linejoin="miter"
+          fill="none"
+          opacity="0.5"/>
+  </g>
+
+  <!-- x letter - angled cross -->
+  <g filter="url(#neonGlow)" opacity="0.92">
+    <path d="M76 82l20-44M96 82L76 38"
+          stroke="url(#zxGold)"
+          stroke-width="5"
+          stroke-linecap="square"
+          stroke-linejoin="miter"
+          fill="none"/>
+    <!-- x inner detail -->
+    <path d="M76 82l20-44M96 82L76 38"
+          stroke="#FFF8DC"
+          stroke-width="1"
+          stroke-linecap="square"
+          stroke-linejoin="miter"
+          fill="none"
+          opacity="0.4"/>
+  </g>
+
+  <!-- Subtle outer glow pulse dots -->
+  <circle cx="30" cy="30" r="2" fill="#FFD700" opacity="0.3" filter="url(#outerGlow)"/>
+  <circle cx="90" cy="90" r="1.5" fill="#FFD700" opacity="0.2" filter="url(#outerGlow)"/>
+</svg>
