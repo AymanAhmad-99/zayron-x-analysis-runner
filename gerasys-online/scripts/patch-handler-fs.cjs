@@ -54,7 +54,6 @@ const NOOP_MODULES = [
   "dns",
   "net",
   "tls",
-  "module",
 ];
 
 const NOOP_SRC = path.join(ROOT, "lib", "polyfills", "noop.cjs");

@@ -92,7 +92,6 @@ module.exports = {
   Server: Server,
   createConnection: function () { return new Socket(); },
   connect: function () { return new Socket(); },
-  createServer: function () { return new Server(); },
   createSecureContext: noopFn,
   TLSSocket: Socket,
 
