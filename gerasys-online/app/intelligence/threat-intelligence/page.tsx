@@ -2,13 +2,14 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import type { Metadata } from "next";
-import type { CategoryType, Article } from "@/lib/db/schema";
+import type { CategoryType, Article } from "@/lib/types";
 import { ArticleCard } from "@/components/ui/ArticleCard";
 import {
   getArticlesByCategory,
   getCategoriesWithCounts,
   getAllTags,
-} from "@/lib/db/queries/articles";
+} from "@/lib/supabase/queries/articles";
+import { getCached } from "@/lib/cache/redis";
 import {
   getSiloForCategory,
   getSiloColorClass,
@@ -58,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
   let articleCount = 0;
 
   try {
-    const articles = await getArticlesByCategory(DB_CATEGORY, 1, 1);
+    const articles = await getArticlesByCategory(DB_CATEGORY, 1, 1, process.env);
     articleCount = articles.length;
   } catch {
     articleCount = 0;
@@ -232,8 +233,8 @@ export default async function ThreatIntelligencePage({
 
   try {
     const [fetchedArticles, fetchedTags] = await Promise.all([
-      getArticlesByCategory(DB_CATEGORY, page, PAGE_SIZE),
-      getAllTags(),
+      getCached(process.env, `intel:category:${DB_CATEGORY}:page:${page}`, () => getArticlesByCategory(DB_CATEGORY, page, PAGE_SIZE, process.env), 300),
+      getCached(process.env, "intel:all_tags", () => getAllTags(process.env), 300),
     ]);
     articles = fetchedArticles as Article[];
     allTags = fetchedTags;

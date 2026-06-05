@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import Link from "next/link";
-import { getRecentArticles } from "@/lib/db/queries/articles";
+import { getRecentArticles } from "@/lib/supabase/queries/articles";
 import { Shield, Clock, ArrowRight } from "@/lib/icons";
 
 // 3-TIER CACHE LAYER 2: Incremental Static Regeneration (ISR) via unstable_cache

@@ -9,7 +9,8 @@ import {
   getArticlesByCategory,
   getCategoriesWithCounts,
   getAllTags,
-} from "@/lib/db/queries/articles";
+} from "@/lib/supabase/queries/articles";
+import { getCached } from "@/lib/cache/redis";
 import {
   getSiloForCategory,
   getSiloColorClass,
@@ -44,9 +45,9 @@ const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?
   networking: Network,
 };
 
-interface Props {
-  params: Promise<{ category: string }> | { category: string };
-  searchParams?: Promise<{ page?: string }> | { page?: string };
+type Props = {
+  params: Promise<{ category: string }>;
+  searchParams?: Promise<{ page?: string }>;
 }
 
 function getSiloHeroClass(siloId: SiloId): string {
@@ -73,8 +74,7 @@ function getSectionTitle(siloId: SiloId): string {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const resolvedParams = await params;
-    const category = resolvedParams?.category;
+    const { category } = await params;
     if (!category) {
       return {
         title: "Intelligence Reports — ZAYRON-X",
@@ -187,13 +187,7 @@ export default async function IntelligenceCategoryPage({
   params,
   searchParams,
 }: Props) {
-  let category = "";
-  try {
-    const resolvedParams = await params;
-    category = resolvedParams?.category || "";
-  } catch (error) {
-    console.error("EDGE PARAMS RESOLVE ERROR AVOIDED:", error);
-  }
+  const { category } = await params;
 
   if (!category) {
     return notFound();
@@ -221,8 +215,8 @@ export default async function IntelligenceCategoryPage({
   let allTags: Awaited<ReturnType<typeof getAllTags>> = [];
   try {
     [articles, allTags] = await Promise.all([
-      getArticlesByCategory(dbCategory, page, 12),
-      getAllTags(),
+      getCached(process.env, `intel:category:${dbCategory}:page:${page}`, () => getArticlesByCategory(dbCategory, page, 12, process.env), 300),
+      getCached(process.env, "intel:all_tags", () => getAllTags(process.env), 300),
     ]);
   } catch (error) {
     console.error(

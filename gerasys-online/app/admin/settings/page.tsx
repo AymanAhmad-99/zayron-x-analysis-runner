@@ -14,7 +14,7 @@ const ENV_GROUPS = [
     label: "Redis / Cache",
     icon: Cpu,
     color: "#D97706",
-    vars: ["REDIS_URL", "REDIS_TOKEN"],
+    vars: ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
   },
   {
     label: "Site",

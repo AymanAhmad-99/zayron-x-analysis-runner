@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type Article } from "@/lib/db/schema";
+import { type Article } from "@/lib/types";
 import { ArticleCard } from "@/components/ui/ArticleCard";
 
 interface TabbedContentProps {

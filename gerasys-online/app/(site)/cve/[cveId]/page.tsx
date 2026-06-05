@@ -4,7 +4,7 @@ export const revalidate = 0;
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CveDetailCard } from "@/components/cve/CveDetailCard";
-import { getCVEById, getAllCVEIds } from "@/lib/db/queries/cves";
+import { getCVEById, getAllCVEIds } from "@/lib/supabase/queries/cves";
 
 interface Props {
   params: Promise<{ cveId: string }>;

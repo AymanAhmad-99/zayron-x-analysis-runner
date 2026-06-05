@@ -2,7 +2,7 @@ export const revalidate = 3600;
 
 import type { Metadata } from "next";
 import { AnalystTeam } from "@/components/homepage/AnalystTeam";
-import { getAnalysts } from "@/lib/db/queries/analysts";
+import { getAnalysts } from "@/lib/supabase/queries/analysts";
 
 export const metadata: Metadata = {
   title: "Threat Intelligence Analysts",

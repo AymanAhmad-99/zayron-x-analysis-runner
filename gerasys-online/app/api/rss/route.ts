@@ -1,4 +1,4 @@
-import { getRecentArticles } from "@/lib/db/queries/articles";
+import { getRecentArticles } from "@/lib/supabase/queries/articles";
 import { NextResponse } from "next/server";
 
 export const revalidate = 3600; // 1 hour

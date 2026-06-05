@@ -3,10 +3,11 @@ export const revalidate = 60;
 import {
   getArticles,
   getCategoriesWithCounts,
-} from "@/lib/db/queries/articles";
-import { getRecentCVEs, getCVECount } from "@/lib/db/queries/cves";
-import { getAnalysts } from "@/lib/db/queries/analysts";
-import type { Article, CVE, Analyst } from "@/lib/db/schema";
+} from "@/lib/supabase/queries/articles";
+import { getRecentCVEs, getCVECount } from "@/lib/supabase/queries/cves";
+import { getAnalysts } from "@/lib/supabase/queries/analysts";
+import type { Article, CVE, Analyst } from "@/lib/types";
+import { getCached } from "@/lib/cache/redis";
 
 import { SectorWorkspace } from "@/components/platform/SectorWorkspace";
 import { IntelCard, IntelEmptyState } from "@/components/platform/IntelCard";
@@ -30,17 +31,17 @@ export default async function HomePage() {
 
   try {
     const results = await Promise.allSettled([
-      getArticles(1, 20),
-      getRecentCVEs(20),
-      getAnalysts(),
-      getCVECount(),
-      getCategoriesWithCounts(),
+      getCached(process.env, "home:articles", () => getArticles(1, 20), 300),
+      getCached(process.env, "home:cves", () => getRecentCVEs(20), 300),
+      getCached(process.env, "home:analysts", () => getAnalysts(), 300),
+      getCached(process.env, "home:cve_count", () => getCVECount(), 300),
+      getCached(process.env, "home:categories", () => getCategoriesWithCounts(), 300),
     ]);
-    articles   = results[0].status === "fulfilled" ? results[0].value : [];
-    cves       = results[1].status === "fulfilled" ? results[1].value : [];
-    analysts   = results[2].status === "fulfilled" ? results[2].value : [];
-    cveCount   = results[3].status === "fulfilled" ? results[3].value : 0;
-    categories = results[4].status === "fulfilled" ? results[4].value : [];
+    articles   = results[0].status === "fulfilled" ? (results[0].value as Article[]) : [];
+    cves       = results[1].status === "fulfilled" ? (results[1].value as CVE[]) : [];
+    analysts   = results[2].status === "fulfilled" ? (results[2].value as Analyst[]) : [];
+    cveCount   = results[3].status === "fulfilled" ? (results[3].value as number) : 0;
+    categories = results[4].status === "fulfilled" ? (results[4].value as { category: string; count: number }[]) : [];
   } catch {}
 
   const totalCategories = categories.length;

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getToolBySlug } from "@/lib/db/queries/tools";
+import { getToolBySlug } from "@/lib/supabase/queries/tools";
 import { Star, ExternalLink, GitFork } from "@/lib/icons";
 
 interface Props {

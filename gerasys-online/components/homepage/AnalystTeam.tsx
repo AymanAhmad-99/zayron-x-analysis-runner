@@ -1,4 +1,4 @@
-import { type Analyst } from "@/lib/db/schema";
+import { type Analyst } from "@/lib/types";
 
 interface AnalystTeamProps {
   analysts: Analyst[];

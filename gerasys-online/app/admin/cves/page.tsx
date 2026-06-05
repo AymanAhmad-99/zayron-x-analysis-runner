@@ -20,7 +20,7 @@ export default async function AdminCVEsPage({ searchParams }: Props) {
   let total = 0;
 
   try {
-    const { getCVEs, getCVECount } = await import("@/lib/db/queries/cves");
+    const { getCVEs, getCVECount } = await import("@/lib/supabase/queries/cves");
     [cves, total] = await Promise.all([getCVEs(page, 50), getCVECount()]);
   } catch {
     // DB not available

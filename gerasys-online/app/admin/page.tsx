@@ -82,10 +82,10 @@ export default async function AdminDashboardPage() {
   try {
     const [{ getArticleCount }, { getCVECount }, { getPendingFeedCount }, { getRecentArticles }] =
       await Promise.all([
-        import("@/lib/db/queries/articles"),
-        import("@/lib/db/queries/cves"),
-        import("@/lib/db/queries/rawFeeds"),
-        import("@/lib/db/queries/articles"),
+        import("@/lib/supabase/queries/articles"),
+        import("@/lib/supabase/queries/cves"),
+        import("@/lib/supabase/queries/rawFeeds"),
+        import("@/lib/supabase/queries/articles"),
       ]);
 
     const [dbArticleCount, dbCveCount, dbPendingFeeds, dbRecentArticles] = await Promise.all([

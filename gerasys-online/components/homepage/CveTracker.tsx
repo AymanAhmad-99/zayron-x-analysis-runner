@@ -1,4 +1,4 @@
-import { type CVE } from "@/lib/db/schema";
+import { type CVE } from "@/lib/types";
 import { formatDateShort } from "@/lib/utils/formatDate";
 import { SeverityBadge } from "@/components/cve/SeverityBadge";
 

@@ -3,7 +3,7 @@ export const revalidate = 0;
 
 import type { Metadata } from "next";
 import { CveTable } from "@/components/cve/CveTable";
-import { getCVEs, getCVECount } from "@/lib/db/queries/cves";
+import { getCVEs, getCVECount } from "@/lib/supabase/queries/cves";
 
 export const metadata: Metadata = {
   title: "CVE Tracker",

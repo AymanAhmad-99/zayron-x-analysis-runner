@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from "next/server";
-import { getArticleBySlug } from "@/lib/db/queries/articles";
+import { getArticleBySlug } from "@/lib/supabase/queries/articles";
 
 export async function GET(
   _request: Request,

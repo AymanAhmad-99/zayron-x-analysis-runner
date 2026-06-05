@@ -1,4 +1,4 @@
-import { type Tool } from "@/lib/db/schema";
+import { type Tool } from "@/lib/types";
 import Link from "next/link";
 import { Star, ExternalLink, GitFork } from "@/lib/icons";
 

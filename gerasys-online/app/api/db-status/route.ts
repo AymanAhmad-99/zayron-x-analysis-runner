@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getArticleCount } from "@/lib/db/queries/articles";
-import { getCVECount } from "@/lib/db/queries/cves";
+import { getArticleCount } from "@/lib/supabase/queries/articles";
+import { getCVECount } from "@/lib/supabase/queries/cves";
 
 export const dynamic = "force-dynamic";
 

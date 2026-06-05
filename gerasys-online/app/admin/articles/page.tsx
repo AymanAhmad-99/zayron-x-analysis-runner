@@ -18,7 +18,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
   let articles: any[] = [];
 
   try {
-    const { getAllArticlesAdmin } = await import("@/lib/db/queries/articles");
+    const { getAllArticlesAdmin } = await import("@/lib/supabase/queries/articles");
     articles = await getAllArticlesAdmin(page, 50);
   } catch {
     // DB not available

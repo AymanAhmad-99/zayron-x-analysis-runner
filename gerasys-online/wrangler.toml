@@ -87,11 +87,6 @@ head_sampling_rate = 0.1
 #   NEXT_PUBLIC_SITE_URL
 #   NEXT_PUBLIC_SITE_NAME
 # ═══════════════════════════════════════════════════════════════
-[[hyperdrive]]
-binding = "HYPERDRIVE"
-id = "aaca5baa765e490a94d42e9870a7a9be"
-localConnectionString = "postgresql://postgres:postgres@localhost:5432/postgres"
-
 # ═══════════════════════════════════════════════════════════════
 # PRODUCTION ENVIRONMENT
 # ═══════════════════════════════════════════════════════════════
@@ -101,10 +96,7 @@ name = "zayron-x-production"
 # Route traffic from the custom domain to this Worker.
 # If NOT using a custom domain, replace with:
 #   workers_dev = true
-routes = [
-  { pattern = "zayron-x.com", custom_domain = true },
-  { pattern = "www.zayron-x.com", custom_domain = true },
-]
+workers_dev = true
 
 # ── Gradual (Canary) Deployments ────────────────────────────
 # Cloudflare Workers Gradual Deployments roll out new versions
@@ -135,11 +127,6 @@ stages = [
 binding = "ZAYRON_CACHE"
 id = "c5704144e6984dd597e2f000a1e84aa2"
 
-[[env.production.hyperdrive]]
-binding = "HYPERDRIVE"
-id = "aaca5baa765e490a94d42e9870a7a9be"
-localConnectionString = "postgresql://postgres:postgres@localhost:5432/postgres"
-
 [env.production.vars]
 NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
@@ -155,11 +142,6 @@ workers_dev = true
 [[env.preview.kv_namespaces]]
 binding = "ZAYRON_CACHE"
 id = "834e78268ee0457196ecf48026b06ece"
-
-[[env.preview.hyperdrive]]
-binding = "HYPERDRIVE"
-id = "aaca5baa765e490a94d42e9870a7a9be"
-localConnectionString = "postgresql://postgres:postgres@localhost:5432/postgres"
 
 [env.preview.vars]
 NEXT_PUBLIC_SITE_URL = "https://preview.zayron-x.workers.dev"

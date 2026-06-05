@@ -1,4 +1,4 @@
-import { type Article } from "@/lib/db/schema";
+import { type Article } from "@/lib/types";
 import Link from "next/link";
 import Image from "next/image";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";

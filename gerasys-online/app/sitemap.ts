@@ -1,4 +1,4 @@
-import { getAllArticleSlugs, getCategoriesWithCounts } from "@/lib/db/queries/articles";
+import { getAllArticleSlugs, getCategoriesWithCounts } from "@/lib/supabase/queries/articles";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zayron-x.com";
 

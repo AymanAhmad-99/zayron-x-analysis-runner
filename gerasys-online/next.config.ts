@@ -9,10 +9,10 @@ import { withSentryConfig } from "@sentry/nextjs";
    ──────────────────────────────────────────────────────────────── */
 const CSP = [
   `default-src 'self'`,
-  `script-src 'self' *.supabase.co 'strict-dynamic'`,
+  `script-src 'self' *.supabase.co 'unsafe-inline' 'unsafe-eval'`,
   `style-src 'self' fonts.googleapis.com 'unsafe-inline'`,
   `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com`,
-  `connect-src 'self' *.supabase.co`,
+  `connect-src 'self' *.supabase.co https://*.workers.dev`,
   `font-src 'self' fonts.gstatic.com`,
   `frame-src 'self'`,
   `object-src 'none'`,
@@ -21,6 +21,7 @@ const CSP = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  productionBrowserSourceMaps: false,
   poweredByHeader: false,
   output: "standalone",
   outputFileTracingRoot: process.cwd(),

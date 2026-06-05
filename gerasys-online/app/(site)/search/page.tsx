@@ -1,7 +1,7 @@
 export const revalidate = 0;
 
 import type { Metadata } from "next";
-import { searchArticles } from "@/lib/db/queries/articles";
+import { searchArticles } from "@/lib/supabase/queries/articles";
 import { ArticleCard } from "@/components/ui/ArticleCard";
 
 interface Props {

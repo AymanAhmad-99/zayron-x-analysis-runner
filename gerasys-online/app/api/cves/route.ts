@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCVEs, getCVECount, getCVEsBySeverity } from "@/lib/db/queries/cves";
+import { getCVEs, getCVECount, getCVEsBySeverity } from "@/lib/supabase/queries/cves";
 import { getCachedOrFetch } from "@/lib/cache/redis";
 import { cvesLimiter, checkRateLimit, getClientIp } from "@/lib/cache/ratelimit";
 
@@ -31,6 +31,7 @@ export async function GET(request: Request) {
     const CACHE_TTL_SECONDS = 60;
 
     const result = await getCachedOrFetch<{ cves: any[]; total: number }>(
+      process.env,
       cacheKey,
       async () => {
         console.log(`[CACHE MISS fallback] Executing direct PostgreSQL queries for ${cacheKey}...`);

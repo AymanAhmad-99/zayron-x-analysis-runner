@@ -1,4 +1,5 @@
-import { getDarkwebFeeds } from "@/lib/db/queries/rawFeeds";
+import { getDarkwebFeeds } from "@/lib/supabase/queries/rawFeeds";
+import { getCached } from "@/lib/cache/redis";
 import { Terminal, ShieldAlert, Activity, RefreshCw } from "@/lib/icons";
 
 export const revalidate = 0; // Force dynamic rendering on every request to show live CTI feeds
@@ -19,7 +20,12 @@ const MONITORED_FAMILIES = [
 
 export default async function DarkWebReconPage() {
   // Fetch real, live dark web feeds from database: channel LIKE 'darkweb_%' ORDER BY created_at DESC LIMIT 20
-  const dbFeeds = await getDarkwebFeeds(20);
+  const dbFeeds = await getCached(
+    process.env,
+    "darkweb:feeds",
+    () => getDarkwebFeeds(20),
+    300
+  );
 
   const logs: InterceptLog[] = dbFeeds.map((feed) => ({
     timestamp: feed.createdAt ? new Date(feed.createdAt).toISOString() : new Date().toISOString(),

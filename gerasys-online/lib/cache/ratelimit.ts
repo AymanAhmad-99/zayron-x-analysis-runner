@@ -3,7 +3,8 @@ import { getRedis } from './redis';
 
 function createLimiter(maxRequests: number, windowSeconds: number, label: string) {
   try {
-    const redis = getRedis();
+    const env = process.env;
+    const redis = getRedis(env);
     return new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(maxRequests, `${windowSeconds} s`),

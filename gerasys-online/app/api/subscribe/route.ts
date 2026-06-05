@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
-import { subscribers } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { getSupabaseAdmin } from "@/lib/supabase/client";
 import { subscribeLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
 
 export async function POST(request: Request) {
@@ -37,30 +35,39 @@ export async function POST(request: Request) {
       );
     }
 
+    const supabase = getSupabaseAdmin(process.env);
+
     // Check existing
-    const existing = await getDb()
-      .select()
-      .from(subscribers)
-      .where(eq(subscribers.email, email))
+    const { data: existing, error: selectError } = await supabase
+      .from('subscribers')
+      .select('*')
+      .eq('email', email)
       .limit(1);
 
-    if (existing[0]) {
-      if (existing[0].isActive) {
+    if (selectError) throw selectError;
+
+    if (existing && existing[0]) {
+      if (existing[0].is_active) {
         return NextResponse.json(
           { error: "Email already subscribed." },
           { status: 409 }
         );
       }
       // Re-activate
-      await getDb()
-        .update(subscribers)
-        .set({ isActive: true })
-        .where(eq(subscribers.email, email));
+      const { error: updateError } = await supabase
+        .from('subscribers')
+        .update({ is_active: true })
+        .eq('email', email);
+      if (updateError) throw updateError;
       return NextResponse.json({ success: true, message: "Subscription reactivated." });
     }
 
     // Create
-    await getDb().insert(subscribers).values({ email });
+    const { error: insertError } = await supabase
+      .from('subscribers')
+      .insert({ email });
+    if (insertError) throw insertError;
+
     return NextResponse.json(
       { success: true, message: "Successfully subscribed." },
       {

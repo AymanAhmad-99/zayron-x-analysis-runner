@@ -93,11 +93,11 @@ async function checkSupabase(): Promise<HealthCheck> {
 async function checkRedis(): Promise<HealthCheck> {
   const start = nowMs();
   try {
-    const redisUrl = process.env.REDIS_URL;
-    const redisToken = process.env.REDIS_TOKEN;
+    const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
     if (!redisUrl || !redisToken) {
-      return { status: "unknown", latencyMs: 0, message: "REDIS_URL or REDIS_TOKEN not configured" };
+      return { status: "unknown", latencyMs: 0, message: "UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not configured" };
     }
 
     const controller = new AbortController();

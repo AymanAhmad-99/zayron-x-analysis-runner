@@ -3,7 +3,7 @@ export const revalidate = 0;
 
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { getArticleBySlug } from "@/lib/db/queries/articles";
+import { getArticleBySlug } from "@/lib/supabase/queries/articles";
 
 interface Props {
   params: Promise<{ slug: string }>;

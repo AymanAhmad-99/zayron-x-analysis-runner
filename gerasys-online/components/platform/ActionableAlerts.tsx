@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { Article } from "@/lib/db/schema";
+import type { Article } from "@/lib/types";
 import { ArrowUpRight, Play } from "@/lib/icons";
 import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
 

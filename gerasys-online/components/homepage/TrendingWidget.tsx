@@ -1,4 +1,4 @@
-import { type Article } from "@/lib/db/schema";
+import { type Article } from "@/lib/types";
 import Link from "next/link";
 
 interface TrendingWidgetProps {

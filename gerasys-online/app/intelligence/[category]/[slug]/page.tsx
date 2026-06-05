@@ -8,7 +8,7 @@ import { ShareButtons } from "@/components/article/ShareButtons";
 import { RelatedArticles } from "@/components/article/RelatedArticles";
 import { AuthorCard } from "@/components/article/AuthorCard";
 import { FinancialBlastRadius } from "@/components/platform/FinancialBlastRadius";
-import { getArticleBySlug, getRelatedArticles, getTrendingArticles, getAllArticleSlugs } from "@/lib/db/queries/articles";
+import { getArticleBySlug, getRelatedArticles, getTrendingArticles, getAllArticleSlugs } from "@/lib/supabase/queries/articles";
 import { getSiloForCategory, getSiloColorClass, type SiloId } from "@/lib/silos";
 import { Shield, Code, Network, ChevronRight } from "@/lib/icons";
 import Link from "next/link";
@@ -88,7 +88,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: article.title,
       description: article.excerpt ?? article.content.substring(0, 160),
       type: "article",
-      publishedTime: (article.publishedAt ?? article.createdAt)?.toISOString(),
+      publishedTime: (article.publishedAt ?? article.createdAt) ? new Date((article.publishedAt ?? article.createdAt) as string | Date).toISOString() : undefined,
       authors: [article.author],
       images: article.imageUrl
         ? [{ url: article.imageUrl, width: 1200, height: 630 }]
@@ -133,8 +133,8 @@ export default async function IntelligenceArticlePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: article.title,
-    datePublished: (article.publishedAt ?? article.createdAt)?.toISOString(),
-    dateModified: article.updatedAt?.toISOString(),
+    datePublished: (article.publishedAt ?? article.createdAt) ? new Date((article.publishedAt ?? article.createdAt) as string | Date).toISOString() : undefined,
+    dateModified: article.updatedAt ? new Date(article.updatedAt).toISOString() : undefined,
     author: { "@type": "Person", name: article.author },
     publisher: {
       "@type": "Organization",

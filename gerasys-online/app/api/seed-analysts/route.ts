@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
-import { analysts } from "@/lib/db/schema";
-import { sql } from "drizzle-orm";
+import { getSupabaseAdmin } from "@/lib/supabase/client";
 
 const ANALYST_CORE = [
   { name: "Viktor Volkov", title: "Lead APT Tracking & Encryption Analyst", bio: "15-year veteran of Russian signals intelligence. Former GRU cryptographic analyst turned private-sector threat hunter.", nationality: "Russia", specializations: ["APT Tracking", "Encryption", "Nation-State Threats", "Signals Intelligence", "Malware Analysis"] },
@@ -28,30 +26,38 @@ const ANALYST_CORE = [
 ];
 
 export async function POST() {
-  await getDb().execute(sql`ALTER TABLE analysts ADD COLUMN IF NOT EXISTS nationality text`);
+  const supabase = getSupabaseAdmin(process.env);
+  
+  // Delete existing analysts
+  const { error: deleteError } = await supabase
+    .from('analysts')
+    .delete()
+    .neq('name', ''); // deletes all rows since all names are non-empty
+    
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message }, { status: 500 });
+  }
 
   const results: Array<{ name: string; status: string; id?: string; error?: string }> = [];
 
-  await getDb().delete(analysts).where(sql`true`);
-
   for (const analyst of ANALYST_CORE) {
     try {
-      const inserted = await getDb()
-        .insert(analysts)
-        .values({
+      const { data, error: insertError } = await supabase
+        .from('analysts')
+        .insert({
           name: analyst.name,
           title: analyst.title,
           bio: analyst.bio,
           nationality: analyst.nationality,
           specializations: analyst.specializations,
         })
-        .returning({ id: analysts.id, name: analysts.name });
+        .select('id, name')
+        .single();
 
-      const record = inserted[0];
-      if (record) {
-        results.push({ name: record.name, status: "inserted", id: record.id });
+      if (insertError) {
+        results.push({ name: analyst.name, status: "failed", error: insertError.message });
       } else {
-        results.push({ name: analyst.name, status: "failed", error: "No record returned" });
+        results.push({ name: data.name, status: "inserted", id: data.id });
       }
     } catch (err: any) {
       results.push({ name: analyst.name, status: "failed", error: err.message });

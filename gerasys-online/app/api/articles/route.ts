@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getArticles, getArticleCount } from "@/lib/db/queries/articles";
+import { getArticles, getArticleCount } from "@/lib/supabase/queries/articles";
 import { articlesLimiter, checkRateLimit, getClientIp } from "@/lib/cache/ratelimit";
 
 export async function GET(request: Request) {

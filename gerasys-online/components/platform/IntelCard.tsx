@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Article } from "@/lib/db/schema";
+import type { Article } from "@/lib/types";
 import { Clock, Eye, ArrowUpRight } from "@/lib/icons";
 import { getSmartFallbackImage } from "@/lib/utils/fallbackImages";
 import { formatCategoryLabel } from "@/lib/utils/slugify";
@@ -8,7 +8,7 @@ interface IntelCardProps {
   article: Article;
 }
 
-function formatDate(date: Date | null | undefined): string {
+function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "";
   return new Date(date).toLocaleDateString("en-US", {
     year: "numeric",

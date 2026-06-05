@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils/formatDate";
-import type { CategoryType } from "@/lib/db/schema";
+import type { CategoryType } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Feed Detail",
@@ -25,11 +25,11 @@ async function handlePromote(formData: FormData) {
   const category = (formData.get("category") as string) || "Intelligence";
 
   try {
-    const { getRawFeedById } = await import("@/lib/db/queries/rawFeeds");
-    const { createArticle } = await import("@/lib/db/queries/articles");
-    const { promoteRawFeed } = await import("@/lib/db/queries/rawFeeds");
+    const { getRawFeedById } = await import("@/lib/supabase/queries/rawFeeds");
+    const { createArticle } = await import("@/lib/supabase/queries/articles");
+    const { promoteRawFeed } = await import("@/lib/supabase/queries/rawFeeds");
 
-    const feed = await getRawFeedById(id);
+    const feed = await getRawFeedById(Number(id));
     if (!id || !title || !content) return;
 
     await createArticle({
@@ -48,7 +48,7 @@ async function handlePromote(formData: FormData) {
       tags: feed ? [feed.sourceChannel] : [],
     });
 
-    await promoteRawFeed(id);
+    await promoteRawFeed(Number(id));
   } catch {
     // DB not available
   }
@@ -62,8 +62,8 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
   let feed: any = null;
 
   try {
-    const { getRawFeedById } = await import("@/lib/db/queries/rawFeeds");
-    feed = await getRawFeedById(id);
+    const { getRawFeedById } = await import("@/lib/supabase/queries/rawFeeds");
+    feed = await getRawFeedById(Number(id));
   } catch {
     // DB not available
   }

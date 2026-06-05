@@ -1,4 +1,4 @@
-import type { CVE } from "@/lib/db/schema";
+import type { CVE } from "@/lib/types";
 import Link from "next/link";
 import { ArrowUpRight } from "@/lib/icons";
 import { SeverityBadge } from "@/components/cve/SeverityBadge";

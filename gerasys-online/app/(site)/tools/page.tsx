@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import type { Metadata } from "next";
-import { getTools } from "@/lib/db/queries/tools";
+import { getTools } from "@/lib/supabase/queries/tools";
 import { Star, ExternalLink, GitFork } from "@/lib/icons";
 import Link from "next/link";
 

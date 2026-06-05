@@ -28,8 +28,8 @@ async function discardFeed(formData: FormData) {
   const id = formData.get("id") as string;
   if (!id) return;
   try {
-    const { updateRawFeed } = await import("@/lib/db/queries/rawFeeds");
-    await updateRawFeed(id, { status: "discarded" });
+    const { updateRawFeed } = await import("@/lib/supabase/queries/rawFeeds");
+    await updateRawFeed(Number(id), { status: "discarded" });
   } catch {
     // silently fail
   }
@@ -37,7 +37,7 @@ async function discardFeed(formData: FormData) {
 
 /* ── Types ── */
 interface FeedItem {
-  id: string;
+  id: number;
   sourceChannel: string;
   rawContent: string;
   translatedContent: string | null;
@@ -51,7 +51,7 @@ interface FeedItem {
 
 const MOCK_FEEDS: FeedItem[] = [
   {
-    id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    id: 1,
     sourceChannel: "threat_intel_ru",
     rawContent:
       "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: В Fortinet FortiOS обнаружена критическая уязвимость CVE-2026-27893, позволяющая удаленно выполнить код без аутентификации. Затронуты версии 7.0.x до 7.0.16. Немедленно обновите системы.",
@@ -66,7 +66,7 @@ const MOCK_FEEDS: FeedItem[] = [
     timestamp: new Date("2026-05-10T08:23:00Z"),
   },
   {
-    id: "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    id: 2,
     sourceChannel: "ransomware_feed",
     rawContent:
       "LockBit 5.0 has claimed responsibility for the attack on a major European energy distributor. They threaten to release 80GB of stolen data if ransom is not paid within 72 hours. Samples of the data have been posted on their leak site.",
@@ -79,7 +79,7 @@ const MOCK_FEEDS: FeedItem[] = [
     timestamp: new Date("2026-05-10T06:45:00Z"),
   },
   {
-    id: "c3d4e5f6-a7b8-9012-cdef-123456789012",
+    id: 3,
     sourceChannel: "apt_watch_telegram",
     rawContent:
       "LATAM: APT-C-36 campaigns targeting Colombian government entities have intensified. New phishing lures using themed documents related to tax authority. Delivers updated version of the 'Blind Eagle' implant with enhanced evasion capabilities.",
@@ -94,7 +94,7 @@ const MOCK_FEEDS: FeedItem[] = [
     timestamp: new Date("2026-05-10T04:12:00Z"),
   },
   {
-    id: "d4e5f6a7-b8c9-0123-defa-123456789012",
+    id: 4,
     sourceChannel: "dark_web_broker_channel",
     rawContent:
       "SELLING: Zero-day exploit for Microsoft Exchange Server 2025. Price: 2.5 BTC. Proof available upon request. No LE, no journalists. Serious buyers only. Contact: @dark_0day_broker",
@@ -108,10 +108,10 @@ const MOCK_FEEDS: FeedItem[] = [
     timestamp: new Date("2026-05-09T23:55:00Z"),
   },
   {
-    id: "e5f6a7b8-c9d0-1234-efab-123456789012",
+    id: 5,
     sourceChannel: "osint_brazil",
     rawContent:
-      "Nova campanha de phishing visa clientes do Banco do Brasil e Nubank. Os golpistas estão usando mensagens SMS e Telegram com links maliciosos que imitam as páginas de login legítimas. Mais de 500 vítimas relatadas nas últimas 48 horas.",
+      "Nova campanha de phishing visa clientes do Banco do Brasil e Nubank. Os golpistas estão usando mensagens SMS и Telegram com links maliciosos que imitam as páginas de login legítimas. Mais de 500 vítimas relatadas nas últimas 48 horas.",
     translatedContent:
       "New phishing campaign targets Banco do Brasil and Nubank customers. Scammers use SMS and Telegram messages with malicious links mimicking legitimate login pages. Over 500 victims reported in the last 48 hours.",
     translatedTitle: "Large-Scale Phishing Campaign Targets Brazilian Banks",
@@ -122,7 +122,7 @@ const MOCK_FEEDS: FeedItem[] = [
     timestamp: new Date("2026-05-09T21:30:00Z"),
   },
   {
-    id: "f6a7b8c9-d0e1-2345-fabc-123456789012",
+    id: 6,
     sourceChannel: "vuln_disclosure",
     rawContent:
       "New SmokeLoader variant (v4.3) detected in the wild. Key changes: uses kernel callback hijacking for EDR evasion, adds AES-256 encryption for C2 traffic, drops Amadey loader as secondary payload. Sample hash: a3f8c9d1e2b4...",
@@ -135,7 +135,7 @@ const MOCK_FEEDS: FeedItem[] = [
     timestamp: new Date("2026-05-09T19:15:00Z"),
   },
   {
-    id: "a7b8c9d0-e1f2-3456-abcd-234567890123",
+    id: 7,
     sourceChannel: "threat_intel_ru",
     rawContent:
       "Хакерская группа 'Sandworm' (APT-44) атакует украинские энергетические компании через новую вредоносную программу 'PolarBear'. Используется фишинг с темами восстановления инфраструктуры.",
@@ -162,7 +162,7 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
   let pendingCount = MOCK_FEEDS.filter((f) => f.status === "pending").length;
 
   try {
-    const { getRawFeeds, getPendingFeedCount } = await import("@/lib/db/queries/rawFeeds");
+    const { getRawFeeds, getPendingFeedCount } = await import("@/lib/supabase/queries/rawFeeds");
     const [dbFeeds, dbPendingCount] = await Promise.all([
       getRawFeeds(1, 50),
       getPendingFeedCount(),
@@ -173,13 +173,13 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
         id: f.id,
         sourceChannel: f.sourceChannel,
         rawContent: f.rawContent,
-        translatedContent: f.translatedContent,
-        translatedTitle: f.translatedTitle,
+        translatedContent: f.translatedContent ?? null,
+        translatedTitle: f.translatedTitle ?? null,
         originalLanguage: f.originalLanguage,
         status: f.status,
-        aiGeneratedFlag: f.aiGeneratedFlag,
-        analysis: f.analysis,
-        timestamp: f.timestamp,
+        aiGeneratedFlag: f.aiGeneratedFlag ?? null,
+        analysis: f.analysis ?? null,
+        timestamp: f.timestamp ? new Date(f.timestamp) : null,
       }));
     }
     if (dbPendingCount >= 0) pendingCount = dbPendingCount;
@@ -188,7 +188,7 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
   }
 
   const selectedFeed = selectedId
-    ? feeds.find((f) => f.id === selectedId) ?? feeds[0]
+    ? feeds.find((f) => String(f.id) === selectedId) ?? feeds[0]
     : feeds[0];
 
   const statusStyles: Record<string, string> = {

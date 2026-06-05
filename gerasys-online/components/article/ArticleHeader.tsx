@@ -1,4 +1,4 @@
-import type { Article } from "@/lib/db/schema";
+import type { Article } from "@/lib/types";
 import type { SiloDefinition } from "@/lib/silos";
 import { formatDate } from "@/lib/utils/formatDate";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";

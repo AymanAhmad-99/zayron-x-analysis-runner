@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import type { Metadata } from "next";
-import type { Article, CVE } from "@/lib/db/schema";
+import type { Article, CVE } from "@/lib/types";
 import { ArticleCard } from "@/components/ui/ArticleCard";
 import { CveTable } from "@/components/cve/CveTable";
 import {
@@ -10,9 +10,10 @@ import {
   getBreakingArticles,
   getAllTags,
   getArticleCount,
-} from "@/lib/db/queries/articles";
-import { getCriticalCVEs, getCVECount } from "@/lib/db/queries/cves";
-import { getAnalysts } from "@/lib/db/queries/analysts";
+} from "@/lib/supabase/queries/articles";
+import { getCached } from "@/lib/cache/redis";
+import { getCriticalCVEs, getCVECount } from "@/lib/supabase/queries/cves";
+import { getAnalysts } from "@/lib/supabase/queries/analysts";
 import {
   getSiloForCategory,
   getSiloColorClass,
@@ -299,22 +300,22 @@ export default async function OperationsPage({ searchParams }: PageProps) {
   try {
     const [recent, breaking, cves, tags, analysts, articleCount, cveCount] =
       await Promise.all([
-        getRecentArticles(PAGE_SIZE),
-        getBreakingArticles(5),
-        getCriticalCVEs(CVE_LIMIT),
-        getAllTags(),
-        getAnalysts(),
-        getArticleCount(),
-        getCVECount(),
+        getCached(process.env, "ops:recent_articles", () => getRecentArticles(PAGE_SIZE), 300),
+        getCached(process.env, "ops:breaking_articles", () => getBreakingArticles(5), 300),
+        getCached(process.env, "ops:critical_cves", () => getCriticalCVEs(CVE_LIMIT), 300),
+        getCached(process.env, "ops:all_tags", () => getAllTags(), 300),
+        getCached(process.env, "ops:analysts", () => getAnalysts(), 300),
+        getCached(process.env, "ops:article_count", () => getArticleCount(), 300),
+        getCached(process.env, "ops:cve_count", () => getCVECount(), 300),
       ]);
 
     articles = recent as Article[];
     breakingArticles = breaking as Article[];
     criticalCVEs = cves as CVE[];
-    allTags = tags;
-    analystCount = analysts.length;
-    totalArticleCount = articleCount;
-    totalCveCount = cveCount;
+    allTags = tags as { tag: string; count: number }[];
+    analystCount = (analysts as any[]).length;
+    totalArticleCount = articleCount as number;
+    totalCveCount = cveCount as number;
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : "Unknown database connection failure";

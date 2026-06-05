@@ -1,4 +1,4 @@
-import { type CVE } from "@/lib/db/schema";
+import { type CVE } from "@/lib/types";
 
 interface ThreatTickerProps {
   cves: CVE[];

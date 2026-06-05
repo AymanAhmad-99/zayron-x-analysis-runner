@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { searchArticles } from "@/lib/db/queries/articles";
-import { searchCVEs } from "@/lib/db/queries/cves";
+import { searchArticles } from "@/lib/supabase/queries/articles";
+import { searchCVEs } from "@/lib/supabase/queries/cves";
 import { searchLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
 
 export async function GET(request: Request) {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { Article } from "@/lib/db/schema";
+import type { Article } from "@/lib/types";
 
 interface Article3DImageProps {
   article: Article;

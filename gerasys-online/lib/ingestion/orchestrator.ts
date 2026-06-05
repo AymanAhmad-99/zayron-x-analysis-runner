@@ -42,14 +42,15 @@ export function getAnalystRegistry(): ReadonlyArray<AnalystProfile> {
   return analystRegistry;
 }
 
+import { getAnalysts } from "../supabase/queries/analysts";
+
 /**
  * Hydrates the in-memory analyst registry from the `analysts` database table.
  * Maps DB rows to AnalystProfile structs using keyword inference from specializations.
  * Call once at daemon startup before any `selectLeadAnalyst()` invocation.
  */
-export async function loadAnalystRegistry(db: any) {
-  const { analysts } = await import("../db/schema");
-  const rows = await db.select().from(analysts);
+export async function loadAnalystRegistry(env?: any) {
+  const rows = await getAnalysts(env);
 
   analystRegistry = rows.map((row: any) => {
     const specializations: string[] = row.specializations ?? [];

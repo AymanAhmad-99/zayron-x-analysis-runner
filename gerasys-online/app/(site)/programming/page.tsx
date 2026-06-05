@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import type { Metadata } from "next";
-import { getProgrammingLanguages } from "@/lib/db/queries/programming";
+import { getProgrammingLanguages } from "@/lib/supabase/queries/programming";
 import { Code2, Shield, ArrowRight, Cpu, Braces } from "@/lib/icons";
 import Link from "next/link";
 

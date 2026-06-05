@@ -1,4 +1,4 @@
-import { getBreakingArticles } from "@/lib/db/queries/articles";
+import { getBreakingArticles } from "@/lib/supabase/queries/articles";
 
 async function getTickerItems() {
   try {

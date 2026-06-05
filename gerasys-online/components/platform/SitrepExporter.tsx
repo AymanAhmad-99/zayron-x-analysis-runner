@@ -1,6 +1,6 @@
 "use client";
 
-import type { Article } from "@/lib/db/schema";
+import type { Article } from "@/lib/types";
 import { Download, FileText, CheckCircle2 } from "@/lib/icons";
 import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
 
