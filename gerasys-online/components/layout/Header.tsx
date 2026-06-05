@@ -25,7 +25,7 @@ export function Header() {
 
           {/* Logo — Sovereign Wordmark */}
           <div className="flex items-center shrink-0">
-            <Link href="/" className="flex items-center" aria-label="ZAYRON-X Home">
+            <Link href="/" prefetch={true} className="flex items-center" aria-label="ZAYRON-X Home">
               <span
                 className="text-[1.3rem] font-black uppercase select-none inline-flex items-center tracking-tighter"
                 style={{ letterSpacing: "-0.08em" }}
@@ -44,6 +44,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  prefetch={true}
                   aria-current={isActive ? "page" : undefined}
                   className={`text-[0.75rem] font-bold uppercase tracking-wider transition-colors duration-200 py-2 border-b-2 ${
                     isActive
@@ -62,6 +63,7 @@ export function Header() {
             {/* Search link */}
             <Link
               href="/search"
+              prefetch={true}
               className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-slate-800 text-neutral-500 dark:text-slate-400 hover:text-[#733DD9] dark:hover:text-[#733DD9] transition-colors hidden sm:inline-flex"
               aria-label="Search"
             >

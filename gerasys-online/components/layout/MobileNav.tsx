@@ -92,6 +92,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
             <Link
               key={link.href}
               href={link.href}
+              prefetch={true}
               className="block px-3 py-2.5 text-sm font-medium text-[#475569] dark:text-slate-400 hover:text-[#733DD9] dark:hover:text-[#733DD9] hover:bg-[#F1F5F9] dark:hover:bg-slate-800/50 rounded-lg transition-colors font-ui"
               onClick={onClose}
             >
