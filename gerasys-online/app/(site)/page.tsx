@@ -1,5 +1,6 @@
 export const revalidate = 60;
 
+import { Suspense, cache } from "react";
 import {
   getArticles,
   getCategoriesWithCounts,
@@ -21,8 +22,10 @@ import { SitrepExporter } from "@/components/platform/SitrepExporter";
 
 import { Shield, ArrowUpRight, Globe, Layers } from "@/lib/icons";
 import { LiveIntelTicker } from "@/components/platform/LiveIntelTicker";
+import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
 
-export default async function HomePage() {
+// Shared request-level cache to deduplicate parallel fetches
+const getHomeData = cache(async () => {
   let articles: Article[] = [];
   let cves: CVE[] = [];
   let analysts: Analyst[] = [];
@@ -44,8 +47,96 @@ export default async function HomePage() {
     categories = results[4].status === "fulfilled" ? (results[4].value as { category: string; count: number }[]) : [];
   } catch {}
 
+  return { articles, cves, analysts, cveCount, categories };
+});
+
+function StatPillSkeleton() {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="animate-pulse bg-neutral-200 dark:bg-slate-800 rounded-full w-4 h-4" />
+      <div className="space-y-1">
+        <div className="animate-pulse bg-neutral-200 dark:bg-slate-800 rounded h-4 w-12" />
+        <div className="animate-pulse bg-neutral-200 dark:bg-slate-800 rounded h-3 w-16" />
+      </div>
+    </div>
+  );
+}
+
+function StatsFallback() {
+  return (
+    <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-neutral-100">
+      <StatPillSkeleton />
+      <StatPillSkeleton />
+      <StatPillSkeleton />
+      <StatPillSkeleton />
+    </div>
+  );
+}
+
+function SectorWorkspaceFallback() {
+  return (
+    <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 space-y-8 animate-pulse">
+      <div className="h-10 bg-neutral-200 dark:bg-slate-800 rounded w-1/4" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-4">
+          <SkeletonLoader variant="list" className="h-24 w-full" />
+          <SkeletonLoader variant="list" className="h-24 w-full" />
+          <SkeletonLoader variant="list" className="h-24 w-full" />
+        </div>
+        <div className="lg:col-span-1">
+          <SkeletonLoader variant="card" className="h-72 w-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function SuspendedStats() {
+  const { articles, cveCount, analysts, categories } = await getHomeData();
   const totalCategories = categories.length;
 
+  return (
+    <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-neutral-100">
+      <StatPill icon={<Layers className="w-4 h-4 text-[#733DD9]" />} value={articles.length.toLocaleString()} label="Briefings" />
+      <StatPill icon={<Shield className="w-4 h-4 text-[#733DD9]" />} value={cveCount.toLocaleString()} label="CVEs Tracked" />
+      <StatPill icon={<Globe className="w-4 h-4 text-[#733DD9]" />} value={analysts.length.toLocaleString()} label="Active Nodes" />
+      <StatPill icon={<ArrowUpRight className="w-4 h-4 text-[#733DD9]" />} value={totalCategories.toLocaleString()} label="Sectors" />
+    </div>
+  );
+}
+
+async function SuspendedSectorWorkspace() {
+  const { articles, cves, analysts, cveCount } = await getHomeData();
+
+  return (
+    <SectorWorkspace
+      articleCount={articles.length}
+      cveCount={cveCount}
+      analystCount={analysts.length}
+      briefings={
+        articles.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Lower-Left: Actionable Alerts Data Table */}
+            <div className="lg:col-span-2">
+              <ActionableAlerts articles={articles} />
+            </div>
+            
+            {/* Lower-Right: Sitrep Exporter Visual Card */}
+            <div className="lg:col-span-1">
+              <SitrepExporter articles={articles} />
+            </div>
+          </div>
+        ) : (
+          <IntelEmptyState />
+        )
+      }
+      cveIndex={<CvePanel cves={cves} totalCount={cveCount} />}
+      analysts={<AnalystPanel analysts={analysts} />}
+    />
+  );
+}
+
+export default async function HomePage() {
   return (
     <main className="min-h-screen">
 
@@ -169,43 +260,19 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Stat strip */}
-          <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-neutral-100">
-            <StatPill icon={<Layers className="w-4 h-4 text-[#733DD9]" />} value={articles.length.toLocaleString()} label="Briefings" />
-            <StatPill icon={<Shield className="w-4 h-4 text-[#733DD9]" />} value={cveCount.toLocaleString()} label="CVEs Tracked" />
-            <StatPill icon={<Globe className="w-4 h-4 text-[#733DD9]" />} value={analysts.length.toLocaleString()} label="Active Nodes" />
-            <StatPill icon={<ArrowUpRight className="w-4 h-4 text-[#733DD9]" />} value={totalCategories.toLocaleString()} label="Sectors" />
-          </div>
+          {/* Stat strip wrapped in Suspense */}
+          <Suspense fallback={<StatsFallback />}>
+            <SuspendedStats />
+          </Suspense>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════
-          SECTOR WORKSPACE
+          SECTOR WORKSPACE wrapped in Suspense
           ═══════════════════════════════════════════════ */}
-      <SectorWorkspace
-        articleCount={articles.length}
-        cveCount={cveCount}
-        analystCount={analysts.length}
-        briefings={
-          articles.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-              {/* Lower-Left: Actionable Alerts Data Table */}
-              <div className="lg:col-span-2">
-                <ActionableAlerts articles={articles} />
-              </div>
-              
-              {/* Lower-Right: Sitrep Exporter Visual Card */}
-              <div className="lg:col-span-1">
-                <SitrepExporter articles={articles} />
-              </div>
-            </div>
-          ) : (
-            <IntelEmptyState />
-          )
-        }
-        cveIndex={<CvePanel cves={cves} totalCount={cveCount} />}
-        analysts={<AnalystPanel analysts={analysts} />}
-      />
+      <Suspense fallback={<SectorWorkspaceFallback />}>
+        <SuspendedSectorWorkspace />
+      </Suspense>
 
     </main>
   );
