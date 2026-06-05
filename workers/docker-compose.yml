@@ -183,7 +183,7 @@ services:
     image: peterdavehello/tor-socks-proxy:latest
     container_name: zayron_tor_proxy
     restart: always
-    command: ["/usr/bin/tor", "-f", "/etc/tor/torrc", "--ControlPort", "0.0.0.0:9051", "--CookieAuthentication", "0"]
+    command: ["/usr/bin/tor", "-f", "/etc/tor/torrc", "--ControlPort", "0.0.0.0:9051", "--HashedControlPassword", "16:BB044189D119B92C600F09C82296F49826A50D2D20359121D6FCA748BB", "--CookieAuthentication", "0"]
     networks:
       - zayron_net
     deploy:
