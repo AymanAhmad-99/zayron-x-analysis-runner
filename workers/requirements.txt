@@ -3,7 +3,7 @@
 # ============================================================================
 
 # Core Multi-Agent Orchestration & AI SDKs
-crewai==0.80.2
+crewai==0.80.0
 crewai-tools==0.14.0
 google-generativeai==0.8.3
 
