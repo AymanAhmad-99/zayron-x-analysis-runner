@@ -128,6 +128,7 @@ from workers.persistence import (
     mark_feed_status,
     persist_sitrep,
     trigger_revalidation,
+    utc_now_iso,
 )
 
 # ---------------------------------------------------------------------------
@@ -178,7 +179,7 @@ class GeminiClient:
         user_message: str,
         max_output_tokens: int = 4096,
         temperature: float = 0.2,
-    ) -> str:
+    ) -> tuple[str, int, int]:
         """Generate a response from the specified Gemini model with backoff and model fallback."""
         if not self._initialized:
             raise RuntimeError("Gemini SDK not initialized")
@@ -190,7 +191,7 @@ class GeminiClient:
             attempt = 0
             while True:
                 try:
-                    def _call() -> str:
+                    def _call() -> tuple[str, int, int]:
                         model = self._genai.GenerativeModel(
                             model_name=current_model,
                             system_instruction=system_prompt,
@@ -201,7 +202,17 @@ class GeminiClient:
                             ),
                         )
                         response = model.generate_content(user_message)
-                        return response.text or ""
+                        text = response.text or ""
+                        prompt_tokens = 0
+                        completion_tokens = 0
+                        try:
+                            if hasattr(response, "usage_metadata") and response.usage_metadata:
+                                prompt_tokens = response.usage_metadata.prompt_token_count
+                                completion_tokens = response.usage_metadata.candidates_token_count
+                        except Exception:
+                            prompt_tokens = len(user_message) // 4
+                            completion_tokens = len(text) // 4
+                        return text, prompt_tokens, completion_tokens
 
                     return await asyncio.to_thread(_call)
 
@@ -262,19 +273,23 @@ async def stage_harvest(
     client: GeminiClient,
     raw_text: str,
     source_channel: str,
+    token_tracker: dict[str, int] | None = None,
 ) -> HarvestPayload:
     """Stage 1: Harvester — Extract, translate, classify."""
     log.info("  [HARVESTER] Processing %d chars from %s", len(raw_text), source_channel)
     t0 = time.monotonic()
 
     user_msg = build_harvest_prompt(raw_text, source_channel)
-    llm_output = await client.generate(
+    llm_output, p_tok, c_tok = await client.generate(
         model_name=GEMINI_FLASH_MODEL,
         system_prompt=HARVESTER_SYSTEM_PROMPT,
         user_message=user_msg,
         max_output_tokens=TOKEN_BUDGET_HARVESTER,
         temperature=0.1,
     )
+    if token_tracker is not None:
+        token_tracker["prompt"] += p_tok
+        token_tracker["completion"] += c_tok
 
     payload = parse_harvest_response(raw_text, source_channel, llm_output)
     log.info(
@@ -290,19 +305,23 @@ async def stage_harvest(
 async def stage_validate(
     client: GeminiClient,
     harvest: HarvestPayload,
+    token_tracker: dict[str, int] | None = None,
 ) -> ValidatedIntel:
     """Stage 2: Validator — Cross-reference, verify IoCs, map TTPs."""
     log.info("  [VALIDATOR] Verifying intelligence...")
     t0 = time.monotonic()
 
     user_msg = build_validator_prompt(harvest)
-    llm_output = await client.generate(
+    llm_output, p_tok, c_tok = await client.generate(
         model_name=GEMINI_FLASH_MODEL,
         system_prompt=VALIDATOR_SYSTEM_PROMPT,
         user_message=user_msg,
         max_output_tokens=TOKEN_BUDGET_VALIDATOR,
         temperature=0.1,
     )
+    if token_tracker is not None:
+        token_tracker["prompt"] += p_tok
+        token_tracker["completion"] += c_tok
 
     validated = parse_validator_response(harvest, llm_output)
     log.info(
@@ -319,19 +338,23 @@ async def stage_validate(
 async def stage_compliance(
     client: GeminiClient,
     validated: ValidatedIntel,
+    token_tracker: dict[str, int] | None = None,
 ) -> ComplianceReport:
     """Stage 3a: Compliance — Regulatory framework mapping."""
     log.info("  [COMPLIANCE] Mapping regulatory frameworks...")
     t0 = time.monotonic()
 
     user_msg = build_compliance_prompt(validated)
-    llm_output = await client.generate(
+    llm_output, p_tok, c_tok = await client.generate(
         model_name=GEMINI_PRO_MODEL,
         system_prompt=COMPLIANCE_SYSTEM_PROMPT,
         user_message=user_msg,
         max_output_tokens=TOKEN_BUDGET_COMPLIANCE,
         temperature=0.2,
     )
+    if token_tracker is not None:
+        token_tracker["prompt"] += p_tok
+        token_tracker["completion"] += c_tok
 
     report = parse_compliance_response(llm_output)
     log.info(
@@ -349,19 +372,23 @@ async def stage_quant(
     client: GeminiClient,
     validated: ValidatedIntel,
     compliance: ComplianceReport,
+    token_tracker: dict[str, int] | None = None,
 ) -> FinancialAssessment:
     """Stage 3b: Quant — Financial Blast Radius computation."""
     log.info("  [QUANT] Computing Financial Blast Radius...")
     t0 = time.monotonic()
 
     user_msg = build_quant_prompt(validated, compliance)
-    llm_output = await client.generate(
+    llm_output, p_tok, c_tok = await client.generate(
         model_name=GEMINI_FLASH_MODEL,
         system_prompt=QUANT_SYSTEM_PROMPT,
         user_message=user_msg,
         max_output_tokens=TOKEN_BUDGET_QUANT,
         temperature=0.15,
     )
+    if token_tracker is not None:
+        token_tracker["prompt"] += p_tok
+        token_tracker["completion"] += c_tok
 
     assessment = parse_quant_response(validated, compliance, llm_output)
     log.info(
@@ -380,6 +407,7 @@ async def stage_weave(
     validated: ValidatedIntel,
     compliance: ComplianceReport,
     financial: FinancialAssessment,
+    token_tracker: dict[str, int] | None = None,
 ) -> ExecutiveSITREP | None:
     """Stage 4: Weaver — Executive SITREP synthesis with Anti-FUD gate.
 
@@ -393,13 +421,16 @@ async def stage_weave(
     for attempt in range(1, MAX_RETRIES_PER_AGENT + 2):
         t0 = time.monotonic()
 
-        llm_output = await client.generate(
+        llm_output, p_tok, c_tok = await client.generate(
             model_name=GEMINI_PRO_MODEL,
             system_prompt=WEAVER_SYSTEM_PROMPT,
             user_message="\n\n".join(messages),
             max_output_tokens=TOKEN_BUDGET_WEAVER,
             temperature=0.25,
         )
+        if token_tracker is not None:
+            token_tracker["prompt"] += p_tok
+            token_tracker["completion"] += c_tok
 
         sitrep = parse_weaver_response(validated, compliance, financial, llm_output)
 
@@ -454,6 +485,7 @@ async def run_crew(
     client: GeminiClient,
     raw_text: str,
     source_channel: str,
+    token_tracker: dict[str, int] | None = None,
 ) -> ExecutiveSITREP | None:
     """Execute the full 5-agent pipeline on a single raw feed.
 
@@ -461,33 +493,29 @@ async def run_crew(
     """
     # Stage 1: Harvest
     try:
-        harvest = await stage_harvest(client, raw_text, source_channel)
+        harvest = await stage_harvest(client, raw_text, source_channel, token_tracker)
     except Exception as exc:
         log.error("Harvester failed: %s", exc)
         return None
 
     # Stage 2: Validate
     try:
-        validated = await stage_validate(client, harvest)
+        validated = await stage_validate(client, harvest, token_tracker)
     except Exception as exc:
         log.error("Validator failed: %s", exc)
         return None
 
-    # Stage 3a + 3b: Compliance and Quant (run in parallel)
+    # Stage 3a + 3b: Compliance and Quant (run sequentially)
     try:
-        compliance_task = stage_compliance(client, validated)
-        quant_task = stage_quant(client, validated, ComplianceReport())
-
-        # Start compliance first, then quant uses its result
-        compliance = await compliance_task
-        quant_assessment = await stage_quant(client, validated, compliance)
+        compliance = await stage_compliance(client, validated, token_tracker)
+        quant_assessment = await stage_quant(client, validated, compliance, token_tracker)
     except Exception as exc:
         log.error("Compliance/Quant stage failed: %s", exc)
         return None
 
     # Stage 4: Weave
     try:
-        sitrep = await stage_weave(client, validated, compliance, quant_assessment)
+        sitrep = await stage_weave(client, validated, compliance, quant_assessment, token_tracker)
     except Exception as exc:
         log.error("Weaver failed: %s", exc)
         return None
@@ -539,7 +567,8 @@ async def crew_cycle(
         log.info("═══ Processing feed %s from %s ═══", str(feed_id)[:8], source)
 
         try:
-            sitrep = await run_crew(client, raw_text, source)
+            token_tracker = {"prompt": 0, "completion": 0}
+            sitrep = await run_crew(client, raw_text, source, token_tracker)
 
             if sitrep is None:
                 stats["errors"] += 1
@@ -563,6 +592,12 @@ async def crew_cycle(
                     feed_id,
                     "crew_promoted",
                     analysis=sitrep.executive_summary[:500],
+                    translated_title=sitrep.title,
+                    translated_content=sitrep.content[:2000],
+                    category=sitrep.category,
+                    prompt_tokens=token_tracker["prompt"],
+                    completion_tokens=token_tracker["completion"],
+                    promoted_at=utc_now_iso(),
                 )
                 # Trigger ISR revalidation
                 await trigger_revalidation(http_session)

@@ -51,7 +51,11 @@ OPERATIONAL DIRECTIVES:
 2. MITIGATION ROI:
    - Do not just say "HIGH YIELD". Explain: "ROI = (Avoided Breach Cost - Mitigation Cost) / Mitigation Cost".
 
-3. OUTPUT REQUIREMENTS (STRICT JSON):
+3. MANDATORY ESTIMATE DIRECTIVE (NON-NEGOTIABLE):
+   - Never output null, 0, or empty values for breach_cost_low, breach_cost_high, or affected_org_estimate.
+   - If the raw feed does not specify financial metrics or affected organization counts, you must calculate high-probability estimates based on the threat severity, sector multiplier, and geo exposure profile. Always synthesize a defensible financial range rather than leaving fields empty.
+
+4. OUTPUT REQUIREMENTS (STRICT JSON):
    Your output MUST be a valid JSON object. Do not include markdown fences.
    
    {

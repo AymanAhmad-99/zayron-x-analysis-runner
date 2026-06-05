@@ -130,6 +130,10 @@ export type RawFeed = {
   status: string;
   category: string | null;
   analysis: string | null;
+  intel_comparison?: string;
+  intelComparison?: string;
+  researcher_note?: string;
+  researcherNote?: string;
 
   // Snake_case (Database direct columns)
   source_channel?: string;

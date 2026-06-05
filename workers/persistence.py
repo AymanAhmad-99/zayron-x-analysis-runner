@@ -171,6 +171,12 @@ async def mark_feed_status(
     feed_id: str,
     status: str,
     analysis: str | None = None,
+    translated_title: str | None = None,
+    translated_content: str | None = None,
+    category: str | None = None,
+    prompt_tokens: int | None = None,
+    completion_tokens: int | None = None,
+    promoted_at: str | None = None,
 ) -> bool:
     """Update a raw_feed entry's status after crew processing."""
     url = f"{SUPABASE_URL}/rest/v1/raw_feeds?id=eq.{feed_id}"
@@ -184,6 +190,18 @@ async def mark_feed_status(
     body: dict[str, Any] = {"status": status}
     if analysis:
         body["analysis"] = analysis[:500]
+    if translated_title:
+        body["translated_title"] = translated_title[:500]
+    if translated_content:
+        body["translated_content"] = translated_content
+    if category:
+        body["category"] = category
+    if prompt_tokens is not None:
+        body["prompt_tokens"] = prompt_tokens
+    if completion_tokens is not None:
+        body["completion_tokens"] = completion_tokens
+    if promoted_at:
+        body["promoted_at"] = promoted_at
 
     try:
         async with session.patch(
