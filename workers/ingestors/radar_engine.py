@@ -61,6 +61,11 @@ from typing import Any
 from urllib.parse import urlparse
 
 import aiohttp
+try:
+    from aiohttp_socks import ProxyConnector
+    HAS_SOCKS = True
+except ImportError:
+    HAS_SOCKS = False
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -79,6 +84,32 @@ if not SUPABASE_SERVICE_KEY:
 SCAN_INTERVAL_MINUTES: int = int(os.getenv("SCAN_INTERVAL", "5"))
 DEDUP_TTL_HOURS: int = int(os.getenv("DEDUP_TTL_HOURS", "72"))
 MAX_MESSAGES_PER_CH: int = int(os.getenv("MAX_MESSAGES_PER_CH", "10"))
+TOR_PROXY: str = os.getenv("TOR_PROXY", "socks5://tor_proxy:9150")
+
+async def rotate_tor_circuit() -> None:
+    """Request a new Tor exit node via the Tor ControlPort (SIGNAL NEWNYM)."""
+    log.info("Requesting Tor circuit rotation (SIGNAL NEWNYM)...")
+    try:
+        reader, writer = await asyncio.open_connection("tor_proxy", 9051)
+        writer.write(b'AUTHENTICATE ""\r\n')
+        await writer.drain()
+        auth_resp = await reader.readline()
+
+        if auth_resp.startswith(b"250"):
+            writer.write(b"SIGNAL NEWNYM\r\n")
+            await writer.drain()
+            signal_resp = await reader.readline()
+            if signal_resp.startswith(b"250"):
+                log.info("Tor circuit rotated — egress IP changed.")
+            else:
+                log.warning("NEWNYM rejected: %s", signal_resp.decode().strip())
+        else:
+            log.warning("Tor auth failed: %s", auth_resp.decode().strip())
+
+        writer.close()
+        await writer.wait_closed()
+    except Exception as exc:
+        log.warning("Tor circuit rotation failed (non-fatal): %s", exc)
 
 logging.basicConfig(
     level=logging.DEBUG if os.getenv("RADAR_DEBUG", "").lower() == "true"
@@ -580,34 +611,51 @@ async def radar_cycle(
 
     stats["channels_scanned"] = len(targets)
 
+    # Rotate Tor circuit
+    await rotate_tor_circuit()
+
     # Step 2: Scrape each channel
     all_messages: list[dict[str, Any]] = []
     semaphore = asyncio.Semaphore(5)  # Max 5 concurrent channel scrapes
 
-    async def scrape_one(target: RadarTarget) -> None:
-        async with semaphore:
-            channel_type, identifier = parse_channel_identifier(target.channel_url)
+    # Configure Tor proxy connector if available
+    connector = None
+    if TOR_PROXY and HAS_SOCKS:
+        log.info("Scraping session configured with Tor proxy: %s", TOR_PROXY)
+        connector = ProxyConnector.from_url(TOR_PROXY)
+    else:
+        log.debug("Scraping session configured without proxy")
 
-            if channel_type == "invite":
-                log.debug("Skipping invite link %s (MTProto-only)", target.channel_url)
-                return
+    async with aiohttp.ClientSession(
+        connector=connector,
+        headers={"User-Agent": random.choice(USER_AGENTS)},
+        timeout=aiohttp.ClientTimeout(total=30),
+    ) as scraping_session:
 
-            if telethon_client and channel_type == "public":
-                msgs = await scrape_channel_mtproto(telethon_client, identifier)
-            else:
-                msgs = await scrape_public_channel(http_session, identifier)
+        async def scrape_one(target: RadarTarget) -> None:
+            async with semaphore:
+                channel_type, identifier = parse_channel_identifier(target.channel_url)
 
-            # Attach target metadata
-            for m in msgs:
-                m["category"] = target.category
-                m["target_id"] = target.id
-                m["language"] = _detect_language(m.get("text", ""))
+                if channel_type == "invite":
+                    log.debug("Skipping invite link %s (MTProto-only)", target.channel_url)
+                    return
 
-            all_messages.extend(msgs)
-            stats["messages_fetched"] += len(msgs)
+                if telethon_client and channel_type == "public":
+                    msgs = await scrape_channel_mtproto(telethon_client, identifier)
+                else:
+                    msgs = await scrape_public_channel(scraping_session, identifier)
 
-    tasks = [scrape_one(t) for t in targets]
-    await asyncio.gather(*tasks, return_exceptions=True)
+                # Attach target metadata
+                for m in msgs:
+                    m["category"] = target.category
+                    m["target_id"] = target.id
+                    m["language"] = _detect_language(m.get("text", ""))
+
+                all_messages.extend(msgs)
+                stats["messages_fetched"] += len(msgs)
+
+        tasks = [scrape_one(t) for t in targets]
+        await asyncio.gather(*tasks, return_exceptions=True)
 
     log.info(
         "Fetched %d total messages from %d channels",

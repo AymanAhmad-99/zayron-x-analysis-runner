@@ -164,7 +164,7 @@ class ExecutiveSITREP(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
     executive_summary: str = Field(..., min_length=1)
     content: str = Field(..., min_length=100)
-    category: str = Field(default="Threat Intelligence")
+    category: str = Field(default="threat_intel")
     severity: str = Field(default="Medium")
 
     # MITRE & Detection
@@ -194,6 +194,20 @@ class ExecutiveSITREP(BaseModel):
     ai_image_prompt: str | None = None
     anti_fud_passed: bool = Field(default=False)
 
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, v: str) -> str:
+        """Normalize and strictly map to ZayronCategory Enum."""
+        cleaned = v.strip().lower()
+        if "tool" in cleaned:
+            return "tools"
+        elif "exploit" in cleaned or "vuln" in cleaned or "cve" in cleaned:
+            return "vulnerabilities"
+        elif "leak" in cleaned or "breach" in cleaned:
+            return "osint"
+        else:
+            return "threat_intel"
+
     @field_validator("content")
     @classmethod
     def validate_content_length(cls, v: str) -> str:
@@ -221,7 +235,7 @@ class ExecutiveSITREP(BaseModel):
         import hashlib
 
         severity = data.get("severity") or "Medium"
-        category = data.get("category") or "Threat Intelligence"
+        category = data.get("category") or "threat_intel"
         title = data.get("title") or "Threat Intel Brief"
         sectors = data.get("affected_sectors") or ["Technology"]
         sector_str = sectors[0] if sectors else "Technology"
@@ -310,10 +324,10 @@ class ExecutiveSITREP(BaseModel):
         # 8. Synthesize MITRE ATT&CK TTPs if empty
         if not data.get("mitre_attack_ttps"):
             cat_ttp_map = {
-                "Exploits": ["T1190 — Exploit Public-Facing Application"],
-                "Leaks": ["T1048 — Exfiltration Over Alternative Protocol"],
-                "Tools": ["T1588.002 — Obtain Capabilities: Tool"],
-                "Intel": ["T1566 — Phishing"]
+                "vulnerabilities": ["T1190 — Exploit Public-Facing Application"],
+                "osint": ["T1048 — Exfiltration Over Alternative Protocol"],
+                "tools": ["T1588.002 — Obtain Capabilities: Tool"],
+                "threat_intel": ["T1566 — Phishing"]
             }
             data["mitre_attack_ttps"] = cat_ttp_map.get(category, ["T1566 — Phishing"])
 

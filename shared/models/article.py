@@ -86,13 +86,13 @@ class ArticleInsert(BaseModel):
         """Normalize and strictly map to ZayronCategory Enum."""
         cleaned = v.strip().lower()
         if "tool" in cleaned:
-            return "Tools"
+            return "tools"
         elif "exploit" in cleaned or "vuln" in cleaned or "cve" in cleaned:
-            return "Exploits"
+            return "vulnerabilities"
         elif "leak" in cleaned or "breach" in cleaned:
-            return "Leaks"
+            return "osint"
         else:
-            return "Intel"
+            return "threat_intel"
 
     @model_validator(mode="before")
     @classmethod
@@ -103,7 +103,7 @@ class ArticleInsert(BaseModel):
 
         # 1. Determine severity context if available
         severity = data.get("severity") or "Medium"
-        category = data.get("category") or "Intel"
+        category = data.get("category") or "threat_intel"
 
         # 2. Synthesize CVSS v4 score if missing
         if data.get("cvss_v4_score") is None:
@@ -183,10 +183,10 @@ class ArticleInsert(BaseModel):
         # 9. Synthesize MITRE ATT&CK TTPs if empty
         if not data.get("mitre_ttps"):
             cat_ttp_map = {
-                "Exploits": ["T1190 — Exploit Public-Facing Application"],
-                "Leaks": ["T1048 — Exfiltration Over Alternative Protocol"],
-                "Tools": ["T1588.002 — Obtain Capabilities: Tool"],
-                "Intel": ["T1566 — Phishing"]
+                "vulnerabilities": ["T1190 — Exploit Public-Facing Application"],
+                "osint": ["T1048 — Exfiltration Over Alternative Protocol"],
+                "tools": ["T1588.002 — Obtain Capabilities: Tool"],
+                "threat_intel": ["T1566 — Phishing"]
             }
             data["mitre_ttps"] = cat_ttp_map.get(category, ["T1566 — Phishing"])
 
@@ -220,7 +220,7 @@ class ArticleSITREP(BaseModel):
     title: str = Field(..., min_length=1)
     executive_summary: str = Field(..., min_length=1)
     content: str = Field(..., min_length=100)
-    category: str = Field(default="Threat Intelligence")
+    category: str = Field(default="threat_intel")
     severity: str = Field(default="Medium")
     mitre_attack_ttps: list[str] = Field(default_factory=list)
     affected_sectors: list[str] = Field(default_factory=list)
@@ -248,13 +248,13 @@ class ArticleSITREP(BaseModel):
         """Normalize and strictly map to ZayronCategory Enum."""
         cleaned = v.strip().lower()
         if "tool" in cleaned:
-            return "Tools"
+            return "tools"
         elif "exploit" in cleaned or "vuln" in cleaned or "cve" in cleaned:
-            return "Exploits"
+            return "vulnerabilities"
         elif "leak" in cleaned or "breach" in cleaned:
-            return "Leaks"
+            return "osint"
         else:
-            return "Intel"
+            return "threat_intel"
 
     @field_validator("content")
     @classmethod
@@ -282,7 +282,7 @@ class ArticleSITREP(BaseModel):
             return data
 
         severity = data.get("severity") or "Medium"
-        category = data.get("category") or "Intel"
+        category = data.get("category") or "threat_intel"
         title = data.get("title") or "Threat Intel Brief"
 
         if not data.get("cvss_v4_score"):
@@ -348,10 +348,10 @@ class ArticleSITREP(BaseModel):
 
         if not data.get("mitre_attack_ttps"):
             cat_ttp_map = {
-                "Exploits": ["T1190 — Exploit Public-Facing Application"],
-                "Leaks": ["T1048 — Exfiltration Over Alternative Protocol"],
-                "Tools": ["T1588.002 — Obtain Capabilities: Tool"],
-                "Intel": ["T1566 — Phishing"]
+                "vulnerabilities": ["T1190 — Exploit Public-Facing Application"],
+                "osint": ["T1048 — Exfiltration Over Alternative Protocol"],
+                "tools": ["T1588.002 — Obtain Capabilities: Tool"],
+                "threat_intel": ["T1566 — Phishing"]
             }
             data["mitre_attack_ttps"] = cat_ttp_map.get(category, ["T1566 — Phishing"])
 

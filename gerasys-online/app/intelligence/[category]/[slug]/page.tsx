@@ -216,6 +216,30 @@ export default async function IntelligenceArticlePage({ params }: Props) {
                     {(article.views ?? 0).toLocaleString()}
                   </span>
                 </div>
+                {article.cvssV4Score !== undefined && article.cvssV4Score !== null && (
+                  <div className="flex justify-between items-center py-1.5 border-b border-neutral-100">
+                    <span className="font-mono">CVSS V4.0:</span>
+                    <span className={`font-mono font-bold px-2 py-0.5 rounded text-[10px] ${
+                      Number(article.cvssV4Score) >= 9.0
+                        ? "bg-red-500 text-white"
+                        : Number(article.cvssV4Score) >= 7.0
+                        ? "bg-orange-500 text-white"
+                        : Number(article.cvssV4Score) >= 4.0
+                        ? "bg-yellow-500 text-black"
+                        : "bg-blue-500 text-white"
+                    }`}>
+                      {Number(article.cvssV4Score).toFixed(1)}
+                    </span>
+                  </div>
+                )}
+                {article.fbrScore !== undefined && article.fbrScore !== null && (
+                  <div className="flex justify-between items-center py-1.5 border-b border-neutral-100">
+                    <span className="font-mono">FBR SCORE:</span>
+                    <span className="font-bold text-[#050505] font-mono bg-neutral-100 px-2 py-0.5 rounded">
+                      {article.fbrScore}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -241,6 +265,26 @@ export default async function IntelligenceArticlePage({ params }: Props) {
                 )}
               </div>
             </div>
+
+            {/* MITRE ATT&CK TTPs */}
+            {article.mitreTtps && article.mitreTtps.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#050505] font-black">
+                  MITRE ATT&CK TTPs
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {article.mitreTtps.map((ttp, idx) => (
+                    <span
+                      key={idx}
+                      title={ttp}
+                      className="text-[9px] font-mono uppercase tracking-wider bg-purple-50 border border-purple-200 text-[#733DD9] px-2 py-0.5 rounded cursor-default hover:bg-purple-100 transition-colors"
+                    >
+                      {ttp.split(" — ")[0] || ttp}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Dynamic Financial Impact Engine Toggle Interface */}
             <div className="pt-8 mt-6 border-t border-neutral-200/60">
@@ -318,6 +362,26 @@ export default async function IntelligenceArticlePage({ params }: Props) {
             <article className={`${proseClass} bg-white leading-loose`}>
               <ArticleBody content={article.content} />
             </article>
+
+            {/* YARA detection rule code block */}
+            {article.yaraRule && (
+              <div className="mt-12 bg-white">
+                <details className="group border border-neutral-200/80 rounded-lg overflow-hidden bg-neutral-50/50 hover:bg-neutral-50/80 transition-all duration-300">
+                  <summary className="flex items-center justify-between px-6 py-4 cursor-pointer select-none bg-neutral-50/80 hover:bg-neutral-100/60 font-mono text-xs font-bold uppercase tracking-wider text-neutral-700 border-b border-transparent group-open:border-neutral-200/80 transition-all">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#733DD9]" />
+                      <span>YARA Rule Signature</span>
+                    </div>
+                    <span className="text-[10px] text-neutral-400 group-open:rotate-180 transition-transform duration-200">
+                      ▼
+                    </span>
+                  </summary>
+                  <div className="p-6 bg-[#0B0F19] text-[#A9B2C3] font-mono text-xs overflow-x-auto whitespace-pre leading-relaxed">
+                    <code>{article.yaraRule}</code>
+                  </div>
+                </details>
+              </div>
+            )}
 
             {/* Symmetrical Footer Tools */}
             <div className="pt-10 border-t border-neutral-100 space-y-8">
