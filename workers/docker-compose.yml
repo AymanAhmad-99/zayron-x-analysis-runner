@@ -194,7 +194,7 @@ services:
           cpus: "1.0"
           memory: 512M
     healthcheck:
-      test: ["CMD", "nc", "-z", "127.0.0.1", "9050"]
+      test: ["CMD", "nc", "-z", "127.0.0.1", "9150"]
       interval: 10s
       timeout: 5s
       retries: 5
