@@ -141,7 +141,7 @@ async def rotate_tor_circuit() -> None:
     log.info("Requesting Tor circuit rotation (SIGNAL NEWNYM)...")
     try:
         reader, writer = await asyncio.open_connection("tor_proxy", 9051)
-        writer.write(b'AUTHENTICATE ""\r\n')
+        writer.write(b'AUTHENTICATE "ZayronTorControlPass"\r\n')
         await writer.drain()
         auth_resp = await reader.readline()
 
