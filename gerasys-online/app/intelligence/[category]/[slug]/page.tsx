@@ -13,7 +13,7 @@ import { getSiloForCategory, getSiloColorClass, type SiloId } from "@/lib/silos"
 import { Shield, Code, Network, ChevronRight } from "@/lib/icons";
 import Link from "next/link";
 import Image from "next/image";
-import { getSmartFallbackImage } from "@/lib/utils/fallbackImages";
+import CyberArticleImage from "@/components/ui/CyberArticleImage";
 
 const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?: string }>> = {
   cybersecurity: Shield,
@@ -164,8 +164,6 @@ export default async function IntelligenceArticlePage({ params }: Props) {
     .toLowerCase()
     .replace(/\s+/g, "-");
   const articleUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/intelligence/${categorySlug}/${article.slug}`;
-
-  const articleImage = getSmartFallbackImage(article);
 
   return (
     <div className="bg-white min-h-screen">
@@ -342,18 +340,14 @@ export default async function IntelligenceArticlePage({ params }: Props) {
             </div>
 
             {/* Standalone Featured Image */}
-            {articleImage && (
-              <div className="relative rounded-lg overflow-hidden border border-neutral-100 shadow-sm group bg-neutral-50 transition-all duration-300 hover:border-neutral-200" style={{ aspectRatio: "16/9", maxHeight: "500px" }}>
-                <Image
-                  src={articleImage}
-                  alt={article.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 75vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                  priority
-                />
-              </div>
-            )}
+            <CyberArticleImage
+              title={article.title}
+              category={article.category}
+              articleId={article.id}
+              featuredImage={article.image_url}
+              className="w-full rounded-lg border border-neutral-100 shadow-sm group bg-neutral-50 transition-all duration-300 hover:border-neutral-200 aspect-[16/9] max-h-[500px]"
+              priority
+            />
 
             {/* Clean Separator */}
             <hr className="border-neutral-100 my-8" />

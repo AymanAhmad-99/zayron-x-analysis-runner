@@ -15,6 +15,7 @@ function mapArticle(dbArticle: any): Article {
     content: dbArticle.content,
     excerpt: dbArticle.excerpt,
     imageUrl: dbArticle.image_url,
+    image_url: dbArticle.image_url,
     readTime: dbArticle.read_time,
     views: dbArticle.views,
     isPublished: dbArticle.is_published,

@@ -3,8 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { formatDate } from "@/lib/utils/formatDate";
-import { getSmartFallbackImage } from "@/lib/utils/fallbackImages";
 import { ArrowRight } from "@/lib/icons";
+import CyberArticleImage from "@/components/ui/CyberArticleImage";
 
 interface HeroSectionProps {
   primary: Article | null;
@@ -21,12 +21,12 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
             className="lg:col-span-2 group card-article flex flex-col border-r-0 lg:border-r"
           >
             <div className="img-intel relative">
-              <Image
-                src={getSmartFallbackImage(primary)}
-                alt={primary.title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                className="object-cover"
+              <CyberArticleImage
+                title={primary.title}
+                category={primary.category}
+                articleId={primary.id}
+                featuredImage={primary.image_url}
+                className="w-full h-full"
                 priority
               />
             </div>
@@ -62,12 +62,12 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
               }`}
             >
               <div className="relative w-20 h-20 shrink-0 overflow-hidden">
-                <Image
-                  src={getSmartFallbackImage(article)}
-                  alt=""
-                  fill
-                  sizes="80px"
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                <CyberArticleImage
+                  title={article.title}
+                  category={article.category}
+                  articleId={article.id}
+                  featuredImage={article.image_url}
+                  className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500"
                 />
               </div>
               <div className="min-w-0 flex-1">

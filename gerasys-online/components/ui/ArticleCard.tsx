@@ -2,22 +2,23 @@ import type { Article } from "@/lib/types";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils/formatDate";
-import { getSmartFallbackImage } from "@/lib/utils/fallbackImages";
 import { formatCategoryLabel } from "@/lib/utils/slugify";
+import CyberArticleImage from "@/components/ui/CyberArticleImage";
 
 interface ArticleCardProps {
   article: Article;
   variant?: "default" | "hero" | "compact" | "list";
 }
 
-function ArticleImage({ article, className }: { article: Article; className?: string }) {
+function ArticleImage({ article, className, priority }: { article: Article; className?: string; priority?: boolean }) {
   return (
-    <Image
-      src={getSmartFallbackImage(article)}
-      alt={article.title}
-      fill
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+    <CyberArticleImage
+      title={article.title}
+      category={article.category}
+      articleId={article.id}
+      featuredImage={article.image_url}
       className={className}
+      priority={priority}
     />
   );
 }
@@ -30,7 +31,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
     return (
       <Link href={href} className="group block" role="article" aria-labelledby={titleId}>
         <div className="relative w-full overflow-hidden mb-5" style={{ aspectRatio: "21/9" }}>
-          <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" />
+          <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" priority />
         </div>
         <span className="eyebrow text-[0.62rem] mb-2 block">{formatCategoryLabel(article.category)}</span>
         <h2 id={titleId} className="headline text-balance group-hover:italic transition-all duration-200" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)" }}>
@@ -54,13 +55,12 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
     return (
       <Link href={href} className="group flex items-start gap-3 py-4 border-b border-black/10 dark:border-slate-800 last:border-b-0" role="article" aria-labelledby={titleId}>
         <div className="relative w-16 h-16 overflow-hidden shrink-0 bg-[#E8E8E8] dark:bg-slate-800">
-          <Image
-            src={getSmartFallbackImage(article)}
-            alt=""
-            fill
-            sizes="64px"
-            className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out"
-            aria-hidden="true"
+          <CyberArticleImage
+            title={article.title}
+            category={article.category}
+            articleId={article.id}
+            featuredImage={article.image_url}
+            className="w-full h-full grayscale-[8%] transition-all duration-200 ease-in-out"
           />
         </div>
         <div className="min-w-0 flex-1">
