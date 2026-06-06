@@ -140,8 +140,8 @@ import json
 import sys
 
 proxies = {
-    'http': 'socks5h://tor_proxy:9050',
-    'https': 'socks5h://tor_proxy:9050'
+    'http': 'socks5h://tor_proxy:9150',
+    'https': 'socks5h://tor_proxy:9150'
 }
 handler = urllib.request.ProxyHandler(proxies)
 opener = urllib.request.build_opener(handler)
