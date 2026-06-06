@@ -135,29 +135,52 @@ echo -e "\n${YELLOW}[*] PHASE 4: Executing active Verification Suite...${NC}"
 # A. Tor Egress and Onion-routing verification
 echo -e "${YELLOW}[*] Verifying Tor Proxy routing and exit-node verification...${NC}"
 TOR_STATUS=$($DOCKER_COMPOSE -f workers/docker-compose.yml exec -T zayron_crew python -c "
-import urllib.request
+import socket
 import json
 import sys
 
-proxies = {
-    'http': 'socks5h://tor_proxy:9150',
-    'https': 'socks5h://tor_proxy:9150'
-}
-handler = urllib.request.ProxyHandler(proxies)
-opener = urllib.request.build_opener(handler)
 try:
-    req = urllib.request.Request(
-        'https://check.torproject.org/api/ip',
-        headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0'}
-    )
-    with opener.open(req, timeout=15) as response:
-        data = json.loads(response.read().decode('utf-8'))
-        is_tor = data.get('IsTor', False)
-        ip = data.get('IP', 'Unknown')
-        if is_tor:
-            print(f'SUCCESS|{ip}')
-        else:
-            print('FAILED_NOT_TOR')
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(15)
+    s.connect(('tor_proxy', 9150))
+    s.sendall(b'\x05\x01\x00')
+    resp = s.recv(2)
+    if resp != b'\x05\x00':
+        print('FAILED_SOCKS_HANDSHAKE')
+        sys.exit(0)
+    domain = b'check.torproject.org'
+    s.sendall(b'\x05\x01\x00\x03' + bytes([len(domain)]) + domain + b'\x00\x50')
+    resp_header = s.recv(4)
+    if len(resp_header) < 4 or resp_header[1] != 0:
+        print('FAILED_SOCKS_CONNECT')
+        sys.exit(0)
+    atyp = resp_header[3]
+    if atyp == 1:
+        s.recv(6)
+    elif atyp == 3:
+        addr_len = s.recv(1)[0]
+        s.recv(addr_len + 2)
+    elif atyp == 4:
+        s.recv(18)
+    
+    s.sendall(b'GET /api/ip HTTP/1.1\r\nHost: check.torproject.org\r\nConnection: close\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0\r\n\r\n')
+    
+    resp_data = b''
+    while True:
+        chunk = s.recv(4096)
+        if not chunk:
+            break
+        resp_data += chunk
+    s.close()
+    
+    body = resp_data.split(b'\r\n\r\n', 1)[1].decode('utf-8')
+    data = json.loads(body)
+    is_tor = data.get('IsTor', False)
+    ip = data.get('IP', 'Unknown')
+    if is_tor:
+        print(f'SUCCESS|{ip}')
+    else:
+        print('FAILED_NOT_TOR')
 except Exception as e:
     print(f'ERROR|{e}')
 " | tr -d '\r')
