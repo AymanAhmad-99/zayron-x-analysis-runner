@@ -10,6 +10,16 @@ const CATEGORY_THEMES: Record<string, string> = {
   'default': 'cyber warfare classification dark chamber, high-contrast matrix server racks, cinematic suspense mood, sharp focus, volumetric dust particles',
 };
 
+const UNSPLASH_FALLBACKS: Record<string, string> = {
+  'threat_intel': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
+  'vulnerabilities': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
+  'osint': 'https://images.unsplash.com/photo-1504711434969-e33886168d6c?w=800&q=80',
+  'tools': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80',
+  'default': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80',
+};
+
+const SVG_GRID_PLACEHOLDER = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450"><rect width="800" height="450" fill="%23050505"/><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="%23151515" stroke-width="0.5"/></pattern></defs><rect width="800" height="450" fill="url(%23grid)"/><line x1="0" y1="0" x2="800" y2="450" stroke="%231e1b4b" stroke-width="0.5" opacity="0.3"/><line x1="800" y1="0" x2="0" y2="450" stroke="%231e1b4b" stroke-width="0.5" opacity="0.3"/></svg>`;
+
 function normalizeCategory(category: string): string {
   if (!category) return 'default';
   const c = category.toLowerCase().trim().replace(/[-\s]/g, '_');
@@ -32,17 +42,15 @@ function generateImageUrl(title: string, category: string, id: string): string {
   const normCategory = normalizeCategory(category);
   const themePrompt = CATEGORY_THEMES[normCategory] ?? CATEGORY_THEMES['default'];
   
-  // 1. Clean and completely purge boilerplate words to prevent uniform collapse
   const stopWords = new Set(['strategic', 'analysis', 'assessment', 'executive', 'sitrep', 'report', 'security', 'management', 'risk', 'via', 'and', 'the', 'for', 'with']);
   const cleanKeywords = title
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, '')
     .split(' ')
     .filter(word => word.length > 2 && !stopWords.has(word))
     .slice(0, 4)
-    .join(' ');
+    .join(' ') || 'cyber operations';
 
-  // 2. Inject cryptographic noise string directly inside the prompt sentence text to break uniformity
   const cryptoNoise = `environmental data stream node signature hex alpha ${(id ?? '').slice(0, 8)}`;
   
   const fullPrompt = `${themePrompt}, target vector focused on [${cleanKeywords}], architectural cryptography fingerprint [${cryptoNoise}], ultra-detailed corporate threat asset photography, 8k resolution, cinematic lighting, octane render, sharp focus --v 6.0`;
@@ -67,24 +75,72 @@ export default function CyberArticleImage({
   priority = false,
 }: CyberArticleImageProps) {
   const [loaded, setLoaded] = useState(false);
-  const [imgError, setImgError] = useState(false);
+  const [sourceTier, setSourceTier] = useState<'featured' | 'ai' | 'unsplash' | 'svg'>('featured');
   const imgRef = useRef<HTMLImageElement>(null);
 
   const normCategory = normalizeCategory(category);
-  const displaySrc = (featuredImage && !imgError) ? featuredImage : generateImageUrl(title, normCategory, articleId);
 
-  // Reset states on src change to support dynamic transitions
+  // Initialize or reset source tier based on featured image availability
   useEffect(() => {
+    if (featuredImage) {
+      setSourceTier('featured');
+    } else {
+      setSourceTier('ai');
+    }
     setLoaded(false);
-    setImgError(false);
-  }, [displaySrc]);
+  }, [featuredImage, title, category, articleId]);
 
-  // Handle cached images: check complete status natively
+  // Determine display source based on current active tier
+  let displaySrc = '';
+  if (sourceTier === 'featured') {
+    displaySrc = featuredImage || '';
+  } else if (sourceTier === 'ai') {
+    displaySrc = generateImageUrl(title, normCategory, articleId);
+  } else if (sourceTier === 'unsplash') {
+    displaySrc = UNSPLASH_FALLBACKS[normCategory] ?? UNSPLASH_FALLBACKS['default'] ?? '';
+  } else {
+    displaySrc = SVG_GRID_PLACEHOLDER;
+  }
+
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete) {
+    if (!img || !displaySrc) return;
+
+    let active = true;
+
+    const handleLoad = () => {
+      if (!active) return;
       setLoaded(true);
+    };
+
+    const handleError = () => {
+      if (!active) return;
+      // Advance to next tier on failure
+      setSourceTier((prev) => {
+        if (prev === 'featured') return 'ai';
+        if (prev === 'ai') return 'unsplash';
+        return 'svg';
+      });
+      setLoaded(false);
+    };
+
+    // Native tracking checks for cached/immediate delivery
+    if (img.complete) {
+      if (img.naturalWidth > 0) {
+        handleLoad();
+      } else {
+        handleError();
+      }
     }
+
+    img.addEventListener('load', handleLoad);
+    img.addEventListener('error', handleError);
+
+    return () => {
+      active = false;
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
+    };
   }, [displaySrc]);
 
   return (
@@ -106,12 +162,6 @@ export default function CyberArticleImage({
         src={displaySrc}
         alt={title}
         className={`w-full h-full object-cover transition-all duration-700 ease-out transform ${loaded ? 'scale-100 opacity-100 filter brightness-90 contrast-110' : 'scale-105 opacity-0'}`}
-        onLoad={() => setLoaded(true)}
-        onError={() => {
-          if (displaySrc === featuredImage) {
-            setImgError(true);
-          }
-        }}
         loading={priority ? 'eager' : 'lazy'}
       />
     </div>
