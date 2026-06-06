@@ -25,6 +25,16 @@ echo -e "${CYAN}================================================================
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Detect docker compose version (standard 'docker compose' vs legacy standalone 'docker-compose')
+if docker compose version &>/dev/null; then
+    DOCKER_COMPOSE="docker compose"
+elif command -v docker-compose &>/dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+else
+    echo -e "${RED}[!] Fatal: Neither 'docker compose' nor 'docker-compose' is available!${NC}"
+    exit 1
+fi
+
 # ----------------------------------------------------------------------------
 # STEP 1: Server Cleansing (Orphaned / Dangling Resource Elimination)
 # ----------------------------------------------------------------------------
@@ -33,7 +43,7 @@ echo -e "\n${YELLOW}[*] PHASE 1: Executing complete server cleanup prune...${NC}
 if command -v docker &>/dev/null; then
     if [ -f "workers/docker-compose.yml" ]; then
         echo -e "${YELLOW}[*] Stopping existing Zayron-X services...${NC}"
-        docker compose -f workers/docker-compose.yml down --remove-orphans || true
+        $DOCKER_COMPOSE -f workers/docker-compose.yml down --remove-orphans || true
     fi
     echo -e "${YELLOW}[*] Pruning unused container caches, dangling images, and volumes...${NC}"
     docker system prune -af --volumes
@@ -87,7 +97,7 @@ fi
 echo -e "\n${YELLOW}[*] PHASE 3: Building and launching micro-containers...${NC}"
 
 # Launch docker services in detached mode
-docker compose -f workers/docker-compose.yml up -d --build --force-recreate
+$DOCKER_COMPOSE -f workers/docker-compose.yml up -d --build --force-recreate
 
 echo -e "${YELLOW}[*] Waiting for microservices to initialize and complete healthcheck grace periods...${NC}"
 sleep 15
@@ -111,7 +121,7 @@ for container in "${services[@]}"; do
     if [ "$HEALTH" != "healthy" ]; then
         echo -e "${RED}[!] FATAL: Container ${container} failed its system healthcheck!${NC}"
         echo -e "${YELLOW}[*] Fetching crash logs for ${container}...${NC}"
-        docker compose -f workers/docker-compose.yml logs --tail=50 "$container" || true
+        $DOCKER_COMPOSE -f workers/docker-compose.yml logs --tail=50 "$container" || true
         exit 1
     fi
     echo -e "${GREEN}[+] Service ${container} is healthy.${NC}"
@@ -124,7 +134,7 @@ echo -e "\n${YELLOW}[*] PHASE 4: Executing active Verification Suite...${NC}"
 
 # A. Tor Egress and Onion-routing verification
 echo -e "${YELLOW}[*] Verifying Tor Proxy routing and exit-node verification...${NC}"
-TOR_STATUS=$(docker compose -f workers/docker-compose.yml exec -T zayron_crew python -c "
+TOR_STATUS=$($DOCKER_COMPOSE -f workers/docker-compose.yml exec -T zayron_crew python -c "
 import urllib.request
 import json
 import sys
@@ -162,7 +172,7 @@ fi
 
 # B. Supabase DB Connection and schema latency checking
 echo -e "${YELLOW}[*] Checking Supabase database connectivity...${NC}"
-DB_STATUS=$(docker compose -f workers/docker-compose.yml exec -T zayron_crew python -c "
+DB_STATUS=$($DOCKER_COMPOSE -f workers/docker-compose.yml exec -T zayron_crew python -c "
 import urllib.request
 import os
 import sys
@@ -202,7 +212,7 @@ fi
 
 # C. Telegram Gateway reachability check
 echo -e "${YELLOW}[*] Testing external reachability to Telegram network gateways...${NC}"
-TG_STATUS=$(docker compose -f workers/docker-compose.yml exec -T zayron_crew python -c "
+TG_STATUS=$($DOCKER_COMPOSE -f workers/docker-compose.yml exec -T zayron_crew python -c "
 import socket
 import sys
 try:
