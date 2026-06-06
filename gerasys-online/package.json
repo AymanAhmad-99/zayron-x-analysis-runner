@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node --max-old-space-size=3072 node_modules/next/dist/bin/next build --webpack",
+    "build": "node --max-old-space-size=4096 node_modules/next/dist/bin/next build --webpack",
     "build:cf": "opennextjs-cloudflare build --skipNextBuild",
     "postbuild:cf": "node scripts/patch-handler-fs.cjs",
     "deploy": "opennextjs-cloudflare deploy",

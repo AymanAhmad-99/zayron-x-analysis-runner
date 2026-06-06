@@ -1,2 +1,2 @@
 /*
-  Content-Security-Policy: default-src 'self'; img-src 'self' data: https://image.pollinations.ai https://images.unsplash.com;
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com; connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com;
