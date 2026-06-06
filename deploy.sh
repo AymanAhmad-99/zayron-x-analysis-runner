@@ -136,12 +136,13 @@ echo -e "\n${YELLOW}[*] PHASE 4: Executing active Verification Suite...${NC}"
 echo -e "${YELLOW}[*] Verifying Tor Proxy routing and exit-node verification...${NC}"
 TOR_STATUS=$($DOCKER_COMPOSE -f workers/docker-compose.yml exec -T zayron_crew python -c "
 import socket
+import ssl
 import json
 import sys
 
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(15)
+    s.settimeout(20)
     s.connect(('tor_proxy', 9150))
     s.sendall(b'\x05\x01\x00')
     resp = s.recv(2)
@@ -149,7 +150,7 @@ try:
         print('FAILED_SOCKS_HANDSHAKE')
         sys.exit(0)
     domain = b'check.torproject.org'
-    s.sendall(b'\x05\x01\x00\x03' + bytes([len(domain)]) + domain + b'\x00\x50')
+    s.sendall(b'\x05\x01\x00\x03' + bytes([len(domain)]) + domain + b'\x01\xbb')
     resp_header = s.recv(4)
     if len(resp_header) < 4 or resp_header[1] != 0:
         print('FAILED_SOCKS_CONNECT')
@@ -162,17 +163,19 @@ try:
         s.recv(addr_len + 2)
     elif atyp == 4:
         s.recv(18)
-    
-    s.sendall(b'GET /api/ip HTTP/1.1\r\nHost: check.torproject.org\r\nConnection: close\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0\r\n\r\n')
-    
+
+    ctx = ssl.create_default_context()
+    ss = ctx.wrap_socket(s, server_hostname='check.torproject.org')
+    ss.sendall(b'GET /api/ip HTTP/1.1\r\nHost: check.torproject.org\r\nConnection: close\r\nUser-Agent: Mozilla/5.0\r\n\r\n')
+
     resp_data = b''
     while True:
-        chunk = s.recv(4096)
+        chunk = ss.recv(4096)
         if not chunk:
             break
         resp_data += chunk
-    s.close()
-    
+    ss.close()
+
     body = resp_data.split(b'\r\n\r\n', 1)[1].decode('utf-8')
     data = json.loads(body)
     is_tor = data.get('IsTor', False)
