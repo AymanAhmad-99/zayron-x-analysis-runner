@@ -69,8 +69,8 @@ export function TabbedContent({ articles }: TabbedContentProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filterArticles(activeTab).map((article) => (
-          <ArticleCard key={article.id} article={article} />
+        {filterArticles(activeTab).map((article, index) => (
+          <ArticleCard key={article.id} article={article} neighborOffset={index * 17} />
         ))}
       </div>
     </section>

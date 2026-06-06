@@ -3754,7 +3754,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
-      "bytes": 254159,
+      "bytes": 254157,
       "imports": [
         {
           "path": "path",
@@ -4696,7 +4696,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/9107.js": {
-      "bytes": 16555,
+      "bytes": 17943,
       "imports": [],
       "format": "cjs"
     },
@@ -5634,7 +5634,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/intelligence/threat-intelligence/page.js": {
-      "bytes": 40179,
+      "bytes": 40203,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -5870,7 +5870,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/intelligence/[category]/[slug]/page.js": {
-      "bytes": 253271,
+      "bytes": 253295,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -6116,7 +6116,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/intelligence/[category]/page.js": {
-      "bytes": 37075,
+      "bytes": 37099,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -6352,7 +6352,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/intelligence/operations/page.js": {
-      "bytes": 50494,
+      "bytes": 50518,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -7593,7 +7593,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/unsplash-search/route.js": {
-      "bytes": 12146,
+      "bytes": 12365,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -12721,7 +12721,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/(site)/search/page.js": {
-      "bytes": 37288,
+      "bytes": 37312,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -28417,7 +28417,7 @@
           "bytesInOutput": 494
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
-          "bytesInOutput": 222436
+          "bytesInOutput": 222434
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage-instance.js": {
           "bytesInOutput": 504
@@ -28630,7 +28630,7 @@
           "bytesInOutput": 469852
         },
         ".open-next/server-functions/default/.next/server/chunks/9107.js": {
-          "bytesInOutput": 17207
+          "bytesInOutput": 18690
         },
         ".open-next/server-functions/default/.next/server/chunks/915.js": {
           "bytesInOutput": 9923
@@ -28777,16 +28777,16 @@
           "bytesInOutput": 2678
         },
         ".open-next/server-functions/default/.next/server/app/intelligence/threat-intelligence/page.js": {
-          "bytesInOutput": 40781
+          "bytesInOutput": 40807
         },
         ".open-next/server-functions/default/.next/server/app/intelligence/[category]/[slug]/page.js": {
-          "bytesInOutput": 278136
+          "bytesInOutput": 278162
         },
         ".open-next/server-functions/default/.next/server/app/intelligence/[category]/page.js": {
-          "bytesInOutput": 37655
+          "bytesInOutput": 37681
         },
         ".open-next/server-functions/default/.next/server/app/intelligence/operations/page.js": {
-          "bytesInOutput": 51449
+          "bytesInOutput": 51475
         },
         ".open-next/server-functions/default/.next/server/app/(site)/article/[slug]/page.js": {
           "bytesInOutput": 50021
@@ -28804,7 +28804,7 @@
           "bytesInOutput": 18822
         },
         ".open-next/server-functions/default/.next/server/app/api/unsplash-search/route.js": {
-          "bytesInOutput": 12537
+          "bytesInOutput": 12756
         },
         ".open-next/server-functions/default/.next/server/app/(site)/tools/[slug]/page.js": {
           "bytesInOutput": 35529
@@ -28873,7 +28873,7 @@
           "bytesInOutput": 20719
         },
         ".open-next/server-functions/default/.next/server/app/(site)/search/page.js": {
-          "bytesInOutput": 37957
+          "bytesInOutput": 37983
         },
         ".open-next/server-functions/default/.next/server/app/(site)/status/page.js": {
           "bytesInOutput": 36696
@@ -29104,7 +29104,7 @@
           "bytesInOutput": 68139
         }
       },
-      "bytes": 7675128
+      "bytes": 7676958
     }
   }
 }

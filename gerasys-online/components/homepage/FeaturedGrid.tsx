@@ -17,8 +17,8 @@ export function FeaturedGrid({ articles }: FeaturedGridProps) {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {articles.slice(0, 6).map((article) => (
-          <ArticleCard key={article.id} article={article} />
+        {articles.slice(0, 6).map((article, index) => (
+          <ArticleCard key={article.id} article={article} neighborOffset={index * 17} />
         ))}
       </div>
     </section>

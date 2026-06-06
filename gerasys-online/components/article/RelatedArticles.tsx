@@ -14,8 +14,8 @@ export function RelatedArticles({ articles }: RelatedArticlesProps) {
         Related Intelligence
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {articles.slice(0, 3).map((article) => (
-          <ArticleCard key={article.id} article={article} variant="default" />
+        {articles.slice(0, 3).map((article, index) => (
+          <ArticleCard key={article.id} article={article} variant="default" neighborOffset={index * 23} />
         ))}
       </div>
     </section>

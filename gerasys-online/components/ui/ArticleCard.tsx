@@ -8,9 +8,10 @@ import CyberArticleImage from "@/components/ui/CyberArticleImage";
 interface ArticleCardProps {
   article: Article;
   variant?: "default" | "hero" | "compact" | "list";
+  neighborOffset?: number;
 }
 
-function ArticleImage({ article, className, priority }: { article: Article; className?: string; priority?: boolean }) {
+function ArticleImage({ article, className, priority, neighborOffset }: { article: Article; className?: string; priority?: boolean; neighborOffset?: number }) {
   return (
     <CyberArticleImage
       title={article.title}
@@ -19,11 +20,12 @@ function ArticleImage({ article, className, priority }: { article: Article; clas
       featuredImage={article.image_url}
       className={className}
       priority={priority}
+      neighborOffset={neighborOffset}
     />
   );
 }
 
-export function ArticleCard({ article, variant = "default" }: ArticleCardProps) {
+export function ArticleCard({ article, variant = "default", neighborOffset = 0 }: ArticleCardProps) {
   const href = `/intelligence/${(article.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${article.slug}`;
   const titleId = `article-title-${article.slug}`;
 
@@ -31,7 +33,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
     return (
       <Link href={href} className="group block" role="article" aria-labelledby={titleId}>
         <div className="relative w-full overflow-hidden mb-5" style={{ aspectRatio: "21/9" }}>
-          <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" priority />
+          <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" priority neighborOffset={neighborOffset} />
         </div>
         <span className="eyebrow text-[0.62rem] mb-2 block">{formatCategoryLabel(article.category)}</span>
         <h2 id={titleId} className="headline text-balance group-hover:italic transition-all duration-200" style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)" }}>
@@ -61,6 +63,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
             articleId={article.id}
             featuredImage={article.image_url}
             className="w-full h-full grayscale-[8%] transition-all duration-200 ease-in-out"
+            neighborOffset={neighborOffset}
           />
         </div>
         <div className="min-w-0 flex-1">
@@ -97,7 +100,7 @@ export function ArticleCard({ article, variant = "default" }: ArticleCardProps) 
   return (
     <Link href={href} className="group block" role="article" aria-labelledby={titleId}>
       <div className="relative w-full overflow-hidden mb-4" style={{ aspectRatio: "16/9" }}>
-        <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" />
+        <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" neighborOffset={neighborOffset} />
       </div>
       <span className="eyebrow text-[0.62rem] mb-2 block">{formatCategoryLabel(article.category)}</span>
       <h3 id={titleId} className="headline dark:text-slate-200 leading-snug text-balance group-hover:italic transition-all duration-200" style={{ fontSize: "clamp(1rem, 1.6vw, 1.3rem)" }}>

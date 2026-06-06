@@ -28,6 +28,7 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
                 featuredImage={primary.image_url}
                 className="w-full h-full"
                 priority
+                neighborOffset={0}
               />
             </div>
             <div className="p-6 lg:p-10 flex flex-col flex-1">
@@ -68,6 +69,7 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
                   articleId={article.id}
                   featuredImage={article.image_url}
                   className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500"
+                  neighborOffset={(i + 1) * 17}
                 />
               </div>
               <div className="min-w-0 flex-1">
