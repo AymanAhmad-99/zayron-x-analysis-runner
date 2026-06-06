@@ -37,7 +37,7 @@ function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: st
     );
     response.headers.set("Content-Security-Policy", patched);
   } else {
-    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'unsafe-inline' 'unsafe-eval'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com; connect-src 'self' *.supabase.co https://*.workers.dev; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'`;
+    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'unsafe-inline' 'unsafe-eval'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com; connect-src 'self' *.supabase.co https://*.workers.dev; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'`;
     response.headers.set("Content-Security-Policy", enforcingCsp);
   }
 

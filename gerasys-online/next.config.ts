@@ -11,7 +11,7 @@ const CSP = [
   `default-src 'self'`,
   `script-src 'self' *.supabase.co 'unsafe-inline' 'unsafe-eval'`,
   `style-src 'self' fonts.googleapis.com 'unsafe-inline'`,
-  `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com`,
+  `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com`,
   `connect-src 'self' *.supabase.co https://*.workers.dev`,
   `font-src 'self' fonts.gstatic.com`,
   `frame-src 'self'`,

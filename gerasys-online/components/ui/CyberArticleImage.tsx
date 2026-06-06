@@ -1,12 +1,13 @@
-import Image from 'next/image';
-import { useState } from 'react';
+"use client";
 
-const CATEGORY_PROMPTS: Record<string, string> = {
-  'threat_intel': 'cyber threat intelligence dark holographic network map glowing red nodes',
-  'osint': 'dark web reconnaissance deep internet tunnel neon blue surveillance',
-  'vulnerabilities': 'vulnerability analysis binary code explosion red orange technical',
-  'tools': 'cyber operations command center digital warfare matrix green code',
-  'default': 'cybersecurity abstract digital fortress dark technology futuristic',
+import { useState, useEffect, useRef } from 'react';
+
+const CATEGORY_THEMES: Record<string, string> = {
+  'threat_intel': 'dramatic overhead military spy photography of an underground cyber operations command bunker, glowing crimson warning monitors, tactical terminal screens flashing breach payloads',
+  'osint': 'forensic extreme macro close-up of a shattered tactical smartphone screen lying on a cold stainless steel table, reflecting cascading green encrypted code arrays and decrypted data profiles',
+  'vulnerabilities': 'hyper-detailed award-winning macro shot of a melted corporate server silicon microchip on a smoking hardware motherboard, sharp amber laser grid lines cutting through volumetric fog',
+  'tools': 'high-contrast dramatic close-up of a backlit stealth mechanical hacker keyboard drenched in shifting binary code reflections, a custom black offensive hardware injection device attached to the side interface port',
+  'default': 'cyber warfare classification dark chamber, high-contrast matrix server racks, cinematic suspense mood, sharp focus, volumetric dust particles',
 };
 
 function normalizeCategory(category: string): string {
@@ -27,57 +28,25 @@ function normalizeCategory(category: string): string {
   return 'default';
 }
 
-function generateImageUrl(title: string, category: string, seed: string): string {
+function generateImageUrl(title: string, category: string, id: string): string {
   const normCategory = normalizeCategory(category);
-  const categoryPrompt = CATEGORY_PROMPTS[normCategory] ?? CATEGORY_PROMPTS['default'];
-  const titleKeywords = title.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(' ').slice(0, 5).join(' ');
-  const fullPrompt = `${categoryPrompt} ${titleKeywords} cinematic dark professional`;
-  const encodedPrompt = encodeURIComponent(fullPrompt);
-  const numericSeed = (seed ?? '').replace(/[^a-f0-9]/g, '').slice(0, 8);
-  const seedNumber = parseInt(numericSeed, 16) || 42;
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=450&seed=${seedNumber}&nologo=true&enhance=true`;
-}
+  const themePrompt = CATEGORY_THEMES[normCategory] ?? CATEGORY_THEMES['default'];
+  
+  // 1. Clean and completely purge boilerplate words to prevent uniform collapse
+  const stopWords = new Set(['strategic', 'analysis', 'assessment', 'executive', 'sitrep', 'report', 'security', 'management', 'risk', 'via', 'and', 'the', 'for', 'with']);
+  const cleanKeywords = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .split(' ')
+    .filter(word => word.length > 2 && !stopWords.has(word))
+    .slice(0, 4)
+    .join(' ');
 
-function CyberFallbackSVG({ category }: { category: string }) {
-  const colors: Record<string, [string, string, string]> = {
-    'threat_intel':    ['#0f1923', '#ff3366', '#ff6b35'],
-    'osint':           ['#0a0f1e', '#00d4ff', '#0066ff'],
-    'tools':           ['#0a1a0a', '#00ff88', '#00cc44'],
-    'vulnerabilities': ['#1a0a0a', '#ff6600', '#ff3300'],
-    'default':          ['#0f0f1a', '#4444ff', '#2222cc'],
-  };
-  const normCategory = normalizeCategory(category);
-  const [bg, c1, c2] = (colors[normCategory] ?? colors['default']) as [string, string, string];
-  const id = `grad-${normCategory}`;
-  const displayLabel = normCategory === 'default' ? 'CYBERSECURITY' : normCategory.toUpperCase().replace('_', ' ');
-
-  return (
-    <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <defs>
-        <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={bg} />
-          <stop offset="50%" stopColor={c1} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={c2} stopOpacity="0.1" />
-        </linearGradient>
-      </defs>
-      <rect width="800" height="450" fill={`url(#${id})`} />
-      {Array.from({ length: 12 }, (_, i) => Array.from({ length: 7 }, (_, j) => (
-        <circle key={`${i}-${j}`} cx={i * 70 + 25} cy={j * 70 + 25} r="1.5" fill={c1} opacity="0.4" />
-      )))}
-      {Array.from({ length: 6 }, (_, i) => (
-        <line key={`h-${i}`} x1="0" y1={i * 90 + 45} x2="800" y2={i * 90 + 45} stroke={c1} strokeWidth="0.5" opacity="0.15" />
-      ))}
-      {Array.from({ length: 9 }, (_, i) => (
-        <line key={`v-${i}`} x1={i * 100 + 50} y1="0" x2={i * 100 + 50} y2="450" stroke={c1} strokeWidth="0.5" opacity="0.15" />
-      ))}
-      <circle cx="400" cy="225" r="80" fill="none" stroke={c1} strokeWidth="1" opacity="0.3" />
-      <circle cx="400" cy="225" r="50" fill="none" stroke={c2} strokeWidth="0.5" opacity="0.5" />
-      <circle cx="400" cy="225" r="8" fill={c1} opacity="0.8" />
-      <text x="400" y="340" textAnchor="middle" fill={c1} fontSize="11" fontFamily="monospace" opacity="0.6" letterSpacing="4">
-        {displayLabel}
-      </text>
-    </svg>
-  );
+  // 2. Inject cryptographic noise string directly inside the prompt sentence text to break uniformity
+  const cryptoNoise = `environmental data stream node signature hex alpha ${(id ?? '').slice(0, 8)}`;
+  
+  const fullPrompt = `${themePrompt}, target vector focused on [${cleanKeywords}], architectural cryptography fingerprint [${cryptoNoise}], ultra-detailed corporate threat asset photography, 8k resolution, cinematic lighting, octane render, sharp focus --v 6.0`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=800&height=450&nologo=true&enhance=true`;
 }
 
 interface CyberArticleImageProps {
@@ -97,31 +66,54 @@ export default function CyberArticleImage({
   className = '',
   priority = false,
 }: CyberArticleImageProps) {
+  const [loaded, setLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [aiError, setAiError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  if (featuredImage && !imgError) {
-    return (
-      <div className={`relative overflow-hidden ${className}`}>
-        <Image src={featuredImage} alt={title} fill className="object-cover" priority={priority} onError={() => setImgError(true)} />
-      </div>
-    );
-  }
+  const normCategory = normalizeCategory(category);
+  const displaySrc = (featuredImage && !imgError) ? featuredImage : generateImageUrl(title, normCategory, articleId);
 
-  const normalizedCat = normalizeCategory(category);
+  // Reset states on src change to support dynamic transitions
+  useEffect(() => {
+    setLoaded(false);
+    setImgError(false);
+  }, [displaySrc]);
 
-  if (!aiError) {
-    const aiUrl = generateImageUrl(title, normalizedCat, articleId);
-    return (
-      <div className={`relative overflow-hidden ${className}`}>
-        <img src={aiUrl} alt={title} className="w-full h-full object-cover" onError={() => setAiError(true)} loading={priority ? 'eager' : 'lazy'} />
-      </div>
-    );
-  }
+  // Handle cached images: check complete status natively
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete) {
+      setLoaded(true);
+    }
+  }, [displaySrc]);
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <CyberFallbackSVG category={normalizedCat} />
+    <div className={`relative overflow-hidden bg-neutral-950 border border-neutral-900 ${className}`}>
+      {/* 2027 Premium Animated Skeleton Shimmer Layer */}
+      {!loaded && (
+        <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 bg-gradient-to-br from-neutral-900 to-neutral-950 animate-pulse">
+          <div className="flex justify-between items-center opacity-30">
+            <span className="font-mono text-[8px] tracking-widest text-neutral-400">SYS_RECON_LOADING...</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+          </div>
+          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-neutral-800 to-transparent" />
+          <span className="font-mono text-[7px] tracking-widest text-neutral-500 text-right uppercase">{normCategory}</span>
+        </div>
+      )}
+
+      <img
+        ref={imgRef}
+        src={displaySrc}
+        alt={title}
+        className={`w-full h-full object-cover transition-all duration-700 ease-out transform ${loaded ? 'scale-100 opacity-100 filter brightness-90 contrast-110' : 'scale-105 opacity-0'}`}
+        onLoad={() => setLoaded(true)}
+        onError={() => {
+          if (displaySrc === featuredImage) {
+            setImgError(true);
+          }
+        }}
+        loading={priority ? 'eager' : 'lazy'}
+      />
     </div>
   );
 }
