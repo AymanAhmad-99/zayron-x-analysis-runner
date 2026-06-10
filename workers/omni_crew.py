@@ -151,8 +151,8 @@ class GeminiClient:
                         res = await asyncio.to_thread(_call)
                         
                         # MISSION 1: IMMUTABLE THROTTLING CONDITION (12 RPM)
-                        log.debug("Enforcing immutable 5.0s rate limit sleep...")
-                        await asyncio.sleep(5.0)
+                        log.debug("Enforcing immutable 20.0s rate limit sleep...")
+                        await asyncio.sleep(20.0)
                         
                         return res
 

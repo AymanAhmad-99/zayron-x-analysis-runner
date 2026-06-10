@@ -275,6 +275,7 @@ async def insert_raw_feed(
         "raw_content": raw_content,
         "original_language": "en",
         "status": "pending",
+        "category": article.source_category,
     }
 
     headers = {

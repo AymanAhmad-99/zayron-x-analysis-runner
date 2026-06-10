@@ -38,12 +38,15 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import hashlib
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 # Ensure shared package is importable from project root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from shared.models.cve import CVERecord
+from shared.models.fbr_calculator import FBRCalculator
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -116,7 +119,7 @@ def fetch_nvd_cves(
                 data = json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             log.error("NVD API HTTP %s: %s", exc.code, exc.reason)
-            if exc.code == 403:
+            if exc.code in (403, 429):
                 log.warning("Rate limited by NVD — cooling down 60s ...")
                 time.sleep(60)
                 continue
@@ -307,30 +310,19 @@ def infer_sector_from_product(product: str) -> str:
     return "Technology"  # Default for software CVEs
 
 
-def compute_fbr_score(
+def compute_fbr_for_cve(
     cvss_score: float,
     product: str,
-    vendor: str,
-) -> float:
-    """Compute the Financial Blast Radius score for a CVE.
-
-    Formula: FBR = CVSS_base × sector_weight × geo_exposure × base_cost_factor
-    """
-    if cvss_score <= 0:
-        return 0.0
-
-    sector = infer_sector_from_product(product)
-    sector_weight = SECTOR_WEIGHTS.get(sector, 1.0)
-
-    # Default to US exposure since NVD is US-centric
-    geo_weight = GEO_EXPOSURE.get("US", 1.2)
-
-    # Scale factor: higher CVSS = exponentially higher financial exposure
-    # FBR = base_cost × (cvss / 10)^2 × sector × geo
-    cvss_factor = (cvss_score / 10.0) ** 2
-    fbr = BASE_BREACH_COST_PER_RECORD * 10000 * cvss_factor * sector_weight * geo_weight
-
-    return round(fbr, 2)
+) -> dict:
+    """Compute the Financial Blast Radius score for a CVE using the centralized FBRCalculator."""
+    sector = FBRCalculator.infer_sector(product)
+    sector_weight = FBRCalculator.get_sector_weight(sector)
+    geo_factor = FBRCalculator.get_geo_exposure("US")
+    return FBRCalculator.calculate_impact(
+        base_cvss=cvss_score,
+        sector_weight=sector_weight,
+        geo_factor=geo_factor,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -402,6 +394,74 @@ def upsert_cves(cves: list[dict]) -> int:
 # Daemon Core
 # ---------------------------------------------------------------------------
 
+def insert_raw_feed_sync(cve: dict) -> bool:
+    """Insert a raw CVE payload into raw_feeds with status='pending' and category='vulnerabilities'."""
+    cve_id = cve.get("cve_id")
+    title = cve.get("title") or ""
+    description = cve.get("description") or ""
+    severity = cve.get("severity") or "Unknown"
+    cvss_score = cve.get("cvss_score") or 0.0
+    cvss_vector = cve.get("cvss_vector") or ""
+    product = cve.get("affected_product") or "Unknown"
+    vendor = cve.get("vendor") or "Unknown"
+
+    content_hash = hashlib.sha256(f"{cve_id}".encode("utf-8")).hexdigest()
+
+    raw_content = (
+        f"[CVE:{cve_id}] [HASH:{content_hash}]\n\n"
+        f"# {title}\n\n"
+        f"**CVE ID:** {cve_id}\n"
+        f"**Severity:** {severity}\n"
+        f"**CVSS Score:** {cvss_score}\n"
+        f"**CVSS Vector:** {cvss_vector}\n"
+        f"**Product:** {product}\n"
+        f"**Vendor:** {vendor}\n\n"
+        f"**Description:**\n{description}"
+    )
+
+    headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "Accept": "application/json",
+    }
+
+    # Query duplicate using LIKE with content_hash in raw_content
+    check_url = f"{SUPABASE_URL}/rest/v1/raw_feeds?raw_content=like.*{content_hash}*&select=id"
+    req_check = urllib.request.Request(check_url, headers=headers)
+    try:
+        with urllib.request.urlopen(req_check, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            if data:
+                log.info("CVE raw feed for %s already exists, skipping.", cve_id)
+                return True
+    except Exception as e:
+        log.error("Failed to check if CVE %s raw feed exists: %s", cve_id, e)
+
+    payload = {
+        "source_channel": "cveNotify",
+        "raw_content": raw_content,
+        "original_language": "en",
+        "status": "pending",
+        "category": "vulnerabilities"
+    }
+
+    url = f"{SUPABASE_URL}/rest/v1/raw_feeds"
+    headers["Content-Type"] = "application/json"
+    headers["Prefer"] = "return=minimal"
+
+    req = urllib.request.Request(
+        url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status in (200, 201, 204):
+                log.info("Queued raw feed for CVE %s", cve_id)
+                return True
+    except Exception as e:
+        log.error("Failed to insert CVE raw feed for %s: %s", cve_id, e)
+    return False
+
+
 def run_cycle(api_key: str | None) -> None:
     """Execute a single CVE ingestion cycle (last N minutes)."""
     now = datetime.now(timezone.utc)
@@ -468,16 +528,30 @@ def run_cycle(api_key: str | None) -> None:
             min(fbr_values), max(fbr_values), sum(fbr_values) / len(fbr_values),
         )
 
-    inserted = upsert_cves(parsed)
-    log.info("Done — %d CVEs upserted into Supabase.", inserted)
+    # Strip non-existent database columns for cves table upsert
+    db_cves = []
+    for r in parsed:
+        db_cve = r.copy()
+        db_cve.pop("fbr_score", None)
+        db_cve.pop("fbr_risk_tier", None)
+        db_cve.pop("fbr_loss_frequency", None)
+        db_cves.append(db_cve)
+
+    inserted = upsert_cves(db_cves)
+    log.info("Done — %d CVEs upserted into Supabase cves table.", inserted)
+
+    # Queue in raw_feeds for AI processing
+    for r in parsed:
+        insert_raw_feed_sync(r)
+    log.info("Done — raw feeds queued for AI processing.")
 
 
-def main() -> None:
+async def main_async() -> None:
     """Run the CVE Worker as a continuous intelligence daemon."""
     api_key = os.getenv("NVD_API_KEY")
 
     log.info("=" * 64)
-    log.info("  ZAYRON-X CVE Intelligence Daemon v3.0")
+    log.info("  ZAYRON-X CVE Intelligence Daemon v3.0 (Async)")
     log.info("  NVD API Key: %s", "CONFIGURED" if api_key else "NOT SET (rate limited)")
     log.info("  Poll Interval: %d minutes", CVE_POLL_INTERVAL)
     log.info("  FBR Enrichment: ENABLED")
@@ -489,7 +563,8 @@ def main() -> None:
     since = now - timedelta(hours=24)
 
     try:
-        vulns = fetch_nvd_cves(since, now, api_key)
+        loop = asyncio.get_running_loop()
+        vulns = await loop.run_in_executor(None, fetch_nvd_cves, since, now, api_key)
         log.info("Backfill received %d CVE items.", len(vulns))
 
         parsed: list[dict] = []
@@ -513,8 +588,22 @@ def main() -> None:
                     log.warning("CVE validation failed: %s", exc)
 
         if parsed:
-            inserted = upsert_cves(parsed)
-            log.info("Backfill complete — %d CVEs upserted.", inserted)
+            # Strip non-existent database columns for cves table upsert
+            db_cves = []
+            for r in parsed:
+                db_cve = r.copy()
+                db_cve.pop("fbr_score", None)
+                db_cve.pop("fbr_risk_tier", None)
+                db_cve.pop("fbr_loss_frequency", None)
+                db_cves.append(db_cve)
+
+            inserted = await loop.run_in_executor(None, upsert_cves, db_cves)
+            log.info("Backfill complete — %d CVEs upserted into cves table.", inserted)
+
+            # Queue raw feeds for AI processing
+            for r in parsed:
+                await loop.run_in_executor(None, insert_raw_feed_sync, r)
+            log.info("Backfill raw feeds queued for AI processing.")
     except Exception as exc:
         log.error("Backfill failed (non-fatal): %s", exc)
 
@@ -525,18 +614,19 @@ def main() -> None:
         log.info("═══ CVE Cycle %d starting ═══", cycle)
 
         try:
-            run_cycle(api_key)
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, run_cycle, api_key)
         except Exception as exc:
             log.error(
                 "Cycle %d crashed (non-fatal): %s", cycle, exc, exc_info=True
             )
 
-        log.info("Sleeping %d minutes until next cycle...", CVE_POLL_INTERVAL)
-        time.sleep(CVE_POLL_INTERVAL * 60)
+        log.info("Sleeping 300 seconds until next cycle...")
+        await asyncio.sleep(300) # Clean 300-second backoff/polling loop interval
 
 
 if __name__ == "__main__":
     try:
-        main()
+        asyncio.run(main_async())
     except KeyboardInterrupt:
         log.info("CVE Daemon shutdown.")

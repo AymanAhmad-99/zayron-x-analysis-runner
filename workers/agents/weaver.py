@@ -91,43 +91,38 @@ STYLE RULES:
 REPORT STRUCTURE (ALL SECTIONS MANDATORY)
 ═══════════════════════════════════════════════════════════════
 
-The report MUST be 1500+ words with ALL of the following Markdown sections:
+The report MUST be 1500+ words with ALL of the following HTML sections.
+CRITICAL FORMATTING INVARIANT: You MUST NEVER output raw markdown characters like '##', '###', '**', or '*' inside the 'content' or 'executive_summary' fields. The AI must wrap the intelligence report using clean, semantic HTML elements that perfectly parse on the frontend:
 
-### KEY TAKEAWAYS
-5-7 one-sentence bullets. Each is a self-contained fact, risk metric, or \
-action item. Embed SEO keywords naturally.
+<h2>KEY TAKEAWAYS</h2>
+Must be compiled into a clean HTML Unordered List (<ul><li>). 5-7 one-sentence bullets. Each is a self-contained fact, risk metric, or action item. Embed SEO keywords naturally.
 
-### EXECUTIVE THREAT BRIEF
-BLUF (Bottom Line Up Front) opening. Affected entities, geographies, \
-sectors. Quantitative blast radius estimate. Strategic significance.
+<h2>EXECUTIVE THREAT BRIEF</h2>
+Technical Executive Summary: Wrapped inside paragraph tags (<p>). Includes BLUF (Bottom Line Up Front) opening, affected entities, geographies, sectors, quantitative blast radius estimate, and strategic significance.
 
-### TECHNICAL DEEP-DIVE
-Root cause, exploit chain, CVSS v4.0 vector justification, affected \
-versions matrix, malware lineage if applicable.
+<h2>TECHNICAL DEEP-DIVE</h2>
+Root cause, exploit chain, CVSS v4.0 vector justification, affected versions matrix, malware lineage if applicable. Wrapped in standard HTML paragraph (<p>) and table/list elements.
 
-### MITRE ATT&CK ENTERPRISE MATRIX
-Table: | Tactic | Technique ID | Technique Name | Observed Activity |
+<h2>MITRE ATT&CK ENTERPRISE MATRIX</h2>
+Must be rendered into a beautiful HTML Table (<table>) with Bold headers (<th>) for Tactic, Technique ID, and Observed Activity. Use <thead>, <tbody>, <tr>, <th>, <td> tags.
 
-### DETECTION ENGINEERING
-YARA rules, Sigma YAML, Snort/Suricata signatures (ONLY if network attack), \
-KQL/SPL hunting queries, EDR telemetry queries.
+<h2>DETECTION ENGINEERING</h2>
+Yara and Sigma rules MUST be strictly enclosed inside HTML preformatted tags (<pre><code>) with proper indentation so security analysts can copy them with one click. Include KQL/SPL hunting queries, Snort/Suricata, or EDR queries in similar (<pre><code>) tags.
 
-### INDICATORS OF COMPROMISE
-Table: | Type | Value | Context | Confidence |
-ONLY include IoCs from the verified list. If empty, state: \
-"No indicators were present in the source intelligence."
+<h2>INDICATORS OF COMPROMISE</h2>
+Table with bold headers for Type, Value, Context, and Confidence. Use <table>, <thead>, <tbody>, <tr>, <th>, <td>. ONLY include IoCs from the verified list. If empty, state: "No indicators were present in the source intelligence."
 
-### COMPLIANCE & REGULATORY IMPACT
-ISO 27001, NIST CSF 2.0, GDPR, NIS2, PCI-DSS mappings with fine exposure.
+<h2>COMPLIANCE & REGULATORY IMPACT</h2>
+ISO 27001, NIST CSF 2.0, GDPR, NIS2, PCI-DSS mappings with fine exposure. Must be clearly isolated with a bold divider (<hr>) or specific HTML blockquote component (<blockquote>) displaying the calculated compliance risks.
 
-### FINANCIAL BLAST RADIUS
-FBR score, breach cost range, sector multiplier, mitigation ROI.
+<h2>FINANCIAL BLAST RADIUS</h2>
+FBR score, breach cost range, sector multiplier, mitigation ROI. Must be clearly isolated with a bold divider (<hr>) or specific HTML blockquote component (<blockquote>) displaying the calculated dynamic financial threat.
 
-### REMEDIATION ROADMAP
-Tier 1 (0-24h), Tier 2 (24-72h), Tier 3 (1-4 weeks).
+<h2>REMEDIATION ROADMAP</h2>
+Tier 1 (0-24h), Tier 2 (24-72h), Tier 3 (1-4 weeks). Wrapped in HTML lists or paragraphs.
 
-### STRATEGIC OUTLOOK
-30/60/90-day forecast with second-order effects.
+<h2>STRATEGIC OUTLOOK</h2>
+30/60/90-day forecast with second-order effects. Wrapped in HTML paragraphs.
 
 ═══════════════════════════════════════════════════════════════
 OUTPUT FORMAT
@@ -137,17 +132,17 @@ Return a valid JSON object — no markdown fences, no commentary:
 
 {
   "title": "SEO-optimized title (60-120 chars)",
-  "executive_summary": "4-6 sentence BLUF summary",
-  "content": "## KEY TAKEAWAYS\\n- ...\\n\\n## EXECUTIVE THREAT BRIEF\\n... \
-[FULL 1500+ WORD MARKDOWN WITH ALL SECTIONS]",
+  "executive_summary": "<p>4-6 sentence BLUF summary. Fully semantic HTML.</p>",
+  "teaser_text": "High-impact public teaser summary of the breach or threat vector, maximum 40 words.",
+  "is_public_teaser": true,
+  "premium_payload": "<h2>KEY TAKEAWAYS</h2>\n<ul>\n  <li>First key takeaway...</li>\n</ul>\n\n<h2>EXECUTIVE THREAT BRIEF</h2>\n<p>Executive threat brief...</p>\n\n<h2>MITRE ATT&CK ENTERPRISE MATRIX</h2>\n<table>\n  <thead>\n    <tr>\n      <th>Tactic</th>\n      <th>Technique ID</th>\n      <th>Technique Name</th>\n      <th>Observed Activity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td><b>Tactic Name</b></td>\n      <td><b>T1234</b></td>\n      <td>Technique Name</td>\n      <td>Observed activity details...</td>\n    </tr>\n  </tbody>\n</table>\n\n[FULL 1500+ WORD SEMANTIC HTML REPORT WITH ALL SECTIONS, COMPLETELY FREE OF ## OR ** OR * MARKDOWN]",
   "category": "Threat Intelligence|Malware Analysis|APT Activity|...",
   "severity": "Critical|High|Medium|Low|Informational",
   "mitre_attack_ttps": ["T1566.001 — Spearphishing Attachment", ...],
   "yara_rules": ["rule Name { ... }"],
-  "sigma_rules": ["title: ...\\nid: ..."],
+  "sigma_rules": ["title: ...\nid: ..."],
   "snort_signatures": [],
-  "iocs": [{"type": "SHA256", "value": "...", "context": "...", \
-"confidence": "High"}],
+  "iocs": [{"type": "SHA256", "value": "...", "context": "...", "confidence": "High"}],
   "iso_27001_controls": ["A.5.1", "A.8.1"],
   "nist_csf_functions": ["GOVERN — ...", "DETECT — ..."],
   "gdpr_implications": "GDPR impact assessment",
@@ -339,7 +334,9 @@ def parse_weaver_response(
         sitrep = ExecutiveSITREP(
             title=parsed.get("title", ""),
             executive_summary=parsed.get("executive_summary", ""),
-            content=parsed.get("content", ""),
+            content=parsed.get("premium_payload") or parsed.get("content") or "",
+            teaser_text=parsed.get("teaser_text"),
+            is_public_teaser=parsed.get("is_public_teaser", True),
             category=parsed.get("category", validated.harvest.preliminary_category),
             severity=parsed.get("severity", validated.severity),
             mitre_attack_ttps=parsed.get("mitre_attack_ttps", validated.mitre_ttps),

@@ -57,6 +57,8 @@ class ArticleInsert(BaseModel):
     source_channel: str | None = None
     cvss_v4_score: float | None = None
     published_at: str | None = None  # ISO 8601 string for display ordering
+    is_public_teaser: bool | None = True
+    teaser_text: str | None = None
 
     @field_validator("slug")
     @classmethod
@@ -241,6 +243,8 @@ class ArticleSITREP(BaseModel):
     gdpr_implications: str | None = None
     gdpr_impact: str | None = None
     ai_image_prompt: str | None = None
+    is_public_teaser: bool | None = True
+    teaser_text: str | None = None
 
     @field_validator("category")
     @classmethod

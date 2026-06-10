@@ -203,6 +203,45 @@ services:
         max-size: "10m"
         max-file: "2"
 
+  # ──────────────────────────────────────────────────────────────────────────
+  # 6. INGESTION DAEMON: NIST NVD CVE THREAT FEED COLLECTOR
+  # ──────────────────────────────────────────────────────────────────────────
+  zayron_cve:
+    build:
+      context: ..
+      dockerfile: workers/Dockerfile.workers
+    container_name: zayron_cve_daemon
+    restart: always
+    entrypoint: ["python", "-m", "workers.ingestors.cve_worker"]
+    env_file:
+      - ../.env
+    environment:
+      - PYTHONPATH=/app
+      - CVE_POLL_INTERVAL=15
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - NVD_API_KEY=${NVD_API_KEY}
+    networks:
+      - zayron_net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('CVE Collector OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 networks:
   zayron_net:
     driver: bridge

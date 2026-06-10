@@ -558,6 +558,7 @@ async def insert_raw_feeds(
                 "raw_content": f["text"],
                 "original_language": f.get("language", "auto"),
                 "status": "pending",
+                "category": f.get("category"),
                 "timestamp": f["timestamp"],
             }
             for f in batch

@@ -28,6 +28,7 @@ import aiohttp
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from shared.models import ArticleInsert
+from shared.models.fbr_calculator import FBRCalculator
 from workers.config import (
     CTI_AUTHORS,
     REVALIDATION_SECRET,
@@ -101,7 +102,14 @@ async def claim_pending_feeds(
         f"?status=eq.pending"
     )
     if feed_type:
-        select_url += f"&feed_type=eq.{feed_type}"
+        if feed_type == "cve":
+            select_url += "&source_channel=eq.cveNotify"
+        elif feed_type == "darkweb":
+            select_url += "&source_channel=like.darkweb_*"
+        elif feed_type == "rss":
+            select_url += "&source_channel=like.rss_*"
+        elif feed_type == "telegram":
+            select_url += "&source_channel=not.like.rss_*&source_channel=not.like.darkweb_*&source_channel=not.eq.cveNotify"
         
     select_url += (
         f"&order=created_at.asc"
@@ -277,6 +285,8 @@ async def persist_sitrep(
             iocs_json=iocs_json,
             source_channel=source_channel,
             cvss_v4_score=sitrep.cvss_v4_score,
+            is_public_teaser=sitrep.is_public_teaser,
+            teaser_text=sitrep.teaser_text,
         )
         row = insert.to_supabase_dict()
     except Exception as exc:
@@ -297,6 +307,78 @@ async def persist_sitrep(
         ) as resp:
             if resp.status in (200, 201, 204):
                 log.info("Article persisted: %s", sitrep.title[:80])
+
+                # Relational routing bifurcation logic
+                if sitrep.category == "vulnerabilities":
+                    try:
+                        cve_match = re.search(r"CVE-\d{4}-\d{4,}", sitrep.title + " " + sitrep.content, re.IGNORECASE)
+                        cve_id = cve_match.group(0).upper() if cve_match else f"CVE-{datetime.now().year}-{abs(hash(sitrep.title)) % 100000:05d}"
+
+                        cve_payload = {
+                            "cve_id": cve_id,
+                            "title": sitrep.title,
+                            "description": sitrep.executive_summary + "\n\n" + sitrep.content,
+                            "severity": sitrep.severity,
+                            "cvss_score": sitrep.cvss_v4_score or 5.0,
+                            "cvss_vector": sitrep.cvss_v4_vector or "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                            "affected_product": sitrep.affected_sectors[0] if sitrep.affected_sectors else "Unknown",
+                            "vendor": "Unknown",
+                            "status": "Active",
+                            "published_date": utc_now_iso(),
+                        }
+
+                        cve_url = f"{SUPABASE_URL}/rest/v1/cves?on_conflict=cve_id"
+                        cve_headers = {
+                            **headers,
+                            "Prefer": "resolution=merge-duplicates"
+                        }
+
+                        async with session.post(
+                            cve_url, headers=cve_headers, json=cve_payload, timeout=aiohttp.ClientTimeout(total=10)
+                        ) as cve_resp:
+                            if cve_resp.status in (200, 201, 204):
+                                log.info("Relational routing: CVE %s successfully upserted.", cve_id)
+                            else:
+                                cve_body = await cve_resp.text()
+                                log.warning("Relational routing: CVE upsert HTTP %d: %s", cve_resp.status, cve_body[:200])
+                    except Exception as cve_exc:
+                        log.error("Relational routing: CVE upsert failed: %s", cve_exc)
+
+                elif sitrep.category == "threat_intel":
+                    try:
+                        sector = sitrep.affected_sectors[0] if sitrep.affected_sectors else "Technology"
+                        sector_weight = FBRCalculator.get_sector_weight(sector)
+                        geo_factor = FBRCalculator.get_geo_exposure("US")
+                        fbr_calc = FBRCalculator.calculate_impact(sitrep.cvss_v4_score or 5.0, sector_weight, geo_factor)
+                        fbr_total = fbr_calc["fbr_score_usd"]
+
+                        threat_payload = {
+                            "title": sitrep.title,
+                            "severity": sitrep.severity.upper(),
+                            "cvss_score": sitrep.cvss_v4_score or 5.0,
+                            "fbr_total": fbr_total,
+                            "sector": sector,
+                            "yara_rules": "\n\n".join(sitrep.yara_rules) if isinstance(sitrep.yara_rules, list) else (sitrep.yara_rule or ""),
+                            "sigma_rules": "\n\n".join(sitrep.sigma_rules) if isinstance(sitrep.sigma_rules, list) else "",
+                            "raw_iocs": json.dumps(sitrep.iocs) if sitrep.iocs else "[]",
+                            "unmasked_target_entities": ", ".join(sitrep.affected_sectors) if sitrep.affected_sectors else "Technology",
+                            "sitrep_pdf_url": f"https://xdfndojvqazffcjngglr.supabase.co/storage/v1/object/public/sitreps/{generate_slug(sitrep.title)}.pdf",
+                            "is_public_teaser": sitrep.is_public_teaser,
+                            "teaser_text": sitrep.teaser_text,
+                        }
+
+                        threat_url = f"{SUPABASE_URL}/rest/v1/threat_artifacts_secure"
+                        async with session.post(
+                            threat_url, headers=headers, json=threat_payload, timeout=aiohttp.ClientTimeout(total=10)
+                        ) as threat_resp:
+                            if threat_resp.status in (200, 201, 204):
+                                log.info("Relational routing: Threat Artifact secure record successfully created.")
+                            else:
+                                threat_body = await threat_resp.text()
+                                log.warning("Relational routing: Threat Artifact insert HTTP %d: %s", threat_resp.status, threat_body[:200])
+                    except Exception as threat_exc:
+                        log.error("Relational routing: Threat Artifact insert failed: %s", threat_exc)
+
                 return True
             else:
                 body = await resp.text()

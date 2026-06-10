@@ -207,6 +207,7 @@ async def insert_darkweb_feed(
     source_name: str,
     raw_content: str,
     content_hash: str,
+    category: str = "darkweb",
 ) -> bool:
     """Insert a novel dark web alert into Supabase raw_feeds."""
     formatted = (
@@ -219,6 +220,7 @@ async def insert_darkweb_feed(
         "raw_content": formatted,
         "original_language": "en",
         "status": "pending",
+        "category": category,
     }
 
     headers = {
@@ -385,6 +387,7 @@ async def ingestion_cycle(session: aiohttp.ClientSession) -> dict[str, int]:
             parsed["source_name"],
             parsed["raw_content"],
             content_hash,
+            category="darkweb",
         )
         if success:
             stats["inserted"] += 1
@@ -410,7 +413,7 @@ async def ingestion_cycle(session: aiohttp.ClientSession) -> dict[str, int]:
 
         stats["novel"] += 1
         success = await insert_darkweb_feed(
-            session, target.name, raw_html[:10000], content_hash
+            session, target.name, raw_html[:10000], content_hash, category=target.category
         )
         if success:
             stats["inserted"] += 1

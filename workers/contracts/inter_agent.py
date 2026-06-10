@@ -185,6 +185,9 @@ class ExecutiveSITREP(BaseModel):
     mitigation_impact: str | None = None
     fbr_score: float = Field(default=0.0, ge=0.0)
 
+    is_public_teaser: bool = Field(default=True)
+    teaser_text: str | None = None
+
     # Metadata
     affected_sectors: list[str] = Field(default_factory=list)
     cvss_v4_score: float | None = Field(default=None, ge=0.0, le=10.0)
