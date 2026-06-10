@@ -70,34 +70,11 @@ if not SUPABASE_SERVICE_KEY:
     sys.exit(1)
 
 # ---------------------------------------------------------------------------
-# FBR Sector Weights (imported from shared config for deterministic scoring)
+# FBR Sector Weights — centralized in shared.models.fbr_calculator
 # ---------------------------------------------------------------------------
-
-SECTOR_WEIGHTS: dict[str, float] = {
-    "Healthcare": 1.8,
-    "Financial Services": 1.6,
-    "Energy": 1.5,
-    "Government": 1.5,
-    "Defense": 1.5,
-    "Critical Infrastructure": 1.5,
-    "Technology": 1.2,
-    "Telecommunications": 1.3,
-    "Manufacturing": 1.2,
-    "Retail": 1.1,
-    "Education": 1.0,
-    "Other": 1.0,
-}
-
-GEO_EXPOSURE: dict[str, float] = {
-    "EU": 1.4,
-    "US": 1.2,
-    "UK": 1.3,
-    "APAC": 1.1,
-    "Other": 1.0,
-}
-
-# Average data breach cost per record (IBM 2025 Cost of a Data Breach Report)
-BASE_BREACH_COST_PER_RECORD: float = 165.0
+# All sector weights, geo exposure multipliers, and calculation logic are
+# now sourced exclusively from FBRCalculator. Local hardcoded copies are
+# forbidden per ZX-SEC-036 architecture invariants.
 
 
 # ---------------------------------------------------------------------------
@@ -448,17 +425,21 @@ def run_cycle(api_key: str | None) -> None:
                 record = CVERecord(**raw_row)
                 row = record.to_insert().to_supabase_dict()
 
-                # ─── FBR Enrichment ───
-                fbr = compute_fbr_score(
-                    record.cvss_score,
-                    record.affected_product,
-                    record.vendor,
+                # ─── FBR Enrichment (centralized engine) ───
+                fbr_result = compute_fbr_for_cve(
+                    cvss_score=record.cvss_score,
+                    product=record.affected_product or "",
                 )
-                if fbr > 0:
-                    row["fbr_score"] = fbr
+                fbr_usd = fbr_result["fbr_score_usd"]
+                if fbr_usd > 0:
+                    row["fbr_score"] = fbr_usd
+                    row["fbr_risk_tier"] = fbr_result["risk_tier"]
+                    row["fbr_loss_frequency"] = fbr_result["loss_frequency"]
                     log.debug(
-                        "FBR for %s: $%.2f (CVSS=%.1f, product=%s)",
-                        record.cve_id, fbr, record.cvss_score, record.affected_product,
+                        "FBR for %s: $%.2f [%s] (CVSS=%.1f, product=%s)",
+                        record.cve_id, fbr_usd,
+                        fbr_result["risk_tier"],
+                        record.cvss_score, record.affected_product,
                     )
 
                 parsed.append(row)
@@ -518,9 +499,15 @@ def main() -> None:
                 try:
                     record = CVERecord(**raw_row)
                     row = record.to_insert().to_supabase_dict()
-                    fbr = compute_fbr_score(record.cvss_score, record.affected_product, record.vendor)
-                    if fbr > 0:
-                        row["fbr_score"] = fbr
+                    fbr_result = compute_fbr_for_cve(
+                        cvss_score=record.cvss_score,
+                        product=record.affected_product or "",
+                    )
+                    fbr_usd = fbr_result["fbr_score_usd"]
+                    if fbr_usd > 0:
+                        row["fbr_score"] = fbr_usd
+                        row["fbr_risk_tier"] = fbr_result["risk_tier"]
+                        row["fbr_loss_frequency"] = fbr_result["loss_frequency"]
                     parsed.append(row)
                 except Exception as exc:
                     log.warning("CVE validation failed: %s", exc)

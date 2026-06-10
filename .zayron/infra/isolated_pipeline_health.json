@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-06-10T15:15:00Z",
+  "status": "HEALTHY",
+  "architecture": {
+    "version": "2027-grade asynchronous decoupled",
+    "deployment_target": "VPS (65.75.200.149)"
+  },
+  "pipeline": {
+    "LINE-01-CVE": {
+      "status": "ACTIVE",
+      "feed_type": "cve",
+      "description": "Vulnerability, Code Compliance, and Patching"
+    },
+    "LINE-02-DARKWEB": {
+      "status": "ACTIVE",
+      "feed_type": "darkweb",
+      "description": "Threat Intelligence, Data Leaks, Cyber Law"
+    },
+    "LINE-03-TELEGRAM": {
+      "status": "ACTIVE",
+      "feed_type": "telegram",
+      "description": "Actor Campaigns, Hacktivism"
+    },
+    "LINE-04-OSINT": {
+      "status": "ACTIVE",
+      "feed_type": "rss",
+      "description": "Geopolitical Security, Tech Assessment, Risk"
+    },
+    "LINE-05-SYNTHESIS": {
+      "status": "ACTIVE",
+      "feed_type": "central_validator_queue",
+      "description": "Aggregates findings, appends deterministic financial risk profiles (FBR)"
+    }
+  },
+  "constraints": {
+    "rate_limiting": {
+      "strategy": "Token Bucket / Immutable 5.0s Lock",
+      "status": "VERIFIED",
+      "details": "Ensures collective outbound inference stream strictly processes sequentially, guaranteeing <=12 RPM (Gemini Free Tier constraint)."
+    },
+    "edge_rag": {
+      "status": "ACTIVE",
+      "endpoint": "/api/admin/sync-knowledge",
+      "details": "Top-3 grounded book segments fetched from Cloudflare Vectorize and appended to system context."
+    },
+    "financial_blast_radius": {
+      "status": "VERIFIED",
+      "details": "Deterministic FBR calculations strictly enforced via shared/models/fbr_calculator.py (zero variable cost)."
+    }
+  }
+}

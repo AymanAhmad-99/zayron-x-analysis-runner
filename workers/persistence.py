@@ -83,6 +83,7 @@ def pick_author() -> str:
 async def claim_pending_feeds(
     session: aiohttp.ClientSession,
     limit: int = 3,
+    feed_type: str | None = None,
 ) -> list[dict[str, Any]]:
     """Claim pending feeds by atomically transitioning their status.
 
@@ -98,6 +99,11 @@ async def claim_pending_feeds(
     select_url = (
         f"{SUPABASE_URL}/rest/v1/raw_feeds"
         f"?status=eq.pending"
+    )
+    if feed_type:
+        select_url += f"&feed_type=eq.{feed_type}"
+        
+    select_url += (
         f"&order=created_at.asc"
         f"&limit={limit}"
         f"&select=id,raw_content,source_channel,created_at"

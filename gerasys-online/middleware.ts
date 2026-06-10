@@ -156,21 +156,41 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  /* ── Protect /admin/* with HTTP Basic Auth ── */
-  if (pathname.startsWith("/admin")) {
-    if (!isAdminAuthenticated(request)) {
-      return new NextResponse("Authentication required", {
-        status: 401,
-        headers: {
-          "WWW-Authenticate": 'Basic realm="ZAYRON-X Admin", charset="UTF-8"',
-          "Content-Type": "text/plain",
+  /* ── Supabase session refresh and Admin Hardening ── */
+  response = await updateSession(request);
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return request.cookies.getAll(); },
+        setAll(cookiesToSet) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value);
+          }
         },
-      });
+      },
+    }
+  );
+
+  /* ── Protect /admin/* and /api/admin/* with Fail-Closed Access Control ── */
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const isAdmin =
+      user?.app_metadata?.role === "admin" ||
+      user?.user_metadata?.role === "admin";
+
+    if (!user || !isAdmin) {
+      console.error(`[SECURITY ALERT] ZX-SEC-043/066: Unauthorized admin access attempt to ${pathname} from IP ${getClientIp(request)}`);
+      
+      const status = user ? 403 : 401;
+      return NextResponse.json(
+        { error: "Access Denied. ZAYRON-X node isolation active." },
+        { status }
+      );
     }
   }
-
-  /* ── Supabase session refresh for all other routes ── */
-  response = await updateSession(request);
 
   // Apply the per-request CSP nonce
   applyNonceToCsp(request, response, nonce);

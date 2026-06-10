@@ -24,12 +24,12 @@ import logging
 import re
 from typing import Any
 
-from workers.config import GEO_EXPOSURE, SECTOR_WEIGHTS
 from workers.contracts.inter_agent import (
     ComplianceReport,
     FinancialAssessment,
     ValidatedIntel,
 )
+from shared.models.fbr_calculator import FBRCalculator
 
 log = logging.getLogger("zayron_x_quant")
 
@@ -106,7 +106,9 @@ def compute_fbr(
 ) -> float:
     """Compute the Financial Blast Radius score deterministically.
 
-    FBR = (CVSS_base × sector_weight × geo_exposure) + regulatory_fine_ceiling
+    Delegates to the centralized FBRCalculator (ZX-SEC-036).
+    The returned float is the fbr_score_usd value from the calculator,
+    which represents the Financial Blast Radius in USD.
 
     This is a deterministic computation, NOT an LLM output. It provides
     a ground-truth anchor for the Quant agent's estimates.
@@ -115,20 +117,28 @@ def compute_fbr(
 
     # Select highest applicable sector weight
     sector_weight = 1.0
-    for sector in affected_sectors:
-        weight = SECTOR_WEIGHTS.get(sector, 1.0)
+    for sector in (affected_sectors or []):
+        weight = FBRCalculator.get_sector_weight(sector)
         sector_weight = max(sector_weight, weight)
 
     # Geographic exposure — default to EU if GDPR is triggered
     geo_exposure = 1.0
     if compliance.gdpr_fine_exposure_eur > 0 or compliance.nis2_applicable:
-        geo_exposure = max(geo_exposure, GEO_EXPOSURE["EU"])
+        geo_exposure = max(geo_exposure, FBRCalculator.get_geo_exposure("EU"))
 
-    # Regulatory fine ceiling (normalize to millions for score scaling)
-    fine_ceiling_normalized = compliance.gdpr_fine_exposure_eur / 1_000_000
+    # Regulatory fine ceiling in USD (GDPR fine exposure is already in EUR;
+    # treat as approximate USD for FBR calculation consistency)
+    compliance_penalty_ceiling = compliance.gdpr_fine_exposure_eur
 
-    fbr = (base_cvss * sector_weight * geo_exposure) + fine_ceiling_normalized
-    return round(fbr, 2)
+    calculator = FBRCalculator()
+    result = calculator.calculate_impact(
+        base_cvss=base_cvss,
+        sector_weight=sector_weight,
+        geo_factor=geo_exposure,
+        compliance_penalty_ceiling=compliance_penalty_ceiling,
+    )
+
+    return result["fbr_score_usd"]
 
 
 def parse_quant_response(
