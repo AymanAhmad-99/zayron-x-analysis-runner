@@ -149,7 +149,7 @@ export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGate
                 ) : (
                   <>
                     <Lock size={12} />
-                    AUTHENTICATE & SECURE ACCESS ($15/MO)
+                    AUTHENTICATE & SECURE ACCESS ($25/MO)
                   </>
                 )}
               </button>

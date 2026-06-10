@@ -14,6 +14,8 @@ interface ThreatArtifact {
   teaser_text: string | null;
   yara_rules: string | null;
   sigma_rules: string | null;
+  cloudflare_waf_rules?: string | null;
+  assessment_25_point?: any;
   raw_iocs: string | null;
   unmasked_target_entities: string | null;
   sitrep_pdf_url: string | null;
@@ -287,6 +289,50 @@ export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProp
                               </pre>
                             </div>
 
+                            <div>
+                              <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
+                                Cloudflare WAF Rules
+                              </span>
+                              <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
+                                <code>{threat.cloudflare_waf_rules || "# No Cloudflare WAF rules mapped."}</code>
+                              </pre>
+                            </div>
+
+                            {(() => {
+                              let assessment: Record<string, string> = {};
+                              try {
+                                if (threat.assessment_25_point) {
+                                  assessment = typeof threat.assessment_25_point === "string"
+                                    ? JSON.parse(threat.assessment_25_point)
+                                    : threat.assessment_25_point;
+                                }
+                              } catch (e) {
+                                console.error("Failed parsing 25 point assessment", e);
+                              }
+
+                              if (!assessment || Object.keys(assessment).length === 0) return null;
+
+                              return (
+                                <div className="mt-4 border-t border-neutral-100 pt-4">
+                                  <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-2">
+                                    25-Point Swarm Intelligence Assessment Breakdown
+                                  </span>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto scrollbar-thin p-1">
+                                    {Object.entries(assessment).map(([key, value]) => (
+                                      <div key={key} className="bg-neutral-50 p-2.5 border border-neutral-200">
+                                        <div className="text-[8px] font-mono font-bold text-[#733DD9] uppercase tracking-wide truncate mb-1">
+                                          {key.replace(/_/g, " ")}
+                                        </div>
+                                        <div className="text-[9px] text-neutral-600 font-sans leading-normal">
+                                          {value as string}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })()}
+
                             {threat.sitrep_pdf_url && (
                               <a
                                 href={threat.sitrep_pdf_url}
@@ -300,10 +346,32 @@ export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProp
                             )}
                           </div>
                         ) : (
-                          <div className="relative overflow-hidden h-36 border border-dashed border-neutral-300 p-4 flex flex-col justify-between bg-neutral-50/20">
-                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-white/70 backdrop-blur-sm">
-                              <Lock className="w-4 h-4 text-[#733DD9] mb-2" />
-                              <span className="text-[10px] font-mono font-bold text-neutral-900 uppercase">SUBSCRIBER AUTH REQUIRED</span>
+                          <div className="relative overflow-hidden p-6 bg-neutral-50/20 border border-neutral-200">
+                            {/* Blurred background mockup representing paywalled content */}
+                            <div className="space-y-4 text-[10px] font-mono text-neutral-300 filter blur-[4px] select-none pointer-events-none">
+                              <div>
+                                <span className="text-[9px] uppercase font-bold block mb-1">Target Entities (Unmasked)</span>
+                                <div className="bg-white border p-2">Restricted corporate entity assets under threat</div>
+                              </div>
+                              <div>
+                                <span className="text-[9px] uppercase font-bold block mb-1">Indicators of Compromise (IoCs)</span>
+                                <pre className="bg-neutral-950 p-2 text-[9px] truncate">185.220.101.x, command-c2-route.onion, sha256_hash_value</pre>
+                              </div>
+                            </div>
+                            
+                            {/* Frosted Glassmorphism Overlay */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-white/70 backdrop-blur-md z-10 border border-dashed border-[#733DD9]/20">
+                              <Lock className="w-5 h-5 text-[#733DD9] mb-2 animate-bounce" />
+                              <span className="text-[10px] font-mono font-black text-neutral-900 uppercase tracking-widest mb-1">PREMIUM INTEL ENCRYPTED</span>
+                              <p className="text-[9px] text-neutral-500 font-mono text-center max-w-[280px] leading-relaxed mb-3">
+                                Detailed YARA/Sigma rules, Cloudflare WAF JSON, unmasked entities, and full 25-point breakdown are locked under Premium clearance.
+                              </p>
+                              <a
+                                href="/pricing"
+                                className="px-4 py-2 bg-[#733DD9] hover:bg-[#5f2ebd] text-white font-mono text-[9px] font-bold uppercase tracking-wider transition-all shadow-md"
+                              >
+                                Unlock Full Intelligence Stream ──▶ Go Premium ($25/mo)
+                              </a>
                             </div>
                           </div>
                         )}
@@ -332,7 +400,7 @@ export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProp
                   href="/pricing"
                   className="inline-flex items-center justify-center px-6 py-3 bg-[#733DD9] hover:bg-[#5f2ebd] active:scale-98 transition-all text-white font-mono text-[10px] font-bold uppercase tracking-wider shadow-md border border-[#733DD9] cursor-pointer"
                 >
-                  Unlock Full Intelligence Stream ──▶ Go Premium
+                  Unlock Full Intelligence Stream ──▶ Go Premium ($25/mo)
                 </a>
               </div>
             </div>

@@ -61,6 +61,75 @@ class HarvestPayload(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Stage 1b: OSINT Spy Output
+# ---------------------------------------------------------------------------
+
+class OSINTPayload(BaseModel):
+    """Output of the OSINT Spy agent. Deep metadata mapping, actor profiles,
+    and source tracking."""
+    actor_profile: str = Field(..., description="Threat actor profile summary")
+    source_metadata: dict[str, Any] = Field(default_factory=dict, description="Metadata schema keys/values")
+    metadata_validation_notes: str = Field(default="")
+    extraction_timestamp: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
+
+
+# ---------------------------------------------------------------------------
+# Stage 1c: Infrastructure Architect Output
+# ---------------------------------------------------------------------------
+
+class InfraAssessment(BaseModel):
+    """Output of the Infrastructure Architect agent. Core network/database transit vectors
+    and architectural resiliency analysis."""
+    network_transit_vectors: list[str] = Field(default_factory=list, description="TCP/IP Illustrated transit vectors")
+    host_components_targeted: list[str] = Field(default_factory=list, description="Target host components and protocols")
+    database_impact_vector: str = Field(..., description="Database impact analysis under DDIA paradigms")
+    architectural_resilience_rating: float = Field(default=0.0, ge=0.0, le=10.0)
+    mitigation_notes: str = Field(default="")
+
+
+# ---------------------------------------------------------------------------
+# 25-Point Assessment Contract Schema
+# ---------------------------------------------------------------------------
+
+class SwarmAssessment25Point(BaseModel):
+    """The strict 25-point assessment contract satisfying all 4 domains."""
+    # Technical Mechanics (1-7)
+    cve_vulnerability_mapping: str = Field(..., min_length=1)
+    cvss_vector_analysis: str = Field(..., min_length=1)
+    exploit_complexity_score: str = Field(..., min_length=1)
+    affected_software_hardware: str = Field(..., min_length=1)
+    infrastructure_dependency_depth: str = Field(..., min_length=1)
+    network_traversal_mechanics: str = Field(..., min_length=1)
+    threat_origin_forensics: str = Field(..., min_length=1)
+
+    # Standard Compliance (8-13)
+    iso_27001_compliance: str = Field(..., min_length=1)
+    nist_csf_alignment: str = Field(..., min_length=1)
+    gdpr_liability_check: str = Field(..., min_length=1)
+    regulatory_fine_exposure: str = Field(..., min_length=1)
+    nis2_impact_classification: str = Field(..., min_length=1)
+    compliance_risk_level: str = Field(..., min_length=1)
+
+    # Defensive Action (14-19)
+    yara_signature_readiness: str = Field(..., min_length=1)
+    sigma_log_patterns: str = Field(..., min_length=1)
+    cloudflare_waf_rules: str = Field(..., min_length=1)
+    mitigation_playbook_difficulty: str = Field(..., min_length=1)
+    hunting_queries: str = Field(..., min_length=1)
+    insider_behavioral_remediation: str = Field(..., min_length=1)
+
+    # Corporate Finance (20-25)
+    financial_blast_radius: str = Field(..., min_length=1)
+    downtime_cost_exposure: str = Field(..., min_length=1)
+    breach_cost_exposure: str = Field(..., min_length=1)
+    sector_financial_multiplier: str = Field(..., min_length=1)
+    mitigation_roi_percentage: str = Field(..., min_length=1)
+    insurance_impact: str = Field(..., min_length=1)
+
+
+# ---------------------------------------------------------------------------
 # Stage 2: Validator Output
 # ---------------------------------------------------------------------------
 
@@ -77,6 +146,8 @@ class ValidatedIntel(BaseModel):
     intelligence with graded source reliability."""
 
     harvest: HarvestPayload
+    osint: OSINTPayload | None = None
+    infra: InfraAssessment | None = None
     verified_iocs: list[VerifiedIoC] = Field(default_factory=list)
     mitre_ttps: list[str] = Field(default_factory=list)
     cross_ref_score: float = Field(default=0.0, ge=0.0, le=1.0)
@@ -187,6 +258,8 @@ class ExecutiveSITREP(BaseModel):
 
     is_public_teaser: bool = Field(default=True)
     teaser_text: str | None = None
+    cloudflare_waf_rules: str | None = None
+    assessment_25_point: dict[str, Any] | None = None
 
     # Metadata
     affected_sectors: list[str] = Field(default_factory=list)

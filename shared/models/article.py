@@ -59,6 +59,8 @@ class ArticleInsert(BaseModel):
     published_at: str | None = None  # ISO 8601 string for display ordering
     is_public_teaser: bool | None = True
     teaser_text: str | None = None
+    cloudflare_waf_rules: str | None = None
+    assessment_25_point: dict[str, Any] | None = None
 
     @field_validator("slug")
     @classmethod
@@ -245,6 +247,8 @@ class ArticleSITREP(BaseModel):
     ai_image_prompt: str | None = None
     is_public_teaser: bool | None = True
     teaser_text: str | None = None
+    cloudflare_waf_rules: str | None = None
+    assessment_25_point: dict[str, Any] | None = None
 
     @field_validator("category")
     @classmethod

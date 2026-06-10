@@ -51,8 +51,12 @@ from workers.contracts.inter_agent import (
     FinancialAssessment,
     HarvestPayload,
     ValidatedIntel,
+    OSINTPayload,
+    InfraAssessment,
 )
 from workers.agents.harvester import HARVESTER_SYSTEM_PROMPT, build_harvest_prompt, parse_harvest_response
+from workers.agents.osint_spy import OSINT_SPY_SYSTEM_PROMPT, build_osint_spy_prompt, parse_osint_spy_response
+from workers.agents.infra_architect import INFRA_ARCHITECT_SYSTEM_PROMPT, build_infra_architect_prompt, parse_infra_architect_response
 from workers.agents.validator import VALIDATOR_SYSTEM_PROMPT, build_validator_prompt, parse_validator_response
 from workers.agents.compliance import COMPLIANCE_SYSTEM_PROMPT, build_compliance_prompt, parse_compliance_response
 from workers.agents.quant import QUANT_SYSTEM_PROMPT, build_quant_prompt, parse_quant_response
@@ -187,26 +191,52 @@ async def run_pipeline_stages_1_3(
     # EDGE-RAG Correlation Lookup
     rag_context = await fetch_rag_context(http_session, line_token, raw_text[:500])
     
-    # 1. Harvest
+    # 1. Harvest & OSINT Spy in parallel
     try:
-        sys_prompt = HARVESTER_SYSTEM_PROMPT + rag_context
-        user_msg = build_harvest_prompt(raw_text, source)
-        llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt, user_msg, TOKEN_BUDGET_HARVESTER, 0.1)
-        token_tracker["prompt"] += p; token_tracker["completion"] += c
-        harvest = parse_harvest_response(raw_text, source, llm_out)
+        sys_prompt_harv = HARVESTER_SYSTEM_PROMPT + rag_context
+        user_msg_harv = build_harvest_prompt(raw_text, source)
+        sys_prompt_osint = OSINT_SPY_SYSTEM_PROMPT + rag_context
+        user_msg_osint = build_osint_spy_prompt(raw_text, source)
+
+        async def run_harv():
+            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_harv, user_msg_harv, TOKEN_BUDGET_HARVESTER, 0.1)
+            return parse_harvest_response(raw_text, source, llm_out), p, c
+
+        async def run_osint():
+            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_osint, user_msg_osint, TOKEN_BUDGET_HARVESTER, 0.1)
+            return parse_osint_spy_response(raw_text, source, llm_out), p, c
+
+        (harvest, hp, hc), (osint, op, oc) = await asyncio.gather(run_harv(), run_osint())
+        token_tracker["prompt"] += (hp + op)
+        token_tracker["completion"] += (hc + oc)
     except Exception as exc:
-        log.error("[%s] Harvester failed: %s", line_token, exc)
+        log.error("[%s] Advanced Ingestion (Harvester & OSINT Spy) failed: %s", line_token, exc)
         return None
 
-    # 2. Validate
+    # 2. Infrastructure Defense & Forensic Validation in parallel
     try:
-        sys_prompt = VALIDATOR_SYSTEM_PROMPT + rag_context
-        user_msg = build_validator_prompt(harvest)
-        llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt, user_msg, TOKEN_BUDGET_VALIDATOR, 0.1)
-        token_tracker["prompt"] += p; token_tracker["completion"] += c
-        validated = parse_validator_response(harvest, llm_out)
+        sys_prompt_infra = INFRA_ARCHITECT_SYSTEM_PROMPT + rag_context
+        user_msg_infra = build_infra_architect_prompt(harvest, osint)
+        sys_prompt_val = VALIDATOR_SYSTEM_PROMPT + rag_context
+        user_msg_val = build_validator_prompt(harvest)
+
+        async def run_infra():
+            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_infra, user_msg_infra, TOKEN_BUDGET_HARVESTER, 0.1)
+            return parse_infra_architect_response(llm_out), p, c
+
+        async def run_val():
+            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_val, user_msg_val, TOKEN_BUDGET_VALIDATOR, 0.1)
+            return parse_validator_response(harvest, llm_out), p, c
+
+        (infra, ip, ic), (validated, vp, vc) = await asyncio.gather(run_infra(), run_val())
+        token_tracker["prompt"] += (ip + vp)
+        token_tracker["completion"] += (ic + vc)
+
+        # Attach osint & infra results to validated model
+        validated.osint = osint
+        validated.infra = infra
     except Exception as exc:
-        log.error("[%s] Validator failed: %s", line_token, exc)
+        log.error("[%s] Infrastructure Defense & Forensic Validation failed: %s", line_token, exc)
         return None
 
     # 3. Compliance

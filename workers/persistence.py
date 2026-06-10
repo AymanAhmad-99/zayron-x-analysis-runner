@@ -287,6 +287,8 @@ async def persist_sitrep(
             cvss_v4_score=sitrep.cvss_v4_score,
             is_public_teaser=sitrep.is_public_teaser,
             teaser_text=sitrep.teaser_text,
+            cloudflare_waf_rules=sitrep.cloudflare_waf_rules,
+            assessment_25_point=sitrep.assessment_25_point,
         )
         row = insert.to_supabase_dict()
     except Exception as exc:
@@ -365,6 +367,8 @@ async def persist_sitrep(
                             "sitrep_pdf_url": f"https://xdfndojvqazffcjngglr.supabase.co/storage/v1/object/public/sitreps/{generate_slug(sitrep.title)}.pdf",
                             "is_public_teaser": sitrep.is_public_teaser,
                             "teaser_text": sitrep.teaser_text,
+                            "cloudflare_waf_rules": sitrep.cloudflare_waf_rules,
+                            "assessment_25_point": sitrep.assessment_25_point,
                         }
 
                         threat_url = f"{SUPABASE_URL}/rest/v1/threat_artifacts_secure"

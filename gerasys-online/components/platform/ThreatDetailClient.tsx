@@ -229,7 +229,7 @@ export function ThreatDetailClient({
               onClick={() => setIsModalOpen(true)}
               className="bg-[#050505] text-white hover:shadow-[0_0_15px_rgba(115,61,217,0.4)] font-mono font-bold text-xs uppercase tracking-widest py-4 px-8 mt-2 cursor-pointer transition-all duration-300 rounded-none border-none"
             >
-              AUTHENTICATE & SECURE ACCESS ($15/MO)
+              AUTHENTICATE & SECURE ACCESS ($25/MO)
             </button>
           </div>
         </div>
