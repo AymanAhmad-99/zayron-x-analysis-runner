@@ -99,8 +99,8 @@ export function ArticleCard({ article, variant = "default", neighborOffset = 0 }
 
   return (
     <Link href={href} className="group block" role="article" aria-labelledby={titleId}>
-      <div className="relative w-full overflow-hidden mb-4" style={{ aspectRatio: "16/9" }}>
-        <ArticleImage article={article} className="object-cover grayscale-[8%] transition-all duration-200 ease-in-out" neighborOffset={neighborOffset} />
+      <div className="relative w-full overflow-hidden mb-4">
+        <ArticleImage article={article} className="w-full h-40 object-cover object-center rounded-t-lg transition-transform duration-300 hover:scale-105" neighborOffset={neighborOffset} />
       </div>
       <span className="eyebrow text-[0.62rem] mb-2 block">{formatCategoryLabel(article.category)}</span>
       <h3 id={titleId} className="headline dark:text-slate-200 leading-snug text-balance group-hover:italic transition-all duration-200" style={{ fontSize: "clamp(1rem, 1.6vw, 1.3rem)" }}>
