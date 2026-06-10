@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CveDetailCard } from "@/components/cve/CveDetailCard";
 import { getCVEById, getAllCVEIds } from "@/lib/supabase/queries/cves";
+import { createClient } from "@/lib/supabase/server";
 
 interface Props {
   params: Promise<{ cveId: string }>;
@@ -39,6 +40,23 @@ export default async function CVEDetailPage({ params }: Props) {
   }
   if (!cve) notFound();
 
+  // Establish secure client session and authenticate profile
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let isSubscriber = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("clearance_level")
+      .eq("id", user.id)
+      .single();
+    
+    isSubscriber = profile?.clearance_level === "SUBSCRIBER";
+  }
+
   return (
     <div>
       <div className="max-w-4xl mx-auto px-6 py-12">
@@ -49,7 +67,7 @@ export default async function CVEDetailPage({ params }: Props) {
           <span>/</span>
           <span className="text-[#0F172A] font-medium">{cve.cveId}</span>
         </nav>
-        <CveDetailCard cve={cve} />
+        <CveDetailCard cve={cve} isSubscriber={isSubscriber} />
       </div>
     </div>
   );

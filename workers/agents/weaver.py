@@ -97,17 +97,17 @@ CRITICAL FORMATTING INVARIANT: You MUST NEVER output raw markdown characters lik
 <h2>KEY TAKEAWAYS</h2>
 Must be compiled into a clean HTML Unordered List (<ul><li>). 5-7 one-sentence bullets. Each is a self-contained fact, risk metric, or action item. Embed SEO keywords naturally.
 
-<h2>EXECUTIVE THREAT BRIEF</h2>
+<h2>Executive Brief</h2>
 Technical Executive Summary: Wrapped inside paragraph tags (<p>). Includes BLUF (Bottom Line Up Front) opening, affected entities, geographies, sectors, quantitative blast radius estimate, and strategic significance.
 
 <h2>TECHNICAL DEEP-DIVE</h2>
 Root cause, exploit chain, CVSS v4.0 vector justification, affected versions matrix, malware lineage if applicable. Wrapped in standard HTML paragraph (<p>) and table/list elements.
 
-<h2>MITRE ATT&CK ENTERPRISE MATRIX</h2>
+<h2>MITRE ATT&CK Matrix</h2>
 Must be rendered into a beautiful HTML Table (<table>) with Bold headers (<th>) for Tactic, Technique ID, and Observed Activity. Use <thead>, <tbody>, <tr>, <th>, <td> tags.
 
-<h2>DETECTION ENGINEERING</h2>
-Yara and Sigma rules MUST be strictly enclosed inside HTML preformatted tags (<pre><code>) with proper indentation so security analysts can copy them with one click. Include KQL/SPL hunting queries, Snort/Suricata, or EDR queries in similar (<pre><code>) tags.
+<h2>Defensive Engineering</h2>
+YARA, Sigma, and Cloudflare WAF Rules MUST be strictly enclosed inside distinct, clean HTML preformatted tags (<pre><code>) with proper indentation so security analysts can copy them with one click. Include KQL/SPL hunting queries, Snort/Suricata, or EDR queries in similar (<pre><code>) tags.
 
 <h2>INDICATORS OF COMPROMISE</h2>
 Table with bold headers for Type, Value, Context, and Confidence. Use <table>, <thead>, <tbody>, <tr>, <th>, <td>. ONLY include IoCs from the verified list. If empty, state: "No indicators were present in the source intelligence."
@@ -135,7 +135,7 @@ Return a valid JSON object — no markdown fences, no commentary:
   "executive_summary": "<p>4-6 sentence BLUF summary. Fully semantic HTML.</p>",
   "teaser_text": "High-impact public teaser summary of the breach or threat vector, maximum 40 words.",
   "is_public_teaser": true,
-  "premium_payload": "<h2>KEY TAKEAWAYS</h2>\n<ul>\n  <li>First key takeaway...</li>\n</ul>\n\n<h2>EXECUTIVE THREAT BRIEF</h2>\n<p>Executive threat brief...</p>\n\n<h2>MITRE ATT&CK ENTERPRISE MATRIX</h2>\n<table>\n  <thead>\n    <tr>\n      <th>Tactic</th>\n      <th>Technique ID</th>\n      <th>Technique Name</th>\n      <th>Observed Activity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td><b>Tactic Name</b></td>\n      <td><b>T1234</b></td>\n      <td>Technique Name</td>\n      <td>Observed activity details...</td>\n    </tr>\n  </tbody>\n</table>\n\n[FULL 1500+ WORD SEMANTIC HTML REPORT WITH ALL SECTIONS, COMPLETELY FREE OF ## OR ** OR * MARKDOWN]",
+  "premium_payload": "<h2>KEY TAKEAWAYS</h2>\n<ul>\n  <li>First key takeaway...</li>\n</ul>\n\n<h2>Executive Brief</h2>\n<p>Executive brief...</p>\n\n<h2>MITRE ATT&CK Matrix</h2>\n<table>\n  <thead>\n    <tr>\n      <th>Tactic</th>\n      <th>Technique ID</th>\n      <th>Technique Name</th>\n      <th>Observed Activity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td><b>Tactic Name</b></td>\n      <td><b>T1234</b></td>\n      <td>Technique Name</td>\n      <td>Observed activity details...</td>\n    </tr>\n  </tbody>\n</table>\n\n[FULL 1500+ WORD SEMANTIC HTML REPORT WITH ALL SECTIONS, COMPLETELY FREE OF ## OR ** OR * MARKDOWN]",
   "category": "Threat Intelligence|Malware Analysis|APT Activity|...",
   "severity": "Critical|High|Medium|Low|Informational",
   "mitre_attack_ttps": ["T1566.001 — Spearphishing Attachment", ...],
