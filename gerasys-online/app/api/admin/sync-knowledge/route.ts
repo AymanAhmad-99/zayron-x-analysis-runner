@@ -31,17 +31,40 @@ export async function POST(req: NextRequest) {
 
     // Cloudflare Edge-RAG Correlation Lookup (Vectorize + KV)
     if (action === "query") {
-      // In production, this would query process.env.VECTORIZE_INDEX.query(values)
-      // and retrieve the full text segments from process.env.KNOWLEDGE_KV
-      // For this architecture refactor, we simulate the Top-3 structural segments:
-      const segments = [
-        `Extracted grounded book segment for sector: ${line_token} (Constraint 1)`,
-        `Strategic guidance matched for query: ${query?.substring(0, 20)}... (Constraint 2)`,
-        `Historical precedent matched in KV storage. (Constraint 3)`
-      ];
+      let segments: string[] = [];
+      const { data, error: selectError } = await supabase
+        .from("knowledge_embeddings")
+        .select("content")
+        .textSearch("content", query, { type: "websearch", config: "english" })
+        .limit(limit || 3);
+
+      if (data && data.length > 0) {
+        segments = data.map((d: any) => d.content);
+      } else {
+        // Fallback: fetch general segments if no results match
+        const { data: fallbackData } = await supabase
+          .from("knowledge_embeddings")
+          .select("content")
+          .limit(limit || 3);
+        if (fallbackData) {
+          segments = fallbackData.map((d: any) => d.content);
+        }
+      }
       return NextResponse.json({ segments });
     } else if (action === "insert") {
-      // In production: await process.env.VECTORIZE_INDEX.insert([{ id, values, metadata }])
+      const { error: insertError } = await supabase
+        .from("knowledge_embeddings")
+        .upsert({
+          id,
+          content: text,
+          embedding: values,
+          metadata
+        });
+
+      if (insertError) {
+        console.error("[DATABASE ERROR] Failed to insert knowledge embedding:", insertError);
+        return NextResponse.json({ error: insertError.message }, { status: 500 });
+      }
       return NextResponse.json({ success: true, id });
     }
 

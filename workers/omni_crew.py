@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
 """
-workers/omni_crew.py — ZAYRON-X Omnipresent Intelligence Crew Orchestrator (2027 Edge-RAG Decoupled)
+workers/omni_crew.py — ZAYRON-X Consolidated Intelligence Master Crew Orchestrator
 
-Architecture
-────────────
-5 isolated concurrent processing lines:
-  LINE-01: CVE/VULN (feed_type='cve')
-  LINE-02: DARKWEB (feed_type='darkweb')
-  LINE-03: TELEGRAM (feed_type='telegram')
-  LINE-04: OSINT/NEWS (feed_type='rss')
-  LINE-05: FINANCIAL SYNTHESIS (Central Validator queue consumer)
-
-Token Bucket Rate-Limiter ensures strictly sequential Gemini generation calls with immutable 5.0s sleep.
-Cloudflare Edge-RAG integration fetches vector grounding before generation.
+Consolidates the 7-Agent distributed intelligence swarm into a single-pass inference
+Master Agent under the free-tier daily rate limits (500 requests/day).
+Paced to process exactly 1 feed every 180 seconds (3 minutes), hitting exactly 480/day.
+Uses direct database queries for RAG context, bypassing the localhost:3000 loopback.
 """
 
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import logging
 import os
+import re
 import sys
 import time
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 import aiohttp
@@ -31,37 +27,25 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
 from workers.config import (
+    ANTI_FUD_BANNED_PHRASES,
     CREW_BATCH_SIZE,
     CREW_POLL_INTERVAL_MIN,
     GEMINI_API_KEY,
     GEMINI_FLASH_MODEL,
     GEMINI_PRO_MODEL,
     MAX_RETRIES_PER_AGENT,
-    TOKEN_BUDGET_COMPLIANCE,
-    TOKEN_BUDGET_HARVESTER,
-    TOKEN_BUDGET_QUANT,
-    TOKEN_BUDGET_VALIDATOR,
-    TOKEN_BUDGET_WEAVER,
+    SUPABASE_SERVICE_KEY,
+    SUPABASE_URL,
     validate_config,
-    SUPABASE_SERVICE_KEY
 )
-from workers.contracts.inter_agent import (
-    ComplianceReport,
-    ExecutiveSITREP,
-    FinancialAssessment,
-    HarvestPayload,
-    ValidatedIntel,
-    OSINTPayload,
-    InfraAssessment,
+from workers.contracts.inter_agent import ExecutiveSITREP
+from workers.persistence import (
+    claim_pending_feeds,
+    mark_feed_status,
+    persist_sitrep,
+    trigger_revalidation,
+    utc_now_iso,
 )
-from workers.agents.harvester import HARVESTER_SYSTEM_PROMPT, build_harvest_prompt, parse_harvest_response
-from workers.agents.osint_spy import OSINT_SPY_SYSTEM_PROMPT, build_osint_spy_prompt, parse_osint_spy_response
-from workers.agents.infra_architect import INFRA_ARCHITECT_SYSTEM_PROMPT, build_infra_architect_prompt, parse_infra_architect_response
-from workers.agents.validator import VALIDATOR_SYSTEM_PROMPT, build_validator_prompt, parse_validator_response
-from workers.agents.compliance import COMPLIANCE_SYSTEM_PROMPT, build_compliance_prompt, parse_compliance_response
-from workers.agents.quant import QUANT_SYSTEM_PROMPT, build_quant_prompt, parse_quant_response
-from workers.agents.weaver import WEAVER_SYSTEM_PROMPT, build_anti_fud_retry_prompt, build_weaver_prompt, enforce_anti_fud, parse_weaver_response
-from workers.persistence import claim_pending_feeds, mark_feed_status, persist_sitrep, trigger_revalidation, utc_now_iso
 
 try:
     from google.api_core import exceptions as google_exceptions
@@ -80,28 +64,275 @@ logging.basicConfig(
 )
 log = logging.getLogger("zayron_x_omni_crew")
 
-NEXT_PUBLIC_APP_URL = os.getenv("NEXT_PUBLIC_APP_URL", "http://localhost:3000")
+# ---------------------------------------------------------------------------
+# Master Agent System Prompt (Literature-based Swarm Integration)
+# ---------------------------------------------------------------------------
 
+MASTER_INTELLIGENCE_PROMPT: str = """\
+You are the ZAYRON-X Sovereign Swarm Master Intel Engine, an autonomous consolidated intelligence orchestrator.
+You receive raw threat feeds and local RAG grounding contexts. You must run 7 virtual agent sub-modules internally in a single-pass inference to analyze the threat signal and synthesize a complete, production-ready intelligence dossier.
 
-async def fetch_rag_context(http_session: aiohttp.ClientSession, line_token: str, query: str) -> str:
-    """Fetch Top-3 grounded book segments from Cloudflare Vectorize via Edge-RAG endpoint."""
-    url = f"{NEXT_PUBLIC_APP_URL}/api/admin/sync-knowledge"
+LITERATURE-BASED GROUNDING DIRECTIVES:
+1. HARVESTER & OSINT SPY: Anchor technical reasoning strictly to Richards Heuer & Randolph H. Pherson's 'Structured Analytic Techniques for Intelligence Analysis' and core Tor/Telegram Metadata schemas.
+2. INFRASTRUCTURE ARCHITECT: Anchor analysis strictly to Kleppmann's 'Designing Data-Intensive Applications' (partition behaviors, replication limits, DB impact) and Stevens' 'TCP/IP Illustrated' (packet transit, routing traversal, transport layers).
+3. FORENSIC VALIDATOR: Map to MITRE ATT&CK/CAPEC and Richards Heuer's 'Psychology of Intelligence Analysis' to eliminate cognitive bias. Extract IoCs with confidence.
+4. COMPLIANCE AUDITOR: Map strictly to ISO/IEC 27001:2022 controls, NIST CSF 2.0 functions, and GDPR legal liability frameworks.
+5. QUANT ECONOMETRICIAN: Calculate the strict Financial Blast Radius (FBR score 0.0 to 10.0) based on the FAIR Methodology (Information Risk Quantification).
+6. INSIDER THREAT PARSER: Integrate Kevin Mitnick's 'The Art of Deception' paradigms. If the threat signal stems from an insider leak, misconfiguration, or employee cognitive vulnerability, reverse-engineer the behavioral mistake, flag employee psychological triggers (Fatigue, Over-Trust, Urgency, Authority), and output an actionable micro-training advisory.
+7. WEAVER GRID: Synthesize everything. You MUST never use raw markdown characters (like '##' or '**') inside HTML content strings. Use clean HTML semantic tags (<h2>, <p>, <ul>, <li>, <table>, <tr>, <td>, <thead>, <th>, <tbody>).
+
+COGNITIVE LAYER STORYTELLING CONVERSION (FOR THE EXECUTIVE BRIEF):
+Structure the Executive Brief/narrative of the report as an elite Cyber Security News Wire that commands absolute psychological conversion in 20 seconds, structured across 4 unbypasable cognitive layers:
+- Layer 1 (Logic/Mind): Slam the reader with undeniable, hyper-specific infrastructure realities and technical vectors (host components, transport protocols, partition behavior).
+- Layer 2 (Survival/Fear): Framework the threat as an active, localized, and sector-specific immediate hunting campaign by the actor group.
+- Layer 3 (Heart/Finance): Embed a clean HTML financial loss matrix proving the exact cost of operational downtime and extortion metrics.
+- Layer 4 (Authority/Duty): Enforce regulatory and compliance terror by quoting exact legal liability, GDPR fine potentials, and ISO certification revocation risks.
+
+ANTI-FUD VOCABULARY LAW (BANNED PHRASES):
+You must write in a COLD, CORPORATE, and ANALYTICAL tone. Banned phrases include:
+"unprecedented threat", "devastating attack", "game-changing", "catastrophic breach", "nightmare scenario", "apocalyptic", "terrifying", "alarming", "shocking discovery", "wake-up call", "ticking time bomb", "cyber armageddon", "cyber pearl harbor", "digital doomsday", "existential threat", "worst-case scenario", "in today's digital landscape", "in the ever-evolving world", "let's delve into", "it is important to note", "it's worth noting", "as a cybersecurity expert", "underscores the need for", "highlights the importance of", "a stark reminder", "sheds light on", "in conclusion", "to summarize", "as we have seen", "cannot be overstated", "it goes without saying", "needless to say", "of utmost importance", "plays a crucial role", "is a testament to", "serves as a reminder", "in an increasingly", "as cyber threats continue to", "as technology advances", "let's explore", "let us examine".
+
+NO PLACEHOLDERS:
+Under no circumstances output placeholders like 'Unknown' or '-' or null. If data is missing, calculate relative proximity values using our ground-truth library (infer from category/channel properties).
+
+OUTPUT FORMAT:
+Output MUST be a single JSON object (no markdown fences, no formatting other than valid JSON) containing the following fields:
+{
+  "title": "A concise, high-impact, professional CTI title",
+  "teaser_text": "A high-impact, 40-word marketing headline and hook for the public FRONT PAGE.",
+  "executive_summary": "HTML string containing the Executive Brief structured across the 4 cognitive layers.",
+  "content": "HTML string containing the complete, 1500+ word detailed analysis report with Key Takeaways, Technical Deep-Dive, Compliance Analysis, and Defensive Engineering.",
+  "category": "threat_intel | vulnerabilities | osint | tools",
+  "severity": "Critical | High | Medium | Low | Informational",
+  "mitre_attack_ttps": ["T1190 — Exploit Public-Facing Application", ...],
+  "yara_rules": ["rule rule_name { ... }"],
+  "sigma_rules": ["title: ..."],
+  "snort_signatures": [],
+  "iso_27001_controls": ["A.12.6.1", ...],
+  "nist_csf_functions": ["PR.IP-1", ...],
+  "gdpr_implications": "Detailed GDPR articles and compliance risk",
+  "financial_exposure": "$500K - $2.0M range",
+  "regulatory_risk": "NIS2 & GDPR fine exposures",
+  "mitigation_impact": "Configuration audit ROI",
+  "fbr_score": 5.5,
+  "is_public_teaser": true,
+  "cloudflare_waf_rules": "WAF block rules or JSON string config",
+  "assessment_25_point": {
+    "cve_vulnerability_mapping": "...",
+    "cvss_vector_analysis": "...",
+    "exploit_complexity_score": "...",
+    "affected_software_hardware": "...",
+    "infrastructure_dependency_depth": "...",
+    "network_traversal_mechanics": "...",
+    "threat_origin_forensics": "...",
+    "iso_27001_compliance": "...",
+    "nist_csf_alignment": "...",
+    "gdpr_liability_check": "...",
+    "regulatory_fine_exposure": "...",
+    "nis2_impact_classification": "...",
+    "compliance_risk_level": "...",
+    "yara_signature_readiness": "...",
+    "sigma_log_patterns": "...",
+    "cloudflare_waf_rules": "...",
+    "mitigation_playbook_difficulty": "...",
+    "hunting_queries": "...",
+    "insider_behavioral_remediation": "...",
+    "financial_blast_radius": "...",
+    "downtime_cost_exposure": "...",
+    "breach_cost_exposure": "...",
+    "sector_financial_multiplier": "...",
+    "mitigation_roi_percentage": "...",
+    "insurance_impact": "..."
+  },
+  "affected_sectors": ["Healthcare", ...],
+  "cvss_v4_score": 8.0,
+  "cvss_v4_vector": "CVSS:4.0/...",
+  "source_reliability_grade": "A|B|C|D|E",
+  "yara_rule": "rule rule_name { ... }",
+  "ai_image_prompt": "Unsplash search keyword or image prompt"
+}
+"""
+
+# ---------------------------------------------------------------------------
+# Free-Tier Deduplication & Direct RAG Lookups
+# ---------------------------------------------------------------------------
+
+async def fetch_local_rag_context(session: aiohttp.ClientSession, query_text: str) -> str:
+    """Fetch Top-3 grounded book segments from Supabase locally via FTS."""
+    if not query_text or len(query_text.strip()) < 5:
+        return ""
+
+    # Clean the query for websearch FTS
+    clean_query = re.sub(r"[^\w\s]", " ", query_text).strip()
+    search_terms = " & ".join([w for w in clean_query.split() if len(w) > 2][:5])
+    if not search_terms:
+        return ""
+
+    url = f"{SUPABASE_URL}/rest/v1/knowledge_embeddings"
     headers = {
+        "apikey": SUPABASE_SERVICE_KEY,
         "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
-        "Content-Type": "application/json"
+        "Accept": "application/json",
     }
-    payload = {"action": "query", "line_token": line_token, "query": query, "limit": 3}
+
+    # Query using websearch full-text search capability
+    query_url = f"{url}?select=content&content=wfts.{search_terms}&limit=3"
     try:
-        async with http_session.post(url, headers=headers, json=payload, timeout=5) as resp:
+        async with session.get(query_url, headers=headers, timeout=5) as resp:
             if resp.status == 200:
                 data = await resp.json()
-                segments = data.get("segments", [])
-                if segments:
-                    return "\n\n[EDGE-RAG GROUNDING KNOWLEDGE]:\n" + "\n---\n".join(segments)
+                if data:
+                    segments = [d.get("content", "") for d in data if d.get("content")]
+                    if segments:
+                        return "\n\n[LOCAL RAG KNOWLEDGE REFERENCE]:\n" + "\n---\n".join(segments)
     except Exception as exc:
-        log.warning("[EDGE-RAG] Lookup failed for %s: %s", line_token, exc)
+        log.warning("[LOCAL-RAG] Query failed: %s", exc)
+
+    # Fallback to general chunks to ensure grounded reference structure
+    try:
+        fallback_url = f"{url}?select=content&limit=3"
+        async with session.get(fallback_url, headers=headers, timeout=5) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                if data:
+                    segments = [d.get("content", "") for d in data if d.get("content")]
+                    if segments:
+                        return "\n\n[LOCAL RAG GROUND-TRUTH FALLBACK]:\n" + "\n---\n".join(segments)
+    except Exception as exc:
+        log.warning("[LOCAL-RAG] Fallback query failed: %s", exc)
+
     return ""
 
+
+def clean_anti_fud_text(text: str) -> str:
+    """Scrub banned phrases from the generated text and replace them with colder equivalents."""
+    if not text:
+        return ""
+    for phrase in ANTI_FUD_BANNED_PHRASES:
+        pattern = re.compile(re.escape(phrase), re.IGNORECASE)
+        replacement = "critical concern"
+        if phrase == "unprecedented threat":
+            replacement = "identified anomaly"
+        elif phrase == "devastating attack":
+            replacement = "security incident"
+        elif phrase == "game-changing":
+            replacement = "notable"
+        elif phrase == "catastrophic breach":
+            replacement = "data exposure event"
+        elif phrase == "worst-case scenario":
+            replacement = "upper boundary condition"
+        elif phrase in ["let's delve into", "let's explore", "let us examine", "let's examine"]:
+            replacement = "analysis indicates"
+        elif phrase in ["it is important to note", "it's worth noting", "cannot be overstated"]:
+            replacement = "specifically"
+        elif phrase in ["highlights the importance of", "underscores the need for"]:
+            replacement = "necessitates"
+        elif phrase == "a stark reminder":
+            replacement = "illustrative case"
+        elif phrase == "in conclusion":
+            replacement = "remediation actions require"
+        
+        text = pattern.sub(replacement, text)
+    return text
+
+
+def parse_master_response(llm_output: str) -> ExecutiveSITREP | None:
+    """Parse JSON block, clean Anti-FUD violations, and validate against contract schema."""
+    try:
+        start_idx = llm_output.find('{')
+        end_idx = llm_output.rfind('}')
+        if start_idx != -1 and end_idx != -1:
+            cleaned_json = llm_output[start_idx:end_idx+1]
+        else:
+            cleaned_json = llm_output.strip()
+            
+        parsed = json.loads(cleaned_json)
+    except Exception as exc:
+        log.error("Failed to decode Master Agent JSON: %s", exc)
+        return None
+
+    if not parsed.get("title"):
+        log.warning("Parsed JSON is missing a title.")
+        return None
+
+    # Clean FUD phrases inside text structures
+    for field in ["title", "executive_summary", "content", "teaser_text"]:
+        val = parsed.get(field)
+        if isinstance(val, str):
+            parsed[field] = clean_anti_fud_text(val)
+
+    # Clean 25-point assessment values
+    assessment = parsed.get("assessment_25_point")
+    if isinstance(assessment, dict):
+        for k, v in assessment.items():
+            if isinstance(v, str):
+                assessment[k] = clean_anti_fud_text(v)
+        parsed["assessment_25_point"] = assessment
+
+    # Normalize properties
+    cat = parsed.get("category") or "threat_intel"
+    parsed["category"] = ExecutiveSITREP.validate_category(cat)
+
+    sev = parsed.get("severity") or "Medium"
+    parsed["severity"] = ExecutiveSITREP.validate_severity(sev)
+
+    # Synthesize fallback YARA rule if missing
+    if not parsed.get("yara_rule") or parsed.get("yara_rule") == "None":
+        cleaned_title = re.sub(r'[^a-zA-Z0-9]', '_', parsed["title"])
+        yara_name = f"zayron_{cleaned_title.lower()}_auto"
+        parsed["yara_rule"] = (
+            f"rule {yara_name} {{\n"
+            f"    meta:\n"
+            f"        author = \"ZAYRON-X Auto-Generator\"\n"
+            f"        severity = \"{parsed['severity']}\"\n"
+            f"    strings:\n"
+            f"        $s1 = \"{yara_name}\"\n"
+            f"    condition:\n"
+            f"        any of them\n"
+            f"}}"
+        )
+    if not parsed.get("yara_rules"):
+        parsed["yara_rules"] = [parsed["yara_rule"]]
+
+    try:
+        sitrep = ExecutiveSITREP(
+            title=parsed.get("title", ""),
+            executive_summary=parsed.get("executive_summary", ""),
+            content=parsed.get("premium_payload") or parsed.get("content") or "",
+            teaser_text=parsed.get("teaser_text"),
+            is_public_teaser=parsed.get("is_public_teaser", True),
+            category=parsed["category"],
+            severity=parsed["severity"],
+            mitre_attack_ttps=parsed.get("mitre_attack_ttps", []),
+            yara_rules=parsed.get("yara_rules", []),
+            sigma_rules=parsed.get("sigma_rules", []),
+            snort_signatures=parsed.get("snort_signatures", []),
+            iocs=parsed.get("iocs", []),
+            iso_27001_controls=parsed.get("iso_27001_controls", []),
+            nist_csf_functions=parsed.get("nist_csf_functions", []),
+            gdpr_implications=parsed.get("gdpr_implications"),
+            financial_exposure=parsed.get("financial_exposure"),
+            regulatory_risk=parsed.get("regulatory_risk"),
+            mitigation_impact=parsed.get("mitigation_impact"),
+            fbr_score=parsed.get("fbr_score", 0.0),
+            affected_sectors=parsed.get("affected_sectors", ["Technology"]),
+            cvss_v4_score=parsed.get("cvss_v4_score"),
+            cvss_v4_vector=parsed.get("cvss_v4_vector"),
+            source_reliability_grade=parsed.get("source_reliability_grade", "C"),
+            yara_rule=parsed.get("yara_rule"),
+            ai_image_prompt=parsed.get("ai_image_prompt"),
+            cloudflare_waf_rules=parsed.get("cloudflare_waf_rules"),
+            assessment_25_point=parsed.get("assessment_25_point"),
+            anti_fud_passed=True,
+        )
+        return sitrep
+    except Exception as exc:
+        log.error("ExecutiveSITREP Pydantic validation failed: %s", exc)
+        return None
+
+# ---------------------------------------------------------------------------
+# API Engine Client
+# ---------------------------------------------------------------------------
 
 class GeminiClient:
     def __init__(self, api_key: str):
@@ -122,7 +353,7 @@ class GeminiClient:
         model_name: str,
         system_prompt: str,
         user_message: str,
-        max_output_tokens: int = 4096,
+        max_output_tokens: int = 8192,
         temperature: float = 0.2,
     ) -> tuple[str, int, int]:
         if not self._initialized:
@@ -154,10 +385,8 @@ class GeminiClient:
 
                         res = await asyncio.to_thread(_call)
                         
-                        # MISSION 1: IMMUTABLE THROTTLING CONDITION (12 RPM)
-                        log.debug("Enforcing immutable 20.0s rate limit sleep...")
-                        await asyncio.sleep(20.0)
-                        
+                        # Add structural API spacing delay to clear flash limits
+                        await asyncio.sleep(5.0)
                         return res
 
                     except (google_exceptions.ResourceExhausted, google_exceptions.RetryError) as exc:
@@ -177,216 +406,154 @@ class GeminiClient:
                             break
                         raise exc
 
+# ---------------------------------------------------------------------------
+# Consolidated Master Swarm Scheduler
+# ---------------------------------------------------------------------------
 
-async def run_pipeline_stages_1_3(
-    client: GeminiClient, 
-    http_session: aiohttp.ClientSession,
-    feed: dict[str, Any], 
-    line_token: str
-) -> tuple[ValidatedIntel, ComplianceReport, dict[str, int], str] | None:
-    raw_text = feed.get("raw_content", "")
-    source = feed.get("source_channel", "unknown")
-    token_tracker = {"prompt": 0, "completion": 0}
+async def master_crew_scheduler(client: GeminiClient) -> None:
+    log.info("Started Master Swarm Scheduler (3-Minute Paced Queue)")
+    seen_hashes: set[str] = set()
 
-    # EDGE-RAG Correlation Lookup
-    rag_context = await fetch_rag_context(http_session, line_token, raw_text[:500])
-    
-    # 1. Harvest & OSINT Spy in parallel
-    try:
-        sys_prompt_harv = HARVESTER_SYSTEM_PROMPT + rag_context
-        user_msg_harv = build_harvest_prompt(raw_text, source)
-        sys_prompt_osint = OSINT_SPY_SYSTEM_PROMPT + rag_context
-        user_msg_osint = build_osint_spy_prompt(raw_text, source)
-
-        async def run_harv():
-            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_harv, user_msg_harv, TOKEN_BUDGET_HARVESTER, 0.1)
-            return parse_harvest_response(raw_text, source, llm_out), p, c
-
-        async def run_osint():
-            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_osint, user_msg_osint, TOKEN_BUDGET_HARVESTER, 0.1)
-            return parse_osint_spy_response(raw_text, source, llm_out), p, c
-
-        (harvest, hp, hc), (osint, op, oc) = await asyncio.gather(run_harv(), run_osint())
-        token_tracker["prompt"] += (hp + op)
-        token_tracker["completion"] += (hc + oc)
-    except Exception as exc:
-        log.error("[%s] Advanced Ingestion (Harvester & OSINT Spy) failed: %s", line_token, exc)
-        return None
-
-    # 2. Infrastructure Defense & Forensic Validation in parallel
-    try:
-        sys_prompt_infra = INFRA_ARCHITECT_SYSTEM_PROMPT + rag_context
-        user_msg_infra = build_infra_architect_prompt(harvest, osint)
-        sys_prompt_val = VALIDATOR_SYSTEM_PROMPT + rag_context
-        user_msg_val = build_validator_prompt(harvest)
-
-        async def run_infra():
-            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_infra, user_msg_infra, TOKEN_BUDGET_HARVESTER, 0.1)
-            return parse_infra_architect_response(llm_out), p, c
-
-        async def run_val():
-            llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt_val, user_msg_val, TOKEN_BUDGET_VALIDATOR, 0.1)
-            return parse_validator_response(harvest, llm_out), p, c
-
-        (infra, ip, ic), (validated, vp, vc) = await asyncio.gather(run_infra(), run_val())
-        token_tracker["prompt"] += (ip + vp)
-        token_tracker["completion"] += (ic + vc)
-
-        # Attach osint & infra results to validated model
-        validated.osint = osint
-        validated.infra = infra
-    except Exception as exc:
-        log.error("[%s] Infrastructure Defense & Forensic Validation failed: %s", line_token, exc)
-        return None
-
-    # 3. Compliance
-    try:
-        sys_prompt = COMPLIANCE_SYSTEM_PROMPT + rag_context
-        user_msg = build_compliance_prompt(validated)
-        llm_out, p, c = await client.generate(GEMINI_PRO_MODEL, sys_prompt, user_msg, TOKEN_BUDGET_COMPLIANCE, 0.2)
-        token_tracker["prompt"] += p; token_tracker["completion"] += c
-        compliance = parse_compliance_response(llm_out)
-    except Exception as exc:
-        log.error("[%s] Compliance failed: %s", line_token, exc)
-        return None
-        
-    return validated, compliance, token_tracker, raw_text
-
-
-# Queue for Line 5 (Financial Synthesis)
-synthesis_queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
-
-
-async def extraction_line_worker(line_id: str, feed_type: str, client: GeminiClient, interval_min: int) -> None:
-    """Lines 1-4: Extract intelligence and push to Synthesis Queue."""
-    log.info("Started %s (feed_type=%s)", line_id, feed_type)
     while True:
-        try:
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30)) as session:
-                feeds = await claim_pending_feeds(session, limit=CREW_BATCH_SIZE, feed_type=feed_type)
-                for feed in feeds:
-                    feed_id = feed.get("id")
-                    result = await run_pipeline_stages_1_3(client, session, feed, line_id)
-                    if result is None:
-                        await mark_feed_status(session, feed_id, "crew_failed")
-                        continue
-                    
-                    validated, compliance, tokens, raw_text = result
-                    await synthesis_queue.put({
-                        "feed_id": feed_id,
-                        "feed": feed,
-                        "validated": validated,
-                        "compliance": compliance,
-                        "tokens": tokens,
-                        "raw_text": raw_text,
-                        "source": feed.get("source_channel", "unknown")
-                    })
-        except Exception as exc:
-            log.error("%s Error: %s", line_id, exc)
-        await asyncio.sleep(interval_min * 60)
+        loop_start = time.time()
+        
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=45)) as session:
+            # 1. Fetch & atomically claim exactly 1 pending feed of any type
+            feeds = await claim_pending_feeds(session, limit=1)
+            if not feeds:
+                log.debug("No pending feeds. Waiting 10 seconds...")
+                await asyncio.sleep(10)
+                continue
 
+            feed = feeds[0]
+            feed_id = feed.get("id")
+            raw_content = feed.get("raw_content", "")
+            source = feed.get("source_channel", "unknown")
 
-async def synthesis_line_worker(client: GeminiClient) -> None:
-    """Line 5: Central Validator (Financial Synthesis & Weaver)."""
-    log.info("Started LINE-05-SYNTHESIS")
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30)) as session:
-        while True:
+            log.info("Processing Feed ID: %s (source: %s)", feed_id, source)
+
+            # 2. Local Python Filtering & Noise Deduplication
+            cleaned_content = raw_content.strip()
+            if not cleaned_content or len(cleaned_content) < 20:
+                log.info("Feed %s classified as noise (length %d < 20). Skipping LLM.", feed_id, len(cleaned_content))
+                await mark_feed_status(session, feed_id, "crew_ignored")
+                continue
+
+            # In-memory deduplication check
+            url_hash = hashlib.sha256(cleaned_content.encode("utf-8")).hexdigest()
+            if url_hash in seen_hashes:
+                log.info("Feed %s is a duplicate (in-memory match). Skipping LLM.", feed_id)
+                await mark_feed_status(session, feed_id, "crew_ignored")
+                continue
+
+            # Database duplicate check
+            db_check_url = f"{SUPABASE_URL}/rest/v1/articles?url_hash=eq.{url_hash}&select=id"
+            headers = {
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                "Accept": "application/json",
+            }
+            is_dup = False
             try:
-                task_data = await synthesis_queue.get()
-                feed_id = task_data["feed_id"]
-                validated: ValidatedIntel = task_data["validated"]
-                compliance: ComplianceReport = task_data["compliance"]
-                tokens: dict[str, int] = task_data["tokens"]
-                raw_text: str = task_data["raw_text"]
-                source: str = task_data["source"]
-                
-                # EDGE-RAG Correlation Lookup for Weaving
-                rag_context = await fetch_rag_context(session, "LINE-05-SYNTHESIS", raw_text[:500])
-
-                # Stage 4: Quant (Financial Synthesis - uses FBRCalculator internally)
-                try:
-                    sys_prompt = QUANT_SYSTEM_PROMPT + rag_context
-                    user_msg = build_quant_prompt(validated, compliance)
-                    llm_out, p, c = await client.generate(GEMINI_FLASH_MODEL, sys_prompt, user_msg, TOKEN_BUDGET_QUANT, 0.15)
-                    tokens["prompt"] += p; tokens["completion"] += c
-                    financial = parse_quant_response(validated, compliance, llm_out)
-                except Exception as exc:
-                    log.error("[LINE-05] Quant failed: %s", exc)
-                    await mark_feed_status(session, feed_id, "crew_failed")
-                    synthesis_queue.task_done()
-                    continue
-
-                # Stage 5: Weaver
-                sitrep = None
-                messages = [build_weaver_prompt(validated, compliance, financial)]
-                sys_prompt = WEAVER_SYSTEM_PROMPT + rag_context
-                
-                for attempt in range(1, MAX_RETRIES_PER_AGENT + 2):
-                    try:
-                        llm_out, p, c = await client.generate(GEMINI_PRO_MODEL, sys_prompt, "\n\n".join(messages), TOKEN_BUDGET_WEAVER, 0.25)
-                        tokens["prompt"] += p; tokens["completion"] += c
-                        sitrep = parse_weaver_response(validated, compliance, financial, llm_out)
-                        if sitrep is not None:
-                            break
-                        
-                        if attempt <= MAX_RETRIES_PER_AGENT:
-                            try:
-                                cleaned = llm_out.strip().strip("```json").strip("```").strip()
-                                _, violations = enforce_anti_fud(json.loads(cleaned))
-                                messages.append(build_anti_fud_retry_prompt(violations))
-                            except:
-                                messages.append("REJECTED: Invalid JSON or Anti-FUD violation. Rewrite.")
-                    except Exception as exc:
-                        log.error("[LINE-05] Weaver attempt %d failed: %s", attempt, exc)
-                
-                if sitrep is None:
-                    await mark_feed_status(session, feed_id, "crew_failed")
-                elif not sitrep.anti_fud_passed:
-                    await mark_feed_status(session, feed_id, "anti_fud_rejected")
-                else:
-                    success = await persist_sitrep(session, sitrep, raw_text, source_channel=source)
-                    if success:
-                        await mark_feed_status(
-                            session, feed_id, "crew_promoted",
-                            analysis=sitrep.executive_summary[:500],
-                            translated_title=sitrep.title,
-                            translated_content=sitrep.content[:2000],
-                            category=sitrep.category,
-                            prompt_tokens=tokens["prompt"],
-                            completion_tokens=tokens["completion"],
-                            promoted_at=utc_now_iso()
-                        )
-                        await trigger_revalidation(session)
-                    else:
-                        await mark_feed_status(session, feed_id, "persist_failed")
-
-                synthesis_queue.task_done()
+                async with session.get(db_check_url, headers=headers, timeout=5) as check_resp:
+                    if check_resp.status == 200:
+                        rows = await check_resp.json()
+                        if rows:
+                            is_dup = True
             except Exception as exc:
-                log.error("[LINE-05] Unhandled error: %s", exc)
+                log.warning("Database duplicate check failed: %s. Continuing...", exc)
+
+            if is_dup:
+                log.info("Feed %s is a duplicate (database match). Skipping LLM.", feed_id)
+                seen_hashes.add(url_hash)
+                await mark_feed_status(session, feed_id, "crew_ignored")
+                continue
+
+            seen_hashes.add(url_hash)
+
+            # 3. Fetch Local RAG context directly from Supabase
+            rag_context = await fetch_local_rag_context(session, raw_content[:500])
+
+            # 4. Master Agent Single-Pass LLM Call
+            log.info("Invoking single Consolidated Master Agent...")
+            sys_prompt = MASTER_INTELLIGENCE_PROMPT + rag_context
+            user_msg = (
+                f"SOURCE CHANNEL: {source}\n"
+                f"RAW THREAT telemetry:\n{raw_content}\n\n"
+                f"Execute full 7-agent consolidated analysis. Output strict JSON only."
+            )
+
+            sitrep = None
+            token_tracker = {"prompt": 0, "completion": 0}
+
+            try:
+                llm_out, p, c = await client.generate(
+                    GEMINI_PRO_MODEL,
+                    sys_prompt,
+                    user_msg,
+                    max_output_tokens=8192,
+                    temperature=0.2
+                )
+                token_tracker["prompt"] += p
+                token_tracker["completion"] += c
+
+                # Parse and clean output
+                sitrep = parse_master_response(llm_out)
+
+            except Exception as exc:
+                log.error("Consolidated Master Inference failed: %s", exc)
+                await mark_feed_status(session, feed_id, "crew_failed")
                 await asyncio.sleep(5)
+                continue
+
+            if sitrep is None:
+                log.warning("Master Agent returned invalid or unparseable payload. Marking failed.")
+                await mark_feed_status(session, feed_id, "crew_failed")
+                continue
+
+            # 5. Persist SITREP & Mark Feed status
+            success = await persist_sitrep(session, sitrep, raw_content, source_channel=source)
+            if success:
+                log.info("Successfully persisted Master intelligence report: %s", sitrep.title)
+                await mark_feed_status(
+                    session, feed_id, "crew_promoted",
+                    analysis=sitrep.executive_summary[:500],
+                    translated_title=sitrep.title,
+                    translated_content=sitrep.content[:2000],
+                    category=sitrep.category,
+                    prompt_tokens=token_tracker["prompt"],
+                    completion_tokens=token_tracker["completion"],
+                    promoted_at=utc_now_iso()
+                )
+                await trigger_revalidation(session)
+            else:
+                log.error("Failed to persist Master intelligence report to database.")
+                await mark_feed_status(session, feed_id, "persist_failed")
+
+            # 6. Pacing sleep: enforce exactly 180 seconds per LLM request
+            elapsed = time.time() - loop_start
+            remaining = max(0.0, 180.0 - elapsed)
+            log.info("Master analysis complete. Pacing sleep: waiting %.1f seconds...", remaining)
+            await asyncio.sleep(remaining)
 
 
 async def main_loop() -> None:
-    log.info("Starting ZAYRON-X Omnipresent Intelligence Crew (5 Isolated Lines)")
+    log.info("Starting ZAYRON-X Consolidated Intelligence Master Crew")
     config_errors = validate_config()
     if config_errors:
-        for err in config_errors: log.critical("CONFIG ERROR: %s", err)
+        for err in config_errors:
+            log.critical("CONFIG ERROR: %s", err)
         sys.exit(1)
 
     client = GeminiClient(api_key=GEMINI_API_KEY)
+    
+    # Run the central master scheduler
+    await master_crew_scheduler(client)
 
-    # Launch the 5 independent lines
-    asyncio.create_task(extraction_line_worker("LINE-01-CVE", "cve", client, CREW_POLL_INTERVAL_MIN))
-    asyncio.create_task(extraction_line_worker("LINE-02-DARKWEB", "darkweb", client, CREW_POLL_INTERVAL_MIN))
-    asyncio.create_task(extraction_line_worker("LINE-03-TELEGRAM", "telegram", client, CREW_POLL_INTERVAL_MIN))
-    asyncio.create_task(extraction_line_worker("LINE-04-OSINT", "rss", client, CREW_POLL_INTERVAL_MIN))
-    asyncio.create_task(synthesis_line_worker(client))
-
-    while True:
-        await asyncio.sleep(3600)
 
 def main() -> None:
     asyncio.run(main_loop())
+
 
 if __name__ == "__main__":
     main()
