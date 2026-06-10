@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { DarkWebDashboard } from "@/components/platform/DarkWebDashboard";
 import { RefreshCw } from "@/lib/icons";
 
@@ -24,15 +24,18 @@ export default async function DarkWebReconPage() {
     isSubscriber = profile?.clearance_level === "SUBSCRIBER";
   }
 
-  // 2. Query threat_artifacts_secure view directly (threat_artifacts has a type-cast bug in RLS).
-  // force-dynamic + no cache layer = always live SSR. No stale edge data.
-  const { data: rawThreats, error: threatsError } = await supabase
+  // 2. Use admin (service-role) client for threat data to bypass RLS.
+  // The anon key cannot authenticate against threat_artifacts_secure due to RLS policy.
+  // Service role key is ONLY used server-side in this Server Component — never sent to the browser.
+  // DarkWebDashboard masks premium fields client-side via the isSubscriber prop.
+  const adminSupabase = await createAdminClient();
+  const { data: rawThreats, error: threatsError } = await adminSupabase
     .from("threat_artifacts_secure")
     .select("*")
     .order("created_at", { ascending: false });
 
   if (threatsError) {
-    console.error("[DarkWebRecon] DB query failed:", threatsError.message, threatsError.code);
+    console.error("[DarkWebRecon] Admin DB query failed:", threatsError.message, threatsError.code);
   }
 
   const dbThreats = (!threatsError && rawThreats) ? rawThreats : [];
