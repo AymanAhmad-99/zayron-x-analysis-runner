@@ -621,8 +621,8 @@ async def main_async() -> None:
                 "Cycle %d crashed (non-fatal): %s", cycle, exc, exc_info=True
             )
 
-        log.info("Sleeping 300 seconds until next cycle...")
-        await asyncio.sleep(300) # Clean 300-second backoff/polling loop interval
+        log.info("Sleeping %d seconds until next cycle (CVE_POLL_INTERVAL=%d min)...", CVE_POLL_INTERVAL * 60, CVE_POLL_INTERVAL)
+        await asyncio.sleep(CVE_POLL_INTERVAL * 60)  # Synchronized: env-driven, not hardcoded
 
 
 if __name__ == "__main__":

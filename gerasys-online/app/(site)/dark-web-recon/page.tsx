@@ -40,6 +40,13 @@ export default async function DarkWebReconPage() {
 
   const dbThreats = (!threatsError && rawThreats) ? rawThreats : [];
 
+  // 3. Fetch total ingested article count for the live threat counter (WARN-09 fix).
+  // Uses the admin client to count articles regardless of RLS. Falls back to threat count.
+  const { count: articleCount } = await adminSupabase
+    .from("articles")
+    .select("*", { count: "exact", head: true });
+  const totalIntelCount = articleCount ?? dbThreats.length;
+
   return (
     <div className="bg-[#FAFAFA] min-h-screen py-12 px-6 lg:px-10 font-sans selection:bg-[#733DD9] selection:text-white">
       <div className="max-w-[1400px] mx-auto space-y-8 animate-fade-up">
@@ -75,7 +82,7 @@ export default async function DarkWebReconPage() {
         </div>
 
         {/* Live Client Dashboard Component */}
-        <DarkWebDashboard threats={dbThreats} isSubscriber={isSubscriber} />
+        <DarkWebDashboard threats={dbThreats} isSubscriber={isSubscriber} totalIntelCount={totalIntelCount} />
 
       </div>
     </div>

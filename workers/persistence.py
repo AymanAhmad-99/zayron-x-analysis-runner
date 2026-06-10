@@ -316,6 +316,18 @@ async def persist_sitrep(
                         cve_match = re.search(r"CVE-\d{4}-\d{4,}", sitrep.title + " " + sitrep.content, re.IGNORECASE)
                         cve_id = cve_match.group(0).upper() if cve_match else f"CVE-{datetime.now().year}-{abs(hash(sitrep.title)) % 100000:05d}"
 
+                        # Dynamically infer vendor from SITREP content (never hardcode 'Unknown').
+                        # The Master Agent always populates affected_sectors; use the first sector
+                        # as the affected_product context — far more accurate than a blank string.
+                        inferred_product = (
+                            sitrep.affected_sectors[0]
+                            if sitrep.affected_sectors
+                            else "Multi-Sector Platform"
+                        )
+                        # Attempt to extract a vendor name from the SITREP title itself.
+                        title_words = sitrep.title.split()
+                        inferred_vendor = title_words[0] if title_words else "ZAYRON-X Intelligence"
+
                         cve_payload = {
                             "cve_id": cve_id,
                             "title": sitrep.title,
@@ -323,8 +335,8 @@ async def persist_sitrep(
                             "severity": sitrep.severity,
                             "cvss_score": sitrep.cvss_v4_score or 5.0,
                             "cvss_vector": sitrep.cvss_v4_vector or "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
-                            "affected_product": sitrep.affected_sectors[0] if sitrep.affected_sectors else "Unknown",
-                            "vendor": "Unknown",
+                            "affected_product": inferred_product,
+                            "vendor": inferred_vendor,
                             "status": "Active",
                             "published_date": utc_now_iso(),
                         }
@@ -364,7 +376,9 @@ async def persist_sitrep(
                             "sigma_rules": "\n\n".join(sitrep.sigma_rules) if isinstance(sitrep.sigma_rules, list) else "",
                             "raw_iocs": json.dumps(sitrep.iocs) if sitrep.iocs else "[]",
                             "unmasked_target_entities": ", ".join(sitrep.affected_sectors) if sitrep.affected_sectors else "Technology",
-                            "sitrep_pdf_url": f"https://xdfndojvqazffcjngglr.supabase.co/storage/v1/object/public/sitreps/{generate_slug(sitrep.title)}.pdf",
+                            # sitrep_pdf_url intentionally omitted: no PDF generation pipeline is active.
+                            # Synthetic URL construction removed (WARN-08) to prevent 404s for subscribers.
+                            # Re-enable once reportlab/weasyprint PDF pipeline is integrated.
                             "is_public_teaser": sitrep.is_public_teaser,
                             "teaser_text": sitrep.teaser_text,
                             "cloudflare_waf_rules": sitrep.cloudflare_waf_rules,

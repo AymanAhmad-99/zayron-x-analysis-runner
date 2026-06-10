@@ -18,6 +18,8 @@ import os
 import re
 import sys
 import time
+import urllib.request
+import urllib.parse
 from datetime import datetime, timezone
 from typing import Any, Optional
 
@@ -63,6 +65,67 @@ logging.basicConfig(
     stream=sys.stdout,
 )
 log = logging.getLogger("zayron_x_omni_crew")
+
+# ---------------------------------------------------------------------------
+# Redis-Backed Daily Quota Ledger (WARN-05)
+# Survives Docker container restarts. Key is UTC-date-scoped.
+# ---------------------------------------------------------------------------
+
+UPSTASH_REDIS_URL: str = os.getenv("UPSTASH_REDIS_REST_URL", "")
+UPSTASH_REDIS_TOKEN: str = os.getenv("UPSTASH_REDIS_REST_TOKEN", "")
+DAILY_REQUEST_LIMIT: int = int(os.getenv("DAILY_REQUEST_LIMIT", "480"))
+
+
+def _quota_key() -> str:
+    """Return today's UTC quota Redis key, e.g. 'zayron:quota:2026-06-11'."""
+    return f"zayron:quota:{datetime.now(timezone.utc).strftime('%Y-%m-%d')}"
+
+
+def _redis_request(method: str, path: str, body: str | None = None) -> Any:
+    """Minimal synchronous Upstash REST call. Returns parsed JSON or None on failure."""
+    if not UPSTASH_REDIS_URL or not UPSTASH_REDIS_TOKEN:
+        return None
+    url = UPSTASH_REDIS_URL.rstrip("/") + path
+    headers = {
+        "Authorization": f"Bearer {UPSTASH_REDIS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    data = body.encode() if body else None
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=4) as resp:
+            return json.loads(resp.read().decode())
+    except Exception as exc:
+        log.debug("[QUOTA-LEDGER] Redis request failed (non-fatal): %s", exc)
+        return None
+
+
+def quota_get_today() -> int:
+    """Return the current daily inference count from Redis. Returns 0 on failure."""
+    result = _redis_request("GET", f"/get/{urllib.parse.quote(_quota_key())}")
+    if result and result.get("result") is not None:
+        try:
+            return int(result["result"])
+        except (TypeError, ValueError):
+            pass
+    return 0
+
+
+def quota_increment() -> int:
+    """Atomically increment today's daily counter. Sets TTL to 25h on first write."""
+    key = urllib.parse.quote(_quota_key())
+    # INCR returns the new count
+    result = _redis_request("GET", f"/incr/{key}")
+    new_count = 0
+    if result and result.get("result") is not None:
+        try:
+            new_count = int(result["result"])
+        except (TypeError, ValueError):
+            pass
+    # Set TTL of 90000 seconds (25 hours) to ensure rollover on midnight UTC
+    if new_count == 1:
+        _redis_request("GET", f"/expire/{key}/90000")
+    return new_count
 
 # ---------------------------------------------------------------------------
 # Master Agent System Prompt (Literature-based Swarm Integration)
@@ -474,8 +537,20 @@ async def master_crew_scheduler(client: GeminiClient) -> None:
             # 3. Fetch Local RAG context directly from Supabase
             rag_context = await fetch_local_rag_context(session, raw_content[:500])
 
-            # 4. Master Agent Single-Pass LLM Call
-            log.info("Invoking single Consolidated Master Agent...")
+            # 4. Quota gate: check Redis ledger before consuming a Gemini request.
+            # This survives container restarts — counter is stored in Upstash, not RAM.
+            daily_count = await asyncio.to_thread(quota_get_today)
+            if daily_count >= DAILY_REQUEST_LIMIT:
+                log.warning(
+                    "[QUOTA-LEDGER] Daily limit reached (%d/%d). Backing off 30 minutes.",
+                    daily_count, DAILY_REQUEST_LIMIT,
+                )
+                await mark_feed_status(session, feed_id, "pending")  # Release the claim
+                await asyncio.sleep(1800)  # 30-minute backoff
+                continue
+
+            # 5. Master Agent Single-Pass LLM Call
+            log.info("Invoking single Consolidated Master Agent... [Quota: %d/%d]", daily_count, DAILY_REQUEST_LIMIT)
             sys_prompt = MASTER_INTELLIGENCE_PROMPT + rag_context
             user_msg = (
                 f"SOURCE CHANNEL: {source}\n"
@@ -496,6 +571,10 @@ async def master_crew_scheduler(client: GeminiClient) -> None:
                 )
                 token_tracker["prompt"] += p
                 token_tracker["completion"] += c
+
+                # Increment the persistent daily quota counter after a successful API call.
+                new_total = await asyncio.to_thread(quota_increment)
+                log.info("[QUOTA-LEDGER] Daily inference count: %d/%d", new_total, DAILY_REQUEST_LIMIT)
 
                 # Parse and clean output
                 sitrep = parse_master_response(llm_out)
@@ -546,7 +625,38 @@ async def main_loop() -> None:
         sys.exit(1)
 
     client = GeminiClient(api_key=GEMINI_API_KEY)
-    
+
+    # WARN-14 Remediation: Run stale-claim watchdog on every container boot.
+    # Reverts any raw_feeds rows stuck in 'processing_crew' > 10 minutes
+    # back to 'pending', clearing zombie entries from prior OOM kills.
+    log.info("[WATCHDOG] Running stale-claim recovery sweep...")
+    try:
+        async with aiohttp.ClientSession() as _session:
+            watchdog_url = f"{SUPABASE_URL}/rest/v1/rpc/revert_stale_crew_claims"
+            watchdog_headers = {
+                "apikey": SUPABASE_SERVICE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+                "Content-Type": "application/json",
+            }
+            async with _session.post(
+                watchdog_url,
+                headers=watchdog_headers,
+                json={"stale_threshold_minutes": 10},
+                timeout=aiohttp.ClientTimeout(total=10),
+            ) as resp:
+                if resp.status in (200, 204):
+                    reverted = await resp.json()
+                    count = len(reverted) if isinstance(reverted, list) else 0
+                    if count:
+                        log.warning("[WATCHDOG] Reverted %d stale 'processing_crew' feeds to 'pending'.", count)
+                    else:
+                        log.info("[WATCHDOG] No stale claims found. Queue is clean.")
+                else:
+                    body = await resp.text()
+                    log.warning("[WATCHDOG] RPC call returned HTTP %d: %s", resp.status, body[:200])
+    except Exception as exc:
+        log.warning("[WATCHDOG] Stale-claim sweep failed (non-fatal): %s", exc)
+
     # Run the central master scheduler
     await master_crew_scheduler(client)
 

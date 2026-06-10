@@ -59,9 +59,13 @@ MAX_RETRIES_PER_AGENT: int = int(os.getenv("MAX_RETRIES_PER_AGENT", "2"))
 # Vercel ISR Revalidation
 # ---------------------------------------------------------------------------
 
+# REVALIDATION_URL must be set explicitly via .env on VPS (e.g., https://zayron-x.com/api/revalidate).
+# The localhost:3000 loopback is intentionally removed — it fails silently on Docker VPS deployments.
+# If both env vars are unset, trigger_revalidation() will detect the empty secret and no-op cleanly.
+_app_base = os.getenv("NEXT_PUBLIC_APP_URL", "").rstrip("/")
 REVALIDATION_URL: str = os.getenv(
     "REVALIDATION_URL",
-    os.getenv("NEXT_PUBLIC_APP_URL", "http://localhost:3000") + "/api/revalidate",
+    f"{_app_base}/api/revalidate" if _app_base else "",
 )
 REVALIDATION_SECRET: str = os.getenv("REVALIDATION_SECRET", "")
 
