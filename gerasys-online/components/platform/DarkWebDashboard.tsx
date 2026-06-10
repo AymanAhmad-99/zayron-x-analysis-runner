@@ -72,6 +72,39 @@ function sanitizeTeaserText(text: string | null): string {
   return clean;
 }
 
+const getDeterministicThumbnail = (id: string, title: string) => {
+  const IMAGES = [
+    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80", // matrix code
+    "https://images.unsplash.com/photo-1509023467864-1ecb6c43d2be?auto=format&fit=crop&w=400&q=80", // dark abstract server
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=400&q=80", // tech circuit
+    "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80", // cyber dashboard
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80", // circuit board
+    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80", // servers
+    "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=400&q=80", // abstract digital
+    "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=400&q=80", // quantum light
+    "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?auto=format&fit=crop&w=400&q=80", // binary tech
+    "https://images.unsplash.com/photo-1544256718-3bcf237f3974?auto=format&fit=crop&w=400&q=80", // programming lines
+    "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=400&q=80", // cybersecurity shield
+    "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?auto=format&fit=crop&w=400&q=80"  // glowing screen matrix
+  ];
+  let hash = 0;
+  const str = id + title;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % IMAGES.length;
+  return IMAGES[index];
+};
+
+const formatCardDate = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "JUST NOW";
+  }
+};
+
 export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProps) {
   const [filter, setFilter] = useState<string>("ALL");
   const [liveCount, setLiveCount] = useState<number>(14873);
@@ -155,10 +188,8 @@ export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProp
             <span className="text-[9px] font-mono text-neutral-400">
               ACTIVE CAPTURES: {filteredThreats.length}
             </span>
-          </div>
-
-          {/* Cards Stack */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin bg-white pb-32">
+          </div>          {/* Cards Stack */}
+          <div className="flex-1 overflow-y-auto p-6 scrollbar-thin bg-white pb-32">
             {filteredThreats.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center text-neutral-400 py-20 font-mono">
                 <ShieldAlert className="w-10 h-10 text-neutral-300 mb-3 animate-pulse" />
@@ -168,218 +199,234 @@ export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProp
                 </span>
               </div>
             ) : (
-              filteredThreats.map((threat, index) => {
-                const isExpanded = expandedId === threat.id;
-                const isGated = !isSubscriber && index >= 3;
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredThreats.map((threat, index) => {
+                  const isExpanded = expandedId === threat.id;
+                  const isGated = !isSubscriber && index >= 3;
+                  const readTime = Math.max(2, Math.round((threat.teaser_text || "").split(/\s+/).length / 200) || 3) + " min read";
 
-                return (
-                  <div
-                    key={threat.id}
-                    className={`bg-white border border-neutral-200/80 p-5 hover:border-[#733DD9]/40 transition-all duration-300 flex flex-col shadow-sm group ${
-                      isGated ? "blur-[3px] opacity-25 pointer-events-none select-none" : ""
-                    }`}
-                  >
-                    {/* Header & Badges */}
-                    <div className="flex items-center justify-between gap-4 mb-3">
-                      <span className="text-[9px] font-mono bg-neutral-100 text-neutral-600 px-2 py-0.5 border border-neutral-200/60 uppercase font-bold tracking-wider">
-                        {threat.sector}
-                      </span>
-                      <span
-                        className={`text-[9px] font-mono font-extrabold px-2 py-0.5 border text-white ${
-                          threat.severity.toUpperCase() === "CRITICAL"
-                            ? "bg-red-600 border-red-700"
-                            : threat.severity.toUpperCase() === "HIGH"
-                            ? "bg-orange-500 border-orange-600"
-                            : "bg-amber-500 border-amber-600"
-                        }`}
-                      >
-                        {threat.severity.toUpperCase()}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-sm font-bold text-neutral-900 group-hover:text-[#733DD9] transition-colors leading-snug uppercase tracking-tight mb-2">
-                      {threat.title}
-                    </h3>
-
-                    {/* Teaser text (stripping JSON/URLs/markdown) */}
-                    <p className="text-xs text-neutral-600 leading-relaxed font-sans mb-4">
-                      {sanitizeTeaserText(threat.teaser_text)}
-                    </p>
-
-                    {/* Card Footer */}
-                    <div className="border-t border-neutral-100 pt-3 flex items-center justify-between text-[10px] font-mono text-neutral-500">
-                      <div className="flex gap-4">
-                        <div>
-                          <span>FBR: </span>
-                          <span className="font-extrabold text-neutral-900">
-                            {formatUSD(threat.fbr_total)}
-                          </span>
-                        </div>
-                        <div>
-                          <span>CVSS: </span>
-                          <span className="font-bold text-neutral-900">
-                            {threat.cvss_score}
-                          </span>
+                  return (
+                    <div
+                      key={threat.id}
+                      className={`bg-white border border-neutral-200/80 p-5 hover:border-[#733DD9]/40 hover:scale-[1.02] transition-all duration-300 flex flex-col shadow-sm group ${
+                        isExpanded ? "md:col-span-2" : ""
+                      } ${isGated ? "blur-[3px] opacity-25 pointer-events-none select-none" : ""}`}
+                    >
+                      {/* Visual Thumbnail */}
+                      <div className="relative w-full h-32 overflow-hidden bg-neutral-100 mb-4 border border-neutral-200/60 shrink-0">
+                        <img
+                          src={getDeterministicThumbnail(threat.id, threat.title)}
+                          alt="Threat Vector Visual"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
+                          loading="lazy"
+                        />
+                        <div className="absolute top-2 left-2 bg-[#733DD9] text-white text-[8px] font-mono font-bold tracking-wider px-2 py-0.5 uppercase">
+                          ZAYRON-X INTELLIGENCE UNIT
                         </div>
                       </div>
 
-                      {!isGated && (
-                        <button
-                          onClick={() => setExpandedId(isExpanded ? null : threat.id)}
-                          className="py-1 px-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-[9px] uppercase font-bold tracking-wider transition-all flex items-center gap-1 cursor-pointer"
-                        >
-                          {isExpanded ? (
-                            <>
-                              <Eye className="w-3 h-3" />
-                              CLOSE
-                            </>
-                          ) : (
-                            <>
-                              <Activity className="w-3 h-3" />
-                              ANALYZE
-                            </>
+                      {/* Top Meta Row */}
+                      <div className="flex items-center justify-between text-[8px] font-mono text-neutral-400 uppercase tracking-wider mb-2 shrink-0">
+                        <span>{formatCardDate(threat.created_at)}</span>
+                        <span>{readTime}</span>
+                      </div>
+
+                      {/* Header Title */}
+                      <h3 className="text-xs font-extrabold text-neutral-900 group-hover:text-[#733DD9] transition-colors leading-snug uppercase tracking-tight mb-2 shrink-0">
+                        {threat.title}
+                      </h3>
+
+                      {/* Teaser Abstract */}
+                      <p className="text-[11px] text-neutral-600 leading-relaxed font-sans mb-4 flex-1">
+                        {sanitizeTeaserText(threat.teaser_text)}
+                      </p>
+
+                      {/* Bottom Meta Row / Badges */}
+                      <div className="border-t border-neutral-100 pt-3 flex flex-wrap items-center justify-between gap-3 text-[9px] font-mono text-neutral-500 shrink-0">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="bg-neutral-100 text-neutral-600 px-1.5 py-0.5 border border-neutral-200/60 uppercase font-bold tracking-wider">
+                            {threat.sector}
+                          </span>
+                          <span
+                            className={`font-extrabold px-1.5 py-0.5 border text-white ${
+                              threat.severity.toUpperCase() === "CRITICAL"
+                                ? "bg-red-600 border-red-700"
+                                : threat.severity.toUpperCase() === "HIGH"
+                                ? "bg-orange-500 border-orange-600"
+                                : "bg-amber-500 border-amber-600"
+                            }`}
+                          >
+                            {threat.severity.toUpperCase()}
+                          </span>
+                          {threat.cvss_score > 0 && (
+                            <span className="bg-neutral-50 text-neutral-700 px-1.5 py-0.5 border border-neutral-200">
+                              CVSS: {threat.cvss_score}
+                            </span>
                           )}
-                        </button>
-                      )}
-                    </div>
+                          {threat.fbr_total > 0 && (
+                            <span className="bg-[#733DD9]/5 text-[#733DD9] px-1.5 py-0.5 border border-[#733DD9]/10 font-extrabold">
+                              FBR: {formatUSD(threat.fbr_total)}
+                            </span>
+                          )}
+                        </div>
 
-                    {/* Expanded details (Premium Payload) */}
-                    {isExpanded && !isGated && (
-                      <div className="mt-4 pt-4 border-t border-neutral-200 relative space-y-4">
-                        {isSubscriber ? (
-                          <div className="space-y-4 text-[10px] font-mono text-neutral-800">
-                            <div>
-                              <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
-                                Target Entities (Unmasked)
-                              </span>
-                              <div className="bg-white border border-neutral-200 p-2 text-neutral-700">
-                                {threat.unmasked_target_entities || "None cataloged"}
-                              </div>
-                            </div>
-
-                            <div>
-                              <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
-                                Indicators of Compromise (IoCs)
-                              </span>
-                              <pre className="bg-neutral-950 text-neutral-300 p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
-                                <code>
-                                  {threat.raw_iocs
-                                    ? JSON.stringify(JSON.parse(threat.raw_iocs), null, 2)
-                                    : "[]"}
-                                </code>
-                              </pre>
-                            </div>
-
-                            <div>
-                              <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
-                                YARA Rules Signature
-                              </span>
-                              <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
-                                <code>{threat.yara_rules || "// No YARA rules mapped."}</code>
-                              </pre>
-                            </div>
-
-                            <div>
-                              <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
-                                Sigma Detection Rules
-                              </span>
-                              <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
-                                <code>{threat.sigma_rules || "# No Sigma rules mapped."}</code>
-                              </pre>
-                            </div>
-
-                            <div>
-                              <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
-                                Cloudflare WAF Rules
-                              </span>
-                              <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
-                                <code>{threat.cloudflare_waf_rules || "# No Cloudflare WAF rules mapped."}</code>
-                              </pre>
-                            </div>
-
-                            {(() => {
-                              let assessment: Record<string, string> = {};
-                              try {
-                                if (threat.assessment_25_point) {
-                                  assessment = typeof threat.assessment_25_point === "string"
-                                    ? JSON.parse(threat.assessment_25_point)
-                                    : threat.assessment_25_point;
-                                }
-                              } catch (e) {
-                                console.error("Failed parsing 25 point assessment", e);
-                              }
-
-                              if (!assessment || Object.keys(assessment).length === 0) return null;
-
-                              return (
-                                <div className="mt-4 border-t border-neutral-100 pt-4">
-                                  <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-2">
-                                    25-Point Swarm Intelligence Assessment Breakdown
-                                  </span>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto scrollbar-thin p-1">
-                                    {Object.entries(assessment).map(([key, value]) => (
-                                      <div key={key} className="bg-neutral-50 p-2.5 border border-neutral-200">
-                                        <div className="text-[8px] font-mono font-bold text-[#733DD9] uppercase tracking-wide truncate mb-1">
-                                          {key.replace(/_/g, " ")}
-                                        </div>
-                                        <div className="text-[9px] text-neutral-600 font-sans leading-normal">
-                                          {value as string}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              );
-                            })()}
-
-                            {threat.sitrep_pdf_url && (
-                              <a
-                                href={threat.sitrep_pdf_url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="mt-2 w-full py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-mono text-[9px] font-bold uppercase flex items-center justify-center gap-2"
-                              >
-                                <Download className="w-3 h-3" />
-                                Download Executive SITREP PDF
-                              </a>
+                        {!isGated && (
+                          <button
+                            onClick={() => setExpandedId(isExpanded ? null : threat.id)}
+                            className="py-1 px-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-[9px] uppercase font-bold tracking-wider transition-all flex items-center gap-1 cursor-pointer shrink-0"
+                          >
+                            {isExpanded ? (
+                              <>
+                                <Eye className="w-3 h-3" />
+                                CLOSE
+                              </>
+                            ) : (
+                              <>
+                                <Activity className="w-3 h-3" />
+                                ANALYZE
+                              </>
                             )}
-                          </div>
-                        ) : (
-                          <div className="relative overflow-hidden p-6 bg-neutral-50/20 border border-neutral-200">
-                            {/* Blurred background mockup representing paywalled content */}
-                            <div className="space-y-4 text-[10px] font-mono text-neutral-300 filter blur-[4px] select-none pointer-events-none">
-                              <div>
-                                <span className="text-[9px] uppercase font-bold block mb-1">Target Entities (Unmasked)</span>
-                                <div className="bg-white border p-2">Restricted corporate entity assets under threat</div>
-                              </div>
-                              <div>
-                                <span className="text-[9px] uppercase font-bold block mb-1">Indicators of Compromise (IoCs)</span>
-                                <pre className="bg-neutral-950 p-2 text-[9px] truncate">185.220.101.x, command-c2-route.onion, sha256_hash_value</pre>
-                              </div>
-                            </div>
-                            
-                            {/* Frosted Glassmorphism Overlay */}
-                            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-white/70 backdrop-blur-md z-10 border border-dashed border-[#733DD9]/20">
-                              <Lock className="w-5 h-5 text-[#733DD9] mb-2 animate-bounce" />
-                              <span className="text-[10px] font-mono font-black text-neutral-900 uppercase tracking-widest mb-1">PREMIUM INTEL ENCRYPTED</span>
-                              <p className="text-[9px] text-neutral-500 font-mono text-center max-w-[280px] leading-relaxed mb-3">
-                                Detailed YARA/Sigma rules, Cloudflare WAF JSON, unmasked entities, and full 25-point breakdown are locked under Premium clearance.
-                              </p>
-                              <a
-                                href="/pricing"
-                                className="px-4 py-2 bg-[#733DD9] hover:bg-[#5f2ebd] text-white font-mono text-[9px] font-bold uppercase tracking-wider transition-all shadow-md"
-                              >
-                                Unlock Full Intelligence Stream ──▶ Go Premium ($25/mo)
-                              </a>
-                            </div>
-                          </div>
+                          </button>
                         )}
                       </div>
-                    )}
-                  </div>
-                );
-              })
+
+                      {/* Expanded Details (Premium Payload) */}
+                      {isExpanded && !isGated && (
+                        <div className="mt-4 pt-4 border-t border-neutral-200 relative space-y-4">
+                          {isSubscriber ? (
+                            <div className="space-y-4 text-[10px] font-mono text-neutral-800">
+                              <div>
+                                <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
+                                  Target Entities (Unmasked)
+                                </span>
+                                <div className="bg-white border border-neutral-200 p-2 text-neutral-700">
+                                  {threat.unmasked_target_entities || "None cataloged"}
+                                </div>
+                              </div>
+
+                              <div>
+                                <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
+                                  Indicators of Compromise (IoCs)
+                                </span>
+                                <pre className="bg-neutral-950 text-neutral-300 p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
+                                  <code>
+                                    {threat.raw_iocs
+                                      ? JSON.stringify(JSON.parse(threat.raw_iocs), null, 2)
+                                      : "[]"}
+                                  </code>
+                                </pre>
+                              </div>
+
+                              <div>
+                                <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
+                                  YARA Rules Signature
+                                </span>
+                                <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
+                                  <code>{threat.yara_rules || "// No YARA rules mapped."}</code>
+                                </pre>
+                              </div>
+
+                              <div>
+                                <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
+                                  Sigma Detection Rules
+                                </span>
+                                <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
+                                  <code>{threat.sigma_rules || "# No Sigma rules mapped."}</code>
+                                </pre>
+                              </div>
+
+                              <div>
+                                <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-1">
+                                  Cloudflare WAF Rules
+                                </span>
+                                <pre className="bg-[#0B0F19] text-[#A9B2C3] p-2.5 overflow-x-auto rounded leading-normal max-h-40 text-[9px] scrollbar-thin">
+                                  <code>{threat.cloudflare_waf_rules || "# No Cloudflare WAF rules mapped."}</code>
+                                </pre>
+                              </div>
+
+                              {(() => {
+                                let assessment: Record<string, string> = {};
+                                try {
+                                  if (threat.assessment_25_point) {
+                                    assessment = typeof threat.assessment_25_point === "string"
+                                      ? JSON.parse(threat.assessment_25_point)
+                                      : threat.assessment_25_point;
+                                  }
+                                } catch (e) {
+                                  console.error("Failed parsing 25 point assessment", e);
+                                }
+
+                                if (!assessment || Object.keys(assessment).length === 0) return null;
+
+                                return (
+                                  <div className="mt-4 border-t border-neutral-100 pt-4">
+                                    <span className="text-[9px] uppercase font-bold text-[#733DD9] tracking-wider block mb-2">
+                                      25-Point Swarm Intelligence Assessment Breakdown
+                                    </span>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto scrollbar-thin p-1">
+                                      {Object.entries(assessment).map(([key, value]) => (
+                                        <div key={key} className="bg-neutral-50 p-2.5 border border-neutral-200">
+                                          <div className="text-[8px] font-mono font-bold text-[#733DD9] uppercase tracking-wide truncate mb-1">
+                                            {key.replace(/_/g, " ")}
+                                          </div>
+                                          <div className="text-[9px] text-neutral-600 font-sans leading-normal">
+                                            {value as string}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+
+                              {threat.sitrep_pdf_url && (
+                                <a
+                                  href={threat.sitrep_pdf_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-2 w-full py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-mono text-[9px] font-bold uppercase flex items-center justify-center gap-2"
+                                >
+                                  <Download className="w-3 h-3" />
+                                  Download Executive SITREP PDF
+                                </a>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="relative overflow-hidden p-6 bg-neutral-50/20 border border-neutral-200">
+                              {/* Blurred background mockup representing paywalled content */}
+                              <div className="space-y-4 text-[10px] font-mono text-neutral-300 filter blur-[4px] select-none pointer-events-none">
+                                <div>
+                                  <span className="text-[9px] uppercase font-bold block mb-1">Target Entities (Unmasked)</span>
+                                  <div className="bg-white border p-2">Restricted corporate entity assets under threat</div>
+                                </div>
+                                <div>
+                                  <span className="text-[9px] uppercase font-bold block mb-1">Indicators of Compromise (IoCs)</span>
+                                  <pre className="bg-neutral-950 p-2 text-[9px] truncate">185.220.101.x, command-c2-route.onion, sha256_hash_value</pre>
+                                </div>
+                              </div>
+                              
+                              {/* Frosted Glassmorphism Overlay */}
+                              <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-white/70 backdrop-blur-md z-10 border border-dashed border-[#733DD9]/20">
+                                <Lock className="w-5 h-5 text-[#733DD9] mb-2 animate-bounce" />
+                                <span className="text-[10px] font-mono font-black text-neutral-900 uppercase tracking-widest mb-1">PREMIUM INTEL ENCRYPTED</span>
+                                <p className="text-[9px] text-neutral-500 font-mono text-center max-w-[280px] leading-relaxed mb-3">
+                                  Detailed YARA/Sigma rules, Cloudflare WAF JSON, unmasked entities, and full 25-point breakdown are locked under Premium clearance.
+                                </p>
+                                <a
+                                  href="/pricing"
+                                  className="px-4 py-2 bg-[#733DD9] hover:bg-[#5f2ebd] text-white font-mono text-[9px] font-bold uppercase tracking-wider transition-all shadow-md"
+                                >
+                                  Unlock Full Intelligence Stream ──▶ Go Premium ($25/mo)
+                                </a>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
 
@@ -406,7 +453,6 @@ export function DarkWebDashboard({ threats, isSubscriber }: DarkWebDashboardProp
             </div>
           )}
         </div>
-
         {/* RIGHT COLUMN: Ransomware Leak Metrics & Active Threat Maps (5 cols) */}
         <div className="lg:col-span-5 space-y-8 flex flex-col justify-between">
           
