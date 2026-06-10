@@ -1,9 +1,9 @@
-import { getCached } from "@/lib/cache/redis";
 import { createClient } from "@/lib/supabase/server";
 import { DarkWebDashboard } from "@/components/platform/DarkWebDashboard";
 import { RefreshCw } from "@/lib/icons";
 
-export const revalidate = 0; // Force dynamic rendering to show live CTI feeds
+export const revalidate = 0; // Disable ISR cache — always fetch fresh data
+export const dynamic = "force-dynamic"; // Nuclear cache-bust: bypass Cloudflare/Next.js static edge
 
 export default async function DarkWebReconPage() {
   // 1. Establish secure client session and authenticate profile
@@ -24,21 +24,18 @@ export default async function DarkWebReconPage() {
     isSubscriber = profile?.clearance_level === "SUBSCRIBER";
   }
 
-  // 2. Query dynamic, RLS-enforced secure threat view threat_artifacts
-  // We cache this query for 10 seconds to maintain high performance with real-time responsiveness
-  const dbThreats = await getCached(
-    process.env,
-    "darkweb:threats_list",
-    async () => {
-      const { data, error } = await supabase
-        .from("threat_artifacts")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error || !data) return [];
-      return data;
-    },
-    10
-  );
+  // 2. Query threat_artifacts_secure view directly (threat_artifacts has a type-cast bug in RLS).
+  // force-dynamic + no cache layer = always live SSR. No stale edge data.
+  const { data: rawThreats, error: threatsError } = await supabase
+    .from("threat_artifacts_secure")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (threatsError) {
+    console.error("[DarkWebRecon] DB query failed:", threatsError.message, threatsError.code);
+  }
+
+  const dbThreats = (!threatsError && rawThreats) ? rawThreats : [];
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen py-12 px-6 lg:px-10 font-sans selection:bg-[#733DD9] selection:text-white">
