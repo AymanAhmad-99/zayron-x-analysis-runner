@@ -20173,8 +20173,14 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/open-next.config.mjs": {
-      "bytes": 679,
-      "imports": [],
+      "bytes": 20079,
+      "imports": [
+        {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        }
+      ],
       "format": "esm"
     },
     ".open-next/server-functions/default/index.mjs": {
@@ -29153,6 +29159,11 @@
           "external": true
         },
         {
+          "path": "node:crypto",
+          "kind": "import-statement",
+          "external": true
+        },
+        {
           "path": "node:module",
           "kind": "import-statement",
           "external": true
@@ -29281,7 +29292,7 @@
           "bytesInOutput": 453
         },
         ".open-next/server-functions/default/node_modules/react/cjs/react.production.js": {
-          "bytesInOutput": 12970
+          "bytesInOutput": 12954
         },
         ".open-next/server-functions/default/node_modules/react/index.js": {
           "bytesInOutput": 171
@@ -29443,7 +29454,7 @@
           "bytesInOutput": 828
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/config-shared.js": {
-          "bytesInOutput": 8571
+          "bytesInOutput": 8533
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/lib/is-ipv6.js": {
           "bytesInOutput": 939
@@ -29749,7 +29760,7 @@
           "bytesInOutput": 495
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/lib/i18n-provider.js": {
-          "bytesInOutput": 2627
+          "bytesInOutput": 2622
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/send-response.js": {
           "bytesInOutput": 1281
@@ -29788,7 +29799,7 @@
           "bytesInOutput": 1071
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/lib/experimental/ppr.js": {
-          "bytesInOutput": 696
+          "bytesInOutput": 687
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/after/builtin-request-context.js": {
           "bytesInOutput": 912
@@ -30247,10 +30258,10 @@
           "bytesInOutput": 1276
         },
         ".open-next/server-functions/default/composable-cache.cjs": {
-          "bytesInOutput": 6636
+          "bytesInOutput": 6633
         },
         ".open-next/server-functions/default/cache.cjs": {
-          "bytesInOutput": 13457
+          "bytesInOutput": 13454
         },
         ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js": {
           "bytesInOutput": 666199
@@ -30517,7 +30528,7 @@
           "bytesInOutput": 29449
         },
         ".open-next/server-functions/default/node_modules/react/cjs/react-jsx-runtime.production.js": {
-          "bytesInOutput": 754
+          "bytesInOutput": 744
         },
         ".open-next/server-functions/default/node_modules/react/jsx-runtime.js": {
           "bytesInOutput": 195
@@ -30610,7 +30621,7 @@
           "bytesInOutput": 13749
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/setup-http-agent-env.js": {
-          "bytesInOutput": 861
+          "bytesInOutput": 856
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/route-matches/pages-api-route-match.js": {
           "bytesInOutput": 486
@@ -30646,7 +30657,7 @@
           "bytesInOutput": 580
         },
         ".open-next/server-functions/default/node_modules/next/dist/lib/static-env.js": {
-          "bytesInOutput": 1820
+          "bytesInOutput": 1811
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/lib/module-loader/node-module-loader.js": {
           "bytesInOutput": 626
@@ -30655,7 +30666,7 @@
           "bytesInOutput": 602
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/node-environment-extensions/global-behaviors.js": {
-          "bytesInOutput": 734
+          "bytesInOutput": 732
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/lib/router-utils/is-postpone.js": {
           "bytesInOutput": 480
@@ -30679,13 +30690,13 @@
           "bytesInOutput": 27937
         },
         ".open-next/server-functions/default/open-next.config.mjs": {
-          "bytesInOutput": 652
+          "bytesInOutput": 14809
         },
         ".open-next/server-functions/default/index.mjs": {
-          "bytesInOutput": 68864
+          "bytesInOutput": 68921
         }
       },
-      "bytes": 8060744
+      "bytes": 8074858
     }
   }
 }

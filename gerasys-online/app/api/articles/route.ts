@@ -1,5 +1,11 @@
 import { articlesLimiter, checkRateLimit, getClientIp } from '@/lib/cache/ratelimit';
-import { getArticleCount, getArticles } from '@/lib/supabase/queries/articles';
+import {
+  getArticleCount,
+  getArticles,
+  getArticlesByCategory,
+  getArticlesCountByCategory,
+} from '@/lib/supabase/queries/articles';
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -24,8 +30,34 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get('page')) || 1;
     const limit = Number(searchParams.get('limit')) || 12;
+    const category = searchParams.get('category');
 
-    const [articles, total] = await Promise.all([getArticles(page, limit), getArticleCount()]);
+    let dbCategory: string | null = null;
+    if (category) {
+      const normalized = category.toLowerCase();
+      const slugMap: Record<string, string> = {
+        malware: 'MALWARE',
+        'threat-actors': 'THREAT_ACTOR',
+        'threat-actor': 'THREAT_ACTOR',
+        vulnerabilities: 'VULNERABILITY',
+        vulnerability: 'VULNERABILITY',
+        exploits: 'EXPLOIT',
+        exploit: 'EXPLOIT',
+        'dark-web': 'DARK_WEB',
+        dark_web: 'DARK_WEB',
+        osint: 'OSINT',
+        'threat-intelligence': 'threat_intel',
+      };
+      dbCategory = slugMap[normalized] ?? normalized.toUpperCase();
+
+      const formattedCategory = category.toLowerCase().replace(/\s+/g, '-');
+      revalidatePath(`/intelligence/${formattedCategory}`);
+    }
+
+    const [articles, total] = await Promise.all([
+      dbCategory ? getArticlesByCategory(dbCategory, page, limit) : getArticles(page, limit),
+      dbCategory ? getArticlesCountByCategory(dbCategory) : getArticleCount(),
+    ]);
 
     return NextResponse.json(
       {
