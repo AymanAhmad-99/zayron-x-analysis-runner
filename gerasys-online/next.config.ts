@@ -114,19 +114,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(
-  nextConfig,
-  {
-    org: process.env.SENTRY_ORG ?? 'zayron-x',
-    project: process.env.SENTRY_PROJECT ?? 'zayron-x-web',
-    silent: true,
-    widenClientFileUpload: true,
-    reactComponentAnnotation: { enabled: true },
-    tunnelRoute: '/api/monitoring',
-    disableLogger: true,
-    automaticVercelMonitors: false,
-    unstable_sentryWebpackPluginOptions: {
-      disable: true,
-    },
-  }
-);
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG ?? 'zayron-x',
+  project: process.env.SENTRY_PROJECT ?? 'zayron-x-web',
+  silent: true,
+  widenClientFileUpload: true,
+  reactComponentAnnotation: { enabled: true },
+  tunnelRoute: '/api/monitoring',
+  disableLogger: true,
+  automaticVercelMonitors: false,
+  unstable_sentryWebpackPluginOptions: {
+    disable: true,
+  },
+});
