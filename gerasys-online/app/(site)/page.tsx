@@ -17,7 +17,9 @@ import { ActionableAlerts } from '@/components/platform/ActionableAlerts';
 import { InfrastructureRadar } from '@/components/platform/InfrastructureRadar';
 import { SitrepExporter } from '@/components/platform/SitrepExporter';
 
+import { AutomatedRoiCalculator } from '@/components/platform/AutomatedRoiCalculator';
 import { LiveIntelTicker } from '@/components/platform/LiveIntelTicker';
+import { PricingTiers } from '@/components/platform/PricingTiers';
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { ArrowUpRight, Globe, Layers, Shield } from '@/lib/icons';
 
@@ -53,10 +55,10 @@ const getHomeData = cache(async () => {
 function StatPillSkeleton() {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="animate-pulse bg-neutral-200 dark:bg-slate-800 rounded-full w-4 h-4" />
+      <div className="animate-pulse bg-slate-800 rounded-full w-4 h-4" />
       <div className="space-y-1">
-        <div className="animate-pulse bg-neutral-200 dark:bg-slate-800 rounded h-4 w-12" />
-        <div className="animate-pulse bg-neutral-200 dark:bg-slate-800 rounded h-3 w-16" />
+        <div className="animate-pulse bg-slate-800 rounded h-4 w-12" />
+        <div className="animate-pulse bg-slate-800 rounded h-3 w-16" />
       </div>
     </div>
   );
@@ -64,7 +66,7 @@ function StatPillSkeleton() {
 
 function StatsFallback() {
   return (
-    <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-neutral-100">
+    <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-white/5">
       <StatPillSkeleton />
       <StatPillSkeleton />
       <StatPillSkeleton />
@@ -76,7 +78,7 @@ function StatsFallback() {
 function SectorWorkspaceFallback() {
   return (
     <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 space-y-8 animate-pulse">
-      <div className="h-10 bg-neutral-200 dark:bg-slate-800 rounded w-1/4" />
+      <div className="h-10 bg-slate-800 rounded w-1/4" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           <SkeletonLoader variant="list" className="h-24 w-full" />
@@ -96,7 +98,7 @@ async function SuspendedStats() {
   const totalCategories = categories.length;
 
   return (
-    <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-neutral-100">
+    <div className="flex flex-wrap items-center gap-8 mt-12 pt-8 border-t border-white/5">
       <StatPill
         icon={<Layers className="w-4 h-4 text-[#733DD9]" />}
         value={articles.length.toLocaleString()}
@@ -154,49 +156,38 @@ async function SuspendedSectorWorkspace() {
 
 export default async function HomePage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-slate-950 text-slate-100">
       {/* ═══════════════════════════════════════════════
           HERO — Executive Briefing Strip
           ═══════════════════════════════════════════ */}
-      <section className="bg-white py-24 md:py-36 border-b border-neutral-100">
+      <section className="bg-slate-950/60 backdrop-blur-xl py-24 md:py-36 border-b border-white/5">
         <div className="max-w-[1100px] mx-auto px-6 text-center font-sans">
           {/* Subheading Badge */}
-          <div className="inline-flex items-center gap-2 mb-10 px-4 py-1.5 border border-neutral-200 bg-neutral-50 rounded-none shadow-none">
+          <div className="inline-flex items-center gap-2 mb-10 px-4 py-1.5 border border-white/5 bg-slate-900/40 rounded-none shadow-none">
             <span className="relative flex h-2 w-2">
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#733DD9] animate-pulse" />
             </span>
-            <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-[#050505]">
+            <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-slate-100">
               Sovereign Intelligence Authority
             </span>
           </div>
 
-          <h1 className="text-[2.5rem] sm:text-[4.2rem] font-sans font-black leading-none uppercase select-none mb-8 text-center text-[#050505] tracking-tight max-w-4xl mx-auto">
+          <h1 className="text-[2.5rem] sm:text-[4.2rem] font-sans font-black leading-none uppercase select-none mb-12 text-center text-slate-100 tracking-tight max-w-4xl mx-auto">
             SOVEREIGN PERIMETER.
             <br className="hidden sm:inline" /> INSTITUTIONAL CTI DEPLOYED.
           </h1>
-
-          {/* The Sovereign Manifesto (Split into 2 hierarchical lines) */}
-          <div className="max-w-2xl mx-auto mb-12 space-y-2 text-xs font-mono font-bold uppercase tracking-normal text-slate-600 leading-relaxed text-center">
-            <div>
-              [PERIMETER_STATUS: 87% SECURE] · [VECTOR_DEFENSE: ACTIVE] · [SCAN_ENGINE: v4.2.0]
-            </div>
-            <div>
-              [TELEMETRY_LATENCY: 12ms] · [DB_STATUS: INSTANCE_ONLINE] · [ONION_SCRAPERS:
-              INTERCEPTING] <span className="text-[#733DD9] animate-pulse">█</span>
-            </div>
-          </div>
 
           {/* Clean Portal CTA Buttons with Hover Brutalism */}
           <div className="flex flex-wrap justify-center gap-4">
             <a
               href="/intelligence/threat-intelligence"
-              className="bg-[#733DD9] text-white px-8 py-3 text-xs font-bold uppercase tracking-wider rounded-none hover:bg-[#050505] hover:text-[#733DD9] hover:ring-1 hover:ring-black hover:ring-offset-2 transition-none shadow-none"
+              className="bg-[#733DD9] text-white px-8 py-3 text-xs font-bold uppercase tracking-wider rounded hover:bg-white hover:text-[#733DD9] transition-all duration-300 shadow-none cursor-pointer"
             >
               ACCESS DOSSIER BRIEFINGS
             </a>
             <a
               href="/contact"
-              className="bg-white border border-neutral-300 text-[#050505] px-8 py-3 text-xs font-bold uppercase tracking-wider rounded-none hover:bg-[#050505] hover:text-white hover:border-black hover:ring-1 hover:ring-black hover:ring-offset-2 transition-none shadow-none"
+              className="bg-transparent border border-white/10 text-slate-300 px-8 py-3 text-xs font-bold uppercase tracking-wider rounded hover:bg-white/5 hover:text-white hover:border-[#733DD9] transition-all duration-300 shadow-none cursor-pointer"
             >
               REQUEST ASSESSMENT
             </a>
@@ -210,7 +201,7 @@ export default async function HomePage() {
       {/* ═══════════════════════════════════════════════
           DASHBOARD TELEMETRY GATEWAY
           ═══════════════════════════════════════════════ */}
-      <section className="bg-neutral-50/50 py-16 border-b border-neutral-100">
+      <section className="bg-slate-950/40 backdrop-blur-xl py-16 border-b border-white/5">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
           <div className="flex flex-col lg:flex-row items-stretch justify-between gap-10">
             <div className="max-w-xl flex flex-col justify-center">
@@ -219,19 +210,15 @@ export default async function HomePage() {
                   Active Sovereign Perimeter
                 </span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[#050505] tracking-tight uppercase">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 tracking-tight uppercase font-mono">
                 Autonomous Risk Posture Monitoring
               </h2>
-              <p className="text-xs font-mono text-neutral-500 leading-loose mt-3 uppercase tracking-tight">
-                [MONITORED_DEVICES: 4] · [SCAN_RATE: 2.4GB/s] · [ACTIVE_VULNS: 0] ·
-                [THREAT_MITIGATION: WAF_ACTIVE] · [POSTURE: SECURE] · [IS_COMPLIANT: TRUE]
-              </p>
             </div>
 
             {/* Telemetry Panels: Posture Dial & Infrastructure Radar */}
             <div className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto shrink-0 items-stretch">
               {/* Sovereign Risk Posture Score Gauge */}
-              <div className="bg-white border border-neutral-200 rounded-none p-6 flex flex-col items-center justify-center text-center shadow-none hover:border-neutral-300 transition-all duration-300 min-w-[280px] shrink-0 font-sans">
+              <div className="bg-slate-950/60 backdrop-blur-xl border border-white/5 rounded p-6 flex flex-col items-center justify-center text-center shadow-none hover:border-[#733DD9]/40 transition-all duration-300 min-w-[280px] shrink-0 font-sans">
                 <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-[#733DD9] font-black mb-3">
                   Overall Threat Posture
                 </span>
@@ -244,7 +231,7 @@ export default async function HomePage() {
                       cx="72"
                       cy="72"
                       r="58"
-                      stroke="#F5F5F5"
+                      stroke="rgba(255, 255, 255, 0.02)"
                       strokeWidth="8"
                       fill="transparent"
                     />
@@ -262,14 +249,14 @@ export default async function HomePage() {
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center font-mono">
-                    <span className="text-3xl font-extrabold text-[#050505]">87%</span>
-                    <span className="text-[9px] uppercase tracking-wider text-[#733DD9] font-black mt-0.5">
+                    <span className="text-3xl font-extrabold text-slate-100">87%</span>
+                    <span className="text-[9px] uppercase tracking-wider text-[#733DD9] font-black mt-0.5 animate-pulse">
                       SECURE
                     </span>
                   </div>
                 </div>
 
-                <span className="text-[9px] text-neutral-500 mt-4 font-mono font-bold leading-normal max-w-[200px]">
+                <span className="text-[9px] text-slate-400 mt-4 font-mono font-bold leading-normal max-w-[200px]">
                   SOVEREIGN PERIMETER: ACTIVE
                 </span>
               </div>
@@ -284,6 +271,16 @@ export default async function HomePage() {
             <SuspendedStats />
           </Suspense>
         </div>
+      </section>
+
+      {/* Row 2: Automation Risks */}
+      <section id="automation-risks" className="border-b border-white/5">
+        <AutomatedRoiCalculator />
+      </section>
+
+      {/* Row 2 Priority (directly under Automation Risks): Pricing Tiers */}
+      <section id="pricing-tiers" className="border-b border-white/5">
+        <PricingTiers />
       </section>
 
       {/* ═══════════════════════════════════════════════
@@ -302,7 +299,7 @@ function StatPill({ icon, value, label }: { icon: React.ReactNode; value: string
     <div className="flex items-center gap-2.5">
       <div className="text-[#94A3B8]">{icon}</div>
       <div>
-        <span className="text-[1.1rem] font-bold text-[#0F172A] font-mono tabular-nums">
+        <span className="text-[1.1rem] font-bold text-slate-100 font-mono tabular-nums">
           {value}
         </span>
         <span className="text-[0.72rem] text-[#94A3B8] ml-1.5 font-medium">{label}</span>

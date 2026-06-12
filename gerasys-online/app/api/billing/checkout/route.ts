@@ -31,8 +31,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Retrieve price ID from environment variables
-    const priceId = process.env.STRIPE_SUBSCRIBER_PRICE_ID;
+    let tierId = 'TACTICAL_OBSERVER';
+    try {
+      const body = await request.json();
+      if (body?.tierId) {
+        tierId = body.tierId;
+      }
+    } catch (e) {
+      // Body may be empty, fallback to default
+    }
+
+    let priceId = '';
+    if (tierId === 'SOVEREIGN_COMMAND') {
+      priceId =
+        process.env.STRIPE_SOVEREIGN_COMMAND_PRICE_ID ||
+        process.env.STRIPE_SUBSCRIBER_PRICE_ID ||
+        '';
+    } else {
+      priceId =
+        process.env.STRIPE_TACTICAL_OBSERVER_PRICE_ID ||
+        process.env.STRIPE_SUBSCRIBER_PRICE_ID ||
+        '';
+    }
+
     if (!priceId) {
       return NextResponse.json(
         { error: 'Stripe Price ID configuration missing on server node.' },
@@ -44,7 +65,7 @@ export async function POST(request: NextRequest) {
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeSecretKey) {
       return NextResponse.json(
-        { error: 'Stripe configuration missing on host node.' },
+        { error: 'Stripe configuration missing on host node. Mock bypass disabled.' },
         { status: 500 },
       );
     }

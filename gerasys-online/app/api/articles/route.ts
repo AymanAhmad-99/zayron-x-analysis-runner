@@ -5,6 +5,7 @@ import {
   getArticlesByCategory,
   getArticlesCountByCategory,
 } from '@/lib/supabase/queries/articles';
+import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
@@ -31,6 +32,7 @@ export async function GET(request: Request) {
     const page = Number(searchParams.get('page')) || 1;
     const limit = Number(searchParams.get('limit')) || 12;
     const category = searchParams.get('category');
+    const secret = searchParams.get('secret') || request.headers.get('x-revalidate-secret');
 
     let dbCategory: string | null = null;
     if (category) {
@@ -50,8 +52,35 @@ export async function GET(request: Request) {
       };
       dbCategory = slugMap[normalized] ?? normalized.toUpperCase();
 
-      const formattedCategory = category.toLowerCase().replace(/\s+/g, '-');
-      revalidatePath(`/intelligence/${formattedCategory}`);
+      // Perform cache invalidation ONLY if a valid secret is provided
+      if (secret && secret === process.env.REVALIDATION_SECRET) {
+        const formattedCategory = category.toLowerCase().replace(/\s+/g, '-');
+        revalidatePath(`/intelligence/${formattedCategory}`);
+      }
+    }
+
+    // 1. Establish server-side security boundary check
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    let isSubscriber = false;
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('clearance_level, stripe_subscription_status, tier_id')
+        .eq('id', user.id)
+        .single();
+
+      isSubscriber = !!(
+        profile &&
+        (profile.clearance_level === 'SUBSCRIBER' ||
+          profile.stripe_subscription_status === 'active' ||
+          profile.stripe_subscription_status === 'trialing' ||
+          profile.tier_id === 'TACTICAL_OBSERVER' ||
+          profile.tier_id === 'SOVEREIGN_COMMAND')
+      );
     }
 
     const [articles, total] = await Promise.all([
@@ -59,9 +88,24 @@ export async function GET(request: Request) {
       dbCategory ? getArticlesCountByCategory(dbCategory) : getArticleCount(),
     ]);
 
+    // 2. Redact premium fields for unauthenticated/unsubscribed requests
+    const processedArticles = isSubscriber
+      ? articles
+      : articles.map((art) => ({
+          ...art,
+          yaraRule: null,
+          iocsJson: null,
+          mitreTtps: null,
+          fbrScore: null,
+          cvssV4Score: null,
+          financialExposure: null,
+          regulatoryRisk: null,
+          mitigationImpact: null,
+        }));
+
     return NextResponse.json(
       {
-        articles,
+        articles: processedArticles,
         total,
         page,
         totalPages: Math.ceil(total / limit),
@@ -83,5 +127,35 @@ export async function GET(request: Request) {
         headers: { 'Cache-Control': 'no-store' },
       },
     );
+  }
+}
+
+// POST endpoint for targeted revalidation from omni_crew.py / external triggers
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const secret = request.headers.get('x-revalidate-secret') || body.secret;
+
+    if (!secret || secret !== process.env.REVALIDATION_SECRET) {
+      return NextResponse.json({ error: 'Unauthorized revalidation' }, { status: 401 });
+    }
+
+    const { category, path } = body;
+
+    if (category) {
+      const formattedCategory = category.toLowerCase().replace(/\s+/g, '-');
+      revalidatePath(`/intelligence/${formattedCategory}`);
+    }
+
+    if (path) {
+      revalidatePath(path);
+    }
+
+    // Always invalidate home page to ensure consistency
+    revalidatePath('/');
+
+    return NextResponse.json({ success: true, message: 'Invalidation triggered' });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Invalidation failed' }, { status: 500 });
   }
 }

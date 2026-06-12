@@ -75,7 +75,7 @@ export async function generateMetadata(): Promise<Metadata> {
     if (articles.status === 'fulfilled') articleCount = articles.value;
     if (cves.status === 'fulfilled') cveCount = cves.value;
   } catch {
-    // Metadata generation failure is non-fatal — return defaults
+    // Metadata generation failure is non-fatal
   }
 
   return {
@@ -96,12 +96,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-/* ───────────────────────────────────────────────────────────
-   FALLBACK: Radar Offline — Dark Terminal UI (ENOTFOUND)
-   ─────────────────────────────────────────────────────────── */
+/* ─── FALLBACK: Radar Offline ─── */
 function RadarOfflineTerminal({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-[#E2E8F0] font-mono">
+    <div className="min-h-screen bg-[#020617] text-[#E2E8F0] font-mono dark">
       {/* Scanline overlay */}
       <div
         className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] bg-repeat"
@@ -113,32 +111,32 @@ function RadarOfflineTerminal({ message }: { message: string }) {
 
       <div className="relative max-w-4xl mx-auto px-6 py-24">
         {/* Status bar */}
-        <div className="flex items-center justify-between mb-12 pb-6 border-b border-[#1E293B]">
+        <div className="flex items-center justify-between mb-12 pb-6 border-b border-white/5">
           <div className="flex items-center gap-3">
             <span className="w-3 h-3 rounded-full bg-[#DC2626]" />
-            <span className="text-xs tracking-[0.2em] text-[#64748B] uppercase">
+            <span className="text-xs tracking-[0.2em] text-slate-500 uppercase">
               ZAYRON-X · COMMAND TERMINAL
             </span>
           </div>
-          <div className="flex items-center gap-4 text-[10px] text-[#475569]">
+          <div className="flex items-center gap-4 text-[10px] text-slate-600">
             <span>UTC {new Date().toISOString().slice(11, 19)}</span>
             <span>ENCRYPTED</span>
           </div>
         </div>
 
         {/* Alert banner */}
-        <div className="mb-10 p-6 rounded-lg border border-[#DC2626]/20 bg-[#DC2626]/[0.04]">
+        <div className="mb-10 p-6 rounded-lg border border-red-500/20 bg-red-950/10">
           <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full border border-[#DC2626]/30 bg-[#DC2626]/[0.06] flex items-center justify-center shrink-0 mt-0.5">
+            <div className="w-10 h-10 rounded-full border border-red-500/30 bg-red-950/20 flex items-center justify-center shrink-0 mt-0.5">
               <Satellite size={20} className="text-[#DC2626]" />
             </div>
             <div className="space-y-2 min-w-0">
               <h2 className="text-sm font-semibold text-[#DC2626] tracking-wide">
                 📡 ZAYRON-X Radar Offline: Re-establishing encrypted connection to Intel Hub...
               </h2>
-              <p className="text-xs text-[#64748B] leading-relaxed">
+              <p className="text-xs text-slate-400 leading-relaxed">
                 The secure channel to{' '}
-                <code className="text-[#94A3B8] bg-[#1E293B] px-1.5 py-0.5 rounded text-[11px]">
+                <code className="text-slate-300 bg-slate-900/60 px-1.5 py-0.5 rounded text-[11px] border border-white/5">
                   aws-1-us-west-1.pooler.supabase.com
                 </code>{' '}
                 could not be established. Ensure your DATABASE_URL is configured to use the
@@ -150,28 +148,28 @@ function RadarOfflineTerminal({ message }: { message: string }) {
 
         {/* Diagnostic table */}
         <div className="space-y-1 mb-10 font-mono text-xs">
-          <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
-            <span className="text-[#475569]">DIAGNOSTIC</span>
-            <span className="text-[#94A3B8]">
+          <div className="flex items-center justify-between px-4 py-3 rounded bg-slate-950/60 border border-white/5">
+            <span className="text-slate-500">DIAGNOSTIC</span>
+            <span className="text-slate-300">
               {'>'} getaddrinfo ENOTFOUND aws-1-us-west-1.pooler.supabase.com
             </span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
-            <span className="text-[#475569]">STACK</span>
-            <span className="text-[#94A3B8]">Vercel Edge Runtime · Node.js 22 · IPv4-only</span>
+          <div className="flex items-center justify-between px-4 py-3 rounded bg-slate-950/60 border border-white/5">
+            <span className="text-slate-500">STACK</span>
+            <span className="text-slate-300">Vercel Edge Runtime · Node.js 22 · IPv4-only</span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
-            <span className="text-[#475569]">RESOLUTION</span>
+          <div className="flex items-center justify-between px-4 py-3 rounded bg-slate-950/60 border border-white/5">
+            <span className="text-slate-500">RESOLUTION</span>
             <span className="text-[#16A34A]">
               Migrate DATABASE_URL to Supabase Connection Pooler (Port 6543)
             </span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
-            <span className="text-[#475569]">RETRY</span>
+          <div className="flex items-center justify-between px-4 py-3 rounded bg-slate-950/60 border border-white/5">
+            <span className="text-slate-500">RETRY</span>
             <span className="text-[#F59E0B]">Automatic reconnection cycle active · TTL 30s</span>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
-            <span className="text-[#475569]">ERROR</span>
+          <div className="flex items-center justify-between px-4 py-3 rounded bg-slate-950/60 border border-white/5">
+            <span className="text-slate-500">ERROR</span>
             <span className="text-[#DC2626] truncate max-w-lg">{message}</span>
           </div>
         </div>
@@ -180,15 +178,14 @@ function RadarOfflineTerminal({ message }: { message: string }) {
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold border border-[#1E293B] text-[#94A3B8] rounded-lg hover:border-[#3B82F6]/40 hover:text-[#E2E8F0] transition-colors uppercase tracking-wider"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold border border-white/5 text-slate-300 rounded-lg hover:border-[#733DD9] hover:text-white transition-colors uppercase tracking-wider bg-slate-950/60"
           >
             <ArrowLeft size={14} />
             Return to Command Center
           </Link>
           <button
             type="button"
-            onClick={undefined}
-            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold bg-[#1E293B] text-[#94A3B8] rounded-lg border border-[#334155] cursor-not-allowed opacity-60 uppercase tracking-wider"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold bg-slate-900 border border-white/5 text-slate-500 rounded-lg cursor-not-allowed opacity-60 uppercase tracking-wider"
             disabled
           >
             <Activity size={14} />
@@ -197,7 +194,7 @@ function RadarOfflineTerminal({ message }: { message: string }) {
         </div>
 
         {/* Footer stamp */}
-        <div className="mt-16 pt-6 border-t border-[#1E293B] flex items-center justify-between text-[10px] text-[#334155]">
+        <div className="mt-16 pt-6 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-600">
           <span>ZAYRON-X TERMINAL · DEGRADED MODE</span>
           <span>TLP:RED · NO FORN</span>
         </div>
@@ -206,22 +203,20 @@ function RadarOfflineTerminal({ message }: { message: string }) {
   );
 }
 
-/* ───────────────────────────────────────────────────────────
-   FALLBACK: Zero Intel — No Articles Found
-   ─────────────────────────────────────────────────────────── */
+/* ─── Zero Intel Fallback ─── */
 function ZeroIntelReport() {
   return (
-    <div>
-      <section className="relative border-b border-[#E2E8F0] silo-cyber-hero">
+    <div className="dark bg-slate-950 text-[#f8fafc] min-h-screen">
+      <section className="relative border-b border-white/5 bg-slate-950/60 backdrop-blur-xl silo-cyber-hero">
         <div className="relative max-w-7xl mx-auto px-8 py-20">
           <div className="flex items-center gap-3 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#DC2626]/6 text-[#DC2626] border border-[#DC2626]/15">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/20 font-mono">
               <Radio size={14} />
               Sector Scan
             </span>
           </div>
-          <h1 className="font-display text-4xl lg:text-5xl font-extrabold text-[#111827] tracking-tight">
-            {DISPLAY_NAME}
+          <h1 className="font-mono text-4xl lg:text-5xl font-extrabold text-[#f8fafc] tracking-tight">
+            {DISPLAY_NAME.toUpperCase()}
           </h1>
         </div>
       </section>
@@ -229,15 +224,15 @@ function ZeroIntelReport() {
       <section className="max-w-7xl mx-auto px-8 py-20">
         <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
           <div className="relative mb-8">
-            <div className="w-24 h-24 rounded-full border border-[#E2E8F0] bg-white flex items-center justify-center relative">
+            <div className="w-24 h-24 rounded-full border border-white/5 bg-slate-950/60 backdrop-blur-xl flex items-center justify-center relative">
               <div className="absolute inset-2 rounded-full border border-[#FFD700]/10" />
-              <Activity size={32} className="text-[#B8860B]" />
+              <Activity size={32} className="text-[#733DD9] animate-pulse" />
             </div>
           </div>
 
-          <div className="mb-8 px-6 py-5 rounded-xl border border-[#DC2626]/10 bg-[#DC2626]/[0.02] max-w-lg w-full">
+          <div className="mb-8 px-6 py-5 rounded-xl border border-white/5 bg-slate-950/40 backdrop-blur-xl max-w-lg w-full">
             <p className="text-[#DC2626] font-mono text-sm leading-relaxed">
-              Zx Sector Scan: <span className="font-bold text-[#111827]">{DISPLAY_NAME}</span> — No
+              Zx Sector Scan: <span className="font-bold text-[#f8fafc]">{DISPLAY_NAME}</span> — No
               intelligence intercepted in the last 24h. The Radar is actively monitoring.
             </p>
           </div>
@@ -250,17 +245,17 @@ function ZeroIntelReport() {
             ].map(([label, value]) => (
               <div
                 key={label}
-                className="flex items-center justify-between px-5 py-3 rounded-lg bg-white border border-[#E2E8F0]"
+                className="flex items-center justify-between px-5 py-3 rounded-lg bg-slate-950/60 backdrop-blur-xl border border-white/5"
               >
-                <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                   {label}
                 </span>
                 <span
-                  className={`text-sm font-semibold font-display ${value === '0' ? 'text-[#DC2626] font-mono' : 'text-[#111827]'}`}
+                  className={`text-sm font-semibold font-mono ${value === '0' ? 'text-[#DC2626]' : 'text-[#f8fafc]'}`}
                 >
                   {value === 'ACTIVE' ? (
                     <span className="text-[#16A34A] font-mono flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
                       ACTIVE
                     </span>
                   ) : (
@@ -274,19 +269,19 @@ function ZeroIntelReport() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-[#733DD9] text-white rounded-lg hover:bg-[#5B21B6] transition-colors font-ui shadow-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold bg-[#733DD9] text-white rounded-lg hover:bg-[#5B21B6] transition-colors font-mono shadow-sm"
             >
               <ArrowLeft size={14} /> Command Center
             </Link>
             <Link
               href="/intelligence/threat-intelligence"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold border border-[#E2E8F0] rounded-lg text-[#4B5563] hover:text-[#111827] hover:border-[#733DD9] transition-all font-ui bg-white"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold border border-white/5 rounded-lg text-slate-300 hover:text-white hover:border-[#733DD9] transition-all font-mono bg-slate-950/60 backdrop-blur-xl"
             >
               Threat Intelligence
             </Link>
           </div>
 
-          <p className="text-[10px] text-[#D1D5DB] font-mono uppercase tracking-wider mt-12">
+          <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider mt-12">
             ZAYRON-X ZERO INTEL REPORT · TLP:AMBER · AUTOMATED SCAN
           </p>
         </div>
@@ -295,14 +290,12 @@ function ZeroIntelReport() {
   );
 }
 
-/* ───────────────────────────────────────────────────────────
-   MAIN PAGE COMPONENT
-   ─────────────────────────────────────────────────────────── */
+/* ─── Main Operations Page ─── */
 export default async function OperationsPage({ searchParams }: PageProps) {
   const { page: pageStr } = await searchParams;
   const page = Number(pageStr) || 1;
 
-  /* ─── Data Fetching — Full Isolation ─── */
+  /* ─── Data Fetching ─── */
   let articles: Article[] = [];
   let breakingArticles: Article[] = [];
   let criticalCVEs: CVE[] = [];
@@ -336,17 +329,16 @@ export default async function OperationsPage({ searchParams }: PageProps) {
     dbError = message;
   }
 
-  /* ─── DB Connection Failure → Radar Offline Terminal ─── */
+  /* ─── DB Connection Failure ─── */
   if (dbError) {
     return <RadarOfflineTerminal message={dbError} />;
   }
 
-  /* ─── Empty Dataset → Zero Intel Report ─── */
+  /* ─── Empty Dataset ─── */
   if (totalArticleCount === 0 && totalCveCount === 0) {
     return <ZeroIntelReport />;
   }
 
-  /* ─── Derived Values ─── */
   const silo = getSiloForCategory(DISPLAY_NAME);
   const siloId: SiloId = silo?.id ?? 'cybersecurity';
   const siloColorClass = silo ? getSiloColorClass(silo.id) : 'silo-cyber';
@@ -359,7 +351,7 @@ export default async function OperationsPage({ searchParams }: PageProps) {
       label: 'Intel Reports',
       value: totalArticleCount.toLocaleString(),
       icon: Database,
-      accent: 'text-[#2563EB]',
+      accent: 'text-[#733DD9]',
     },
     {
       label: 'Breaking Alerts',
@@ -377,11 +369,13 @@ export default async function OperationsPage({ searchParams }: PageProps) {
   ];
 
   return (
-    <div>
+    <div className="dark bg-slate-950 text-[#f8fafc] min-h-screen">
       {/* ─── Hero ─── */}
-      <section className={`relative border-b border-[#E2E8F0] ${heroClass}`}>
+      <section
+        className={`relative border-b border-white/5 bg-slate-950/60 backdrop-blur-xl ${heroClass}`}
+      >
         <div className="absolute top-3 right-6 z-10">
-          <span className="text-[0.55rem] font-bold text-[#9CA3AF] font-mono uppercase tracking-[0.2em] opacity-60">
+          <span className="text-[0.55rem] font-bold text-slate-400 font-mono uppercase tracking-[0.2em] opacity-60">
             {classification}
           </span>
         </div>
@@ -394,14 +388,14 @@ export default async function OperationsPage({ searchParams }: PageProps) {
               <SiloIcon size={14} />
               {silo?.label ?? 'Cyber'} Operations
             </span>
-            <span className="text-[10px] uppercase tracking-[0.15em] text-[#9CA3AF] font-bold">
+            <span className="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold font-mono">
               Command Dashboard
             </span>
           </div>
-          <h1 className="font-display text-4xl lg:text-5xl font-extrabold text-[#111827] tracking-tight">
-            {DISPLAY_NAME}
+          <h1 className="font-mono text-4xl lg:text-5xl font-extrabold text-[#f8fafc] tracking-tight">
+            {DISPLAY_NAME.toUpperCase()}
           </h1>
-          <p className="text-[#4B5563] text-lg mt-3 max-w-2xl leading-loose">
+          <p className="text-slate-400 text-lg mt-3 max-w-2xl leading-loose">
             Live threat radar · CVE tracking · Analyst deployment status · Intelligence command and
             control from ZAYRON-X global operations center.
           </p>
@@ -411,15 +405,13 @@ export default async function OperationsPage({ searchParams }: PageProps) {
             {telemetry.map((t) => (
               <div
                 key={t.label}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#E2E8F0] shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-950/60 backdrop-blur-xl border border-white/5 shadow-sm"
               >
                 <t.icon size={14} className={t.accent} />
-                <span className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-ui">
+                <span className="text-[10px] uppercase tracking-wider text-slate-400 font-mono">
                   {t.label}
                 </span>
-                <span className="text-lg font-extrabold text-[#111827] font-display">
-                  {t.value}
-                </span>
+                <span className="text-lg font-extrabold text-[#f8fafc] font-mono">{t.value}</span>
               </div>
             ))}
           </div>
@@ -428,11 +420,11 @@ export default async function OperationsPage({ searchParams }: PageProps) {
 
       {/* ─── Breaking Alerts Strip ─── */}
       {breakingArticles.length > 0 && (
-        <section className="bg-[#FEF2F2] border-b border-[#FECACA]">
+        <section className="bg-red-950/40 border-b border-red-500/20">
           <div className="max-w-7xl mx-auto px-8 py-4">
             <div className="flex items-center gap-3 mb-2">
               <Zap size={14} className="text-[#DC2626]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#DC2626] font-ui">
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#DC2626] font-mono">
                 Breaking Intelligence
               </span>
             </div>
@@ -441,7 +433,7 @@ export default async function OperationsPage({ searchParams }: PageProps) {
                 <Link
                   key={a.id}
                   href={`/intelligence/${(a.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${a.slug}`}
-                  className="text-sm font-semibold text-[#111827] hover:text-[#DC2626] transition-colors font-display"
+                  className="text-sm font-semibold text-[#f8fafc] hover:text-[#DC2626] transition-colors font-mono"
                 >
                   {a.title}
                 </Link>
@@ -467,27 +459,29 @@ export default async function OperationsPage({ searchParams }: PageProps) {
                 {/* Pagination */}
                 <div className="flex justify-center gap-3 mt-12">
                   {page > 1 && (
-                    <a
+                    <Link
                       href={`/intelligence/operations?page=${page - 1}`}
-                      className="px-5 py-2.5 text-sm font-medium border border-[#E2E8F0] rounded-lg hover:border-[#733DD9] hover:text-[#733DD9] transition-colors font-ui bg-white text-[#4B5563]"
+                      prefetch={true}
+                      className="px-5 py-2.5 text-sm font-bold border border-white/5 rounded-lg hover:border-[#733DD9] hover:text-[#733DD9] transition-colors font-mono bg-slate-950/60 backdrop-blur-xl text-slate-300"
                     >
                       Previous
-                    </a>
+                    </Link>
                   )}
                   {articles.length === PAGE_SIZE && (
-                    <a
+                    <Link
                       href={`/intelligence/operations?page=${page + 1}`}
-                      className="px-5 py-2.5 text-sm font-medium bg-[#733DD9] text-white rounded-lg hover:bg-[#5B21B6] transition-colors font-ui"
+                      prefetch={true}
+                      className="px-5 py-2.5 text-sm font-bold bg-[#733DD9] text-white border border-white/5 rounded-lg hover:bg-[#5B21B6] transition-colors font-mono"
                     >
                       Next Reports →
-                    </a>
+                    </Link>
                   )}
                 </div>
               </>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <Database size={32} className="text-[#D1D5DB] mb-4" />
-                <p className="text-sm text-[#9CA3AF] font-mono">
+                <Database size={32} className="text-slate-600 mb-4" />
+                <p className="text-sm text-slate-500 font-mono">
                   No intelligence reports available. Check back shortly.
                 </p>
               </div>
@@ -499,24 +493,24 @@ export default async function OperationsPage({ searchParams }: PageProps) {
             {/* Critical CVEs */}
             {criticalCVEs.length > 0 && (
               <div className="sticky top-24 space-y-6">
-                <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden shadow-sm">
-                  <div className="px-4 py-3 border-b border-[#E2E8F0] flex items-center gap-2">
+                <div className="rounded-xl border border-white/5 bg-slate-950/60 backdrop-blur-xl overflow-hidden shadow-sm">
+                  <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
                     <Bug size={13} className="text-[#DC2626]" />
-                    <h3 className="text-[10px] uppercase tracking-[0.14em] text-[#DC2626] font-bold font-ui">
+                    <h3 className="text-[10px] uppercase tracking-[0.14em] text-[#DC2626] font-bold font-mono">
                       Critical CVEs
                     </h3>
                   </div>
-                  <div className="divide-y divide-[#F1F5F9]">
+                  <div className="divide-y divide-white/5">
                     {criticalCVEs.map((cve) => (
                       <Link
                         key={cve.id}
                         href={`/cve/${cve.cveId}`}
-                        className="block px-4 py-3 hover:bg-[#F8FAFC] transition-colors"
+                        className="block px-4 py-3 hover:bg-white/5 transition-colors"
                       >
-                        <p className="text-xs font-mono font-bold text-[#111827] mb-0.5">
+                        <p className="text-xs font-mono font-bold text-[#f8fafc] mb-0.5">
                           {cve.cveId}
                         </p>
-                        <p className="text-[11px] text-[#4B5563] leading-snug line-clamp-2 font-ui">
+                        <p className="text-[11px] text-slate-400 leading-snug line-clamp-2 font-sans">
                           {cve.title ?? cve.description ?? 'No description'}
                         </p>
                         {cve.cvssScore != null && (
@@ -527,10 +521,10 @@ export default async function OperationsPage({ searchParams }: PageProps) {
                       </Link>
                     ))}
                   </div>
-                  <div className="px-4 py-2.5 border-t border-[#E2E8F0]">
+                  <div className="px-4 py-2.5 border-t border-white/5 bg-slate-950/40">
                     <Link
                       href="/cve"
-                      className="text-[10px] text-[#733DD9] hover:underline font-ui uppercase tracking-wider"
+                      className="text-[10px] text-[#733DD9] hover:underline font-mono uppercase tracking-wider"
                     >
                       View all CVEs →
                     </Link>
@@ -539,10 +533,10 @@ export default async function OperationsPage({ searchParams }: PageProps) {
 
                 {/* Tags */}
                 {allTags.length > 0 && (
-                  <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden shadow-sm">
-                    <div className="px-4 py-3 border-b border-[#E2E8F0] flex items-center gap-2">
+                  <div className="rounded-xl border border-white/5 bg-slate-950/60 backdrop-blur-xl overflow-hidden shadow-sm">
+                    <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
                       <Tag size={13} className="text-[#733DD9]" />
-                      <h3 className="text-[10px] uppercase tracking-[0.14em] text-[#733DD9] font-bold font-ui">
+                      <h3 className="text-[10px] uppercase tracking-[0.14em] text-[#733DD9] font-bold font-mono">
                         Filter by Tag
                       </h3>
                     </div>
@@ -551,10 +545,10 @@ export default async function OperationsPage({ searchParams }: PageProps) {
                         <Link
                           key={t.tag}
                           href={`/search?q=${encodeURIComponent(t.tag)}`}
-                          className="flex items-center justify-between px-2 py-1.5 rounded-lg text-xs text-[#4B5563] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors font-ui group"
+                          className="flex items-center justify-between px-2 py-1.5 rounded-lg text-xs text-slate-400 hover:text-[#f8fafc] hover:bg-white/5 transition-colors font-mono group"
                         >
                           <span className="truncate">{t.tag}</span>
-                          <span className="text-[10px] text-[#9CA3AF] font-mono ml-2 shrink-0">
+                          <span className="text-[10px] text-slate-500 font-mono ml-2 shrink-0">
                             {t.count}
                           </span>
                         </Link>

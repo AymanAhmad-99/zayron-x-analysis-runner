@@ -61,15 +61,17 @@
   }
 
   :root {
-    --text-primary: #050505;
-    --text-secondary: #4b5563;
-    --bg-primary: #ffffff;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --bg-primary: #020617;
+    --border-primary: rgba(255, 255, 255, 0.05);
   }
 
   .dark {
-    --text-primary: #ffffff;
+    --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --bg-primary: #000000;
+    --bg-primary: #020617;
+    --border-primary: rgba(255, 255, 255, 0.05);
   }
 
   html {
@@ -223,24 +225,31 @@
 
   /* Liquid Glass Panels */
   .fluid-glass {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(5, 5, 5, 0.05);
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  .glass-panel {
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
   .fluid-glass:hover {
-    border-color: rgba(5, 5, 5, 0.1);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
     transform: translateY(-2px);
   }
 
   .dark .fluid-glass {
-    background: rgba(0, 0, 0, 0.85);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(2, 6, 23, 0.6);
+    border-color: rgba(255, 255, 255, 0.05);
   }
   .dark .fluid-glass:hover {
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.15);
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
   }
 

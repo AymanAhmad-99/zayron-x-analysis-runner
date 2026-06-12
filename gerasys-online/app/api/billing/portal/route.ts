@@ -2,13 +2,20 @@ import { createClient } from '@/lib/supabase/server';
 import { type NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// Initialize Stripe.
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_secret_key', {
-  apiVersion: '2023-10-16' as any,
-});
-
 export async function POST(request: NextRequest) {
   try {
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeSecretKey) {
+      return NextResponse.json(
+        { error: 'Stripe configuration missing on host node. Mock portal bypass disabled.' },
+        { status: 500 },
+      );
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16' as any,
+    });
+
     // 1. Authenticate user via Supabase server client
     const supabase = await createClient();
     const {
@@ -44,24 +51,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Create Stripe Customer Portal Session
     const returnUrl = `${request.nextUrl.origin}/intelligence`;
-
-    if (process.env.STRIPE_SECRET_KEY) {
-      const session = await stripe.billingPortal.sessions.create({
-        customer: stripeCustomerId,
-        return_url: returnUrl,
-      });
-
-      return NextResponse.json({ success: true, url: session.url });
-    }
-    // Mock portal redirect in local development mode
-    const mockPortalUrl = `${request.nextUrl.origin}/api/webhooks/stripe?mock_action=portal_cancel&userId=${user.id}`;
-    return NextResponse.json({
-      success: true,
-      url: mockPortalUrl,
-      message: 'Development mode: Mock Stripe Billing Portal URL generated.',
+    const session = await stripe.billingPortal.sessions.create({
+      customer: stripeCustomerId,
+      return_url: returnUrl,
     });
+
+    return NextResponse.json({ success: true, url: session.url });
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || 'Failed to initialize customer billing portal.' },

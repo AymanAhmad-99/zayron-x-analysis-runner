@@ -178,6 +178,7 @@ describe('API Webhook Simulation: /api/webhooks/stripe', () => {
       stripe_price_id: 'price_123',
       stripe_subscription_status: 'active',
       clearance_level: 'SUBSCRIBER',
+      tier_id: 'TACTICAL_OBSERVER',
     });
   });
 

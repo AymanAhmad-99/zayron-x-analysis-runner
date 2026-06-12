@@ -14,6 +14,7 @@ import {
   getArticlesCountByCategory,
   getCategoriesWithCounts,
 } from '@/lib/supabase/queries/articles';
+import { createClient } from '@/lib/supabase/server';
 import type { Article, CategoryType } from '@/lib/types';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -108,21 +109,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-/* ─── Zero Intel Report — Oracle White ─── */
+/* ─── Zero Intel Report — Terminal Matrix ─── */
 function ZeroIntelReport({ categoryName }: { categoryName: string }) {
   return (
-    <div>
+    <div className="dark bg-slate-950 text-[#f8fafc] min-h-[80vh]">
       {/* Hero section */}
-      <section className="relative border-b border-[#E2E8F0] dark:border-slate-800 silo-cyber-hero">
+      <section className="relative border-b border-white/5 bg-slate-950/60 backdrop-blur-xl silo-cyber-hero">
         <div className="relative max-w-7xl mx-auto px-8 py-20">
           <div className="flex items-center gap-3 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#DC2626]/6 text-[#DC2626] border border-[#DC2626]/15">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/20 font-mono">
               <Radio size={14} />
               Sector Scan
             </span>
           </div>
-          <h1 className="font-display text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            {categoryName}
+          <h1 className="font-mono text-4xl lg:text-5xl font-extrabold text-[#f8fafc] tracking-tight">
+            {categoryName.toUpperCase()}
           </h1>
         </div>
       </section>
@@ -132,43 +133,40 @@ function ZeroIntelReport({ categoryName }: { categoryName: string }) {
         <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
           {/* Animated radar icon */}
           <div className="relative mb-8">
-            <div className="w-24 h-24 rounded-full border border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center relative">
+            <div className="w-24 h-24 rounded-full border border-white/5 bg-slate-950/60 backdrop-blur-xl flex items-center justify-center relative">
               <div
                 className="absolute inset-0 rounded-full border border-[#FFD700]/20 animate-ping"
                 style={{ animationDuration: '3s' }}
               />
-              <div className="absolute inset-2 rounded-full border border-[#FFD700]/10" />
-              <Radar size={32} className="text-[#B8860B] animate-pulse" />
+              <div className="absolute inset-2 rounded-full border border-white/5" />
+              <Radar size={32} className="text-[#733DD9] animate-pulse" />
             </div>
           </div>
 
           {/* Alert message */}
-          <div className="mb-8 px-6 py-5 rounded-xl border border-[#DC2626]/10 bg-[#DC2626]/[0.02] max-w-lg w-full">
+          <div className="mb-8 px-6 py-5 rounded-xl border border-white/5 bg-slate-950/40 backdrop-blur-xl max-w-lg w-full">
             <p className="text-[#DC2626] font-mono text-sm leading-loose">
-              🚨 Zx Sector Scan:{' '}
-              <span className="font-bold text-gray-900 dark:text-white">{categoryName}</span> — No
-              intelligence intercepted in the last 24h. The Radar is actively monitoring.
+              🚨 Zx Sector Scan: <span className="font-bold text-[#f8fafc]">{categoryName}</span> —
+              No intelligence intercepted in the last 24h. The Radar is actively monitoring.
             </p>
           </div>
 
           {/* Status details */}
           <div className="space-y-3 mb-10 w-full max-w-md">
-            <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-800">
-              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+            <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-slate-950/60 backdrop-blur-xl border border-white/5">
+              <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 Sector
               </span>
-              <span className="text-sm text-gray-900 dark:text-white font-semibold font-display">
-                {categoryName}
-              </span>
+              <span className="text-sm text-[#f8fafc] font-semibold font-mono">{categoryName}</span>
             </div>
-            <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-800">
-              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+            <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-slate-950/60 backdrop-blur-xl border border-white/5">
+              <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 Reports Found
               </span>
               <span className="text-sm text-[#DC2626] font-bold font-mono">0</span>
             </div>
-            <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-800">
-              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+            <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-slate-950/60 backdrop-blur-xl border border-white/5">
+              <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">
                 Radar Status
               </span>
               <span className="text-sm text-[#16A34A] font-semibold font-mono flex items-center gap-2">
@@ -182,21 +180,21 @@ function ZeroIntelReport({ categoryName }: { categoryName: string }) {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-[#D2B48C] text-white rounded-lg hover:bg-[#C4A47A] transition-colors font-ui shadow-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold bg-[#733DD9] hover:bg-[#5B21B6] text-white rounded-lg transition-colors font-mono shadow-sm"
             >
               <ArrowLeft size={14} />
               Command Center
             </Link>
             <Link
               href="/intelligence/threat-intelligence"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold border border-[#E2E8F0] dark:border-slate-800 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-[#D2B48C] transition-all font-ui bg-white dark:bg-slate-900"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold border border-white/5 rounded-lg text-slate-300 hover:text-white hover:border-[#733DD9] transition-all font-mono bg-slate-950/60 backdrop-blur-xl"
             >
               Browse All Intel
             </Link>
           </div>
 
           {/* Footer stamp */}
-          <p className="text-[10px] text-[#D1D5DB] font-mono uppercase tracking-wider mt-12">
+          <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider mt-12">
             ZAYRON-X ZERO INTEL REPORT · TLP:AMBER · AUTOMATED SCAN
           </p>
         </div>
@@ -262,8 +260,47 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
     totalCount = 0;
   }
 
+  // 1. Establish server-side security context check
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let isSubscriber = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('clearance_level, stripe_subscription_status, tier_id')
+      .eq('id', user.id)
+      .single();
+
+    isSubscriber = !!(
+      profile &&
+      (profile.clearance_level === 'SUBSCRIBER' ||
+        profile.stripe_subscription_status === 'active' ||
+        profile.stripe_subscription_status === 'trialing' ||
+        profile.tier_id === 'TACTICAL_OBSERVER' ||
+        profile.tier_id === 'SOVEREIGN_COMMAND')
+    );
+  }
+
+  // 2. Strict server boundary sanitization to prevent gated data leaks in __NEXT_DATA__ serialization
+  const processedArticles = isSubscriber
+    ? articles
+    : articles.map((art) => ({
+        ...art,
+        yaraRule: null,
+        iocsJson: null,
+        mitreTtps: null,
+        fbrScore: null,
+        cvssV4Score: null,
+        financialExposure: null,
+        regulatoryRisk: null,
+        mitigationImpact: null,
+      }));
+
   /* ─── FALLBACK: Show Zero Intel Report instead of notFound() ─── */
-  if (articles.length === 0) {
+  if (processedArticles.length === 0) {
     return <ZeroIntelReport categoryName={displayCategory} />;
   }
 
@@ -274,15 +311,17 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
   const jsonLd = getCategoryNavigationJsonLd();
 
   return (
-    <div>
+    <div className="dark bg-slate-950 text-[#f8fafc] min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Compartmentalized Category Hero */}
-      <section className={`relative border-b border-[#E2E8F0] dark:border-slate-800 ${heroClass}`}>
+      <section
+        className={`relative border-b border-white/5 bg-slate-950/60 backdrop-blur-xl ${heroClass}`}
+      >
         <div className="absolute top-3 right-6 z-10">
-          <span className="text-[0.55rem] font-bold text-[#9CA3AF] font-mono uppercase tracking-[0.2em] opacity-60">
+          <span className="text-[0.55rem] font-bold text-slate-400 font-mono uppercase tracking-[0.2em] opacity-60">
             {classification}
           </span>
         </div>
@@ -297,14 +336,14 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
                 {silo.label}
               </span>
             )}
-            <span className="text-[10px] uppercase tracking-[0.15em] text-[#9CA3AF] font-bold">
+            <span className="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold font-mono">
               {sectionTitle}
             </span>
           </div>
-          <h1 className="font-display text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            {displayCategory}
+          <h1 className="font-mono text-4xl lg:text-5xl font-extrabold text-[#f8fafc] tracking-tight">
+            {displayCategory.toUpperCase()}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg mt-3 max-w-2xl leading-loose">
+          <p className="text-slate-400 text-lg mt-3 max-w-2xl leading-loose">
             {silo
               ? `${silo.description}`
               : `Curated intelligence reports and deep-dive analysis in ${displayCategory.toLowerCase()}.`}
@@ -312,10 +351,8 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
 
           {/* Article count badge */}
           <div className="flex items-center gap-2 mt-6">
-            <span className="text-2xl font-extrabold text-gray-900 dark:text-white font-display">
-              {totalCount}
-            </span>
-            <span className="text-xs text-[#9CA3AF] font-ui uppercase tracking-wider">
+            <span className="text-2xl font-extrabold text-[#733DD9] font-mono">{totalCount}</span>
+            <span className="text-xs text-slate-400 font-mono uppercase tracking-wider">
               Reports {page > 1 ? `(Page ${page})` : 'Available'}
             </span>
           </div>
@@ -328,7 +365,7 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
           {/* Main content */}
           <div className="flex-1 min-w-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles.map((article, index) => (
+              {processedArticles.map((article, index) => (
                 <ArticleCard key={article.id} article={article} neighborOffset={index * 17} />
               ))}
             </div>
@@ -338,16 +375,17 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
               {page > 1 && (
                 <Link
                   href={`/intelligence/${category}?page=${page - 1}`}
-                  className="px-5 py-2.5 text-sm font-medium border border-[#E2E8F0] dark:border-slate-800 rounded-lg hover:border-[#D2B48C] hover:text-[#D2B48C] transition-colors font-ui bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-300"
+                  prefetch={true}
+                  className="px-5 py-2.5 text-sm font-bold border border-white/5 rounded-lg hover:border-[#733DD9] hover:text-[#733DD9] transition-colors font-mono bg-slate-950/60 backdrop-blur-xl text-slate-300"
                 >
                   Previous
                 </Link>
               )}
-              {articles.length === 12 && (
+              {processedArticles.length === 12 && (
                 <Link
                   href={`/intelligence/${category}?page=${page + 1}`}
                   prefetch={true}
-                  className="px-5 py-2.5 text-sm font-medium bg-[#D2B48C] text-white rounded-lg hover:bg-[#C4A47A] transition-colors font-ui"
+                  className="px-5 py-2.5 text-sm font-bold bg-[#733DD9] text-white border border-white/5 rounded-lg hover:bg-[#5B21B6] transition-colors font-mono"
                 >
                   Next Reports →
                 </Link>
@@ -358,10 +396,10 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
           {/* Tags filter sidebar — DB-driven */}
           {allTags.length > 0 && (
             <aside className="hidden lg:block w-56 shrink-0">
-              <div className="sticky top-24">
+              <div className="sticky top-24 bg-slate-950/60 backdrop-blur-xl border border-white/5 rounded-lg p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Tag size={13} className="text-[#D2B48C]" />
-                  <h3 className="text-[10px] uppercase tracking-[0.14em] text-[#D2B48C] font-bold font-ui">
+                  <Tag size={13} className="text-[#733DD9]" />
+                  <h3 className="text-[10px] uppercase tracking-[0.14em] text-[#733DD9] font-bold font-mono">
                     Filter by Tag
                   </h3>
                 </div>
@@ -370,10 +408,10 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
                     <Link
                       key={t.tag}
                       href={`/search?q=${encodeURIComponent(t.tag)}`}
-                      className="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors font-ui group"
+                      className="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-[#f8fafc] hover:bg-white/5 transition-colors font-mono group"
                     >
                       <span className="truncate">{t.tag}</span>
-                      <span className="text-[10px] text-[#9CA3AF] font-mono ml-2 shrink-0">
+                      <span className="text-[10px] text-slate-500 font-mono ml-2 shrink-0">
                         {t.count}
                       </span>
                     </Link>
@@ -382,7 +420,7 @@ export default async function IntelligenceCategoryPage({ params, searchParams }:
                 {allTags.length > 25 && (
                   <Link
                     href="/search"
-                    className="text-[10px] text-[#D2B48C] hover:underline font-ui mt-3 inline-block"
+                    className="text-[10px] text-[#733DD9] hover:underline font-mono mt-3 inline-block"
                   >
                     +{allTags.length - 25} more tags
                   </Link>

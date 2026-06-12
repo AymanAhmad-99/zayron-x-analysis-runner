@@ -46,6 +46,17 @@ export async function POST(request: NextRequest) {
       const status = subscription.status; // active, past_due, trialing, canceled, etc.
       const priceId = subscription.items.data[0]?.price.id;
 
+      let tierId = 'FREE';
+      if (status === 'active' || status === 'trialing') {
+        if (priceId === process.env.STRIPE_SOVEREIGN_COMMAND_PRICE_ID) {
+          tierId = 'SOVEREIGN_COMMAND';
+        } else if (priceId === process.env.STRIPE_TACTICAL_OBSERVER_PRICE_ID) {
+          tierId = 'TACTICAL_OBSERVER';
+        } else {
+          tierId = 'TACTICAL_OBSERVER'; // default fallback for base sub price
+        }
+      }
+
       // Identify corresponding user profile by customer ID or client reference metadata
       const { data: profile, error: fetchError } = await adminSupabase
         .from('profiles')
@@ -74,6 +85,7 @@ export async function POST(request: NextRequest) {
                   stripe_subscription_status: status,
                   clearance_level:
                     status === 'active' || status === 'trialing' ? 'SUBSCRIBER' : 'FREE',
+                  tier_id: tierId,
                 })
                 .eq('id', profileByEmail.id);
             }
@@ -90,6 +102,7 @@ export async function POST(request: NextRequest) {
             stripe_price_id: priceId,
             stripe_subscription_status: status,
             clearance_level: status === 'active' || status === 'trialing' ? 'SUBSCRIBER' : 'FREE',
+            tier_id: tierId,
           })
           .eq('id', profile.id);
       }
@@ -112,6 +125,7 @@ export async function POST(request: NextRequest) {
           .update({
             stripe_subscription_status: 'canceled',
             clearance_level: 'FREE',
+            tier_id: 'FREE',
           })
           .eq('id', profile.id);
       }
