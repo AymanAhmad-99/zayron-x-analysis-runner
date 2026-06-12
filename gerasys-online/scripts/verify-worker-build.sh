@@ -34,13 +34,30 @@ FORBIDDEN_MODULES=(
     "node:http2"
 )
 
+FILES_TO_SCAN=(
+    ".open-next/worker.js"
+    "worker-wrapper.js"
+)
+
 echo ""
 echo "📋 Checking for CRITICAL modules (deployment blockers)..."
 CRITICAL_FOUND=false
 for mod in "${FORBIDDEN_MODULES[@]}"; do
-    if grep -rq "$mod" "$BUNDLE_DIR" 2>/dev/null; then
+    FOUND_IN_FILE=""
+    for file in "${FILES_TO_SCAN[@]}"; do
+        if [ -f "$file" ] && grep -q "$mod" "$file" 2>/dev/null; then
+            FOUND_IN_FILE="$file"
+            break
+        fi
+    done
+
+    if [ -n "$FOUND_IN_FILE" ]; then
         echo "   ❌ FOUND: $mod"
-        grep -rn "$mod" "$BUNDLE_DIR"
+        for file in "${FILES_TO_SCAN[@]}"; do
+            if [ -f "$file" ] && grep -q "$mod" "$file" 2>/dev/null; then
+                grep -Hrn "$mod" "$file"
+            fi
+        done
         CRITICAL_FOUND=true
     else
         echo "   ✅ $mod — not found"
@@ -84,7 +101,14 @@ WARNING_MODULES=(
 
 WARNING_FOUND=false
 for mod in "${WARNING_MODULES[@]}"; do
-    if grep -rq "$mod" "$BUNDLE_DIR" 2>/dev/null; then
+    FOUND_IN_FILE=""
+    for file in "${FILES_TO_SCAN[@]}"; do
+        if [ -f "$file" ] && grep -q "$mod" "$file" 2>/dev/null; then
+            FOUND_IN_FILE="$file"
+            break
+        fi
+    done
+    if [ -n "$FOUND_IN_FILE" ]; then
         echo "   ⚠️  WARNING: $mod — will be polyfilled at runtime"
         WARNING_FOUND=true
     fi
