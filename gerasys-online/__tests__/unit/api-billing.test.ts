@@ -226,6 +226,7 @@ describe('API Webhook Simulation: /api/webhooks/stripe', () => {
     expect(mockUpdate).toHaveBeenCalledWith({
       stripe_subscription_status: 'canceled',
       clearance_level: 'FREE',
+      tier_id: 'FREE',
     });
   });
 });
