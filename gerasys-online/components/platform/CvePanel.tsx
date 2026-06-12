@@ -15,7 +15,9 @@ export function CvePanel({ cves, totalCount }: CvePanelProps) {
         <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-black border dark:border-slate-800 flex items-center justify-center mb-5">
           <span className="text-lg font-bold text-[#733DD9]">CVE</span>
         </div>
-        <h3 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">Vulnerability index loading</h3>
+        <h3 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">
+          Vulnerability index loading
+        </h3>
         <p className="text-[0.85rem] text-[#94A3B8] max-w-md leading-relaxed">
           CVE records will appear here once the vulnerability ingestion pipeline is connected to the
           NVD data source.
@@ -29,7 +31,9 @@ export function CvePanel({ cves, totalCount }: CvePanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[1.1rem] font-semibold text-[#0F172A] dark:text-white">Vulnerability Index</h2>
+          <h2 className="text-[1.1rem] font-semibold text-[#0F172A] dark:text-white">
+            Vulnerability Index
+          </h2>
           <p className="text-[0.78rem] text-[#94A3B8] mt-0.5">
             {totalCount.toLocaleString()} vulnerabilities tracked across global infrastructure
           </p>
@@ -58,8 +62,8 @@ export function CvePanel({ cves, totalCount }: CvePanelProps) {
             <tbody className="text-xs">
               {cves.map((cve) => (
                 <tr
-                   key={cve.id}
-                   className="border-b border-neutral-100 dark:border-slate-800 last:border-0 hover:bg-neutral-50/30 dark:hover:bg-neutral-900/30 transition-colors duration-200 group"
+                  key={cve.id}
+                  className="border-b border-neutral-100 dark:border-slate-800 last:border-0 hover:bg-neutral-50/30 dark:hover:bg-neutral-900/30 transition-colors duration-200 group"
                 >
                   <td className="py-5 px-6">
                     <Link

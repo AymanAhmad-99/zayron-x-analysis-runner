@@ -17,8 +17,8 @@
  *      file‑system helpers, etc. — never actually called at runtime)
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
 const HANDLER_DIR = path.join(ROOT, '.open-next', 'server-functions', 'default');

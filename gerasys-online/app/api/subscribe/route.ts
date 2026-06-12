@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
     if (selectError) throw selectError;
 
-    if (existing && existing[0]) {
+    if (existing?.[0]) {
       if (existing[0].is_active) {
         return NextResponse.json({ error: 'Email already subscribed.' }, { status: 409 });
       }

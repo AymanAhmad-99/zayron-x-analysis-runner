@@ -31,14 +31,14 @@ export function IntelCard({ article }: IntelCardProps) {
         {/* Visual Telemetry Panel — left 1/3 */}
         <div className="md:w-1/3 shrink-0 flex flex-col justify-between p-5 rounded-lg bg-neutral-50 border border-neutral-200 text-[#050505] font-mono relative overflow-hidden min-h-[140px]">
           {/* Subtle grid background */}
-          <div className="absolute inset-0 opacity-[0.015] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+          <div className="absolute inset-0 opacity-[0.015] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
 
           <div className="relative z-10 flex items-center justify-between border-b border-neutral-200/80 pb-2 mb-2">
             <span className="text-[9px] uppercase tracking-[0.15em] text-[#733DD9] font-bold">
               Threat Dossier
             </span>
             <span className="relative flex h-1.5 w-1.5">
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#733DD9]"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#733DD9]" />
             </span>
           </div>
 

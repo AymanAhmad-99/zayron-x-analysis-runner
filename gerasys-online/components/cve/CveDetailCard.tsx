@@ -75,7 +75,7 @@ function calculateFBR(cvssScore: number | null | undefined, product: string | nu
   const geoFactor = 1.2; // US geo-multiplier used in cve_worker daemon
   const baseBreachCost = 165.0;
 
-  const cvssFactor = Math.pow(score / 10.0, 2);
+  const cvssFactor = (score / 10.0) ** 2;
   const fbrUsd = baseBreachCost * 10000 * cvssFactor * sectorWeight * geoFactor;
   const fbrJod = fbrUsd * 0.709; // Pegged rate: 1 USD = 0.709 JOD
 

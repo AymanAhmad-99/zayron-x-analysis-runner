@@ -18,9 +18,7 @@
 
 // Standard ENOENT error — catchable by Next.js internals
 function enoent(method, pathArg) {
-  var err = new Error(
-    'ENOENT: no such file or directory, ' + method + " '" + (pathArg || '/') + "'",
-  );
+  const err = new Error(`ENOENT: no such file or directory, ${method} '${pathArg || '/'}'`);
   err.code = 'ENOENT';
   err.errno = -2;
   err.syscall = method;
@@ -29,8 +27,8 @@ function enoent(method, pathArg) {
 }
 
 function enosys(method) {
-  var err = new Error(
-    'ENOSYS: ' + method + ' is not available in Cloudflare Workers (no filesystem).',
+  const err = new Error(
+    `ENOSYS: ${method} is not available in Cloudflare Workers (no filesystem).`,
   );
   err.code = 'ENOSYS';
   err.errno = -38;
@@ -99,11 +97,11 @@ function realpath(path, cb) {
 
 // ── Mutation methods — throw ENOSYS (real bug if reached) ──
 
-var ENOSYS = (method) => () => {
+const ENOSYS = (method) => () => {
   throw enosys(method);
 };
 
-var fs = {
+const fs = {
   // Sync probes
   existsSync: existsSync,
   statSync: statSync,

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const date = searchParams.get('date') ?? new Date().getFullYear().toString();
 
   // Truncate long titles
-  const displayTitle = title.length > 80 ? title.slice(0, 77) + '…' : title;
+  const displayTitle = title.length > 80 ? `${title.slice(0, 77)}…` : title;
 
   return new ImageResponse(
     <div

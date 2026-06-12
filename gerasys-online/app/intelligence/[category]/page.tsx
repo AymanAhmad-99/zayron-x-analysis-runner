@@ -6,14 +6,14 @@ import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { getCached } from '@/lib/cache/redis';
 import { ArrowLeft, Code, Network, Radar, Radio, Shield, Tag } from '@/lib/icons';
+import { getCategoryNavigationJsonLd, getCategoryPageMetadata } from '@/lib/seo/metadata';
 import { type SiloId, getSiloColorClass, getSiloForCategory } from '@/lib/silos';
 import {
   getAllTags,
   getArticlesByCategory,
-  getCategoriesWithCounts,
   getArticlesCountByCategory,
+  getCategoriesWithCounts,
 } from '@/lib/supabase/queries/articles';
-import { getCategoryPageMetadata, getCategoryNavigationJsonLd } from '@/lib/seo/metadata';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -52,7 +52,9 @@ function formatCategoryDisplay(slug: string): string {
     osint: 'OSINT',
   };
   const normalized = slug.toLowerCase();
-  return friendlyNames[normalized] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return (
+    friendlyNames[normalized] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 }
 
 const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?: string }>> = {

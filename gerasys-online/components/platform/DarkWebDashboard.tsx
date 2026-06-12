@@ -68,7 +68,7 @@ function sanitizeTeaserText(text: string | null): string {
   // 7. Limit to 40 words
   const words = clean.split(/\s+/);
   if (words.length > 40) {
-    return words.slice(0, 40).join(' ') + '...';
+    return `${words.slice(0, 40).join(' ')}...`;
   }
 
   return clean;
@@ -223,11 +223,10 @@ export function DarkWebDashboard({
                 {filteredThreats.map((threat, index) => {
                   const isExpanded = expandedId === threat.id;
                   const isGated = !isSubscriber && index >= 3;
-                  const readTime =
-                    Math.max(
-                      2,
-                      Math.round((threat.teaser_text || '').split(/\s+/).length / 200) || 3,
-                    ) + ' min read';
+                  const readTime = `${Math.max(
+                    2,
+                    Math.round((threat.teaser_text || '').split(/\s+/).length / 200) || 3,
+                  )} min read`;
 
                   return (
                     <div

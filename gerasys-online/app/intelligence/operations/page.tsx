@@ -332,7 +332,7 @@ export default async function OperationsPage({ searchParams }: PageProps) {
     totalCveCount = cveCount as number;
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown database connection failure';
-    console.error(`[operations] DB fetch failed:`, message);
+    console.error('[operations] DB fetch failed:', message);
     dbError = message;
   }
 

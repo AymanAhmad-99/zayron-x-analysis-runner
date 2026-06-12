@@ -86,7 +86,7 @@ export default async function NewsPage() {
 
                     {/* Excerpt */}
                     <p className="text-neutral-500 text-xs leading-loose mb-6 line-clamp-3">
-                      {article.excerpt || article.content.substring(0, 120) + '...'}
+                      {article.excerpt || `${article.content.substring(0, 120)}...`}
                     </p>
                   </div>
 

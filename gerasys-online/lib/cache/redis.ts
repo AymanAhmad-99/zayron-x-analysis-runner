@@ -4,13 +4,20 @@ let redisInstance: Redis | null = null;
 
 export function getRedis(env: any) {
   if (!redisInstance) {
-    const url = env?.UPSTASH_REDIS_REST_URL || env?.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL!;
-    const token = env?.UPSTASH_REDIS_REST_TOKEN || env?.REDIS_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_TOKEN!;
+    const url =
+      env?.UPSTASH_REDIS_REST_URL ||
+      env?.REDIS_URL ||
+      process.env.UPSTASH_REDIS_REST_URL ||
+      process.env.REDIS_URL!;
+    const token =
+      env?.UPSTASH_REDIS_REST_TOKEN ||
+      env?.REDIS_TOKEN ||
+      process.env.UPSTASH_REDIS_REST_TOKEN ||
+      process.env.REDIS_TOKEN!;
     redisInstance = new Redis({ url, token });
   }
   return redisInstance;
 }
-
 
 export async function getCached<T>(
   env: any,

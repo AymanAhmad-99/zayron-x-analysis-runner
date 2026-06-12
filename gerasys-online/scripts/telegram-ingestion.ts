@@ -257,7 +257,7 @@ async function main() {
   console.log(`  Channels: ${CHANNELS.map((c) => c.name).join(', ')}`);
   console.log(`  Poll interval: ${POLL_INTERVAL_MS / 1000}s`);
   console.log(`  Mode: ${process.env.TELEGRAM_API_ID ? 'LIVE' : 'SIMULATION'}`);
-  console.log(`  DB: ${connectionString!.substring(0, 40)}...`);
+  console.log(`  DB: ${connectionString?.substring(0, 40)}...`);
   console.log('='.repeat(60));
 
   const client = await initTelegramClient();

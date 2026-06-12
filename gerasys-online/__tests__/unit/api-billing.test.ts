@@ -13,8 +13,8 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('API Billing Endpoint: /api/billing/checkout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    delete process.env.STRIPE_SECRET_KEY;
-    delete process.env.STRIPE_SUBSCRIBER_PRICE_ID;
+    process.env.STRIPE_SECRET_KEY = undefined;
+    process.env.STRIPE_SUBSCRIBER_PRICE_ID = undefined;
   });
 
   it('should reject unauthenticated checkout requests', async () => {

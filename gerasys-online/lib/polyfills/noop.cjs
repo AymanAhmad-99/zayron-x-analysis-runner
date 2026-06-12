@@ -24,7 +24,7 @@ function Agent() {
 }
 Agent.prototype.destroy = () => {};
 
-var globalAgent = new Agent();
+const globalAgent = new Agent();
 
 // ── net.Socket / tls.TLSSocket — constructible shells ─────
 

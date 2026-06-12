@@ -167,9 +167,13 @@ export default async function IntelligenceArticlePage({ params }: Props) {
     ]);
   } catch {}
 
-  const severity = isSubscriber ? (article.regulatoryRisk || 'CRITICAL') : '[ RESTRICTED_INTEL ]';
-  const exposure = isSubscriber ? (article.financialExposure || '$4.2M – $8.5M') : '[ RESTRICTED_INTEL ]';
-  const iocs = isSubscriber ? ((article.tags ?? []).filter(Boolean).join(', ') || 'No active IoCs mapped') : '[ RESTRICTED_INTEL ]';
+  const severity = isSubscriber ? article.regulatoryRisk || 'CRITICAL' : '[ RESTRICTED_INTEL ]';
+  const exposure = isSubscriber
+    ? article.financialExposure || '$4.2M – $8.5M'
+    : '[ RESTRICTED_INTEL ]';
+  const iocs = isSubscriber
+    ? (article.tags ?? []).filter(Boolean).join(', ') || 'No active IoCs mapped'
+    : '[ RESTRICTED_INTEL ]';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -256,24 +260,26 @@ export default async function IntelligenceArticlePage({ params }: Props) {
                     {(article.views ?? 0).toLocaleString()}
                   </span>
                 </div>
-                {isSubscriber && article.cvssV4Score !== undefined && article.cvssV4Score !== null && (
-                  <div className="flex justify-between items-center py-1.5 border-b border-neutral-100">
-                    <span className="font-mono">CVSS V4.0:</span>
-                    <span
-                      className={`font-mono font-bold px-2 py-0.5 rounded text-[10px] ${
-                        Number(article.cvssV4Score) >= 9.0
-                          ? 'bg-red-500 text-white'
-                          : Number(article.cvssV4Score) >= 7.0
-                            ? 'bg-orange-500 text-white'
-                            : Number(article.cvssV4Score) >= 4.0
-                              ? 'bg-yellow-500 text-black'
-                              : 'bg-blue-500 text-white'
-                      }`}
-                    >
-                      {Number(article.cvssV4Score).toFixed(1)}
-                    </span>
-                  </div>
-                )}
+                {isSubscriber &&
+                  article.cvssV4Score !== undefined &&
+                  article.cvssV4Score !== null && (
+                    <div className="flex justify-between items-center py-1.5 border-b border-neutral-100">
+                      <span className="font-mono">CVSS V4.0:</span>
+                      <span
+                        className={`font-mono font-bold px-2 py-0.5 rounded text-[10px] ${
+                          Number(article.cvssV4Score) >= 9.0
+                            ? 'bg-red-500 text-white'
+                            : Number(article.cvssV4Score) >= 7.0
+                              ? 'bg-orange-500 text-white'
+                              : Number(article.cvssV4Score) >= 4.0
+                                ? 'bg-yellow-500 text-black'
+                                : 'bg-blue-500 text-white'
+                        }`}
+                      >
+                        {Number(article.cvssV4Score).toFixed(1)}
+                      </span>
+                    </div>
+                  )}
                 {!isSubscriber && (
                   <div className="flex justify-between items-center py-1.5 border-b border-neutral-100">
                     <span className="font-mono">CVSS V4.0:</span>
@@ -318,7 +324,9 @@ export default async function IntelligenceArticlePage({ params }: Props) {
                   ))
                 ) : (
                   <span className="text-[9px] font-mono text-neutral-400">
-                    {isSubscriber ? 'No active threat hashes mapped.' : '[ LOCKED — SUBSCRIBER EXCLUSIVE ]'}
+                    {isSubscriber
+                      ? 'No active threat hashes mapped.'
+                      : '[ LOCKED — SUBSCRIBER EXCLUSIVE ]'}
                   </span>
                 )}
               </div>

@@ -91,9 +91,7 @@ export default function CyberArticleImage({
 
   if (!mounted) {
     return (
-      <div
-        className={`relative overflow-hidden bg-black border border-slate-800 ${className}`}
-      >
+      <div className={`relative overflow-hidden bg-black border border-slate-800 ${className}`}>
         <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 bg-gradient-to-br from-neutral-950 to-black animate-pulse">
           <div className="flex justify-between items-center opacity-20">
             <span className="font-mono text-[8px] tracking-widest text-neutral-400">
@@ -138,9 +136,7 @@ export default function CyberArticleImage({
   }
 
   return (
-    <div
-      className={`relative overflow-hidden bg-black border border-slate-800 ${className}`}
-    >
+    <div className={`relative overflow-hidden bg-black border border-slate-800 ${className}`}>
       {/* Loader Shimmer */}
       {!loaded && (
         <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 bg-gradient-to-br from-neutral-950 to-black animate-pulse">

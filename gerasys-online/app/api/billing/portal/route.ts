@@ -54,15 +54,14 @@ export async function POST(request: NextRequest) {
       });
 
       return NextResponse.json({ success: true, url: session.url });
-    } else {
-      // Mock portal redirect in local development mode
-      const mockPortalUrl = `${request.nextUrl.origin}/api/webhooks/stripe?mock_action=portal_cancel&userId=${user.id}`;
-      return NextResponse.json({
-        success: true,
-        url: mockPortalUrl,
-        message: 'Development mode: Mock Stripe Billing Portal URL generated.',
-      });
     }
+    // Mock portal redirect in local development mode
+    const mockPortalUrl = `${request.nextUrl.origin}/api/webhooks/stripe?mock_action=portal_cancel&userId=${user.id}`;
+    return NextResponse.json({
+      success: true,
+      url: mockPortalUrl,
+      message: 'Development mode: Mock Stripe Billing Portal URL generated.',
+    });
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || 'Failed to initialize customer billing portal.' },

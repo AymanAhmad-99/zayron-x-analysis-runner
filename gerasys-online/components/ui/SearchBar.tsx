@@ -1,9 +1,9 @@
 'use client';
 
 import { Search, X } from '@/lib/icons';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, type KeyboardEvent, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 
 interface ArticleSuggestion {
   id: string;
@@ -116,12 +116,7 @@ export function SearchBar({ className = '' }: { className?: string }) {
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      <form
-        onSubmit={handleSubmit}
-        className="relative"
-        role="search"
-        aria-label="Search articles"
-      >
+      <form onSubmit={handleSubmit} className="relative" role="search" aria-label="Search articles">
         <input
           ref={inputRef}
           type="search"

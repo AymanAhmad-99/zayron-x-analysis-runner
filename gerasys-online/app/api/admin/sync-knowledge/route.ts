@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
         }
       }
       return NextResponse.json({ segments });
-    } else if (action === 'insert') {
+    }
+    if (action === 'insert') {
       const { error: insertError } = await supabase.from('knowledge_embeddings').upsert({
         id,
         content: text,

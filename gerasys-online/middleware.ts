@@ -48,8 +48,7 @@ function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: st
 
   // Setup CSP Report-Only alongside enforcing to monitor blocked/unsafe inline style and script attempts
   const currentCsp = response.headers.get('Content-Security-Policy') ?? '';
-  const reportOnlyCsp =
-    currentCsp.replace(/\b'unsafe-inline'\b/g, '').trim() + '; report-uri /api/csp-report';
+  const reportOnlyCsp = `${currentCsp.replace(/\b'unsafe-inline'\b/g, '').trim()}; report-uri /api/csp-report`;
   response.headers.set('Content-Security-Policy-Report-Only', reportOnlyCsp);
 }
 

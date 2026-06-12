@@ -129,4 +129,5 @@ export interface TranslationResult {
   visualDescription: string;
 }
 
-export const EXECUTIVE_SUMMARY_FORMAT = `Output strictly as valid JSON following the structure defined in the system prompt. Do not include markdown code blocks — output raw JSON only.`;
+export const EXECUTIVE_SUMMARY_FORMAT =
+  'Output strictly as valid JSON following the structure defined in the system prompt. Do not include markdown code blocks — output raw JSON only.';

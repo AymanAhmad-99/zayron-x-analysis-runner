@@ -161,7 +161,7 @@ export function ArticleCard({
         {article.title}
       </h3>
       <p className="text-[#555555] dark:text-slate-400 mt-2 text-[0.85rem] leading-[1.7] line-clamp-3 font-sans">
-        {article.excerpt ?? article.content.substring(0, 120) + '…'}
+        {article.excerpt ?? `${article.content.substring(0, 120)}…`}
       </p>
       <div className="flex items-center gap-2 mt-3">
         <span className="meta text-[0.62rem] dark:text-slate-500">{article.author}</span>

@@ -151,7 +151,9 @@ export function ThreatDetailClient({
             <div className="relative select-none">
               <pre className="bg-[#FAFAFA] text-neutral-300 p-4 text-[11px] font-mono overflow-x-auto filter blur-[2.5px] rounded-none">
                 <code>
-                  {`title: [ RESTRICTED_INTEL ]\nid: rest-id\nstatus: blocked\nlogsource:\n  product: windows\ndetection:\n  condition: selection`}
+                  {
+                    'title: [ RESTRICTED_INTEL ]\nid: rest-id\nstatus: blocked\nlogsource:\n  product: windows\ndetection:\n  condition: selection'
+                  }
                 </code>
               </pre>
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/20">
@@ -218,7 +220,7 @@ export function ThreatDetailClient({
       {!isSubscriber && (
         <div className="absolute inset-0 z-30 flex items-center justify-center backdrop-blur-md bg-white/40 border border-neutral-300 p-8 text-center overflow-hidden">
           {/* Symmetrical wireframes */}
-          <div className="absolute inset-0 opacity-[0.01] bg-[radial-gradient(#000_1px,transparent_1px)] bg-[size:16px_16px]"></div>
+          <div className="absolute inset-0 opacity-[0.01] bg-[radial-gradient(#000_1px,transparent_1px)] bg-[size:16px_16px]" />
 
           <div className="max-w-xl mx-auto space-y-5 relative z-40 py-8 bg-white border border-neutral-200 shadow-xl p-8">
             <div className="w-12 h-12 border border-neutral-200 flex items-center justify-center mx-auto bg-[#FAFAFA] rounded-none">

@@ -82,7 +82,9 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       <div className="absolute top-0 right-0 w-72 h-full bg-white dark:bg-black shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] dark:border-slate-800">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#0F172A] dark:text-white">Menu</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#0F172A] dark:text-white">
+            Menu
+          </span>
           <button
             onClick={onClose}
             aria-label="Close menu"

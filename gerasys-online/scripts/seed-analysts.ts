@@ -305,7 +305,7 @@ async function seed() {
   console.log('  ZAYRON-X — Global Analyst Core Seeder');
   console.log('='.repeat(60));
   console.log(`  Personas to seed: ${ANALYST_CORE.length}`);
-  console.log(`  DB URL is configured`);
+  console.log('  DB URL is configured');
   console.log('='.repeat(60));
 
   let inserted = 0;
