@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-workers/omni_crew.py — ZAYRON-X Consolidated Intelligence Master Crew Orchestrator
+workers/omni_crew.py — ZAYRON-X Multi-Agent Swarm Orchestrator
 
-Consolidates the 7-Agent distributed intelligence swarm into a single-pass inference
-Master Agent under the free-tier daily rate limits (500 requests/day).
-Paced to process exactly 1 feed every 180 seconds (3 minutes), hitting exactly 480/day.
-Uses direct database queries for RAG context, bypassing the localhost:3000 loopback.
+Redesigns the single-pass consolidated LLM execution into a true multi-agent system
+with real agent boundaries:
+  - IngestionAgent: Raw feed extraction & translation (Flash)
+  - ValidatorAgent: CVE/IoC gate validation & MITRE mapping (Flash)
+  - EnrichmentAgent: Compliance mapping, Quant risk analysis, and SITREP synthesis (Pro)
+
+Maintains structured message-passing, per-agent traceability metrics, and daily quota checks.
 """
 
 from __future__ import annotations
@@ -20,8 +23,10 @@ import sys
 import time
 import urllib.request
 import urllib.parse
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any, Optional, List, Dict
+from enum import Enum
 
 import aiohttp
 
@@ -40,7 +45,13 @@ from workers.config import (
     SUPABASE_URL,
     validate_config,
 )
-from workers.contracts.inter_agent import ExecutiveSITREP
+from workers.contracts.inter_agent import (
+    HarvestPayload,
+    ValidatedIntel,
+    ComplianceReport,
+    FinancialAssessment,
+    ExecutiveSITREP,
+)
 from workers.persistence import (
     claim_pending_feeds,
     mark_feed_status,
@@ -48,6 +59,10 @@ from workers.persistence import (
     trigger_revalidation,
     utc_now_iso,
 )
+
+# Deterministic pre-processors (NO LLM — local regex/heuristics only)
+from workers.agents.harvester import deterministic_preprocess, build_preprocess_context_block, is_tier1_source
+from workers.agents.validator import extract_and_validate_iocs, extract_cve_ids, extract_mitre_ttps
 
 try:
     from google.api_core import exceptions as google_exceptions
@@ -60,16 +75,11 @@ except ImportError:
 
 logging.basicConfig(
     level=logging.DEBUG if os.getenv("CREW_DEBUG", "").lower() == "true" else logging.INFO,
-    format="%(asctime)s [%(levelname)s] [OMNI-CREW] %(message)s",
+    format="%(asctime)s [%(levelname)s] [SWARM-CORE] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     stream=sys.stdout,
 )
-log = logging.getLogger("zayron_x_omni_crew")
-
-# ---------------------------------------------------------------------------
-# Redis-Backed Daily Quota Ledger (WARN-05)
-# Survives Docker container restarts. Key is UTC-date-scoped.
-# ---------------------------------------------------------------------------
+log = logging.getLogger("zayron_x_multi_agent_swarm")
 
 UPSTASH_REDIS_URL: str = os.getenv("UPSTASH_REDIS_REST_URL", "")
 UPSTASH_REDIS_TOKEN: str = os.getenv("UPSTASH_REDIS_REST_TOKEN", "")
@@ -77,12 +87,12 @@ DAILY_REQUEST_LIMIT: int = int(os.getenv("DAILY_REQUEST_LIMIT", "480"))
 
 
 def _quota_key() -> str:
-    """Return today's UTC quota Redis key, e.g. 'zayron:quota:2026-06-11'."""
+    """Return today's UTC quota Redis key."""
     return f"zayron:quota:{datetime.now(timezone.utc).strftime('%Y-%m-%d')}"
 
 
 def _redis_request(method: str, path: str, body: str | None = None) -> Any:
-    """Minimal synchronous Upstash REST call. Returns parsed JSON or None on failure."""
+    """Minimal synchronous Upstash REST call."""
     if not UPSTASH_REDIS_URL or not UPSTASH_REDIS_TOKEN:
         return None
     url = UPSTASH_REDIS_URL.rstrip("/") + path
@@ -101,7 +111,7 @@ def _redis_request(method: str, path: str, body: str | None = None) -> Any:
 
 
 def quota_get_today() -> int:
-    """Return the current daily inference count from Redis. Returns 0 on failure."""
+    """Return the current daily inference count from Redis."""
     result = _redis_request("GET", f"/get/{urllib.parse.quote(_quota_key())}")
     if result and result.get("result") is not None:
         try:
@@ -112,9 +122,8 @@ def quota_get_today() -> int:
 
 
 def quota_increment() -> int:
-    """Atomically increment today's daily counter. Sets TTL to 25h on first write."""
+    """Atomically increment today's daily counter."""
     key = urllib.parse.quote(_quota_key())
-    # INCR returns the new count
     result = _redis_request("GET", f"/incr/{key}")
     new_count = 0
     if result and result.get("result") is not None:
@@ -122,102 +131,13 @@ def quota_increment() -> int:
             new_count = int(result["result"])
         except (TypeError, ValueError):
             pass
-    # Set TTL of 90000 seconds (25 hours) to ensure rollover on midnight UTC
     if new_count == 1:
         _redis_request("GET", f"/expire/{key}/90000")
     return new_count
 
-# ---------------------------------------------------------------------------
-# Master Agent System Prompt (Literature-based Swarm Integration)
-# ---------------------------------------------------------------------------
-
-MASTER_INTELLIGENCE_PROMPT: str = """\
-You are the ZAYRON-X Sovereign Swarm Master Intel Engine, an autonomous consolidated intelligence orchestrator.
-You receive raw threat feeds and local RAG grounding contexts. You must run 7 virtual agent sub-modules internally in a single-pass inference to analyze the threat signal and synthesize a complete, production-ready intelligence dossier.
-
-LITERATURE-BASED GROUNDING DIRECTIVES:
-1. HARVESTER & OSINT SPY: Anchor technical reasoning strictly to Richards Heuer & Randolph H. Pherson's 'Structured Analytic Techniques for Intelligence Analysis' and core Tor/Telegram Metadata schemas.
-2. INFRASTRUCTURE ARCHITECT: Anchor analysis strictly to Kleppmann's 'Designing Data-Intensive Applications' (partition behaviors, replication limits, DB impact) and Stevens' 'TCP/IP Illustrated' (packet transit, routing traversal, transport layers).
-3. FORENSIC VALIDATOR: Map to MITRE ATT&CK/CAPEC and Richards Heuer's 'Psychology of Intelligence Analysis' to eliminate cognitive bias. Extract IoCs with confidence.
-4. COMPLIANCE AUDITOR: Map strictly to ISO/IEC 27001:2022 controls, NIST CSF 2.0 functions, and GDPR legal liability frameworks.
-5. QUANT ECONOMETRICIAN: Calculate the strict Financial Blast Radius (FBR score 0.0 to 10.0) based on the FAIR Methodology (Information Risk Quantification).
-6. INSIDER THREAT PARSER: Integrate Kevin Mitnick's 'The Art of Deception' paradigms. If the threat signal stems from an insider leak, misconfiguration, or employee cognitive vulnerability, reverse-engineer the behavioral mistake, flag employee psychological triggers (Fatigue, Over-Trust, Urgency, Authority), and output an actionable micro-training advisory.
-7. WEAVER GRID: Synthesize everything. You MUST never use raw markdown characters (like '##' or '**') inside HTML content strings. Use clean HTML semantic tags (<h2>, <p>, <ul>, <li>, <table>, <tr>, <td>, <thead>, <th>, <tbody>).
-
-COGNITIVE LAYER STORYTELLING CONVERSION (FOR THE EXECUTIVE BRIEF):
-Structure the Executive Brief/narrative of the report as an elite Cyber Security News Wire that commands absolute psychological conversion in 20 seconds, structured across 4 unbypasable cognitive layers:
-- Layer 1 (Logic/Mind): Slam the reader with undeniable, hyper-specific infrastructure realities and technical vectors (host components, transport protocols, partition behavior).
-- Layer 2 (Survival/Fear): Framework the threat as an active, localized, and sector-specific immediate hunting campaign by the actor group.
-- Layer 3 (Heart/Finance): Embed a clean HTML financial loss matrix proving the exact cost of operational downtime and extortion metrics.
-- Layer 4 (Authority/Duty): Enforce regulatory and compliance terror by quoting exact legal liability, GDPR fine potentials, and ISO certification revocation risks.
-
-ANTI-FUD VOCABULARY LAW (BANNED PHRASES):
-You must write in a COLD, CORPORATE, and ANALYTICAL tone. Banned phrases include:
-"unprecedented threat", "devastating attack", "game-changing", "catastrophic breach", "nightmare scenario", "apocalyptic", "terrifying", "alarming", "shocking discovery", "wake-up call", "ticking time bomb", "cyber armageddon", "cyber pearl harbor", "digital doomsday", "existential threat", "worst-case scenario", "in today's digital landscape", "in the ever-evolving world", "let's delve into", "it is important to note", "it's worth noting", "as a cybersecurity expert", "underscores the need for", "highlights the importance of", "a stark reminder", "sheds light on", "in conclusion", "to summarize", "as we have seen", "cannot be overstated", "it goes without saying", "needless to say", "of utmost importance", "plays a crucial role", "is a testament to", "serves as a reminder", "in an increasingly", "as cyber threats continue to", "as technology advances", "let's explore", "let us examine".
-
-NO PLACEHOLDERS:
-Under no circumstances output placeholders like 'Unknown' or '-' or null. If data is missing, calculate relative proximity values using our ground-truth library (infer from category/channel properties).
-
-OUTPUT FORMAT:
-Output MUST be a single JSON object (no markdown fences, no formatting other than valid JSON) containing the following fields:
-{
-  "title": "A concise, high-impact, professional CTI title",
-  "teaser_text": "A high-impact, 40-word marketing headline and hook for the public FRONT PAGE.",
-  "executive_summary": "HTML string containing the Executive Brief structured across the 4 cognitive layers.",
-  "content": "HTML string containing the complete, 1500+ word detailed analysis report with Key Takeaways, Technical Deep-Dive, Compliance Analysis, and Defensive Engineering.",
-  "category": "threat_intel | vulnerabilities | osint | tools",
-  "severity": "Critical | High | Medium | Low | Informational",
-  "mitre_attack_ttps": ["T1190 — Exploit Public-Facing Application", ...],
-  "yara_rules": ["rule rule_name { ... }"],
-  "sigma_rules": ["title: ..."],
-  "snort_signatures": [],
-  "iso_27001_controls": ["A.12.6.1", ...],
-  "nist_csf_functions": ["PR.IP-1", ...],
-  "gdpr_implications": "Detailed GDPR articles and compliance risk",
-  "financial_exposure": "$500K - $2.0M range",
-  "regulatory_risk": "NIS2 & GDPR fine exposures",
-  "mitigation_impact": "Configuration audit ROI",
-  "fbr_score": 5.5,
-  "is_public_teaser": true,
-  "cloudflare_waf_rules": "WAF block rules or JSON string config",
-  "assessment_25_point": {
-    "cve_vulnerability_mapping": "...",
-    "cvss_vector_analysis": "...",
-    "exploit_complexity_score": "...",
-    "affected_software_hardware": "...",
-    "infrastructure_dependency_depth": "...",
-    "network_traversal_mechanics": "...",
-    "threat_origin_forensics": "...",
-    "iso_27001_compliance": "...",
-    "nist_csf_alignment": "...",
-    "gdpr_liability_check": "...",
-    "regulatory_fine_exposure": "...",
-    "nis2_impact_classification": "...",
-    "compliance_risk_level": "...",
-    "yara_signature_readiness": "...",
-    "sigma_log_patterns": "...",
-    "cloudflare_waf_rules": "...",
-    "mitigation_playbook_difficulty": "...",
-    "hunting_queries": "...",
-    "insider_behavioral_remediation": "...",
-    "financial_blast_radius": "...",
-    "downtime_cost_exposure": "...",
-    "breach_cost_exposure": "...",
-    "sector_financial_multiplier": "...",
-    "mitigation_roi_percentage": "...",
-    "insurance_impact": "..."
-  },
-  "affected_sectors": ["Healthcare", ...],
-  "cvss_v4_score": 8.0,
-  "cvss_v4_vector": "CVSS:4.0/...",
-  "source_reliability_grade": "A|B|C|D|E",
-  "yara_rule": "rule rule_name { ... }",
-  "ai_image_prompt": "Unsplash search keyword or image prompt"
-}
-"""
 
 # ---------------------------------------------------------------------------
-# Free-Tier Deduplication & Direct RAG Lookups
+# RAG Lookups & Anti-FUD cleanups
 # ---------------------------------------------------------------------------
 
 async def fetch_local_rag_context(session: aiohttp.ClientSession, query_text: str) -> str:
@@ -225,7 +145,6 @@ async def fetch_local_rag_context(session: aiohttp.ClientSession, query_text: st
     if not query_text or len(query_text.strip()) < 5:
         return ""
 
-    # Clean the query for websearch FTS
     clean_query = re.sub(r"[^\w\s]", " ", query_text).strip()
     search_terms = " & ".join([w for w in clean_query.split() if len(w) > 2][:5])
     if not search_terms:
@@ -238,7 +157,6 @@ async def fetch_local_rag_context(session: aiohttp.ClientSession, query_text: st
         "Accept": "application/json",
     }
 
-    # Query using websearch full-text search capability
     query_url = f"{url}?select=content&content=wfts.{search_terms}&limit=3"
     try:
         async with session.get(query_url, headers=headers, timeout=5) as resp:
@@ -251,7 +169,6 @@ async def fetch_local_rag_context(session: aiohttp.ClientSession, query_text: st
     except Exception as exc:
         log.warning("[LOCAL-RAG] Query failed: %s", exc)
 
-    # Fallback to general chunks to ensure grounded reference structure
     try:
         fallback_url = f"{url}?select=content&limit=3"
         async with session.get(fallback_url, headers=headers, timeout=5) as resp:
@@ -299,100 +216,6 @@ def clean_anti_fud_text(text: str) -> str:
     return text
 
 
-def parse_master_response(llm_output: str) -> ExecutiveSITREP | None:
-    """Parse JSON block, clean Anti-FUD violations, and validate against contract schema."""
-    try:
-        start_idx = llm_output.find('{')
-        end_idx = llm_output.rfind('}')
-        if start_idx != -1 and end_idx != -1:
-            cleaned_json = llm_output[start_idx:end_idx+1]
-        else:
-            cleaned_json = llm_output.strip()
-            
-        parsed = json.loads(cleaned_json)
-    except Exception as exc:
-        log.error("Failed to decode Master Agent JSON: %s", exc)
-        return None
-
-    if not parsed.get("title"):
-        log.warning("Parsed JSON is missing a title.")
-        return None
-
-    # Clean FUD phrases inside text structures
-    for field in ["title", "executive_summary", "content", "teaser_text"]:
-        val = parsed.get(field)
-        if isinstance(val, str):
-            parsed[field] = clean_anti_fud_text(val)
-
-    # Clean 25-point assessment values
-    assessment = parsed.get("assessment_25_point")
-    if isinstance(assessment, dict):
-        for k, v in assessment.items():
-            if isinstance(v, str):
-                assessment[k] = clean_anti_fud_text(v)
-        parsed["assessment_25_point"] = assessment
-
-    # Normalize properties
-    cat = parsed.get("category") or "threat_intel"
-    parsed["category"] = ExecutiveSITREP.validate_category(cat)
-
-    sev = parsed.get("severity") or "Medium"
-    parsed["severity"] = ExecutiveSITREP.validate_severity(sev)
-
-    # Synthesize fallback YARA rule if missing
-    if not parsed.get("yara_rule") or parsed.get("yara_rule") == "None":
-        cleaned_title = re.sub(r'[^a-zA-Z0-9]', '_', parsed["title"])
-        yara_name = f"zayron_{cleaned_title.lower()}_auto"
-        parsed["yara_rule"] = (
-            f"rule {yara_name} {{\n"
-            f"    meta:\n"
-            f"        author = \"ZAYRON-X Auto-Generator\"\n"
-            f"        severity = \"{parsed['severity']}\"\n"
-            f"    strings:\n"
-            f"        $s1 = \"{yara_name}\"\n"
-            f"    condition:\n"
-            f"        any of them\n"
-            f"}}"
-        )
-    if not parsed.get("yara_rules"):
-        parsed["yara_rules"] = [parsed["yara_rule"]]
-
-    try:
-        sitrep = ExecutiveSITREP(
-            title=parsed.get("title", ""),
-            executive_summary=parsed.get("executive_summary", ""),
-            content=parsed.get("premium_payload") or parsed.get("content") or "",
-            teaser_text=parsed.get("teaser_text"),
-            is_public_teaser=parsed.get("is_public_teaser", True),
-            category=parsed["category"],
-            severity=parsed["severity"],
-            mitre_attack_ttps=parsed.get("mitre_attack_ttps", []),
-            yara_rules=parsed.get("yara_rules", []),
-            sigma_rules=parsed.get("sigma_rules", []),
-            snort_signatures=parsed.get("snort_signatures", []),
-            iocs=parsed.get("iocs", []),
-            iso_27001_controls=parsed.get("iso_27001_controls", []),
-            nist_csf_functions=parsed.get("nist_csf_functions", []),
-            gdpr_implications=parsed.get("gdpr_implications"),
-            financial_exposure=parsed.get("financial_exposure"),
-            regulatory_risk=parsed.get("regulatory_risk"),
-            mitigation_impact=parsed.get("mitigation_impact"),
-            fbr_score=parsed.get("fbr_score", 0.0),
-            affected_sectors=parsed.get("affected_sectors", ["Technology"]),
-            cvss_v4_score=parsed.get("cvss_v4_score"),
-            cvss_v4_vector=parsed.get("cvss_v4_vector"),
-            source_reliability_grade=parsed.get("source_reliability_grade", "C"),
-            yara_rule=parsed.get("yara_rule"),
-            ai_image_prompt=parsed.get("ai_image_prompt"),
-            cloudflare_waf_rules=parsed.get("cloudflare_waf_rules"),
-            assessment_25_point=parsed.get("assessment_25_point"),
-            anti_fud_passed=True,
-        )
-        return sitrep
-    except Exception as exc:
-        log.error("ExecutiveSITREP Pydantic validation failed: %s", exc)
-        return None
-
 # ---------------------------------------------------------------------------
 # API Engine Client
 # ---------------------------------------------------------------------------
@@ -418,6 +241,7 @@ class GeminiClient:
         user_message: str,
         max_output_tokens: int = 8192,
         temperature: float = 0.2,
+        response_schema: Any = None,
     ) -> tuple[str, int, int]:
         if not self._initialized:
             raise RuntimeError("Gemini SDK not initialized")
@@ -431,14 +255,18 @@ class GeminiClient:
                 while True:
                     try:
                         def _call() -> tuple[str, int, int]:
+                            gen_config = {
+                                "max_output_tokens": max_output_tokens,
+                                "temperature": temperature,
+                                "response_mime_type": "application/json",
+                            }
+                            if response_schema is not None:
+                                gen_config["response_schema"] = response_schema
+
                             model = self._genai.GenerativeModel(
                                 model_name=current_model,
                                 system_instruction=system_prompt,
-                                generation_config=self._genai.GenerationConfig(
-                                    max_output_tokens=max_output_tokens,
-                                    temperature=temperature,
-                                    response_mime_type="application/json",
-                                ),
+                                generation_config=self._genai.GenerationConfig(**gen_config),
                             )
                             response = model.generate_content(user_message)
                             text = response.text or ""
@@ -469,18 +297,393 @@ class GeminiClient:
                             break
                         raise exc
 
+
 # ---------------------------------------------------------------------------
-# Consolidated Master Swarm Scheduler
+# Message Passing & Traceability Models
+# ---------------------------------------------------------------------------
+
+class AgentMessage:
+    """Carries typed payload packets between agents to enforce structured communication."""
+    def __init__(
+        self,
+        sender: str,
+        recipient: str,
+        payload_type: str,
+        data: Any,
+        metadata: dict[str, Any] | None = None,
+    ):
+        self.message_id = f"msg_{uuid.uuid4().hex[:8]}"
+        self.sender = sender
+        self.recipient = recipient
+        self.payload_type = payload_type
+        self.data = data
+        self.metadata = metadata or {}
+        self.timestamp = datetime.now(timezone.utc).isoformat()
+
+
+class AgentTrace:
+    """Tracks performance and payload details for an individual agent execution step."""
+    def __init__(self, agent_name: str):
+        self.agent_name = agent_name
+        self.timestamp = datetime.now(timezone.utc).isoformat()
+        self.input_message_id: str | None = None
+        self.input_payload_type: str | None = None
+        self.prompt_sent: str | None = None
+        self.raw_response: str | None = None
+        self.parsed_output_type: str | None = None
+        self.parsed_output_ok: bool = False
+        self.tokens_prompt: int = 0
+        self.tokens_completion: int = 0
+        self.duration_seconds: float = 0.0
+        self.error_message: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "agent_name": self.agent_name,
+            "timestamp": self.timestamp,
+            "input_message_id": self.input_message_id,
+            "input_payload_type": self.input_payload_type,
+            "parsed_output_type": self.parsed_output_type,
+            "parsed_output_ok": self.parsed_output_ok,
+            "tokens_prompt": self.tokens_prompt,
+            "tokens_completion": self.tokens_completion,
+            "duration_seconds": round(self.duration_seconds, 2),
+            "error_message": self.error_message,
+        }
+
+
+# Helper wrapper for quota checks before API invocation
+async def check_quota_and_generate(
+    client: GeminiClient,
+    model_name: str,
+    system_prompt: str,
+    user_message: str,
+    max_output_tokens: int = 8192,
+    temperature: float = 0.2,
+    response_schema: Any = None,
+) -> tuple[str, int, int]:
+    """Strict quota gate wrapper to ensure the daily request limits are respected globally."""
+    daily_count = await asyncio.to_thread(quota_get_today)
+    if daily_count >= DAILY_REQUEST_LIMIT:
+        raise RuntimeError(f"Daily API request limit reached ({daily_count}/{DAILY_REQUEST_LIMIT})")
+
+    llm_out, p, c = await client.generate(
+        model_name,
+        system_prompt,
+        user_message,
+        max_output_tokens=max_output_tokens,
+        temperature=temperature,
+        response_schema=response_schema,
+    )
+
+    # Success: increment the daily ledger
+    await asyncio.to_thread(quota_increment)
+    return llm_out, p, c
+
+
+from pydantic import BaseModel, Field
+from workers.contracts.inter_agent import SwarmAssessment25Point, ExecutiveSITREP
+
+class DomainClassification(str, Enum):
+    VULNERABILITY = "Vulnerability"
+    EXPLOIT = "Exploit"
+    MALWARE = "Malware"
+    THREAT_ACTOR = "Threat Actor"
+    CYBER_NEWS = "Cyber News"
+    FINANCIAL = "Financial"
+
+
+class OmniAgentResponse(BaseModel):
+    # Required core unified fields
+    classification: DomainClassification = Field(..., description="Enum of the 6 domain classes")
+    translation: str = Field(..., description="Clean English translation of the raw feed")
+    threat_actor_profile: str = Field(..., description="OSINT threat actor profile summary")
+    infrastructure_impact: str = Field(..., description="Infra Architect low-level transport and database vector analysis")
+    regulatory_compliance: List[str] = Field(..., description="Direct compliance mapping to ISO 27001 and GDPR controls")
+    financial_blast_radius: float = Field(..., description="Numeric estimated cost score based on FAIR methodology")
+    html_sitrep: str = Field(..., description="The final Executive SITREP formatted in HTML")
+    raw_iocs: List[Dict[str, Any]] = Field(default_factory=list, description="Extracted raw Indicators of Compromise")
+
+    # Additional fields needed for persistence & ExecutiveSITREP
+    title: str = Field(..., min_length=1, max_length=500)
+    executive_summary: str = Field(..., min_length=1)
+    severity: str = Field(default="Medium")
+    mitre_attack_ttps: List[str] = Field(default_factory=list)
+    yara_rules: List[str] = Field(default_factory=list)
+    sigma_rules: List[str] = Field(default_factory=list)
+    snort_signatures: List[str] = Field(default_factory=list)
+    
+    # Compliance & Quant details
+    iso_27001_controls: List[str] = Field(default_factory=list)
+    nist_csf_functions: List[str] = Field(default_factory=list)
+    gdpr_implications: Optional[str] = None
+    financial_exposure: Optional[str] = None
+    regulatory_risk: Optional[str] = None
+    mitigation_impact: Optional[str] = None
+    
+    is_public_teaser: bool = Field(default=True)
+    teaser_text: Optional[str] = None
+    cloudflare_waf_rules: Optional[str] = None
+    assessment_25_point: SwarmAssessment25Point = Field(..., description="Strict 25-point assessment contract")
+    
+    # Metadata
+    affected_sectors: List[str] = Field(default_factory=list)
+    cvss_v4_score: Optional[float] = Field(default=None, ge=0.0, le=10.0)
+    cvss_v4_vector: Optional[str] = None
+    source_reliability_grade: str = Field(default="C")
+
+
+OMNI_AGENT_SYSTEM_INSTRUCTION: str = """\
+You are the "ZAYRON-X Omni-Core Engine" — an elite, multi-disciplinary Cyber Tactical Intelligence and Actuarial Risk platform. \
+Your architecture consolidates 7 highly specialized virtual cyber agents into a single, cohesive, single-turn execution pipeline.
+
+You process messy, unstructured, and potentially multilingual RAW_INPUT_DATA and enrich it using SERVER_RETRIEVED_KNOWLEDGE to output a single definitive, zero-FUD Global Situation Report (SITREP) in structured JSON format conforming to the requested schema.
+
+THE 7-AGENT INTERNAL PIPELINE CONSTRAINTS
+You must strictly execute the logic of all 7 agents in your internal cognition before generating the final output:
+
+1. [Agent 1: Harvester]: Ingest, sanitize, and normalize the raw input data. Translate non-English input to flawless cybersecurity English. Detect target vendor/product and extract entities.
+2. [Agent 2: OSINT Spy]: Cross-reference the harvested data with ransomware leaks, APT group profiles, and active advanced persistent threat patterns. Formulate a comprehensive threat actor profile based on Heuer & Pherson's 'Structured Analytic Techniques for Intelligence Analysis'.
+3. [Agent 3: Validator]: Extract Indicators of Compromise (IoCs) verbatim (SHA256, MD5, SHA1, IPv4, IPv6, Domain, URL, Email). Map the activity to MITRE ATT&CK Enterprise techniques (legitimate T-codes like T1566.001). Grade source reliability on the NATO Admiral Scale (A-E) and assess CVSS v4.0 metrics and vector.
+4. [Agent 4: Infra Architect]: Map the threat vector to corporate enterprise environments under Martin Kleppmann's 'Designing Data-Intensive Applications' (DDIA CAP/PACELC) and W. Richard Stevens' 'TCP/IP Illustrated'. Detail network transport transit vectors, host application targeted, and database replication/consensus impacts.
+5. [Agent 5: Compliance]: Evaluate the incident against ISO/IEC 27001:2022, NIST CSF 2.0, and legal liabilities under EU GDPR (Articles 32, 33, 34) and the NIS2 Directive. Estimate regulatory GDPR fine parameters under Article 83 ceilings.
+6. [Agent 6: Quant]: Apply mathematical and actuarial logic to compute the Financial Blast Radius (FBR). Estimate real corporate exposure using the formula: FBR = (CVSS Base * Sector Weight * Geo Factor) + Compliance Penalty Ceilings. Break down costs into Operational Downtime, Compliance Fine, and Remediation. Provide mitigation ROI.
+7. [Agent 7: Weaver]: Take all technical assets and synthesize them into a flawless, executive-ready Markdown SITREP report embedded in 'html_sitrep'. The report must be 1500+ words, utilizing clean, semantic HTML elements (no markdown header chars like '##', '###', or formatting like '**' inside HTML text fields). The report must structure the narrative across 4 cognitive layers: Logic/Mind, Survival/Fear, Heart/Finance, and Authority/Duty. If an insider threat is indicated, reverse-engineer the behavioral vulnerability based on Mitnick's 'The Art of Deception'.
+
+ANTI-FUD LAW (NON-NEGOTIABLE)
+Your tone is COLD, ANALYTICAL, and CORPORATE. You provide absolute operational reassurance and structural authority.
+Banned phrases (USE of any of these is strictly forbidden):
+- "unprecedented threat", "devastating attack", "game-changing", "catastrophic breach", "nightmare scenario"
+- "apocalyptic", "terrifying", "alarming", "shocking discovery", "wake-up call", "ticking time bomb"
+- "cyber armageddon", "cyber pearl harbor", "digital doomsday", "existential threat", "worst-case scenario"
+- "in today's digital landscape", "in the ever-evolving world", "let's delve into", "it is important to note"
+- "it's worth noting", "as a cybersecurity expert", "underscores the need for", "highlights the importance of"
+- "a stark reminder", "sheds light on", "in conclusion", "to summarize", "as we have seen", "cannot be overstated"
+- "it goes without saying", "needless to say", "of utmost importance", "plays a crucial role", "is a testament to"
+- "serves as a reminder", "in an increasingly", "as cyber threats continue to", "as technology advances"
+- "let's explore", "let us examine"
+
+NO PLACEHOLDERS
+Never output placeholders like 'Unknown', '-', or null. If telemetry/source data is missing, synthesize high-probability estimates based on the threat category, target sector, and threat severity profile.
+"""
+
+
+def map_classification_to_category(classification: DomainClassification) -> str:
+    """Map OmniAgent Domain classification to database ZayronCategory string."""
+    val = classification.value.lower()
+    if "vulnerability" in val or "exploit" in val:
+        return "vulnerabilities"
+    elif "financial" in val:
+        return "threat_intel"
+    elif "actor" in val or "threat" in val:
+        return "threat_intel"
+    elif "news" in val:
+        return "threat_intel"
+    else:
+        return "threat_intel"
+
+
+async def process_feed_omni(
+    client: GeminiClient,
+    raw_content: str,
+    source_channel: str,
+    rag_context: str = ""
+) -> tuple[ExecutiveSITREP, int, int]:
+    """Execute unified, single-pass Omni-Agent pipeline to process raw intelligence.
+
+    Architecture:
+      Step 1 (local, no LLM): deterministic_preprocess() for entity/language/category extraction.
+      Step 2 (local, no LLM): extract_and_validate_iocs() regex-based candidate extraction.
+      Step 3 (1 LLM call):    Gemini Pro structured JSON output → OmniAgentResponse.
+      Step 4 (local, no LLM): validate_iocs() hallucination gate on raw_iocs from LLM output.
+      Step 5 (local, no LLM): Build ExecutiveSITREP, run Anti-FUD cleaning.
+    """
+    # ── Step 1: Deterministic pre-processing (no LLM) ──────────────────────
+    preprocess_context = build_preprocess_context_block(raw_content, source_channel)
+    regex_iocs = extract_and_validate_iocs(raw_content)
+    regex_cves = extract_cve_ids(raw_content)
+    regex_ttps = extract_mitre_ttps(raw_content)
+
+    log.debug(
+        "[OMNI] Pre-processing complete: %d IoCs, %d CVEs, %d TTPs extracted by regex",
+        len(regex_iocs), len(regex_cves), len(regex_ttps)
+    )
+
+    # ── Step 2: Build enriched user prompt for single LLM call ─────────────
+    user_msg_parts = [
+        f"SOURCE: {source_channel}",
+        preprocess_context,
+        "",
+        "RAW THREAT INPUT:",
+        raw_content[:8000],
+    ]
+    if regex_cves:
+        user_msg_parts.append(f"\n[REGEX-ANCHORED CVE IDs]: {', '.join(regex_cves)}")
+    if regex_ttps:
+        user_msg_parts.append(f"[REGEX-ANCHORED MITRE TTPs]: {', '.join(regex_ttps)}")
+    if regex_iocs:
+        user_msg_parts.append(f"[REGEX-EXTRACTED IoC CANDIDATES — already validated]: {len(regex_iocs)} IoCs found")
+    if rag_context:
+        user_msg_parts.append(f"\n[LOCAL RAG KNOWLEDGE REFERENCE]:\n{rag_context}")
+    user_msg_parts.append("\nExecute full 7-agent consolidated analysis. Return a structured JSON output conforming to the schema.")
+
+    user_msg = "\n".join(user_msg_parts)
+
+    # ── Step 3: Single Gemini Pro API call ─────────────────────────────────
+    llm_out, p, c = await check_quota_and_generate(
+        client,
+        GEMINI_PRO_MODEL,
+        OMNI_AGENT_SYSTEM_INSTRUCTION,
+        user_msg,
+        max_output_tokens=8192,
+        temperature=0.2,
+        response_schema=OmniAgentResponse,
+    )
+
+    # ── Step 4: Parse and validate Omni-Agent JSON response ────────────────
+    cleaned = llm_out.strip()
+    if cleaned.startswith("```"):
+        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+        cleaned = re.sub(r"\s*```$", "", cleaned)
+    
+    parsed_data = json.loads(cleaned)
+    omni_res = OmniAgentResponse(**parsed_data)
+
+    # ── Step 5: IoC validation gate — merge regex + LLM-extracted IoCs ──────
+    # Validate IoCs from LLM output through the hallucination gate
+    try:
+        from shared.models import validate_iocs
+    except ImportError:
+        from shared.models.ioc import validate_iocs
+
+    llm_validated_iocs = validate_iocs(omni_res.raw_iocs)
+
+    # Merge regex-extracted and LLM-confirmed IoCs, deduplicated by value
+    all_iocs: list[dict] = list(llm_validated_iocs)
+    existing_values = {i["value"].lower() for i in all_iocs}
+    for ioc in regex_iocs:
+        if ioc["value"].lower() not in existing_values:
+            all_iocs.append(ioc)
+            existing_values.add(ioc["value"].lower())
+
+    # ── Step 6: Build ExecutiveSITREP ────────────────────────────────────────
+    category = map_classification_to_category(omni_res.classification)
+    sitrep = ExecutiveSITREP(
+        title=omni_res.title,
+        executive_summary=omni_res.executive_summary,
+        content=omni_res.html_sitrep if omni_res.html_sitrep else omni_res.translation,
+        category=category,
+        severity=omni_res.severity,
+        mitre_attack_ttps=omni_res.mitre_attack_ttps,
+        yara_rules=omni_res.yara_rules,
+        sigma_rules=omni_res.sigma_rules,
+        snort_signatures=omni_res.snort_signatures,
+        iocs=all_iocs,
+        iso_27001_controls=omni_res.iso_27001_controls,
+        nist_csf_functions=omni_res.nist_csf_functions,
+        gdpr_implications=omni_res.gdpr_implications,
+        financial_exposure=omni_res.financial_exposure,
+        regulatory_risk=omni_res.regulatory_risk,
+        mitigation_impact=omni_res.mitigation_impact,
+        fbr_score=omni_res.financial_blast_radius,
+        is_public_teaser=omni_res.is_public_teaser,
+        teaser_text=omni_res.teaser_text,
+        cloudflare_waf_rules=omni_res.cloudflare_waf_rules,
+        assessment_25_point=omni_res.assessment_25_point.model_dump(),
+        affected_sectors=omni_res.affected_sectors,
+        cvss_v4_score=omni_res.cvss_v4_score,
+        cvss_v4_vector=omni_res.cvss_v4_vector,
+        source_reliability_grade=omni_res.source_reliability_grade,
+        yara_rule=omni_res.yara_rules[0] if omni_res.yara_rules else None,
+        anti_fud_passed=True
+    )
+
+    # Secondary Anti-FUD cleaning step
+    sitrep.title = clean_anti_fud_text(sitrep.title)
+    sitrep.executive_summary = clean_anti_fud_text(sitrep.executive_summary)
+    sitrep.content = clean_anti_fud_text(sitrep.content)
+    if sitrep.teaser_text:
+        sitrep.teaser_text = clean_anti_fud_text(sitrep.teaser_text)
+    if sitrep.assessment_25_point:
+        for k, val in sitrep.assessment_25_point.items():
+            if isinstance(val, str):
+                sitrep.assessment_25_point[k] = clean_anti_fud_text(val)
+
+    return sitrep, p, c
+
+
+# ---------------------------------------------------------------------------
+# Omni-Agent Orchestrator — single LLM call, deterministic pre/post processing
+# ---------------------------------------------------------------------------
+
+class OmniCoreOrchestrator:
+    """
+    The central ZAYRON-X Omni-Core Orchestrator.
+
+    Architecture:
+      1. Deterministic pre-processing (harvester.py — no LLM)
+      2. Regex IoC candidate extraction (validator.py — no LLM)
+      3. Single Gemini Pro API call (process_feed_omni — 1 LLM call)
+      4. IoC hallucination gate post-processing (validate_iocs — no LLM)
+      5. Persistence (persistence.py — no LLM)
+
+    This class replaces the legacy 5-call IngestionAgent/ValidatorAgent/EnrichmentAgent
+    pipeline. One feed → one LLM call → one ExecutiveSITREP.
+    """
+
+    def __init__(self, client: GeminiClient):
+        self.client = client
+
+    async def process_feed(
+        self,
+        raw_content: str,
+        source_channel: str,
+        rag_context: str = ""
+    ) -> tuple[ExecutiveSITREP, list[AgentTrace]]:
+        """
+        Process a raw feed through the single-call Omni-Agent pipeline.
+
+        Returns an (ExecutiveSITREP, traces) tuple compatible with the
+        persistence layer.
+        """
+        trace_list: list[AgentTrace] = []
+        trace = AgentTrace("OmniCoreOrchestrator")
+        trace_list.append(trace)
+
+        import time
+        start = time.time()
+        try:
+            log.info("[OMNI-CORE] Starting single-pass Omni-Agent pipeline.")
+            sitrep, p, c = await process_feed_omni(self.client, raw_content, source_channel, rag_context)
+            trace.tokens_prompt = p
+            trace.tokens_completion = c
+            trace.parsed_output_ok = True
+            trace.parsed_output_type = "ExecutiveSITREP"
+            log.info(
+                "[OMNI-CORE] Pipeline complete. Tokens: prompt=%d, completion=%d",
+                p, c
+            )
+        except Exception as exc:
+            trace.error_message = str(exc)
+            raise
+        finally:
+            trace.duration_seconds = time.time() - start
+
+        return sitrep, trace_list
+
+
+# ---------------------------------------------------------------------------
+# Consolidated Swarm Scheduler
 # ---------------------------------------------------------------------------
 
 async def master_crew_scheduler(client: GeminiClient) -> None:
-    log.info("Started Master Swarm Scheduler (3-Minute Paced Queue)")
+    log.info("Started Multi-Agent Swarm Scheduler (3-Minute Paced Queue)")
     seen_hashes: set[str] = set()
 
     while True:
         loop_start = time.time()
         
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=45)) as session:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60)) as session:
             # 1. Fetch & atomically claim exactly 1 pending feed of any type
             feeds = await claim_pending_feeds(session, limit=1)
             if not feeds:
@@ -498,14 +701,14 @@ async def master_crew_scheduler(client: GeminiClient) -> None:
             # 2. Local Python Filtering & Noise Deduplication
             cleaned_content = raw_content.strip()
             if not cleaned_content or len(cleaned_content) < 20:
-                log.info("Feed %s classified as noise (length %d < 20). Skipping LLM.", feed_id, len(cleaned_content))
+                log.info("Feed %s classified as noise (length %d < 20). Skipping Swarm.", feed_id, len(cleaned_content))
                 await mark_feed_status(session, feed_id, "crew_ignored")
                 continue
 
             # In-memory deduplication check
             url_hash = hashlib.sha256(cleaned_content.encode("utf-8")).hexdigest()
             if url_hash in seen_hashes:
-                log.info("Feed %s is a duplicate (in-memory match). Skipping LLM.", feed_id)
+                log.info("Feed %s is a duplicate (in-memory match). Skipping Swarm.", feed_id)
                 await mark_feed_status(session, feed_id, "crew_ignored")
                 continue
 
@@ -527,7 +730,7 @@ async def master_crew_scheduler(client: GeminiClient) -> None:
                 log.warning("Database duplicate check failed: %s. Continuing...", exc)
 
             if is_dup:
-                log.info("Feed %s is a duplicate (database match). Skipping LLM.", feed_id)
+                log.info("Feed %s is a duplicate (database match). Skipping Swarm.", feed_id)
                 seen_hashes.add(url_hash)
                 await mark_feed_status(session, feed_id, "crew_ignored")
                 continue
@@ -537,87 +740,83 @@ async def master_crew_scheduler(client: GeminiClient) -> None:
             # 3. Fetch Local RAG context directly from Supabase
             rag_context = await fetch_local_rag_context(session, raw_content[:500])
 
-            # 4. Quota gate: check Redis ledger before consuming a Gemini request.
-            # This survives container restarts — counter is stored in Upstash, not RAM.
+            # 4. Quota check: ensure we have at least 5 available requests for this swarm pass
             daily_count = await asyncio.to_thread(quota_get_today)
-            if daily_count >= DAILY_REQUEST_LIMIT:
+            if daily_count + 5 >= DAILY_REQUEST_LIMIT:
                 log.warning(
-                    "[QUOTA-LEDGER] Daily limit reached (%d/%d). Backing off 30 minutes.",
-                    daily_count, DAILY_REQUEST_LIMIT,
+                    "[QUOTA-LEDGER] Insufficient daily quota remaining (%d/480). Backing off 30 minutes.",
+                    daily_count
                 )
                 await mark_feed_status(session, feed_id, "pending")  # Release the claim
-                await asyncio.sleep(1800)  # 30-minute backoff
+                await asyncio.sleep(1800)
                 continue
 
-            # 5. Master Agent Single-Pass LLM Call
-            log.info("Invoking single Consolidated Master Agent... [Quota: %d/%d]", daily_count, DAILY_REQUEST_LIMIT)
-            sys_prompt = MASTER_INTELLIGENCE_PROMPT + rag_context
-            user_msg = (
-                f"SOURCE CHANNEL: {source}\n"
-                f"RAW THREAT telemetry:\n{raw_content}\n\n"
-                f"Execute full 7-agent consolidated analysis. Output strict JSON only."
-            )
+            # 5. Swarm Pipeline Execution — SINGLE LLM CALL via OmniCoreOrchestrator
+            log.info("[SCHEDULER] Invoking Omni-Core single-call pipeline... [Quota: %d/%d]", daily_count, DAILY_REQUEST_LIMIT)
 
             sitrep = None
-            token_tracker = {"prompt": 0, "completion": 0}
+            prompt_tokens = 0
+            completion_tokens = 0
+            trace_list: list[AgentTrace] = []
 
             try:
-                llm_out, p, c = await client.generate(
-                    GEMINI_PRO_MODEL,
-                    sys_prompt,
-                    user_msg,
-                    max_output_tokens=8192,
-                    temperature=0.2
-                )
-                token_tracker["prompt"] += p
-                token_tracker["completion"] += c
-
-                # Increment the persistent daily quota counter after a successful API call.
-                new_total = await asyncio.to_thread(quota_increment)
-                log.info("[QUOTA-LEDGER] Daily inference count: %d/%d", new_total, DAILY_REQUEST_LIMIT)
-
-                # Parse and clean output
-                sitrep = parse_master_response(llm_out)
-
+                orchestrator = OmniCoreOrchestrator(client)
+                sitrep, trace_list = await orchestrator.process_feed(raw_content, source, rag_context)
+                prompt_tokens = sum(t.tokens_prompt for t in trace_list)
+                completion_tokens = sum(t.tokens_completion for t in trace_list)
+                log.info("[SCHEDULER] Omni-Core single-call pipeline succeeded.")
             except Exception as exc:
-                log.error("Consolidated Master Inference failed: %s", exc)
+                log.critical(
+                    "[SCHEDULER] Omni-Core pipeline failed: %s. Marking feed for retry.",
+                    exc, exc_info=True
+                )
                 await mark_feed_status(session, feed_id, "crew_failed")
                 await asyncio.sleep(5)
                 continue
 
             if sitrep is None:
-                log.warning("Master Agent returned invalid or unparseable payload. Marking failed.")
+                log.warning("Swarm failed to compile a valid dossier. Marking feed failed.")
                 await mark_feed_status(session, feed_id, "crew_failed")
                 continue
 
-            # 5. Persist SITREP & Mark Feed status
+            # 6. Persist SITREP & Mark Feed status
             success = await persist_sitrep(session, sitrep, raw_content, source_channel=source)
             if success:
-                log.info("Successfully persisted Master intelligence report: %s", sitrep.title)
+                log.info("Successfully persisted intelligence report: %s", sitrep.title)
+                
+                # Format execution trace details for storage in logging analysis
+                trace_summary = "\n".join(
+                    f"- {t.agent_name} ({t.duration_seconds:.1f}s, p_tok={t.tokens_prompt}, c_tok={t.tokens_completion})"
+                    for t in trace_list
+                )
+                analysis_entry = f"{sitrep.executive_summary[:350]}\n\n[Swarm Traces]:\n{trace_summary}"
+
                 await mark_feed_status(
-                    session, feed_id, "crew_promoted",
-                    analysis=sitrep.executive_summary[:500],
+                    session,
+                    feed_id,
+                    "crew_promoted",
+                    analysis=analysis_entry[:500],
                     translated_title=sitrep.title,
                     translated_content=sitrep.content[:2000],
                     category=sitrep.category,
-                    prompt_tokens=token_tracker["prompt"],
-                    completion_tokens=token_tracker["completion"],
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
                     promoted_at=utc_now_iso()
                 )
                 await trigger_revalidation(session)
             else:
-                log.error("Failed to persist Master intelligence report to database.")
+                log.error("Failed to persist intelligence report to database.")
                 await mark_feed_status(session, feed_id, "persist_failed")
 
-            # 6. Pacing sleep: enforce exactly 180 seconds per LLM request
+            # 7. Pacing sleep: enforce exactly 180 seconds per queue loop iteration
             elapsed = time.time() - loop_start
             remaining = max(0.0, 180.0 - elapsed)
-            log.info("Master analysis complete. Pacing sleep: waiting %.1f seconds...", remaining)
+            log.info("Swarm loop complete. Queue pacing sleep: waiting %.1f seconds...", remaining)
             await asyncio.sleep(remaining)
 
 
 async def main_loop() -> None:
-    log.info("Starting ZAYRON-X Consolidated Intelligence Master Crew")
+    log.info("Starting ZAYRON-X Multi-Agent Swarm Swarm-Crew")
     config_errors = validate_config()
     if config_errors:
         for err in config_errors:
@@ -626,9 +825,7 @@ async def main_loop() -> None:
 
     client = GeminiClient(api_key=GEMINI_API_KEY)
 
-    # WARN-14 Remediation: Run stale-claim watchdog on every container boot.
-    # Reverts any raw_feeds rows stuck in 'processing_crew' > 10 minutes
-    # back to 'pending', clearing zombie entries from prior OOM kills.
+    # Watchdog stale claim sweep recovery
     log.info("[WATCHDOG] Running stale-claim recovery sweep...")
     try:
         async with aiohttp.ClientSession() as _session:
@@ -657,7 +854,7 @@ async def main_loop() -> None:
     except Exception as exc:
         log.warning("[WATCHDOG] Stale-claim sweep failed (non-fatal): %s", exc)
 
-    # Run the central master scheduler
+    # Start multi-agent scheduler
     await master_crew_scheduler(client)
 
 

@@ -1,11 +1,11 @@
 """
-workers/agents/harvester.py — Agent 1: Intelligence Harvester
+workers/agents/harvester.py — Deterministic Pre-Processor (NO LLM)
 
-Role: Raw intelligence extraction, language detection, translation to English,
-preliminary threat classification, and entity extraction.
+Role: Raw intelligence normalization, language heuristics, regex entity extraction,
+and keyword-based preliminary classification.
 
-LLM: Gemini 1.5 Flash (fast extraction, low token cost)
-Token Budget: ≤2,000 output tokens
+This module contains ZERO LLM calls. It performs local, deterministic operations only.
+All LLM-based analysis is handled by the single-pass Omni-Agent pipeline in omni_crew.py.
 """
 
 from __future__ import annotations
@@ -51,8 +51,6 @@ def is_tier1_source(source: str) -> bool:
         return False
 
     normalized_source = source.strip().lower()
-
-    # Remove t.me prefix or at-sign if present for Telegram matching
     cleaned_source = (
         normalized_source.replace("https://t.me/", "")
         .replace("http://t.me/", "")
@@ -60,19 +58,16 @@ def is_tier1_source(source: str) -> bool:
         .strip()
     )
 
-    # 1. Check Telegram channels
     for chan in TARGETS_MATRIX.get("telegram_channels", []):
         if cleaned_source == chan.lower():
             return True
 
-    # 2. Check RSS links
     for rss in TARGETS_MATRIX.get("osint_rss", []):
         url_match = re.search(r"\((https?://.*?)\)", rss)
         url = url_match.group(1) if url_match else rss
         if cleaned_source in url.lower() or url.lower() in normalized_source:
             return True
 
-    # 3. Check Darkweb Onion Links
     for onion in TARGETS_MATRIX.get("darkweb_onion_links", []):
         url_match = re.search(r"\((http://.*?\.onion)\)", onion)
         url = url_match.group(1) if url_match else onion
@@ -83,129 +78,223 @@ def is_tier1_source(source: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# System Prompt — Extraction & Translation Directive
+# Regex Patterns for Deterministic Entity Extraction
 # ---------------------------------------------------------------------------
 
-HARVESTER_SYSTEM_PROMPT: str = """\
-You are the Intelligence Harvester for ZAYRON-X. Your sole function is to receive raw intelligence \
-feeds (from Telegram channels, RSS feeds, dark web forums) and produce a structured extraction.
+_CVE_PATTERN = re.compile(r"CVE-\d{4}-\d{4,}", re.IGNORECASE)
+_VENDOR_PATTERN = re.compile(
+    r"\b(Microsoft|Apple|Google|Cisco|VMware|Fortinet|Palo Alto|SolarWinds|"
+    r"Apache|OpenSSL|Linux|Windows|Android|iOS|macOS|AWS|Azure|GCP|Kubernetes|"
+    r"Docker|Jenkins|GitLab|JetBrains|Atlassian|SAP|Oracle|IBM|Dell|HP|Juniper|"
+    r"Citrix|F5|Ivanti|Barracuda|MOVEit|GoAnywhere|Progress Software)\b",
+    re.IGNORECASE,
+)
+_THREAT_ACTOR_PATTERN = re.compile(
+    r"\b(APT\d{1,3}|Lazarus|Cozy Bear|Fancy Bear|Sandworm|Volt Typhoon|"
+    r"Salt Typhoon|LockBit|BlackCat|ALPHV|Clop|REvil|Conti|DarkSide|"
+    r"BlackMatter|Hive|Royal|Play|Akira|Rhysida|Scattered Spider|"
+    r"TA\d{3,4}|FIN\d{1,2}|UNC\d{3,4})\b",
+    re.IGNORECASE,
+)
+_MALWARE_PATTERN = re.compile(
+    r"\b(ransomware|trojan|backdoor|rootkit|wiper|stealer|loader|dropper|"
+    r"botnet|C2|command.and.control|keylogger|spyware|adware|cryptominer|"
+    r"webshell|cobalt.strike|mimikatz|metasploit)\b",
+    re.IGNORECASE,
+)
 
-OPERATIONAL DIRECTIVES:
-1. ANCHOR technical reasoning strictly to Richards Heuer & Randolph H. Pherson's 'Structured Analytic Techniques for Intelligence Analysis' and core Telegram/Tor metadata schemas.
-2. TREAT commercial external LLM tokens strictly as an Ephemeral Linguistic Parser (only for language normalization and verification).
-3. DETECT the language of the input. If non-English, TRANSLATE the full content to flawless cybersecurity English. Preserve original threat actor names and malware family names in parentheses.
-4. CLASSIFY the threat into one of: Threat Intelligence, Vulnerability Research, OSINT, Cyber Crime, Malware Analysis, Ransomware, APT Activity, Nation State, Supply Chain Security, Cloud Security, AI Security, ICS/OT Security, Data Breach, Phishing, Security Tools.
-5. EXTRACT named entities: CVE IDs, malware families, APT group names, product names, vendor names, affected technologies.
-6. FLAG whether the text contains CVE references (has_cve_reference) and potential IoC indicators like IPs, domains, hashes (has_ioc_indicators).
-7. OUTPUT word count of the translated text.
-8. NO PLACEHOLDERS: Under no circumstances output placeholders like 'Unknown' or '-' or null. If data is missing, calculate relative proximity values using our ground-truth library (infer from category/channel properties).
-
-BANNED BEHAVIORS:
-- Do NOT analyse the threat — that is downstream.
-- Do NOT generate IoCs — that is the Validator's role.
-- Do NOT produce a report — that is the Weaver's role.
-- Do NOT fabricate or infer any data not present in the raw input.
-
-OUTPUT FORMAT (strict JSON, no markdown fences):
-{
-  "detected_language": "en|ru|ar|zh|...",
-  "translated_text": "Full English translation or original if already English",
-  "preliminary_category": "Category from list above",
-  "extracted_entities": ["CVE-2025-XXXXX", "APT28", "Cisco ASA", ...],
-  "has_cve_reference": true|false,
-  "has_ioc_indicators": true|false,
-  "word_count": 350
-}
-"""
+# Category keyword mapping (order matters — first match wins)
+_CATEGORY_KEYWORDS: list[tuple[str, list[str]]] = [
+    ("Ransomware", ["ransomware", "extortion", "double extortion", "ransom"]),
+    ("Vulnerability Research", ["cve-", "zero-day", "0day", "proof-of-concept", "poc", "patch tuesday", "cvss"]),
+    ("Malware Analysis", ["malware", "trojan", "backdoor", "rootkit", "wiper", "stealer", "loader"]),
+    ("APT Activity", ["apt", "advanced persistent threat", "state-sponsored", "nation-state"]),
+    ("Data Breach", ["data breach", "data leak", "exfiltration", "stolen data", "leaked database"]),
+    ("Phishing", ["phishing", "spearphishing", "credential harvesting", "pretexting"]),
+    ("Supply Chain Security", ["supply chain", "dependency confusion", "upstream", "third-party"]),
+    ("ICS/OT Security", ["ics", "scada", "ot security", "industrial control", "plc", "modbus"]),
+    ("Cloud Security", ["aws", "azure", "gcp", "cloud", "s3 bucket", "kubernetes"]),
+    ("Cyber Crime", ["darkweb", "dark web", "forum", "marketplace", "carding", "fraud"]),
+    ("OSINT", ["open source", "osint", "leak", "paste", "pastebin"]),
+    ("Threat Intelligence", []),  # Default fallback
+]
 
 
-def build_harvest_prompt(raw_text: str, source_channel: str) -> str:
-    """Construct the user message for the Harvester agent.
+# ---------------------------------------------------------------------------
+# Language Detection (Heuristics-Based, No LLM)
+# ---------------------------------------------------------------------------
 
-    Dynamically injects target calibration instructions if source matches
-    one of our 35 Tier-1 CTI matrices.
+def detect_language(text: str) -> str:
+    """Deterministically detect language of input text using Unicode range heuristics."""
+    if not text or len(text.strip()) < 10:
+        return "en"
+
+    sample = text[:500]
+    cyrillic_count = sum(1 for c in sample if "\u0400" <= c <= "\u04FF")
+    arabic_count = sum(1 for c in sample if "\u0600" <= c <= "\u06FF")
+    cjk_count = sum(1 for c in sample if "\u4E00" <= c <= "\u9FFF")
+    latin_count = sum(1 for c in sample if "a" <= c.lower() <= "z")
+
+    total = max(1, cyrillic_count + arabic_count + cjk_count + latin_count)
+
+    if cyrillic_count / total > 0.20:
+        return "ru"
+    if arabic_count / total > 0.20:
+        return "ar"
+    if cjk_count / total > 0.20:
+        return "zh"
+
+    return "en"
+
+
+# ---------------------------------------------------------------------------
+# Deterministic Category Classification
+# ---------------------------------------------------------------------------
+
+def classify_category(text: str) -> str:
+    """Keyword-based category classification — no LLM."""
+    lower = text.lower()
+    for category, keywords in _CATEGORY_KEYWORDS:
+        if keywords and any(kw in lower for kw in keywords):
+            return category
+    return "Threat Intelligence"
+
+
+# ---------------------------------------------------------------------------
+# Deterministic Entity Extraction
+# ---------------------------------------------------------------------------
+
+def extract_entities(text: str) -> list[str]:
+    """Extract named entities from raw text using regex patterns."""
+    entities: list[str] = []
+
+    # CVE identifiers
+    cves = _CVE_PATTERN.findall(text)
+    entities.extend([c.upper() for c in cves])
+
+    # Threat actors
+    actors = _THREAT_ACTOR_PATTERN.findall(text)
+    entities.extend(actors)
+
+    # Vendor/product names
+    vendors = _VENDOR_PATTERN.findall(text)
+    entities.extend(vendors)
+
+    # Deduplicate, preserving order
+    seen: set[str] = set()
+    unique: list[str] = []
+    for e in entities:
+        if e.upper() not in seen:
+            seen.add(e.upper())
+            unique.append(e)
+
+    return unique[:30]  # Cap to prevent token explosion
+
+
+# ---------------------------------------------------------------------------
+# Main Public Interface: Deterministic Pre-Processing
+# ---------------------------------------------------------------------------
+
+def deterministic_preprocess(raw_text: str, source_channel: str) -> dict[str, Any]:
     """
-    prompt = (
-        f"SOURCE: {source_channel}\n"
-        f"RAW INTELLIGENCE INPUT:\n{raw_text[:6000]}\n\n"
-        f"Execute all extraction directives. Output strict JSON."
+    Deterministic pre-processing of raw feed data.
+
+    Returns a structured context dict that enriches the Omni-Agent prompt.
+    NO LLM is invoked. All operations are purely regex/heuristic.
+    """
+    if not raw_text:
+        raw_text = ""
+
+    detected_language = detect_language(raw_text)
+    entities = extract_entities(raw_text)
+    preliminary_category = classify_category(raw_text)
+
+    cve_ids = _CVE_PATTERN.findall(raw_text)
+    has_cve_reference = len(cve_ids) > 0
+    has_ioc_indicators = bool(
+        re.search(
+            r"\b(?:\d{1,3}\.){3}\d{1,3}\b|"              # IPv4
+            r"\b[a-fA-F0-9]{32}\b|"                       # MD5
+            r"\b[a-fA-F0-9]{40}\b|"                       # SHA1
+            r"\b[a-fA-F0-9]{64}\b|"                       # SHA256
+            r"(?:https?://)\S+",                           # URL
+            raw_text,
+        )
     )
 
-    # Apply calibration instructions depending on source trust verification
-    if is_tier1_source(source_channel):
-        prompt += (
-            "\n\n[CALIBRATION DIRECTIVE: TIER-1 SOURCE VERIFIED]\n"
-            "This source is verified as a ZAYRON-X Tier-1 CTI Channel. "
-            "Prioritize surgical extraction of CVEs, APT aliases, functional IoC indicators, "
-            "and malware family signatures. Ensure high-fidelity translation."
-        )
+    is_tier1 = is_tier1_source(source_channel)
+    if is_tier1:
+        log.info("Deterministic pre-processing: Tier-1 source verified — %s", source_channel)
     else:
-        prompt += (
-            "\n\n[CALIBRATION DIRECTIVE: UNVERIFIED FEED SOURCE]\n"
-            "This feed source is not listed in our elite targets.json matrix. "
-            "Proceed with caution. Perform translation and classification, but strictly "
-            "avoid extracting speculative indicators or general noise."
-        )
+        log.debug("Deterministic pre-processing: Unverified source — %s", source_channel)
 
-    return prompt
+    return {
+        "detected_language": detected_language,
+        "preliminary_category": preliminary_category,
+        "extracted_entities": entities,
+        "cve_ids": [c.upper() for c in cve_ids[:10]],
+        "has_cve_reference": has_cve_reference,
+        "has_ioc_indicators": has_ioc_indicators,
+        "word_count": len(raw_text.split()),
+        "is_tier1_source": is_tier1,
+        "source_channel": source_channel,
+    }
 
 
-def parse_harvest_response(
-    raw_text: str,
-    source_channel: str,
-    llm_output: str,
-) -> HarvestPayload:
-    """Parse the LLM's JSON output into a typed HarvestPayload.
-
-    Falls back to minimal extraction if LLM output is malformed.
+def build_preprocess_context_block(raw_text: str, source_channel: str) -> str:
     """
-    try:
-        # Strip markdown fences if present
-        cleaned = llm_output.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
-            cleaned = re.sub(r"\s*```$", "", cleaned)
+    Build a pre-processed context block string to inject into the Omni-Agent prompt.
+    This gives the LLM ground-truth anchors before it begins its internal cognition.
+    """
+    ctx = deterministic_preprocess(raw_text, source_channel)
+    lines = [
+        "[DETERMINISTIC PRE-PROCESSING CONTEXT — DO NOT CONTRADICT THESE VALUES]",
+        f"Source Channel: {source_channel} | Tier-1 Verified: {ctx['is_tier1_source']}",
+        f"Detected Language: {ctx['detected_language']}",
+        f"Preliminary Category (Keyword Match): {ctx['preliminary_category']}",
+        f"CVE IDs Found (Regex): {', '.join(ctx['cve_ids']) or 'None'}",
+        f"Entities Detected: {', '.join(ctx['extracted_entities'][:15]) or 'None'}",
+        f"Has CVE Reference: {ctx['has_cve_reference']} | Has IoC Indicators: {ctx['has_ioc_indicators']}",
+        f"Word Count: {ctx['word_count']}",
+    ]
+    return "\n".join(lines)
 
-        parsed = json.loads(cleaned)
-    except json.JSONDecodeError:
-        log.warning("Harvester returned invalid JSON — falling back to passthrough")
-        parsed = {}
 
-    # Perform runtime audit alignment logging based on targets.json calibration
-    if is_tier1_source(source_channel):
-        log.info("Successfully harvested validated Tier-1 intelligence from %s", source_channel)
-    else:
-        log.warning("Harvested feed from unaligned source %s — flagging for downstream review", source_channel)
+# ---------------------------------------------------------------------------
+# Legacy compatibility shim for unit tests that import HarvestPayload creation
+# ---------------------------------------------------------------------------
 
+def build_harvest_payload(raw_text: str, source_channel: str) -> HarvestPayload:
+    """Create a HarvestPayload from deterministic pre-processing (no LLM)."""
+    ctx = deterministic_preprocess(raw_text, source_channel)
     return HarvestPayload(
         raw_text=raw_text,
         source_channel=source_channel,
-        detected_language=parsed.get("detected_language", "en"),
-        translated_text=parsed.get("translated_text", raw_text),
-        preliminary_category=parsed.get("preliminary_category", "Threat Intelligence"),
+        detected_language=ctx["detected_language"],
+        translated_text=raw_text,  # No LLM translation; pass raw for Omni-Agent
+        preliminary_category=ctx["preliminary_category"],
         extraction_timestamp=datetime.now(timezone.utc).isoformat(),
-        extracted_entities=parsed.get("extracted_entities", []),
-        has_cve_reference=parsed.get("has_cve_reference", False),
-        has_ioc_indicators=parsed.get("has_ioc_indicators", False),
-        word_count=parsed.get("word_count", len(raw_text.split())),
+        extracted_entities=ctx["extracted_entities"],
+        has_cve_reference=ctx["has_cve_reference"],
+        has_ioc_indicators=ctx["has_ioc_indicators"],
+        word_count=ctx["word_count"],
     )
 
 
 # ---------------------------------------------------------------------------
-# Agent metadata (used by CrewAI Agent constructor)
+# Agent metadata
 # ---------------------------------------------------------------------------
 
 AGENT_CONFIG: dict[str, str] = {
-    "role": "Intelligence Harvester",
+    "role": "Deterministic Intelligence Pre-Processor",
     "goal": (
-        "Extract, translate, and normalize raw intelligence feeds into "
-        "structured English-language payloads with entity extraction and "
-        "preliminary classification."
+        "Perform local, deterministic normalization of raw intelligence feeds "
+        "using regex and heuristics. No LLM calls. Provides ground-truth anchors "
+        "for the downstream Omni-Agent single-pass pipeline."
     ),
     "backstory": (
-        "A polyglot signals intelligence specialist with 20 years at GCHQ "
-        "and NSA TAO. Fluent in Russian, Mandarin, Arabic, and Farsi. "
-        "Processes raw intercepts from encrypted MTProto channels, dark web "
-        "forums, and Pastebins with zero tolerance for data loss."
+        "A signals intelligence preprocessing layer that deterministically extracts "
+        "CVEs, threat actors, vendor names, and language signals from raw feeds, "
+        "anchoring the LLM's cognition to verifiable ground-truth values."
     ),
 }
