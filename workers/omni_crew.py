@@ -86,13 +86,26 @@ UPSTASH_REDIS_TOKEN: str = os.getenv("UPSTASH_REDIS_REST_TOKEN", "")
 DAILY_REQUEST_LIMIT: int = int(os.getenv("DAILY_REQUEST_LIMIT", "480"))
 
 
+_redis_session: aiohttp.ClientSession | None = None
+
+
+async def _get_redis_session() -> aiohttp.ClientSession:
+    global _redis_session
+    if _redis_session is None or _redis_session.closed:
+        _redis_session = aiohttp.ClientSession(
+            connector=aiohttp.TCPConnector(keepalive_timeout=60),
+            timeout=aiohttp.ClientTimeout(total=4)
+        )
+    return _redis_session
+
+
 def _quota_key() -> str:
     """Return today's UTC quota Redis key."""
     return f"zayron:quota:{datetime.now(timezone.utc).strftime('%Y-%m-%d')}"
 
 
-def _redis_request(method: str, path: str, body: str | None = None) -> Any:
-    """Minimal synchronous Upstash REST call."""
+async def _redis_request_async(method: str, path: str, body: str | None = None) -> Any:
+    """Non-blocking async Upstash REST call with connection keep-alive."""
     if not UPSTASH_REDIS_URL or not UPSTASH_REDIS_TOKEN:
         return None
     url = UPSTASH_REDIS_URL.rstrip("/") + path
@@ -100,19 +113,19 @@ def _redis_request(method: str, path: str, body: str | None = None) -> Any:
         "Authorization": f"Bearer {UPSTASH_REDIS_TOKEN}",
         "Content-Type": "application/json",
     }
-    data = body.encode() if body else None
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    session = await _get_redis_session()
     try:
-        with urllib.request.urlopen(req, timeout=4) as resp:
-            return json.loads(resp.read().decode())
+        async with session.request(method, url, data=body, headers=headers) as resp:
+            if resp.status == 200:
+                return await resp.json()
     except Exception as exc:
-        log.debug("[QUOTA-LEDGER] Redis request failed (non-fatal): %s", exc)
-        return None
+        log.debug("[QUOTA-LEDGER] Async Redis request failed: %s", exc)
+    return None
 
 
-def quota_get_today() -> int:
+async def quota_get_today() -> int:
     """Return the current daily inference count from Redis."""
-    result = _redis_request("GET", f"/get/{urllib.parse.quote(_quota_key())}")
+    result = await _redis_request_async("GET", f"/get/{urllib.parse.quote(_quota_key())}")
     if result and result.get("result") is not None:
         try:
             return int(result["result"])
@@ -121,10 +134,10 @@ def quota_get_today() -> int:
     return 0
 
 
-def quota_increment() -> int:
+async def quota_increment() -> int:
     """Atomically increment today's daily counter."""
     key = urllib.parse.quote(_quota_key())
-    result = _redis_request("GET", f"/incr/{key}")
+    result = await _redis_request_async("GET", f"/incr/{key}")
     new_count = 0
     if result and result.get("result") is not None:
         try:
@@ -132,7 +145,7 @@ def quota_increment() -> int:
         except (TypeError, ValueError):
             pass
     if new_count == 1:
-        _redis_request("GET", f"/expire/{key}/90000")
+        await _redis_request_async("GET", f"/expire/{key}/90000")
     return new_count
 
 
@@ -363,7 +376,7 @@ async def check_quota_and_generate(
     response_schema: Any = None,
 ) -> tuple[str, int, int]:
     """Strict quota gate wrapper to ensure the daily request limits are respected globally."""
-    daily_count = await asyncio.to_thread(quota_get_today)
+    daily_count = await quota_get_today()
     if daily_count >= DAILY_REQUEST_LIMIT:
         raise RuntimeError(f"Daily API request limit reached ({daily_count}/{DAILY_REQUEST_LIMIT})")
 
@@ -377,7 +390,7 @@ async def check_quota_and_generate(
     )
 
     # Success: increment the daily ledger
-    await asyncio.to_thread(quota_increment)
+    await quota_increment()
     return llm_out, p, c
 
 
@@ -741,7 +754,7 @@ async def master_crew_scheduler(client: GeminiClient) -> None:
             rag_context = await fetch_local_rag_context(session, raw_content[:500])
 
             # 4. Quota check: ensure we have at least 5 available requests for this swarm pass
-            daily_count = await asyncio.to_thread(quota_get_today)
+            daily_count = await quota_get_today()
             if daily_count + 5 >= DAILY_REQUEST_LIMIT:
                 log.warning(
                     "[QUOTA-LEDGER] Insufficient daily quota remaining (%d/480). Backing off 30 minutes.",

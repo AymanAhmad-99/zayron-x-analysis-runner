@@ -96,10 +96,10 @@ name = "zayron-x-production"
 
 # Route traffic from the custom domain to this Worker.
 workers_dev = true
-routes = [
-  { pattern = "zayron-x.com/*", custom_domain = false },
-  { pattern = "www.zayron-x.com/*", custom_domain = false }
-]
+# routes = [
+#   { pattern = "zayron-x.com/*", custom_domain = false },
+#   { pattern = "www.zayron-x.com/*", custom_domain = false }
+# ]
 
 
 # ── Gradual (Canary) Deployments ────────────────────────────
