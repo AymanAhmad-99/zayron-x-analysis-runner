@@ -1,4 +1,5 @@
 name = "zayron-x"
+account_id = "56534d53775d8280011a325dcf36ed09"
 main = "worker-wrapper.js"
 compatibility_date = "2025-09-23"
 # ── CLOUDFLARE WORKERS COMPAT ────────────────────────────────
@@ -92,7 +93,7 @@ head_sampling_rate = 0.1
 # PRODUCTION ENVIRONMENT
 # ═══════════════════════════════════════════════════════════════
 [env.production]
-name = "zayron-x-production"
+name = "zayron-x-preview"
 
 # Route traffic from the custom domain to this Worker.
 workers_dev = true
