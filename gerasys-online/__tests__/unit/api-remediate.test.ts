@@ -11,8 +11,8 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('API Endpoint: /api/remediate', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.CLOUDFLARE_API_TOKEN = undefined;
-    process.env.CLOUDFLARE_ZONE_ID = undefined;
+    delete process.env.CLOUDFLARE_API_TOKEN;
+    delete process.env.CLOUDFLARE_ZONE_ID;
   });
 
   it('should reject requests without threatId', async () => {
