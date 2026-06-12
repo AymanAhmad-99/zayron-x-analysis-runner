@@ -25,7 +25,8 @@ compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 #   wrangler kv:namespace create ZAYRON_CACHE --preview
 # ═══════════════════════════════════════════════════════════════
 kv_namespaces = [
-  { binding = "ZAYRON_CACHE", id = "c5704144e6984dd597e2f000a1e84aa2", preview_id = "834e78268ee0457196ecf48026b06ece" }
+  { binding = "ZAYRON_CACHE", id = "c5704144e6984dd597e2f000a1e84aa2", preview_id = "834e78268ee0457196ecf48026b06ece" },
+  { binding = "NEXT_INC_CACHE_KV", id = "c5704144e6984dd597e2f000a1e84aa2", preview_id = "834e78268ee0457196ecf48026b06ece" }
 ]
 
 # ═══════════════════════════════════════════════════════════════
@@ -130,6 +131,10 @@ stages = [
 binding = "ZAYRON_CACHE"
 id = "c5704144e6984dd597e2f000a1e84aa2"
 
+[[env.production.kv_namespaces]]
+binding = "NEXT_INC_CACHE_KV"
+id = "c5704144e6984dd597e2f000a1e84aa2"
+
 [env.production.vars]
 NEXT_PUBLIC_SITE_URL = "https://www.zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
@@ -144,6 +149,10 @@ workers_dev = true
 # Preview KV — OpenNext ISR cache (real preview namespace ID)
 [[env.preview.kv_namespaces]]
 binding = "ZAYRON_CACHE"
+id = "834e78268ee0457196ecf48026b06ece"
+
+[[env.preview.kv_namespaces]]
+binding = "NEXT_INC_CACHE_KV"
 id = "834e78268ee0457196ecf48026b06ece"
 
 [env.preview.vars]
