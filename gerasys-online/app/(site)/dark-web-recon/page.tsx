@@ -1,14 +1,14 @@
-import { createClient, createAdminClient } from "@/lib/supabase/server";
-import { DarkWebDashboard } from "@/components/platform/DarkWebDashboard";
-import { RefreshCw } from "@/lib/icons";
+import { DarkWebDashboard } from '@/components/platform/DarkWebDashboard';
+import { RefreshCw } from '@/lib/icons';
+import { createAdminClient, createClient } from '@/lib/supabase/server';
 
 export const revalidate = 0; // Disable ISR cache — always fetch fresh data
-export const dynamic = "force-dynamic"; // Nuclear cache-bust: bypass Cloudflare/Next.js static edge
+export const dynamic = 'force-dynamic'; // Nuclear cache-bust: bypass Cloudflare/Next.js static edge
 
 export default async function DarkWebReconPage() {
   // 1. Establish secure client session and authenticate profile
   const supabase = await createClient();
-  
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -16,12 +16,12 @@ export default async function DarkWebReconPage() {
   let isSubscriber = false;
   if (user) {
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("clearance_level")
-      .eq("id", user.id)
+      .from('profiles')
+      .select('clearance_level')
+      .eq('id', user.id)
       .single();
-    
-    isSubscriber = profile?.clearance_level === "SUBSCRIBER";
+
+    isSubscriber = profile?.clearance_level === 'SUBSCRIBER';
   }
 
   // 2. Use admin (service-role) client for threat data to bypass RLS.
@@ -30,27 +30,54 @@ export default async function DarkWebReconPage() {
   // DarkWebDashboard masks premium fields client-side via the isSubscriber prop.
   const adminSupabase = await createAdminClient();
   const { data: rawThreats, error: threatsError } = await adminSupabase
-    .from("threat_artifacts_secure")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .from('threat_artifacts_secure')
+    .select('*')
+    .order('created_at', { ascending: false });
 
   if (threatsError) {
-    console.error("[DarkWebRecon] Admin DB query failed:", threatsError.message, threatsError.code);
+    console.error('[DarkWebRecon] Admin DB query failed:', threatsError.message, threatsError.code);
   }
 
-  const dbThreats = (!threatsError && rawThreats) ? rawThreats : [];
+  const dbThreats = !threatsError && rawThreats ? rawThreats : [];
 
-  // 3. Fetch total ingested article count for the live threat counter (WARN-09 fix).
+  // 3. Redesign data contracts (DTO layer) to prevent client-side data leakage.
+  // If the user session lacks subscriber clearance, strip all sensitive intellectual property.
+  const threats = dbThreats.map((threat) => {
+    if (isSubscriber) {
+      return threat;
+    }
+    return {
+      id: threat.id,
+      title: threat.title,
+      severity: threat.severity,
+      cvss_score: threat.cvss_score,
+      fbr_total: threat.fbr_total,
+      sector: threat.sector,
+      is_public_teaser: threat.is_public_teaser,
+      teaser_text: threat.teaser_text,
+      created_at: threat.created_at,
+      updated_at: threat.updated_at,
+      // Nullify all premium fields at the server boundary
+      yara_rules: null,
+      sigma_rules: null,
+      cloudflare_waf_rules: null,
+      assessment_25_point: null,
+      raw_iocs: null,
+      unmasked_target_entities: null,
+      sitrep_pdf_url: null,
+    };
+  });
+
+  // 4. Fetch total ingested article count for the live threat counter (WARN-09 fix).
   // Uses the admin client to count articles regardless of RLS. Falls back to threat count.
   const { count: articleCount } = await adminSupabase
-    .from("articles")
-    .select("*", { count: "exact", head: true });
+    .from('articles')
+    .select('*', { count: 'exact', head: true });
   const totalIntelCount = articleCount ?? dbThreats.length;
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen py-12 px-6 lg:px-10 font-sans selection:bg-[#733DD9] selection:text-white">
       <div className="max-w-[1400px] mx-auto space-y-8 animate-fade-up">
-        
         {/* Header Block (Bloomberg Minimalist Style) */}
         <div className="bg-white border border-neutral-200/80 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
           <div>
@@ -71,8 +98,8 @@ export default async function DarkWebReconPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <a 
-              href="/dark-web-recon" 
+            <a
+              href="/dark-web-recon"
               className="flex items-center gap-2 px-3 py-1.5 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 font-mono text-[10px] font-bold uppercase transition-all duration-200 active:scale-95 shadow-sm"
             >
               <RefreshCw className="w-3.5 h-3.5 text-[#733DD9]" />
@@ -82,8 +109,11 @@ export default async function DarkWebReconPage() {
         </div>
 
         {/* Live Client Dashboard Component */}
-        <DarkWebDashboard threats={dbThreats} isSubscriber={isSubscriber} totalIntelCount={totalIntelCount} />
-
+        <DarkWebDashboard
+          threats={threats}
+          isSubscriber={isSubscriber}
+          totalIntelCount={totalIntelCount}
+        />
       </div>
     </div>
   );

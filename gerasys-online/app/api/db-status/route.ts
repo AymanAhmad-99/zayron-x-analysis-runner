@@ -1,15 +1,12 @@
-import { NextResponse } from "next/server";
-import { getArticleCount } from "@/lib/supabase/queries/articles";
-import { getCVECount } from "@/lib/supabase/queries/cves";
+import { getArticleCount } from '@/lib/supabase/queries/articles';
+import { getCVECount } from '@/lib/supabase/queries/cves';
+import { NextResponse } from 'next/server';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const [articleCount, cveCount] = await Promise.all([
-      getArticleCount(),
-      getCVECount(),
-    ]);
+    const [articleCount, cveCount] = await Promise.all([getArticleCount(), getCVECount()]);
 
     return NextResponse.json(
       {

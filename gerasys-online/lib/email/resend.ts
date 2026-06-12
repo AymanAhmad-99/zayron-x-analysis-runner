@@ -12,10 +12,10 @@ export async function sendNewsletterNotification(
     slug: string;
     category: string;
   },
-  subscribers: string[]
+  subscribers: string[],
 ) {
   const resend = getResend(env);
-  
+
   const { data, error } = await resend.emails.send({
     from: 'ZAYRON-X Intelligence <noreply@zayron-x.com>',
     to: subscribers,
@@ -30,7 +30,7 @@ export async function sendNewsletterNotification(
       </div>
     `,
   });
-  
+
   if (error) throw new Error(error.message);
   return data;
 }

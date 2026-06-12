@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
-import { Shield, Lock, X } from "@/lib/icons";
-import { motion, AnimatePresence } from "framer-motion";
+import { useSecurityGating } from '@/components/platform/SecurityGatingContext';
+import { Lock, Shield, X } from '@/lib/icons';
+import { AnimatePresence, motion } from 'framer-motion';
+import type React from 'react';
+import { useState } from 'react';
 
 interface SovereignGateModalProps {
   isOpen: boolean;
@@ -13,9 +14,9 @@ interface SovereignGateModalProps {
 
 export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGateModalProps) {
   const { gateAction } = useSecurityGating();
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -26,13 +27,13 @@ export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGate
     // Validate inputs
     const newErrors: Record<string, string> = {};
     if (fullName.length < 2) {
-      newErrors.fullName = "Operator identity parameter missing (Full Name required).";
+      newErrors.fullName = 'Operator identity parameter missing (Full Name required).';
     }
-    if (!email.includes("@") || !email.includes(".")) {
-      newErrors.email = "Invalid corporate routing destination endpoint.";
+    if (!email.includes('@') || !email.includes('.')) {
+      newErrors.email = 'Invalid corporate routing destination endpoint.';
     }
     if (password.length < 12) {
-      newErrors.password = "Cryptographic integrity compromised. Minimum 12 characters required.";
+      newErrors.password = 'Cryptographic integrity compromised. Minimum 12 characters required.';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -45,7 +46,7 @@ export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGate
     // Simulate elite subscription authorization synchronization
     setTimeout(() => {
       setIsAuthenticating(false);
-      localStorage.setItem("zx_auth_clearance", "true");
+      localStorage.setItem('zx_auth_clearance', 'true');
       onSuccess?.();
       onClose();
       window.location.reload(); // Refresh the page to synchronize SSR contents securely
@@ -60,7 +61,7 @@ export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGate
             initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            transition={{ type: "spring", duration: 0.4 }}
+            transition={{ type: 'spring', duration: 0.4 }}
             className="bg-white max-w-md w-full p-8 border border-neutral-200 shadow-2xl rounded-none relative font-sans text-[#050505]"
           >
             {/* Close */}
@@ -81,7 +82,9 @@ export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGate
                 SOVEREIGN CLEARANCE GATING
               </h3>
               <p className="text-xs text-neutral-500 leading-relaxed mt-2">
-                Automated patch execution, advanced cryptographical blueprints, and official incident SITREPs require an authorized operator synchronization. Synchronize credentials below.
+                Automated patch execution, advanced cryptographical blueprints, and official
+                incident SITREPs require an authorized operator synchronization. Synchronize
+                credentials below.
               </p>
             </div>
 
@@ -145,7 +148,7 @@ export function SovereignGateModal({ isOpen, onClose, onSuccess }: SovereignGate
                 className="bg-[#050505] text-white w-full py-3.5 mt-2 font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#733DD9] transition-colors rounded-none cursor-pointer flex items-center justify-center gap-2"
               >
                 {isAuthenticating ? (
-                  "SYNCHRONIZING..."
+                  'SYNCHRONIZING...'
                 ) : (
                   <>
                     <Lock size={12} />

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 interface PwaInstallPromptProps {
   className?: string;
 }
 
-export function PwaInstallPrompt({ className = "" }: PwaInstallPromptProps) {
+export function PwaInstallPrompt({ className = '' }: PwaInstallPromptProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -16,20 +16,20 @@ export function PwaInstallPrompt({ className = "" }: PwaInstallPromptProps) {
       e.preventDefault();
       setDeferredPrompt(e);
       // Don't show if already installed or dismissed
-      const dismissed = localStorage.getItem("zx_pwa_dismissed");
-      if (!dismissed || Date.now() - parseInt(dismissed) > 7 * 24 * 60 * 60 * 1000) {
+      const dismissed = localStorage.getItem('zx_pwa_dismissed');
+      if (!dismissed || Date.now() - Number.parseInt(dismissed) > 7 * 24 * 60 * 60 * 1000) {
         setShowPrompt(true);
       }
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener('beforeinstallprompt', handler);
 
     // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    if (window.matchMedia('(display-mode: standalone)').matches) {
       setShowPrompt(false);
     }
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   if (!showPrompt) return null;
@@ -38,7 +38,7 @@ export function PwaInstallPrompt({ className = "" }: PwaInstallPromptProps) {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
+    if (outcome === 'accepted') {
       setShowPrompt(false);
     }
     setDeferredPrompt(null);
@@ -46,13 +46,13 @@ export function PwaInstallPrompt({ className = "" }: PwaInstallPromptProps) {
 
   function handleDismiss() {
     setShowPrompt(false);
-    localStorage.setItem("zx_pwa_dismissed", Date.now().toString());
+    localStorage.setItem('zx_pwa_dismissed', Date.now().toString());
   }
 
   return (
     <div
       className={`fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:w-80 z-40
-                  bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700
+                  bg-white dark:bg-black border border-slate-200 dark:border-slate-800
                   rounded-xl shadow-xl p-4 animate-fade-up ${className}`}
       role="dialog"
       aria-label="Install app"
@@ -62,9 +62,7 @@ export function PwaInstallPrompt({ className = "" }: PwaInstallPromptProps) {
           <span className="text-white font-black text-sm">ZX</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-900 dark:text-white">
-            Install ZAYRON-X
-          </p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">Install ZAYRON-X</p>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Add to home screen for offline access
           </p>

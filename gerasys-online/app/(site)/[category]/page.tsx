@@ -1,8 +1,8 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import { redirect } from "next/navigation";
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 interface Props {
   params: Promise<{ category: string }>;
@@ -11,7 +11,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category } = await params;
-  const label = category.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const label = category.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   return {
     title: `${label} — Intelligence Reports`,
     description: `Latest ${label} cyber threat intelligence reports and analysis from ZAYRON-X.`,
@@ -27,5 +27,5 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const page = Number(pageStr) || 1;
 
   // Redirect old /[category] routes to /intelligence/[category]
-  redirect(`/intelligence/${category}${page > 1 ? `?page=${page}` : ""}`);
+  redirect(`/intelligence/${category}${page > 1 ? `?page=${page}` : ''}`);
 }

@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { ArrowLeft, Shield } from "@/lib/icons";
+import { ArrowLeft, Shield } from '@/lib/icons';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -9,25 +9,18 @@ export default function NotFound() {
         <p className="text-[10px] uppercase tracking-[0.2em] text-[#E50000] font-bold font-mono mb-4">
           INTELLIGENCE NOT FOUND
         </p>
-        <h1 className="font-ui text-7xl font-black text-white mb-3 tracking-tight">
-          404
-        </h1>
+        <h1 className="font-ui text-7xl font-black text-white mb-3 tracking-tight">404</h1>
         <p className="text-[#888888] text-lg font-ui leading-relaxed mb-8">
-          The requested intelligence dossier does not exist or has been
-          declassified.
+          The requested intelligence dossier does not exist or has been declassified.
         </p>
         <div className="flex items-center justify-center gap-4">
-          <Link
-            href="/"
-            className="btn-primary"
-          >
+          <Link href="/" className="btn-primary">
             <ArrowLeft size={14} />
             Return to Command Center
           </Link>
         </div>
         <p className="text-[11px] text-[#333333] mt-8 font-mono uppercase tracking-wider">
-          If you believe this is an operational error, contact the intelligence
-          desk.
+          If you believe this is an operational error, contact the intelligence desk.
         </p>
       </div>
     </div>

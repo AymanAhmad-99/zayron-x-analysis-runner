@@ -1,6 +1,6 @@
-import { type Tool } from "@/lib/types";
-import Link from "next/link";
-import { Star, ExternalLink, GitFork } from "@/lib/icons";
+import { ExternalLink, GitFork, Star } from '@/lib/icons';
+import type { Tool } from '@/lib/types';
+import Link from 'next/link';
 
 interface ToolSpotlightProps {
   tools: Tool[];
@@ -20,10 +20,7 @@ export function ToolSpotlight({ tools }: ToolSpotlightProps) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {tools.slice(0, 4).map((tool) => (
-          <div
-            key={tool.id}
-            className="card-bento p-5 group"
-          >
+          <div key={tool.id} className="card-bento p-5 group">
             <div className="flex items-start justify-between mb-3">
               <span className="text-[10px] uppercase font-bold text-[#D2B48C] tracking-wider font-ui">
                 {tool.category}
@@ -35,9 +32,7 @@ export function ToolSpotlight({ tools }: ToolSpotlightProps) {
                 </span>
               )}
             </div>
-            <h3 className="font-display font-bold text-base text-[#0F172A] mb-1">
-              {tool.name}
-            </h3>
+            <h3 className="font-display font-bold text-base text-[#0F172A] mb-1">{tool.name}</h3>
             <p className="text-xs text-[#475569] line-clamp-2 font-body mb-4 leading-relaxed">
               {tool.description}
             </p>

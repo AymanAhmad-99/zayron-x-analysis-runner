@@ -1,7 +1,7 @@
-import { unstable_cache } from "next/cache";
-import Link from "next/link";
-import { getRecentArticles } from "@/lib/supabase/queries/articles";
-import { Shield, Clock, ArrowRight } from "@/lib/icons";
+import { ArrowRight, Clock, Shield } from '@/lib/icons';
+import { getRecentArticles } from '@/lib/supabase/queries/articles';
+import { unstable_cache } from 'next/cache';
+import Link from 'next/link';
 
 // 3-TIER CACHE LAYER 2: Incremental Static Regeneration (ISR) via unstable_cache
 // Aggressively cache the database fetch output at the Vercel/Cloudflare Edge boundary.
@@ -9,19 +9,19 @@ import { Shield, Clock, ArrowRight } from "@/lib/icons";
 // so we can trigger a hard-purge on-demand via a backend secure webhook.
 const getCachedRecentArticles = unstable_cache(
   async (limit: number) => {
-    console.log("[ISR CACHE MISS] Querying PostgreSQL database for fresh threat bulletins...");
+    console.log('[ISR CACHE MISS] Querying PostgreSQL database for fresh threat bulletins...');
     try {
       return await getRecentArticles(limit);
     } catch (error: any) {
-      console.error("[ISR CACHE ERROR] Failed to query recent articles:", error.message || error);
+      console.error('[ISR CACHE ERROR] Failed to query recent articles:', error.message || error);
       return [];
     }
   },
-  ["recent-threat-news"], // Cache namespace key
+  ['recent-threat-news'], // Cache namespace key
   {
     revalidate: 60, // Time-Based Revalidation: Cache stays valid at the edge for 60 seconds
-    tags: ["threat-news"], // On-Demand Revalidation tag: allows instant webhook cache-busting
-  }
+    tags: ['threat-news'], // On-Demand Revalidation tag: allows instant webhook cache-busting
+  },
 );
 
 export default async function NewsPage() {
@@ -31,7 +31,6 @@ export default async function NewsPage() {
   return (
     <main className="min-h-screen bg-white py-16 px-6 font-sans">
       <div className="max-w-[1200px] mx-auto">
-        
         {/* Header Block */}
         <div className="border-b border-neutral-200 pb-8 mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
@@ -47,7 +46,8 @@ export default async function NewsPage() {
               Threat Intelligence Bulletins
             </h1>
             <p className="text-neutral-500 text-xs mt-2 max-w-xl leading-relaxed">
-              Planetary-scale cybersecurity news feeds, zero-day indicators, and nation-state exploit analysis parsed by ZAYRON-X core.
+              Planetary-scale cybersecurity news feeds, zero-day indicators, and nation-state
+              exploit analysis parsed by ZAYRON-X core.
             </p>
           </div>
           <div className="flex items-center gap-4 text-[10px] text-neutral-400 font-mono shrink-0">
@@ -61,9 +61,9 @@ export default async function NewsPage() {
         {articles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {articles.map((article) => {
-              const href = `/intelligence/${(article.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${article.slug}`;
+              const href = `/intelligence/${(article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${article.slug}`;
               return (
-                <div 
+                <div
                   key={article.id}
                   className="bg-white border border-neutral-200 rounded p-6 flex flex-col justify-between hover:border-[#733DD9] transition-all duration-200 shadow-sm"
                 >
@@ -71,7 +71,7 @@ export default async function NewsPage() {
                     {/* Eyebrow */}
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-[9px] font-mono font-bold text-[#733DD9] uppercase tracking-wider">
-                        {article.category.replace("_", " ")}
+                        {article.category.replace('_', ' ')}
                       </span>
                       <span className="text-neutral-300 text-[8px]">·</span>
                       <span className="text-[9px] font-mono text-neutral-400">
@@ -86,14 +86,14 @@ export default async function NewsPage() {
 
                     {/* Excerpt */}
                     <p className="text-neutral-500 text-xs leading-loose mb-6 line-clamp-3">
-                      {article.excerpt || article.content.substring(0, 120) + "..."}
+                      {article.excerpt || article.content.substring(0, 120) + '...'}
                     </p>
                   </div>
 
                   {/* Footer link */}
                   <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
                     <span className="text-[9px] font-mono text-neutral-400">
-                      {new Date(article.createdAt || "").toLocaleDateString()}
+                      {new Date(article.createdAt || '').toLocaleDateString()}
                     </span>
                     <Link
                       href={href}

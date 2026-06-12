@@ -1,10 +1,15 @@
-"use client";
-import { useEffect } from "react";
-import { AlertTriangle, RefreshCw, ArrowLeft } from "@/lib/icons";
-import Link from "next/link";
+'use client';
+import { AlertTriangle, ArrowLeft, RefreshCw } from '@/lib/icons';
+import Link from 'next/link';
+import { useEffect } from 'react';
 
-export default function AdminError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  useEffect(() => { console.error("ZAYRON-X Admin Error:", error); }, [error]);
+export default function AdminError({
+  error,
+  reset,
+}: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => {
+    console.error('ZAYRON-X Admin Error:', error);
+  }, [error]);
   return (
     <div className="p-8 flex items-center justify-center min-h-[60vh]">
       <div className="text-center max-w-md">
@@ -19,10 +24,16 @@ export default function AdminError({ error, reset }: { error: Error & { digest?:
           </div>
         )}
         <div className="flex items-center justify-center gap-3">
-          <button onClick={reset} className="flex items-center gap-2 px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm font-semibold rounded-lg transition-all font-ui">
+          <button
+            onClick={reset}
+            className="flex items-center gap-2 px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm font-semibold rounded-lg transition-all font-ui"
+          >
             <RefreshCw size={13} /> Retry
           </button>
-          <Link href="/admin" className="flex items-center gap-2 px-4 py-2 border border-white/[0.1] text-[#94A3B8] hover:text-white text-sm font-semibold rounded-lg transition-all font-ui">
+          <Link
+            href="/admin"
+            className="flex items-center gap-2 px-4 py-2 border border-white/[0.1] text-[#94A3B8] hover:text-white text-sm font-semibold rounded-lg transition-all font-ui"
+          >
             <ArrowLeft size={13} /> Dashboard
           </Link>
         </div>

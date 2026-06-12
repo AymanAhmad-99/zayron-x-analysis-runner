@@ -1,8 +1,8 @@
-import type { Article } from "@/lib/types";
-import type { SiloDefinition } from "@/lib/silos";
-import { formatDate } from "@/lib/utils/formatDate";
-import { CategoryBadge } from "@/components/ui/CategoryBadge";
-import Link from "next/link";
+import { CategoryBadge } from '@/components/ui/CategoryBadge';
+import type { SiloDefinition } from '@/lib/silos';
+import type { Article } from '@/lib/types';
+import { formatDate } from '@/lib/utils/formatDate';
+import Link from 'next/link';
 
 interface ArticleHeaderProps {
   article: Article;
@@ -11,17 +11,15 @@ interface ArticleHeaderProps {
 
 function getInitials(name: string): string {
   return name
-    .split(" ")
+    .split(' ')
     .map((w) => w[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 }
 
 export function ArticleHeader({ article, silo }: ArticleHeaderProps) {
-  const displayCategory = (article.category ?? "intelligence")
-    .toLowerCase()
-    .replace(/\s+/g, "-");
+  const displayCategory = (article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-');
 
   return (
     <header className="border-b border-[#222222] bg-white">
@@ -42,13 +40,9 @@ export function ArticleHeader({ article, silo }: ArticleHeaderProps) {
 
         {/* Badges */}
         <div className="flex flex-wrap items-center gap-2 mb-5">
-          <CategoryBadge category={article.category ?? ""} />
-          {article.isBreaking && (
-            <span className="tlp-badge tlp-red">BREAKING</span>
-          )}
-          {article.isFeatured && (
-            <span className="tlp-badge tlp-amber">FEATURED</span>
-          )}
+          <CategoryBadge category={article.category ?? ''} />
+          {article.isBreaking && <span className="tlp-badge tlp-red">BREAKING</span>}
+          {article.isFeatured && <span className="tlp-badge tlp-amber">FEATURED</span>}
         </div>
 
         {/* Title */}
@@ -69,19 +63,16 @@ export function ArticleHeader({ article, silo }: ArticleHeaderProps) {
             {getInitials(article.author)}
           </div>
           <div>
-            <span className="block text-sm font-bold text-black font-ui">
-              {article.author}
-            </span>
+            <span className="block text-sm font-bold text-black font-ui">{article.author}</span>
             <span className="text-xs text-[#666666] font-mono uppercase tracking-wider">
-              {article.createdAt ? formatDate(article.createdAt) : ""} //{" "}
-              {article.readTime} min read //{" "}
-              {(article.views ?? 0).toLocaleString()} views
+              {article.createdAt ? formatDate(article.createdAt) : ''} // {article.readTime} min
+              read // {(article.views ?? 0).toLocaleString()} views
             </span>
           </div>
 
           {silo && (
             <span className="ml-auto tlp-badge tlp-white text-[10px]">
-              TLP:{silo.id === "cybersecurity" ? "AMBER" : "WHITE"}
+              TLP:{silo.id === 'cybersecurity' ? 'AMBER' : 'WHITE'}
             </span>
           )}
         </div>

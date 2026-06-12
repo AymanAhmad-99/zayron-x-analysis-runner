@@ -1,5 +1,5 @@
-import { getSupabaseClient } from '../client';
 import type { Tool } from '@/lib/types';
+import { getSupabaseClient } from '../client';
 
 function mapTool(dbTool: any): Tool {
   if (!dbTool) return null as any;
@@ -29,11 +29,7 @@ export async function getTools(env?: any) {
 
 export async function getToolBySlug(slug: string, env?: any) {
   const supabase = getSupabaseClient(env);
-  const { data, error } = await supabase
-    .from('tools')
-    .select('*')
-    .eq('slug', slug)
-    .limit(1);
+  const { data, error } = await supabase.from('tools').select('*').eq('slug', slug).limit(1);
   if (error || !data || data.length === 0) return null;
   return mapTool(data[0]);
 }

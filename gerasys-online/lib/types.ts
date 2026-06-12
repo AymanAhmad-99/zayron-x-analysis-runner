@@ -9,7 +9,7 @@ export type Article = {
   excerpt: string | null;
   tags: string[] | null;
   views: number | null;
-  
+
   // Snake_case (Database direct columns)
   featured_image?: string | null;
   image_url?: string | null;

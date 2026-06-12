@@ -19,7 +19,33 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-ENV="${1:-production}"  # default to production
+ENV="production"
+NON_INTERACTIVE=false
+
+# Check if CI environment variable is set
+if [[ "${CI:-}" == "true" ]]; then
+  NON_INTERACTIVE=true
+fi
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --env)
+      ENV="$2"
+      shift 2
+      ;;
+    -y|--yes)
+      NON_INTERACTIVE=true
+      shift
+      ;;
+    *)
+      if [[ "$1" != -* ]]; then
+        ENV="$1"
+      fi
+      shift
+      ;;
+  esac
+done
+
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -72,11 +98,13 @@ log_info "Recent deployments:"
 echo "$DEPLOYMENTS" | head -10
 echo ""
 
-read -rp "Confirm rollback? This will immediately revert all traffic. [y/N]: " CONFIRM
+if [ "$NON_INTERACTIVE" != "true" ]; then
+  read -rp "Confirm rollback? This will immediately revert all traffic. [y/N]: " CONFIRM
 
-if [ "${CONFIRM,,}" != "y" ] && [ "${CONFIRM,,}" != "yes" ]; then
-  log_info "Rollback cancelled."
-  exit 0
+  if [ "${CONFIRM,,}" != "y" ] && [ "${CONFIRM,,}" != "yes" ]; then
+    log_info "Rollback cancelled."
+    exit 0
+  fi
 fi
 
 log_info "Executing rollback..."

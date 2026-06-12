@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Shield, Bug, Globe, Lock, Cpu, Zap } from "@/lib/icons";
+import { Bug, Cpu, Globe, Lock, Shield, Zap } from '@/lib/icons';
+import Link from 'next/link';
 
 interface CategoryItem {
   category: string;
@@ -15,21 +15,24 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; classN
   exploit: Bug,
   ransomware: Lock,
   malware: Bug,
-  "nation-state": Globe,
+  'nation-state': Globe,
   nationstate: Globe,
   apt: Globe,
   intelligence: Cpu,
-  "threat intelligence": Cpu,
+  'threat intelligence': Cpu,
   osint: Globe,
   tools: Zap,
-  "ai-security": Cpu,
+  'ai-security': Cpu,
   default: Shield,
 };
 
 function getIcon(category: string): React.ReactNode {
-  const key = category.toLowerCase().replace(/\s+/g, "");
+  const key = category.toLowerCase().replace(/\s+/g, '');
   const match = Object.entries(CATEGORY_ICONS).find(([k]) => key.includes(k));
-  const IconComponent = (match?.[1] ?? CATEGORY_ICONS.default) as React.ComponentType<{ size?: number; className?: string }>;
+  const IconComponent = (match?.[1] ?? CATEGORY_ICONS.default) as React.ComponentType<{
+    size?: number;
+    className?: string;
+  }>;
   return <IconComponent size={20} className="text-black" />;
 }
 
@@ -49,7 +52,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
         {categories.map((cat) => (
           <Link
             key={cat.category}
-            href={`/intelligence/${cat.category.toLowerCase().replace(/\s+/g, "-")}`}
+            href={`/intelligence/${cat.category.toLowerCase().replace(/\s+/g, '-')}`}
             className="card-article p-5 flex flex-col items-center text-center group"
           >
             <div className="w-10 h-10 bg-[#F5F5F5] flex items-center justify-center mb-3 group-hover:bg-black transition-colors">
@@ -59,7 +62,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
               {cat.category}
             </h3>
             <span className="text-xs text-[#666666] font-mono mt-1">
-              {cat.count} {cat.count === 1 ? "report" : "reports"}
+              {cat.count} {cat.count === 1 ? 'report' : 'reports'}
             </span>
           </Link>
         ))}

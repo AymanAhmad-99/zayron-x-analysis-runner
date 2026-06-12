@@ -1,14 +1,14 @@
-import { getBreakingArticles } from "@/lib/supabase/queries/articles";
+import { getBreakingArticles } from '@/lib/supabase/queries/articles';
 
 async function getTickerItems() {
   try {
     const breaking = await getBreakingArticles(12);
     if (breaking.length === 0) return null;
     return breaking.map((a) => ({
-      id:    a.id,
-      label: a.category ?? "Intelligence",
+      id: a.id,
+      label: a.category ?? 'Intelligence',
       title: a.title,
-      slug:  a.slug,
+      slug: a.slug,
     }));
   } catch {
     return null;
@@ -35,7 +35,7 @@ export async function NewsTicker() {
     <div className="bg-[#111111] h-7 overflow-hidden relative flex items-center">
       {/* Label */}
       <div className="shrink-0 z-10 flex items-center gap-2 px-5 bg-[#111111] border-r border-white/10 h-full">
-        <span className="live-dot" style={{ width: "5px", height: "5px", background: "#B22222" }} />
+        <span className="live-dot" style={{ width: '5px', height: '5px', background: '#B22222' }} />
         <span className="meta text-[0.58rem] text-[#FAFAFA] uppercase tracking-[0.2em] whitespace-nowrap">
           Live Intelligence
         </span>
@@ -47,7 +47,7 @@ export async function NewsTicker() {
           {[...items, ...items].map((item, i) => (
             <a
               key={`${item.id}-${i}`}
-              href={`/intelligence/${item.label.toLowerCase().replace(/\s+/g, "-")}/${item.slug}`}
+              href={`/intelligence/${item.label.toLowerCase().replace(/\s+/g, '-')}/${item.slug}`}
               className="shrink-0 flex items-center gap-2.5 mr-10 text-[0.7rem] text-[#AAAAAA] hover:text-white transition-colors font-sans"
             >
               <span className="w-px h-3 bg-white/20 shrink-0" />

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -10,12 +10,12 @@ export function ScrollToTop() {
     function handleScroll() {
       setVisible(window.scrollY > 500);
     }
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   if (!visible) return null;

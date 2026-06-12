@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
-import { Mail, Lock, User, ArrowRight, Shield } from "@/lib/icons";
+import { ArrowRight, Lock, Mail, Shield, User } from '@/lib/icons';
+import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
+import { useState } from 'react';
+import { z } from 'zod';
 
 // Zod Schema Enforcing Password Complexity & Non-Empty Full Name
 const registerSchema = z.object({
-  fullName: z.string().min(1, "Full Name is required"),
-  email: z.string().email("Invalid clearance email address"),
+  fullName: z.string().min(1, 'Full Name is required'),
+  email: z.string().email('Invalid clearance email address'),
   password: z
     .string()
-    .min(12, "Password must be at least 12 characters")
+    .min(12, 'Password must be at least 12 characters')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/,
-      "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (@$!%*?&)"
+      'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character (@$!%*?&)',
     ),
 });
 
 type RegisterInput = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -42,7 +42,7 @@ export default function RegisterPage() {
     });
 
     if (!validation.success) {
-      setError(validation.error.issues[0]?.message || "Validation failed");
+      setError(validation.error.issues[0]?.message || 'Validation failed');
       setLoading(false);
       return;
     }
@@ -71,7 +71,10 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="mb-10 text-center">
           <h1 className="font-sans text-3xl font-black select-none leading-none">
-            <span className="inline-flex items-center tracking-tighter" style={{ letterSpacing: "-0.08em" }}>
+            <span
+              className="inline-flex items-center tracking-tighter"
+              style={{ letterSpacing: '-0.08em' }}
+            >
               <span className="text-[#050505]">ZAYRON</span>
               <span className="text-[#733DD9]">-X</span>
             </span>
@@ -82,13 +85,11 @@ export default function RegisterPage() {
           <div className="w-12 h-12 rounded-full bg-[#733DD9]/10 border border-[#733DD9]/20 flex items-center justify-center mx-auto mb-6">
             <Shield size={20} className="text-[#733DD9]" />
           </div>
-          <h2 className="font-sans text-xl font-bold text-[#050505] mb-3">
-            Credentials Requested
-          </h2>
+          <h2 className="font-sans text-xl font-bold text-[#050505] mb-3">Credentials Requested</h2>
           <p className="text-neutral-500 text-sm font-sans mb-8 leading-relaxed">
-            A verification link has been dispatched to{" "}
-            <span className="text-[#733DD9] font-bold">{email}</span>. Access
-            is granted upon confirmation.
+            A verification link has been dispatched to{' '}
+            <span className="text-[#733DD9] font-bold">{email}</span>. Access is granted upon
+            confirmation.
           </p>
           <Link
             href="/login"
@@ -109,14 +110,15 @@ export default function RegisterPage() {
           RESTRICTED · CREDENTIAL REQUEST
         </p>
         <h1 className="font-sans text-3xl font-black select-none leading-none">
-          <span className="inline-flex items-center tracking-tighter" style={{ letterSpacing: "-0.08em" }}>
+          <span
+            className="inline-flex items-center tracking-tighter"
+            style={{ letterSpacing: '-0.08em' }}
+          >
             <span className="text-[#050505]">ZAYRON</span>
             <span className="text-[#733DD9]">-X</span>
           </span>
         </h1>
-        <p className="text-neutral-500 text-sm mt-2 font-medium">
-          Request Platform Credentials
-        </p>
+        <p className="text-neutral-500 text-sm mt-2 font-medium">Request Platform Credentials</p>
       </div>
 
       {/* Card */}
@@ -181,7 +183,8 @@ export default function RegisterPage() {
               />
             </div>
             <p className="text-[10px] text-neutral-400 mt-2 font-mono leading-normal">
-              Must be at least 12 characters, including 1 uppercase, 1 lowercase, 1 number, and 1 symbol.
+              Must be at least 12 characters, including 1 uppercase, 1 lowercase, 1 number, and 1
+              symbol.
             </p>
           </div>
 
@@ -197,7 +200,7 @@ export default function RegisterPage() {
             className="w-full py-3.5 bg-[#050505] text-white font-bold text-xs uppercase tracking-wider rounded hover:bg-[#733DD9] transition-all disabled:opacity-50 font-sans flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
-              "Processing..."
+              'Processing...'
             ) : (
               <>
                 <Shield size={16} />
@@ -209,7 +212,7 @@ export default function RegisterPage() {
 
         <div className="mt-8 pt-6 border-t border-neutral-100">
           <p className="text-center text-xs text-neutral-500 font-sans">
-            Already hold credentials?{" "}
+            Already hold credentials?{' '}
             <Link
               href="/login"
               className="text-[#733DD9] hover:underline font-bold inline-flex items-center gap-1"

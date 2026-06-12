@@ -1,18 +1,18 @@
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/--+/g, "-")
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-')
     .trim()
-    .replace(/^-+|-+$/g, "");
+    .replace(/^-+|-+$/g, '');
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  vulnerabilities: "Vulnerabilities",
-  threat_intel: "Threat Intelligence",
-  osint: "OSINT",
-  cyber_news: "Cyber News",
+  vulnerabilities: 'Vulnerabilities',
+  threat_intel: 'Threat Intelligence',
+  osint: 'OSINT',
+  cyber_news: 'Cyber News',
 };
 
 export function formatCategoryLabel(category: string): string {

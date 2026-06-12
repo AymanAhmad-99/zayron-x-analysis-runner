@@ -97,15 +97,30 @@ Translate the raw message into professional English analysis following the rules
 
 export interface TranslationResult {
   summary: string;
-  silo: "cybersecurity" | "programming" | "networking";
+  silo: 'cybersecurity' | 'programming' | 'networking';
   category: string;
   technicalDetails: string;
-  iso27001Mapping: Array<{ control: string; title: string; applicability: string; mitigation: string }>;
-  nistCsfMapping: Array<{ function: string; category: string; applicability: string; mitigation: string }>;
-  mitreAttackMapping: Array<{ tCode: string; technique: string; applicability: string; detection: string }>;
+  iso27001Mapping: Array<{
+    control: string;
+    title: string;
+    applicability: string;
+    mitigation: string;
+  }>;
+  nistCsfMapping: Array<{
+    function: string;
+    category: string;
+    applicability: string;
+    mitigation: string;
+  }>;
+  mitreAttackMapping: Array<{
+    tCode: string;
+    technique: string;
+    applicability: string;
+    detection: string;
+  }>;
   iocs: { ips: string[]; domains: string[]; hashes: string[]; other: string[] };
   sourceGrading: string;
-  confidence: "High" | "Medium" | "Low";
+  confidence: 'High' | 'Medium' | 'Low';
   confidenceReason: string;
   analystNote: string;
   aiGeneratedFlag: boolean;

@@ -1,10 +1,10 @@
-import { type Article } from "@/lib/types";
-import Link from "next/link";
-import Image from "next/image";
-import { CategoryBadge } from "@/components/ui/CategoryBadge";
-import { formatDate } from "@/lib/utils/formatDate";
-import { ArrowRight } from "@/lib/icons";
-import CyberArticleImage from "@/components/ui/CyberArticleImage";
+import { CategoryBadge } from '@/components/ui/CategoryBadge';
+import CyberArticleImage from '@/components/ui/CyberArticleImage';
+import { ArrowRight } from '@/lib/icons';
+import type { Article } from '@/lib/types';
+import { formatDate } from '@/lib/utils/formatDate';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface HeroSectionProps {
   primary: Article | null;
@@ -17,7 +17,7 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
         {primary && (
           <Link
-            href={`/intelligence/${(primary.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${primary.slug}`}
+            href={`/intelligence/${(primary.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${primary.slug}`}
             className="lg:col-span-2 group card-article flex flex-col border-r-0 lg:border-r"
           >
             <div className="img-intel relative">
@@ -57,9 +57,9 @@ export function HeroSection({ primary, secondary }: HeroSectionProps) {
           {secondary.slice(0, 3).map((article, i) => (
             <Link
               key={article.id}
-              href={`/intelligence/${(article.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${article.slug}`}
+              href={`/intelligence/${(article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${article.slug}`}
               className={`card-article p-5 flex gap-4 items-start group ${
-                i < 2 ? "border-b-0" : ""
+                i < 2 ? 'border-b-0' : ''
               }`}
             >
               <div className="relative w-20 h-20 shrink-0 overflow-hidden">

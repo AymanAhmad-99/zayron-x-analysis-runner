@@ -1,34 +1,23 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import type { Metadata } from "next";
-import type { CategoryType, Article } from "@/lib/types";
-import { ArticleCard } from "@/components/ui/ArticleCard";
+import { ArticleCard } from '@/components/ui/ArticleCard';
+import { getCached } from '@/lib/cache/redis';
+import { Activity, AlertTriangle, ArrowLeft, Radio, Shield, Tag } from '@/lib/icons';
+import { type SiloId, getSiloColorClass, getSiloForCategory } from '@/lib/silos';
 import {
+  getAllTags,
   getArticlesByCategory,
   getCategoriesWithCounts,
-  getAllTags,
-} from "@/lib/supabase/queries/articles";
-import { getCached } from "@/lib/cache/redis";
-import {
-  getSiloForCategory,
-  getSiloColorClass,
-  type SiloId,
-} from "@/lib/silos";
-import {
-  Shield,
-  Radio,
-  ArrowLeft,
-  Tag,
-  Activity,
-  AlertTriangle,
-} from "@/lib/icons";
-import Link from "next/link";
+} from '@/lib/supabase/queries/articles';
+import type { Article, CategoryType } from '@/lib/types';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
-const DB_CATEGORY: CategoryType = "threat_intel";
-const DISPLAY_NAME = "Threat Intelligence";
-const SILO_ID: SiloId = "cybersecurity";
-const CLASSIFICATION = "TLP:AMBER — RESTRICTED DISTRIBUTION";
+const DB_CATEGORY: CategoryType = 'threat_intel';
+const DISPLAY_NAME = 'Threat Intelligence';
+const SILO_ID: SiloId = 'cybersecurity';
+const CLASSIFICATION = 'TLP:AMBER — RESTRICTED DISTRIBUTION';
 const PAGE_SIZE = 12;
 
 const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -39,12 +28,12 @@ const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?
 
 function getSiloHeroClass(siloId: SiloId): string {
   switch (siloId) {
-    case "cybersecurity":
-      return "silo-cyber-hero";
-    case "programming":
-      return "silo-programming-hero";
-    case "networking":
-      return "silo-networking-hero";
+    case 'cybersecurity':
+      return 'silo-cyber-hero';
+    case 'programming':
+      return 'silo-programming-hero';
+    case 'networking':
+      return 'silo-networking-hero';
   }
 }
 
@@ -67,16 +56,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: `${DISPLAY_NAME} — Intelligence Reports`,
-    description: articleCount > 0
-      ? `${articleCount}+ ${DISPLAY_NAME} intelligence reports and deep-dive analysis from ZAYRON-X. APT tracking, campaign analysis, and IOC feeds.`
-      : `Live ${DISPLAY_NAME} monitoring — ZAYRON-X radar actively scanning. Real-time APT tracking, threat actor profiles, and IOC feeds.`,
+    description:
+      articleCount > 0
+        ? `${articleCount}+ ${DISPLAY_NAME} intelligence reports and deep-dive analysis from ZAYRON-X. APT tracking, campaign analysis, and IOC feeds.`
+        : `Live ${DISPLAY_NAME} monitoring — ZAYRON-X radar actively scanning. Real-time APT tracking, threat actor profiles, and IOC feeds.`,
     alternates: {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/intelligence/threat-intelligence`,
     },
     openGraph: {
       title: `${DISPLAY_NAME} — ZAYRON-X Intelligence`,
-      description: "Advanced Persistent Threat tracking, campaign analysis, IOC feeds, and threat actor profiling.",
-      type: "website",
+      description:
+        'Advanced Persistent Threat tracking, campaign analysis, IOC feeds, and threat actor profiling.',
+      type: 'website',
     },
   };
 }
@@ -110,10 +101,8 @@ function ZeroIntelReport() {
 
           <div className="mb-8 px-6 py-5 rounded-xl border border-[#DC2626]/10 bg-[#DC2626]/[0.02] max-w-lg w-full">
             <p className="text-[#DC2626] font-mono text-sm leading-loose">
-              Zx Sector Scan:{" "}
-              <span className="font-bold text-[#111827]">{DISPLAY_NAME}</span> —
-              No intelligence intercepted in the last 24h. The Radar is actively
-              monitoring.
+              Zx Sector Scan: <span className="font-bold text-[#111827]">{DISPLAY_NAME}</span> — No
+              intelligence intercepted in the last 24h. The Radar is actively monitoring.
             </p>
           </div>
 
@@ -220,9 +209,7 @@ function DatabaseErrorReport({ message }: { message: string }) {
 }
 
 /* ─── Main Page Component ─── */
-export default async function ThreatIntelligencePage({
-  searchParams,
-}: PageProps) {
+export default async function ThreatIntelligencePage({ searchParams }: PageProps) {
   const { page: pageStr } = await searchParams;
   const page = Number(pageStr) || 1;
 
@@ -233,18 +220,19 @@ export default async function ThreatIntelligencePage({
 
   try {
     const [fetchedArticles, fetchedTags] = await Promise.all([
-      getCached(process.env, `intel:category:${DB_CATEGORY}:page:${page}`, () => getArticlesByCategory(DB_CATEGORY, page, PAGE_SIZE, process.env), 300),
-      getCached(process.env, "intel:all_tags", () => getAllTags(process.env), 300),
+      getCached(
+        process.env,
+        `intel:category:${DB_CATEGORY}:page:${page}`,
+        () => getArticlesByCategory(DB_CATEGORY, page, PAGE_SIZE, process.env),
+        300,
+      ),
+      getCached(process.env, 'intel:all_tags', () => getAllTags(process.env), 300),
     ]);
     articles = fetchedArticles as Article[];
     allTags = fetchedTags;
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "Unknown database connection failure";
-    console.error(
-      `[threat-intelligence] DB fetch failed for category "${DB_CATEGORY}":`,
-      message,
-    );
+    const message = err instanceof Error ? err.message : 'Unknown database connection failure';
+    console.error(`[threat-intelligence] DB fetch failed for category "${DB_CATEGORY}":`, message);
     dbError = message;
   }
 
@@ -260,11 +248,11 @@ export default async function ThreatIntelligencePage({
 
   /* ─── Render: Full Intelligence Layout ─── */
   const silo = getSiloForCategory(DISPLAY_NAME);
-  const siloId: SiloId = silo?.id ?? "cybersecurity";
-  const siloColorClass = silo ? getSiloColorClass(silo.id) : "silo-cyber";
+  const siloId: SiloId = silo?.id ?? 'cybersecurity';
+  const siloColorClass = silo ? getSiloColorClass(silo.id) : 'silo-cyber';
   const heroClass = getSiloHeroClass(siloId);
   const SiloIcon = silo ? SILO_ICONS[silo.id] : Shield;
-  const sectionTitle = "Tactical Intelligence Dossier";
+  const sectionTitle = 'Tactical Intelligence Dossier';
   const classification = silo?.tagline ?? CLASSIFICATION;
 
   return (
@@ -283,7 +271,7 @@ export default async function ThreatIntelligencePage({
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${siloColorClass}`}
             >
               <SiloIcon size={14} />
-              {silo?.label ?? "Cyber"} Intelligence
+              {silo?.label ?? 'Cyber'} Intelligence
             </span>
             <span className="text-[10px] uppercase tracking-[0.15em] text-[#9CA3AF] font-bold">
               {sectionTitle}
@@ -293,9 +281,8 @@ export default async function ThreatIntelligencePage({
             {DISPLAY_NAME}
           </h1>
           <p className="text-[#4B5563] text-lg mt-3 max-w-2xl leading-loose">
-            Advanced Persistent Threat tracking, campaign analysis, IOC feeds,
-            and threat actor profiling from ZAYRON-X global intelligence
-            network.
+            Advanced Persistent Threat tracking, campaign analysis, IOC feeds, and threat actor
+            profiling from ZAYRON-X global intelligence network.
           </p>
 
           <div className="flex items-center gap-2 mt-6">
@@ -303,7 +290,7 @@ export default async function ThreatIntelligencePage({
               {articles.length}
             </span>
             <span className="text-xs text-[#9CA3AF] font-ui uppercase tracking-wider">
-              Reports{page > 1 ? ` (Page ${page})` : " Available"}
+              Reports{page > 1 ? ` (Page ${page})` : ' Available'}
             </span>
           </div>
         </div>

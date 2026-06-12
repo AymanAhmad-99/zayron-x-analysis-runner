@@ -8,7 +8,11 @@ export default function AnalystsLoading() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="card-article p-6" style={{ animation: `fade-up 0.5s ease-out ${i * 60}ms both` }}>
+          <div
+            key={i}
+            className="card-article p-6"
+            style={{ animation: `fade-up 0.5s ease-out ${i * 60}ms both` }}
+          >
             <div className="flex items-center gap-4 mb-4">
               <div className="skeleton w-14 h-14 rounded-full shrink-0" />
               <div className="flex-1 space-y-2">

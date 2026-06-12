@@ -105,19 +105,60 @@ _MALWARE_PATTERN = re.compile(
 
 # Category keyword mapping (order matters — first match wins)
 _CATEGORY_KEYWORDS: list[tuple[str, list[str]]] = [
-    ("Ransomware", ["ransomware", "extortion", "double extortion", "ransom"]),
-    ("Vulnerability Research", ["cve-", "zero-day", "0day", "proof-of-concept", "poc", "patch tuesday", "cvss"]),
-    ("Malware Analysis", ["malware", "trojan", "backdoor", "rootkit", "wiper", "stealer", "loader"]),
-    ("APT Activity", ["apt", "advanced persistent threat", "state-sponsored", "nation-state"]),
-    ("Data Breach", ["data breach", "data leak", "exfiltration", "stolen data", "leaked database"]),
-    ("Phishing", ["phishing", "spearphishing", "credential harvesting", "pretexting"]),
-    ("Supply Chain Security", ["supply chain", "dependency confusion", "upstream", "third-party"]),
-    ("ICS/OT Security", ["ics", "scada", "ot security", "industrial control", "plc", "modbus"]),
-    ("Cloud Security", ["aws", "azure", "gcp", "cloud", "s3 bucket", "kubernetes"]),
-    ("Cyber Crime", ["darkweb", "dark web", "forum", "marketplace", "carding", "fraud"]),
-    ("OSINT", ["open source", "osint", "leak", "paste", "pastebin"]),
-    ("Threat Intelligence", []),  # Default fallback
+    ("VULNERABILITY", ["cve", "patch", "vulnerability"]),
+    ("EXPLOIT", ["exploit", "proof-of-concept", "poc"]),
+    ("MALWARE", ["virus", "trojan", "backdoor", "ransomware", "malware", "payload"]),
+    ("DARK_WEB", ["dark web", "darkweb", "onion", "leak", "forum", "marketplace", "credentials"]),
+    ("THREAT_ACTOR", ["actor", "campaign", "ttps", "apt", "cybercriminal"]),
 ]
+
+
+# ---------------------------------------------------------------------------
+# System Prompt — Extraction & Translation Directive
+# ---------------------------------------------------------------------------
+
+HARVESTER_SYSTEM_PROMPT: str = """\
+You are the Intelligence Harvester for ZAYRON-X — a Fortune 500-class threat \
+intelligence corporation. Your sole function is to receive raw intelligence \
+feeds (from Telegram channels, RSS feeds, dark web forums) and produce a \
+structured extraction.
+
+OPERATIONAL DIRECTIVES:
+1. DETECT the language of the input. If non-English, TRANSLATE the full \
+   content to flawless cybersecurity English. Preserve original threat actor \
+   names and malware family names in parentheses.
+2. CLASSIFY the threat.
+3. EXTRACT named entities: CVE IDs, malware families, APT group names, \
+   product names, vendor names, affected technologies.
+4. FLAG whether the text contains CVE references (has_cve_reference) and \
+   potential IoC indicators like IPs, domains, hashes (has_ioc_indicators).
+5. OUTPUT word count of the translated text.
+
+STRICT CLASSIFICATION CONSTRAINT:
+You MUST classify the threat report and output ONLY ONE of the following categories in 'preliminary_category' in UPPERCASE:
+- 'MALWARE': Any reports involving viruses, trojans, backdoors, ransomware binaries, or malicious payloads.
+- 'THREAT_ACTOR': Reports about cybercriminal groups, APTs, or specific nation-state campaigns.
+- 'VULNERABILITY': Reports regarding CVEs, software bugs, zero-days, or patch requirements.
+- 'EXPLOIT': Reports detailing proof-of-concept code, exploit kits, or successful exploitation methodologies.
+- 'DARK_WEB': Reports about leak sites, illicit forums, onion services, or credentials for sale on dark web marketplaces.
+
+BANNED BEHAVIORS:
+- Do NOT analyse the threat — that is downstream.
+- Do NOT generate IoCs — that is the Validator's role.
+- Do NOT produce a report — that is the Weaver's role.
+- Do NOT fabricate or infer any data not present in the raw input.
+
+OUTPUT FORMAT (strict JSON, no markdown fences):
+{
+  "detected_language": "en|ru|ar|zh|...",
+  "translated_text": "Full English translation or original if already English",
+  "preliminary_category": "MALWARE|THREAT_ACTOR|VULNERABILITY|EXPLOIT|DARK_WEB",
+  "extracted_entities": ["CVE-2025-XXXXX", "APT28", "Cisco ASA", ...],
+  "has_cve_reference": true|false,
+  "has_ioc_indicators": true|false,
+  "word_count": 350
+}
+"""
 
 
 # ---------------------------------------------------------------------------
@@ -153,11 +194,13 @@ def detect_language(text: str) -> str:
 
 def classify_category(text: str) -> str:
     """Keyword-based category classification — no LLM."""
+    if not text:
+        return "THREAT_ACTOR"
     lower = text.lower()
     for category, keywords in _CATEGORY_KEYWORDS:
         if keywords and any(kw in lower for kw in keywords):
             return category
-    return "Threat Intelligence"
+    return "THREAT_ACTOR"
 
 
 # ---------------------------------------------------------------------------

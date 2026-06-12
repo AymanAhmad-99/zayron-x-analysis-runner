@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import { searchArticles } from "@/lib/supabase/queries/articles";
-import { searchCVEs } from "@/lib/supabase/queries/cves";
-import { searchLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
+import { checkRateLimit, searchLimiter } from '@/lib/cache/ratelimit';
+import { searchArticles } from '@/lib/supabase/queries/articles';
+import { searchCVEs } from '@/lib/supabase/queries/cves';
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get("q")?.trim();
-    const type = searchParams.get("type") ?? "all";
+    const query = searchParams.get('q')?.trim();
+    const type = searchParams.get('type') ?? 'all';
 
     if (!query) {
       return NextResponse.json(
@@ -18,35 +18,32 @@ export async function GET(request: Request) {
 
     // Rate limit: 10 requests per 60s per IP
     const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-      request.headers.get("x-real-ip") ??
-      "unknown";
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      request.headers.get('x-real-ip') ??
+      'unknown';
 
-    const { allowed, remaining } = await checkRateLimit(
-      searchLimiter,
-      `search:${ip}`
-    );
+    const { allowed, remaining } = await checkRateLimit(searchLimiter, `search:${ip}`);
 
     if (!allowed) {
       return NextResponse.json(
-        { error: "Too many search requests. Please wait a moment." },
+        { error: 'Too many search requests. Please wait a moment.' },
         {
           status: 429,
           headers: {
-            "Retry-After": "60",
-            "X-RateLimit-Remaining": String(remaining),
+            'Retry-After': '60',
+            'X-RateLimit-Remaining': String(remaining),
           },
-        }
+        },
       );
     }
 
     let articles: Awaited<ReturnType<typeof searchArticles>> = [];
     let cves: Awaited<ReturnType<typeof searchCVEs>> = [];
 
-    if (type === "all" || type === "articles") {
+    if (type === 'all' || type === 'articles') {
       articles = await searchArticles(query);
     }
-    if (type === "all" || type === "cves") {
+    if (type === 'all' || type === 'cves') {
       cves = await searchCVEs(query);
     }
 
@@ -61,9 +58,9 @@ export async function GET(request: Request) {
       },
     );
   } catch (error) {
-    console.error("API /search error:", error);
+    console.error('API /search error:', error);
     return NextResponse.json(
-      { error: "Search failed" },
+      { error: 'Search failed' },
       { status: 500, headers: { 'Cache-Control': 'no-store' } },
     );
   }

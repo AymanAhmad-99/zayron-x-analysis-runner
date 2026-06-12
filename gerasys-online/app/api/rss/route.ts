@@ -1,19 +1,19 @@
-import { getRecentArticles } from "@/lib/supabase/queries/articles";
-import { NextResponse } from "next/server";
+import { getRecentArticles } from '@/lib/supabase/queries/articles';
+import { NextResponse } from 'next/server';
 
 export const revalidate = 3600; // 1 hour
 
 function escapeXml(str: string): string {
   return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
 export async function GET() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zayron-x.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zayron-x.com';
 
   let articles: Awaited<ReturnType<typeof getRecentArticles>> = [];
   try {
@@ -26,11 +26,11 @@ export async function GET() {
 
   const items = articles
     .map((a) => {
-      const url = `${siteUrl}/intelligence/${(a.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${a.slug}`;
+      const url = `${siteUrl}/intelligence/${(a.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${a.slug}`;
       const pubDate = a.createdAt ? new Date(a.createdAt).toUTCString() : buildDate;
       const desc = escapeXml(a.excerpt ?? a.content.substring(0, 300));
       const title = escapeXml(a.title);
-      const cat = escapeXml(a.category ?? "Intelligence");
+      const cat = escapeXml(a.category ?? 'Intelligence');
 
       return `    <item>
       <title>${title}</title>
@@ -39,11 +39,11 @@ export async function GET() {
       <pubDate>${pubDate}</pubDate>
       <category>${cat}</category>
       <description>${desc}</description>
-      <author>intelligence@zayron-x.com (${escapeXml(a.author ?? "Zayron Intel")})</author>
-      ${a.imageUrl ? `<enclosure url="${escapeXml(a.imageUrl)}" type="image/jpeg" length="0" />` : ""}
+      <author>intelligence@zayron-x.com (${escapeXml(a.author ?? 'Zayron Intel')})</author>
+      ${a.imageUrl ? `<enclosure url="${escapeXml(a.imageUrl)}" type="image/jpeg" length="0" />` : ''}
     </item>`;
     })
-    .join("\n");
+    .join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
@@ -70,8 +70,8 @@ ${items}
 
   return new NextResponse(xml, {
     headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=3600, stale-while-revalidate=300",
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600, stale-while-revalidate=300',
     },
   });
 }

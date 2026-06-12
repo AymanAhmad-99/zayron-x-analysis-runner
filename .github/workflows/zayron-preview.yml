@@ -1,0 +1,72 @@
+name: "🛡️ ZAYRON‑X — Staging / Preview Deployment"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  BUN_VERSION: "1.3.13"
+  WORKER_ENV: "preview"
+
+jobs:
+  validate-and-deploy:
+    name: 🏗️ Validate & Deploy Preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: gerasys-online
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: 📦 Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: 🔍 Run Biome Linter
+        run: bun run lint
+
+      - name: ⚙️ Run Type Check
+        run: bun run type-check
+
+      - name: 🧪 Run Unit Tests
+        run: bun run test:unit
+
+      - name: 🔨 Build Platform (OpenNext)
+        run: bunx --bun opennextjs-cloudflare build
+
+      - name: 🔧 Patch node:fs Internals
+        run: node scripts/patch-handler-fs.cjs
+
+      - name: 🔍 Verify Bundle Cleanliness
+        run: bash scripts/verify-worker-build.sh
+
+      - name: 🚀 Deploy Staging Worker (Cloudflare)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: deploy --env ${{ env.WORKER_ENV }}
+          workingDirectory: gerasys-online
+
+      - name: ✅ Confirm Successful Preview Deployment
+        if: success()
+        run: |
+          echo "=========================================="
+          echo "🛡️ ZAYRON-X Staging/Preview Deployment SUCCESSFUL"
+          echo "=========================================="
+          echo "Environment:  ${{ env.WORKER_ENV }}"
+          echo "Branch:       ${{ github.ref_name }}"
+          echo "Commit SHA:   ${{ github.sha }}"
+          echo "=========================================="

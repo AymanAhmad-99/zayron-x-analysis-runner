@@ -1,5 +1,5 @@
 name = "zayron-x"
-main = ".open-next/worker.js"
+main = "worker-wrapper.js"
 compatibility_date = "2025-09-23"
 # ── CLOUDFLARE WORKERS COMPAT ────────────────────────────────
 # nodejs_compat provides Workers‑safe polyfills for buffer,
@@ -39,7 +39,7 @@ binding = "ASSETS"
 # DEFAULT ENVIRONMENT VARS (shared across envs; overridable)
 # ═══════════════════════════════════════════════════════════════
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
+NEXT_PUBLIC_SITE_URL = "https://www.zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
 
 # ═══════════════════════════════════════════════════════════════
@@ -94,9 +94,12 @@ head_sampling_rate = 0.1
 name = "zayron-x-production"
 
 # Route traffic from the custom domain to this Worker.
-# If NOT using a custom domain, replace with:
-#   workers_dev = true
 workers_dev = true
+routes = [
+  { pattern = "zayron-x.com/*", custom_domain = false },
+  { pattern = "www.zayron-x.com/*", custom_domain = false }
+]
+
 
 # ── Gradual (Canary) Deployments ────────────────────────────
 # Cloudflare Workers Gradual Deployments roll out new versions
@@ -128,7 +131,7 @@ binding = "ZAYRON_CACHE"
 id = "c5704144e6984dd597e2f000a1e84aa2"
 
 [env.production.vars]
-NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
+NEXT_PUBLIC_SITE_URL = "https://www.zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
 
 # ═══════════════════════════════════════════════════════════════

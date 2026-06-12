@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
-import { Mail, Lock, Shield, ArrowRight } from "@/lib/icons";
+import { ArrowRight, Lock, Mail, Shield } from '@/lib/icons';
+import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { z } from 'zod';
 
 // Zod Schema for Login Validation
 const loginSchema = z.object({
-  email: z.string().email("Invalid clearance email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email('Invalid clearance email address'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 type LoginInput = z.infer<typeof loginSchema>;
@@ -18,10 +18,10 @@ type LoginInput = z.infer<typeof loginSchema>;
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams?.get("redirect") ?? "/admin";
+  const redirect = searchParams?.get('redirect') ?? '/admin';
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -35,7 +35,7 @@ function LoginForm() {
     // Schema Validation
     const validation = loginSchema.safeParse({ email, password });
     if (!validation.success) {
-      setError(validation.error.issues[0]?.message || "Validation failed");
+      setError(validation.error.issues[0]?.message || 'Validation failed');
       setLoading(false);
       return;
     }
@@ -63,12 +63,12 @@ function LoginForm() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.resend({ type: "signup", email });
+    const { error } = await supabase.auth.resend({ type: 'signup', email });
 
     if (error) {
       setError(error.message);
     } else {
-      setMessage("Confirmation email resent. Check your inbox.");
+      setMessage('Confirmation email resent. Check your inbox.');
     }
     setLoading(false);
   };
@@ -81,14 +81,15 @@ function LoginForm() {
           CLASSIFIED · TLP:AMBER
         </p>
         <h1 className="font-sans text-3xl font-black select-none leading-none">
-          <span className="inline-flex items-center tracking-tighter" style={{ letterSpacing: "-0.08em" }}>
+          <span
+            className="inline-flex items-center tracking-tighter"
+            style={{ letterSpacing: '-0.08em' }}
+          >
             <span className="text-[#050505]">ZAYRON</span>
             <span className="text-[#733DD9]">-X</span>
           </span>
         </h1>
-        <p className="text-neutral-500 text-sm mt-2 font-medium">
-          Analyst Authentication Portal
-        </p>
+        <p className="text-neutral-500 text-sm mt-2 font-medium">Analyst Authentication Portal</p>
       </div>
 
       {/* Card */}
@@ -137,7 +138,7 @@ function LoginForm() {
           {error && (
             <div className="text-[#DC2626] text-xs font-sans bg-[#DC2626]/[0.03] border border-[#DC2626]/10 rounded p-3">
               <p>{error}</p>
-              {error.includes("not confirmed") && (
+              {error.includes('not confirmed') && (
                 <button
                   type="button"
                   onClick={handleResendConfirmation}
@@ -161,7 +162,7 @@ function LoginForm() {
             className="w-full py-3.5 bg-[#050505] text-white font-bold text-xs uppercase tracking-wider rounded hover:bg-[#733DD9] transition-all disabled:opacity-50 font-sans flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
-              "Authenticating..."
+              'Authenticating...'
             ) : (
               <>
                 <Shield size={16} />
@@ -173,7 +174,7 @@ function LoginForm() {
 
         <div className="mt-8 pt-6 border-t border-neutral-100">
           <p className="text-center text-xs text-neutral-500 font-sans">
-            Need platform access?{" "}
+            Need platform access?{' '}
             <Link
               href="/register"
               className="text-[#733DD9] hover:underline font-bold inline-flex items-center gap-1"
@@ -195,9 +196,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="text-[#94A3B8] text-sm font-ui text-center">
-          Loading secure terminal...
-        </div>
+        <div className="text-[#94A3B8] text-sm font-ui text-center">Loading secure terminal...</div>
       }
     >
       <LoginForm />

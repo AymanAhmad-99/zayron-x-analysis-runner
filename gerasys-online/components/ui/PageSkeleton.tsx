@@ -1,5 +1,5 @@
 /** Shared skeleton shimmer block */
-export function Skeleton({ className = "" }: { className?: string }) {
+export function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`skeleton ${className}`} />;
 }
 
@@ -19,7 +19,7 @@ export function PageSkeleton({ cards = 6, title = true }: { cards?: number; titl
           <div
             key={i}
             className="card-article overflow-hidden"
-            style={{ animationDelay: `${i * 60}ms`, animation: "fade-up 0.5s ease-out both" }}
+            style={{ animationDelay: `${i * 60}ms`, animation: 'fade-up 0.5s ease-out both' }}
           >
             <Skeleton className="aspect-[16/9] w-full rounded-none" />
             <div className="p-5 space-y-2.5">

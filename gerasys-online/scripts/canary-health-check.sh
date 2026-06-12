@@ -126,6 +126,12 @@ if [ "$TOTAL_EVENTS" -gt 0 ]; then
   log_warn "This does NOT automatically fail the deployment, but the error"
   log_warn "rate should be reviewed manually before proceeding to 100%."
   log_info "Sentry URL: https://sentry.io/organizations/${SENTRY_ORG}/projects/${SENTRY_PROJECT}/"
+  
+  if [ "${STRICT_CANARY:-}" = "true" ]; then
+    log_error "STRICT_CANARY is enabled. Triggering failure."
+    exit 1
+  fi
+  
   # Soft warning — does not fail
   exit 0
 fi

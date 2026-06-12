@@ -1,40 +1,36 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import type { Metadata } from "next";
-import type { Article, CVE } from "@/lib/types";
-import { ArticleCard } from "@/components/ui/ArticleCard";
-import { CveTable } from "@/components/cve/CveTable";
+import { CveTable } from '@/components/cve/CveTable';
+import { ArticleCard } from '@/components/ui/ArticleCard';
+import { getCached } from '@/lib/cache/redis';
 import {
-  getRecentArticles,
-  getBreakingArticles,
-  getAllTags,
-  getArticleCount,
-} from "@/lib/supabase/queries/articles";
-import { getCached } from "@/lib/cache/redis";
-import { getCriticalCVEs, getCVECount } from "@/lib/supabase/queries/cves";
-import { getAnalysts } from "@/lib/supabase/queries/analysts";
-import {
-  getSiloForCategory,
-  getSiloColorClass,
-  type SiloId,
-} from "@/lib/silos";
-import {
-  Shield,
-  Radio,
-  ArrowLeft,
-  Tag,
   Activity,
   AlertTriangle,
-  Zap,
+  ArrowLeft,
   Bug,
-  Satellite,
-  Users,
   Database,
-} from "@/lib/icons";
-import Link from "next/link";
+  Radio,
+  Satellite,
+  Shield,
+  Tag,
+  Users,
+  Zap,
+} from '@/lib/icons';
+import { type SiloId, getSiloColorClass, getSiloForCategory } from '@/lib/silos';
+import { getAnalysts } from '@/lib/supabase/queries/analysts';
+import {
+  getAllTags,
+  getArticleCount,
+  getBreakingArticles,
+  getRecentArticles,
+} from '@/lib/supabase/queries/articles';
+import { getCVECount, getCriticalCVEs } from '@/lib/supabase/queries/cves';
+import type { Article, CVE } from '@/lib/types';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
-const DISPLAY_NAME = "Operations";
+const DISPLAY_NAME = 'Operations';
 const PAGE_SIZE = 12;
 const CVE_LIMIT = 5;
 
@@ -46,9 +42,12 @@ const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?
 
 function getSiloHeroClass(siloId: SiloId): string {
   switch (siloId) {
-    case "cybersecurity": return "silo-cyber-hero";
-    case "programming": return "silo-programming-hero";
-    case "networking": return "silo-networking-hero";
+    case 'cybersecurity':
+      return 'silo-cyber-hero';
+    case 'programming':
+      return 'silo-programming-hero';
+    case 'networking':
+      return 'silo-networking-hero';
   }
 }
 
@@ -72,12 +71,9 @@ export async function generateMetadata(): Promise<Metadata> {
   let cveCount = 0;
 
   try {
-    const [articles, cves] = await Promise.allSettled([
-      getArticleCount(),
-      getCVECount(),
-    ]);
-    if (articles.status === "fulfilled") articleCount = articles.value;
-    if (cves.status === "fulfilled") cveCount = cves.value;
+    const [articles, cves] = await Promise.allSettled([getArticleCount(), getCVECount()]);
+    if (articles.status === 'fulfilled') articleCount = articles.value;
+    if (cves.status === 'fulfilled') cveCount = cves.value;
   } catch {
     // Metadata generation failure is non-fatal — return defaults
   }
@@ -87,15 +83,15 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       articleCount > 0
         ? `${articleCount} intelligence reports · ${cveCount} CVEs tracked. Real-time threat operations, live radar, analyst deployment status.`
-        : "ZAYRON-X Operations Center — live threat radar, CVE tracking, analyst deployment, and intelligence command dashboard.",
+        : 'ZAYRON-X Operations Center — live threat radar, CVE tracking, analyst deployment, and intelligence command dashboard.',
     alternates: {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/intelligence/operations`,
     },
     openGraph: {
       title: `${DISPLAY_NAME} — ZAYRON-X Intelligence Command`,
       description:
-        "Real-time threat operations dashboard: live radar, CVE tracking, analyst deployment status, and intelligence command center.",
-      type: "website",
+        'Real-time threat operations dashboard: live radar, CVE tracking, analyst deployment status, and intelligence command center.',
+      type: 'website',
     },
   };
 }
@@ -107,10 +103,11 @@ function RadarOfflineTerminal({ message }: { message: string }) {
   return (
     <div className="min-h-screen bg-[#0B0F19] text-[#E2E8F0] font-mono">
       {/* Scanline overlay */}
-      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] bg-repeat"
+      <div
+        className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] bg-repeat"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)",
+            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
         }}
       />
 
@@ -137,13 +134,15 @@ function RadarOfflineTerminal({ message }: { message: string }) {
             </div>
             <div className="space-y-2 min-w-0">
               <h2 className="text-sm font-semibold text-[#DC2626] tracking-wide">
-                📡 ZAYRON-X Radar Offline: Re-establishing encrypted connection
-                to Intel Hub...
+                📡 ZAYRON-X Radar Offline: Re-establishing encrypted connection to Intel Hub...
               </h2>
               <p className="text-xs text-[#64748B] leading-relaxed">
-                The secure channel to <code className="text-[#94A3B8] bg-[#1E293B] px-1.5 py-0.5 rounded text-[11px]">aws-1-us-west-1.pooler.supabase.com</code> could
-                not be established. Ensure your DATABASE_URL is configured
-                to use the IPv4-only connection pooler endpoint (port 6543).
+                The secure channel to{' '}
+                <code className="text-[#94A3B8] bg-[#1E293B] px-1.5 py-0.5 rounded text-[11px]">
+                  aws-1-us-west-1.pooler.supabase.com
+                </code>{' '}
+                could not be established. Ensure your DATABASE_URL is configured to use the
+                IPv4-only connection pooler endpoint (port 6543).
               </p>
             </div>
           </div>
@@ -153,7 +152,9 @@ function RadarOfflineTerminal({ message }: { message: string }) {
         <div className="space-y-1 mb-10 font-mono text-xs">
           <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
             <span className="text-[#475569]">DIAGNOSTIC</span>
-            <span className="text-[#94A3B8]">{">"} getaddrinfo ENOTFOUND aws-1-us-west-1.pooler.supabase.com</span>
+            <span className="text-[#94A3B8]">
+              {'>'} getaddrinfo ENOTFOUND aws-1-us-west-1.pooler.supabase.com
+            </span>
           </div>
           <div className="flex items-center justify-between px-4 py-3 rounded bg-[#0F172A] border border-[#1E293B]">
             <span className="text-[#475569]">STACK</span>
@@ -237,36 +238,50 @@ function ZeroIntelReport() {
           <div className="mb-8 px-6 py-5 rounded-xl border border-[#DC2626]/10 bg-[#DC2626]/[0.02] max-w-lg w-full">
             <p className="text-[#DC2626] font-mono text-sm leading-relaxed">
               Zx Sector Scan: <span className="font-bold text-[#111827]">{DISPLAY_NAME}</span> — No
-              intelligence intercepted in the last 24h. The Radar is actively
-              monitoring.
+              intelligence intercepted in the last 24h. The Radar is actively monitoring.
             </p>
           </div>
 
           <div className="space-y-3 mb-10 w-full max-w-md">
             {[
-              ["Sector", DISPLAY_NAME],
-              ["Reports Found", "0"],
-              ["Radar Status", "ACTIVE"],
+              ['Sector', DISPLAY_NAME],
+              ['Reports Found', '0'],
+              ['Radar Status', 'ACTIVE'],
             ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between px-5 py-3 rounded-lg bg-white border border-[#E2E8F0]">
-                <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">{label}</span>
-                <span className={`text-sm font-semibold font-display ${value === "0" ? "text-[#DC2626] font-mono" : "text-[#111827]"}`}>
-                  {value === "ACTIVE" ? (
+              <div
+                key={label}
+                className="flex items-center justify-between px-5 py-3 rounded-lg bg-white border border-[#E2E8F0]"
+              >
+                <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+                  {label}
+                </span>
+                <span
+                  className={`text-sm font-semibold font-display ${value === '0' ? 'text-[#DC2626] font-mono' : 'text-[#111827]'}`}
+                >
+                  {value === 'ACTIVE' ? (
                     <span className="text-[#16A34A] font-mono flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A]" />
                       ACTIVE
                     </span>
-                  ) : value}
+                  ) : (
+                    value
+                  )}
                 </span>
               </div>
             ))}
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-[#733DD9] text-white rounded-lg hover:bg-[#5B21B6] transition-colors font-ui shadow-sm">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-[#733DD9] text-white rounded-lg hover:bg-[#5B21B6] transition-colors font-ui shadow-sm"
+            >
               <ArrowLeft size={14} /> Command Center
             </Link>
-            <Link href="/intelligence/threat-intelligence" className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold border border-[#E2E8F0] rounded-lg text-[#4B5563] hover:text-[#111827] hover:border-[#733DD9] transition-all font-ui bg-white">
+            <Link
+              href="/intelligence/threat-intelligence"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold border border-[#E2E8F0] rounded-lg text-[#4B5563] hover:text-[#111827] hover:border-[#733DD9] transition-all font-ui bg-white"
+            >
               Threat Intelligence
             </Link>
           </div>
@@ -298,16 +313,15 @@ export default async function OperationsPage({ searchParams }: PageProps) {
   let dbError: string | null = null;
 
   try {
-    const [recent, breaking, cves, tags, analysts, articleCount, cveCount] =
-      await Promise.all([
-        getCached(process.env, "ops:recent_articles", () => getRecentArticles(PAGE_SIZE), 300),
-        getCached(process.env, "ops:breaking_articles", () => getBreakingArticles(5), 300),
-        getCached(process.env, "ops:critical_cves", () => getCriticalCVEs(CVE_LIMIT), 300),
-        getCached(process.env, "ops:all_tags", () => getAllTags(), 300),
-        getCached(process.env, "ops:analysts", () => getAnalysts(), 300),
-        getCached(process.env, "ops:article_count", () => getArticleCount(), 300),
-        getCached(process.env, "ops:cve_count", () => getCVECount(), 300),
-      ]);
+    const [recent, breaking, cves, tags, analysts, articleCount, cveCount] = await Promise.all([
+      getCached(process.env, 'ops:recent_articles', () => getRecentArticles(PAGE_SIZE), 300),
+      getCached(process.env, 'ops:breaking_articles', () => getBreakingArticles(5), 300),
+      getCached(process.env, 'ops:critical_cves', () => getCriticalCVEs(CVE_LIMIT), 300),
+      getCached(process.env, 'ops:all_tags', () => getAllTags(), 300),
+      getCached(process.env, 'ops:analysts', () => getAnalysts(), 300),
+      getCached(process.env, 'ops:article_count', () => getArticleCount(), 300),
+      getCached(process.env, 'ops:cve_count', () => getCVECount(), 300),
+    ]);
 
     articles = recent as Article[];
     breakingArticles = breaking as Article[];
@@ -317,12 +331,8 @@ export default async function OperationsPage({ searchParams }: PageProps) {
     totalArticleCount = articleCount as number;
     totalCveCount = cveCount as number;
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "Unknown database connection failure";
-    console.error(
-      `[operations] DB fetch failed:`,
-      message,
-    );
+    const message = err instanceof Error ? err.message : 'Unknown database connection failure';
+    console.error(`[operations] DB fetch failed:`, message);
     dbError = message;
   }
 
@@ -338,17 +348,32 @@ export default async function OperationsPage({ searchParams }: PageProps) {
 
   /* ─── Derived Values ─── */
   const silo = getSiloForCategory(DISPLAY_NAME);
-  const siloId: SiloId = silo?.id ?? "cybersecurity";
-  const siloColorClass = silo ? getSiloColorClass(silo.id) : "silo-cyber";
+  const siloId: SiloId = silo?.id ?? 'cybersecurity';
+  const siloColorClass = silo ? getSiloColorClass(silo.id) : 'silo-cyber';
   const heroClass = getSiloHeroClass(siloId);
   const SiloIcon = silo ? SILO_ICONS[silo.id] : Shield;
-  const classification = "TLP:AMBER — OPERATIONS COMMAND — RESTRICTED";
+  const classification = 'TLP:AMBER — OPERATIONS COMMAND — RESTRICTED';
 
   const telemetry: TelemetryDatum[] = [
-    { label: "Intel Reports", value: totalArticleCount.toLocaleString(), icon: Database, accent: "text-[#2563EB]" },
-    { label: "Breaking Alerts", value: breakingArticles.length, icon: Zap, accent: "text-[#DC2626]" },
-    { label: "CVEs Tracked", value: totalCveCount.toLocaleString(), icon: Bug, accent: "text-[#DC2626]" },
-    { label: "Analysts Deployed", value: analystCount, icon: Users, accent: "text-[#16A34A]" },
+    {
+      label: 'Intel Reports',
+      value: totalArticleCount.toLocaleString(),
+      icon: Database,
+      accent: 'text-[#2563EB]',
+    },
+    {
+      label: 'Breaking Alerts',
+      value: breakingArticles.length,
+      icon: Zap,
+      accent: 'text-[#DC2626]',
+    },
+    {
+      label: 'CVEs Tracked',
+      value: totalCveCount.toLocaleString(),
+      icon: Bug,
+      accent: 'text-[#DC2626]',
+    },
+    { label: 'Analysts Deployed', value: analystCount, icon: Users, accent: 'text-[#16A34A]' },
   ];
 
   return (
@@ -363,9 +388,11 @@ export default async function OperationsPage({ searchParams }: PageProps) {
 
         <div className="relative max-w-7xl mx-auto px-8 py-20">
           <div className="flex items-center gap-3 mb-4">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${siloColorClass}`}>
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${siloColorClass}`}
+            >
               <SiloIcon size={14} />
-              {silo?.label ?? "Cyber"} Operations
+              {silo?.label ?? 'Cyber'} Operations
             </span>
             <span className="text-[10px] uppercase tracking-[0.15em] text-[#9CA3AF] font-bold">
               Command Dashboard
@@ -375,14 +402,17 @@ export default async function OperationsPage({ searchParams }: PageProps) {
             {DISPLAY_NAME}
           </h1>
           <p className="text-[#4B5563] text-lg mt-3 max-w-2xl leading-loose">
-            Live threat radar · CVE tracking · Analyst deployment status · Intelligence
-            command and control from ZAYRON-X global operations center.
+            Live threat radar · CVE tracking · Analyst deployment status · Intelligence command and
+            control from ZAYRON-X global operations center.
           </p>
 
           {/* Telemetry bar */}
           <div className="flex flex-wrap items-center gap-3 mt-6">
             {telemetry.map((t) => (
-              <div key={t.label} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#E2E8F0] shadow-sm">
+              <div
+                key={t.label}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#E2E8F0] shadow-sm"
+              >
                 <t.icon size={14} className={t.accent} />
                 <span className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-ui">
                   {t.label}
@@ -410,7 +440,7 @@ export default async function OperationsPage({ searchParams }: PageProps) {
               {breakingArticles.map((a) => (
                 <Link
                   key={a.id}
-                  href={`/intelligence/${(a.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${a.slug}`}
+                  href={`/intelligence/${(a.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${a.slug}`}
                   className="text-sm font-semibold text-[#111827] hover:text-[#DC2626] transition-colors font-display"
                 >
                   {a.title}
@@ -487,7 +517,7 @@ export default async function OperationsPage({ searchParams }: PageProps) {
                           {cve.cveId}
                         </p>
                         <p className="text-[11px] text-[#4B5563] leading-snug line-clamp-2 font-ui">
-                          {cve.title ?? cve.description ?? "No description"}
+                          {cve.title ?? cve.description ?? 'No description'}
                         </p>
                         {cve.cvssScore != null && (
                           <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-mono font-bold text-[#DC2626]">

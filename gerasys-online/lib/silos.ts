@@ -6,7 +6,7 @@
  * SILO C: NETWORKING  — Protocol Deep Dives, Network Hardening, Infrastructure Security
  */
 
-export type SiloId = "cybersecurity" | "programming" | "networking";
+export type SiloId = 'cybersecurity' | 'programming' | 'networking';
 
 export interface SiloDefinition {
   id: SiloId;
@@ -20,47 +20,74 @@ export interface SiloDefinition {
   /** Visual treatment: border accent color */
   borderAccent: string;
   /** Visual treatment: overlay pattern style */
-  overlayPattern: "grid" | "code" | "packets";
+  overlayPattern: 'grid' | 'code' | 'packets';
   /** Hero tagline */
   tagline: string;
 }
 
 export const SILOS: Record<SiloId, SiloDefinition> = {
   cybersecurity: {
-    id: "cybersecurity",
-    label: "Cybersecurity",
-    description: "Threat intelligence, APT analysis, CVE tracking, and ransomware monitoring.",
-    color: "var(--color-silo-cyber)",
-    bgColor: "var(--color-silo-cyber-bg)",
-    accentGradient: "from-black via-[#222222] to-[#444444]",
-    borderAccent: "#222222",
-    overlayPattern: "grid",
-    tagline: "TACTICAL THREAT INTELLIGENCE — FOR OFFICIAL USE ONLY",
-    categories: ["Malware", "APT", "Data Breach", "CVEs", "Ransomware", "Vulnerabilities", "Nation State", "AI Security"],
+    id: 'cybersecurity',
+    label: 'Cybersecurity',
+    description: 'Threat intelligence, APT analysis, CVE tracking, and ransomware monitoring.',
+    color: 'var(--color-silo-cyber)',
+    bgColor: 'var(--color-silo-cyber-bg)',
+    accentGradient: 'from-black via-[#222222] to-[#444444]',
+    borderAccent: '#222222',
+    overlayPattern: 'grid',
+    tagline: 'TACTICAL THREAT INTELLIGENCE — FOR OFFICIAL USE ONLY',
+    categories: [
+      'Malware',
+      'APT',
+      'Data Breach',
+      'CVEs',
+      'Ransomware',
+      'Vulnerabilities',
+      'Nation State',
+      'AI Security',
+      'Threat Actors',
+      'Exploits',
+      'Dark Web',
+      'OSINT',
+      'Vulnerability',
+      'Exploit',
+      'MALWARE',
+      'THREAT_ACTOR',
+      'VULNERABILITY',
+      'EXPLOIT',
+      'DARK_WEB',
+      'osint',
+    ],
   },
   programming: {
-    id: "programming",
-    label: "Programming",
-    description: "Secure coding practices, Rust security, Python tooling, and Go automation.",
-    color: "var(--color-silo-programming)",
-    bgColor: "var(--color-silo-programming-bg)",
-    accentGradient: "from-black via-[#222222] to-[#444444]",
-    borderAccent: "#222222",
-    overlayPattern: "code",
-    tagline: "PRODUCTION-GRADE SECURITY ENGINEERING — SOURCE VALIDATED",
-    categories: ["Secure Coding", "Rust", "Python Security", "Go Automation", "Security Toolchain"],
+    id: 'programming',
+    label: 'Programming',
+    description: 'Secure coding practices, Rust security, Python tooling, and Go automation.',
+    color: 'var(--color-silo-programming)',
+    bgColor: 'var(--color-silo-programming-bg)',
+    accentGradient: 'from-black via-[#222222] to-[#444444]',
+    borderAccent: '#222222',
+    overlayPattern: 'code',
+    tagline: 'PRODUCTION-GRADE SECURITY ENGINEERING — SOURCE VALIDATED',
+    categories: ['Secure Coding', 'Rust', 'Python Security', 'Go Automation', 'Security Toolchain'],
   },
   networking: {
-    id: "networking",
-    label: "Networking",
-    description: "Protocol deep dives, network hardening, infrastructure security, and packet analysis.",
-    color: "var(--color-silo-networking)",
-    bgColor: "var(--color-silo-networking-bg)",
-    accentGradient: "from-black via-[#222222] to-[#444444]",
-    borderAccent: "#222222",
-    overlayPattern: "packets",
-    tagline: "DEEP PACKET INSPECTION — NETWORK FORENSICS DIVISION",
-    categories: ["Protocol Deep Dives", "Network Hardening", "Infrastructure Security", "Packet Analysis"],
+    id: 'networking',
+    label: 'Networking',
+    description:
+      'Protocol deep dives, network hardening, infrastructure security, and packet analysis.',
+    color: 'var(--color-silo-networking)',
+    bgColor: 'var(--color-silo-networking-bg)',
+    accentGradient: 'from-black via-[#222222] to-[#444444]',
+    borderAccent: '#222222',
+    overlayPattern: 'packets',
+    tagline: 'DEEP PACKET INSPECTION — NETWORK FORENSICS DIVISION',
+    categories: [
+      'Protocol Deep Dives',
+      'Network Hardening',
+      'Infrastructure Security',
+      'Packet Analysis',
+    ],
   },
 };
 
@@ -76,8 +103,11 @@ export function getSiloForCategory(category: string): SiloDefinition | null {
 
 export function getSiloColorClass(siloId: SiloId): string {
   switch (siloId) {
-    case "cybersecurity": return "silo-cyber";
-    case "programming": return "silo-programming";
-    case "networking": return "silo-networking";
+    case 'cybersecurity':
+      return 'silo-cyber';
+    case 'programming':
+      return 'silo-programming';
+    case 'networking':
+      return 'silo-networking';
   }
 }

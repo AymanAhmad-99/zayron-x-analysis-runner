@@ -1,4 +1,4 @@
-import { type CVE } from "@/lib/types";
+import type { CVE } from '@/lib/types';
 
 interface ThreatTickerProps {
   cves: CVE[];
@@ -20,16 +20,11 @@ export function ThreatTicker({ cves }: ThreatTickerProps) {
         <div className="overflow-hidden flex-1 relative">
           <div className="animate-ticker flex gap-16 whitespace-nowrap absolute h-full items-center">
             {doubled.map((cve, i) => (
-              <span
-                key={`${cve.cveId}-${i}`}
-                className="text-xs text-[#475569] font-mono"
-              >
+              <span key={`${cve.cveId}-${i}`} className="text-xs text-[#475569] font-mono">
                 <span className="text-[#D2B48C] font-bold">{cve.cveId}</span>
-                {" — "}
-                {cve.affectedProduct ?? cve.vendor ?? "Unknown"}
-                <span className="text-[#C6A664] ml-2">
-                  | CVSS {cve.cvssScore}
-                </span>
+                {' — '}
+                {cve.affectedProduct ?? cve.vendor ?? 'Unknown'}
+                <span className="text-[#C6A664] ml-2">| CVSS {cve.cvssScore}</span>
               </span>
             ))}
           </div>

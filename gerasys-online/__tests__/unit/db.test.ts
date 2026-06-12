@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mock return registry ──
 // Each test sets these before importing the query module dynamically.
@@ -22,7 +22,9 @@ function buildMockChain(finalResult: any = mockSelectResult) {
     orderBy: vi.fn(() => chain),
     limit: vi.fn(() => ({
       offset: vi.fn(() => Promise.resolve(finalResult)),
-      then: vi.fn((cb: any) => cb(finalResult.length > 0 ? finalResult : [mockSingleResult].filter(Boolean))),
+      then: vi.fn((cb: any) =>
+        cb(finalResult.length > 0 ? finalResult : [mockSingleResult].filter(Boolean)),
+      ),
     })),
   }));
   return chain;
@@ -96,7 +98,7 @@ vi.mock('drizzle-orm', () => ({
   and: vi.fn((...conds: any[]) => ({ type: 'and', conditions: conds })),
   sql: Object.assign(
     vi.fn((strings: any, ...values: any[]) => ({ type: 'sql', strings, values })),
-    { type: 'sql' }
+    { type: 'sql' },
   ),
 }));
 
@@ -107,7 +109,12 @@ beforeAll(() => {
 beforeEach(() => {
   mockSelectResult = [];
   mockSingleResult = null;
-  mockInsertResult = { id: 'mock-id', title: 'Mock Article', slug: 'mock-article', category: 'threat_intel' };
+  mockInsertResult = {
+    id: 'mock-id',
+    title: 'Mock Article',
+    slug: 'mock-article',
+    category: 'threat_intel',
+  };
 });
 
 // ─────────────────────────────────────────────
@@ -117,8 +124,32 @@ beforeEach(() => {
 describe('Database Queries — Articles', () => {
   it('1. getArticles() returns array with default pagination', async () => {
     mockSelectResult = [
-      { id: '1', title: 'Article 1', slug: 'article-1', category: 'threat_intel', isPublished: true, views: 100, author: 'Author', content: '...', tags: [], createdAt: new Date(), updatedAt: new Date() },
-      { id: '2', title: 'Article 2', slug: 'article-2', category: 'threat_intel', isPublished: true, views: 200, author: 'Author', content: '...', tags: [], createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: '1',
+        title: 'Article 1',
+        slug: 'article-1',
+        category: 'threat_intel',
+        isPublished: true,
+        views: 100,
+        author: 'Author',
+        content: '...',
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '2',
+        title: 'Article 2',
+        slug: 'article-2',
+        category: 'threat_intel',
+        isPublished: true,
+        views: 200,
+        author: 'Author',
+        content: '...',
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ];
 
     const { getArticles } = await import('@/lib/db/queries/articles');
@@ -137,7 +168,21 @@ describe('Database Queries — Articles', () => {
   });
 
   it('3. getArticles() respects limit parameter', async () => {
-    mockSelectResult = [{ id: '1', title: 'A', slug: 'a', category: 'threat_intel', isPublished: true, views: 0, author: 'X', content: '', tags: [], createdAt: new Date(), updatedAt: new Date() }];
+    mockSelectResult = [
+      {
+        id: '1',
+        title: 'A',
+        slug: 'a',
+        category: 'threat_intel',
+        isPublished: true,
+        views: 0,
+        author: 'X',
+        content: '',
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
 
     const { getArticles } = await import('@/lib/db/queries/articles');
     // Second import returns the same module (cached) but mockSelectResult is updated
@@ -147,7 +192,19 @@ describe('Database Queries — Articles', () => {
   });
 
   it('4. getArticleBySlug() returns article object for valid slug', async () => {
-    mockSingleResult = { id: 'abc', title: 'Found', slug: 'found-slug', category: 'osint', isPublished: true, views: 50, author: 'A', content: 'Body', tags: [], createdAt: new Date(), updatedAt: new Date() };
+    mockSingleResult = {
+      id: 'abc',
+      title: 'Found',
+      slug: 'found-slug',
+      category: 'osint',
+      isPublished: true,
+      views: 50,
+      author: 'A',
+      content: 'Body',
+      tags: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
     const { getArticleBySlug } = await import('@/lib/db/queries/articles');
     const result = await getArticleBySlug('found-slug');
@@ -165,7 +222,19 @@ describe('Database Queries — Articles', () => {
 
   it('6. getArticlesByCategory() filters by category correctly', async () => {
     mockSelectResult = [
-      { id: 'c1', title: 'CVE-2026', slug: 'cve-2026', category: 'vulnerabilities', isPublished: true, views: 10, author: 'Z', content: 'x', tags: [], createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: 'c1',
+        title: 'CVE-2026',
+        slug: 'cve-2026',
+        category: 'vulnerabilities',
+        isPublished: true,
+        views: 10,
+        author: 'Z',
+        content: 'x',
+        tags: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ];
 
     const { getArticlesByCategory } = await import('@/lib/db/queries/articles');
@@ -176,8 +245,32 @@ describe('Database Queries — Articles', () => {
 
   it('7. getRecentArticles() returns most recent articles', async () => {
     mockSelectResult = [
-      { id: 'r1', title: 'Recent 1', slug: 'recent-1', category: 'cyber_news', isPublished: true, views: 1, author: 'Z', content: '', tags: [], createdAt: new Date('2026-06-02'), updatedAt: new Date() },
-      { id: 'r2', title: 'Recent 2', slug: 'recent-2', category: 'cyber_news', isPublished: true, views: 2, author: 'Z', content: '', tags: [], createdAt: new Date('2026-06-01'), updatedAt: new Date() },
+      {
+        id: 'r1',
+        title: 'Recent 1',
+        slug: 'recent-1',
+        category: 'cyber_news',
+        isPublished: true,
+        views: 1,
+        author: 'Z',
+        content: '',
+        tags: [],
+        createdAt: new Date('2026-06-02'),
+        updatedAt: new Date(),
+      },
+      {
+        id: 'r2',
+        title: 'Recent 2',
+        slug: 'recent-2',
+        category: 'cyber_news',
+        isPublished: true,
+        views: 2,
+        author: 'Z',
+        content: '',
+        tags: [],
+        createdAt: new Date('2026-06-01'),
+        updatedAt: new Date(),
+      },
     ];
 
     const { getRecentArticles } = await import('@/lib/db/queries/articles');
@@ -187,7 +280,20 @@ describe('Database Queries — Articles', () => {
 
   it('8. getCVEs() returns array with pagination', async () => {
     mockSelectResult = [
-      { id: 'cve1', cveId: 'CVE-2026-0001', title: 'Test CVE', description: 'Desc', severity: 'HIGH', cvssScore: '8.5', cvssVector: 'AV:N/AC:L', affectedProduct: 'Test', vendor: 'TestCo', status: 'Active', publishedDate: new Date(), createdAt: new Date() },
+      {
+        id: 'cve1',
+        cveId: 'CVE-2026-0001',
+        title: 'Test CVE',
+        description: 'Desc',
+        severity: 'HIGH',
+        cvssScore: '8.5',
+        cvssVector: 'AV:N/AC:L',
+        affectedProduct: 'Test',
+        vendor: 'TestCo',
+        status: 'Active',
+        publishedDate: new Date(),
+        createdAt: new Date(),
+      },
     ];
 
     const { getCVEs } = await import('@/lib/db/queries/cves');
@@ -199,7 +305,20 @@ describe('Database Queries — Articles', () => {
 
   it('9. getCVEsBySeverity() filters by severity CRITICAL', async () => {
     mockSelectResult = [
-      { id: 'sc1', cveId: 'CVE-2026-9999', title: 'Critical Vuln', description: 'Bad', severity: 'CRITICAL', cvssScore: '9.8', cvssVector: '...', affectedProduct: 'All', vendor: 'V', status: 'Active', publishedDate: new Date(), createdAt: new Date() },
+      {
+        id: 'sc1',
+        cveId: 'CVE-2026-9999',
+        title: 'Critical Vuln',
+        description: 'Bad',
+        severity: 'CRITICAL',
+        cvssScore: '9.8',
+        cvssVector: '...',
+        affectedProduct: 'All',
+        vendor: 'V',
+        status: 'Active',
+        publishedDate: new Date(),
+        createdAt: new Date(),
+      },
     ];
 
     const { getCVEsBySeverity } = await import('@/lib/db/queries/cves');
@@ -209,7 +328,20 @@ describe('Database Queries — Articles', () => {
   });
 
   it('10. getCVEByCveId() returns CVE object for valid ID', async () => {
-    mockSingleResult = { id: 'cv1', cveId: 'CVE-2026-5555', title: 'Target CVE', description: 'Test', severity: 'MEDIUM', cvssScore: '5.5', cvssVector: '...', affectedProduct: 'X', vendor: 'Y', status: 'Active', publishedDate: new Date(), createdAt: new Date() };
+    mockSingleResult = {
+      id: 'cv1',
+      cveId: 'CVE-2026-5555',
+      title: 'Target CVE',
+      description: 'Test',
+      severity: 'MEDIUM',
+      cvssScore: '5.5',
+      cvssVector: '...',
+      affectedProduct: 'X',
+      vendor: 'Y',
+      status: 'Active',
+      publishedDate: new Date(),
+      createdAt: new Date(),
+    };
 
     const { getCVEById } = await import('@/lib/db/queries/cves');
     const result = await getCVEById('CVE-2026-5555');
@@ -219,7 +351,19 @@ describe('Database Queries — Articles', () => {
 
   it('11. searchArticles() returns results for matching query', async () => {
     mockSelectResult = [
-      { id: 's1', title: 'Ransomware Attack', slug: 'ransomware-attack', category: 'threat_intel', isPublished: true, views: 500, author: 'Z', content: '...', tags: ['ransomware'], createdAt: new Date(), updatedAt: new Date() },
+      {
+        id: 's1',
+        title: 'Ransomware Attack',
+        slug: 'ransomware-attack',
+        category: 'threat_intel',
+        isPublished: true,
+        views: 500,
+        author: 'Z',
+        content: '...',
+        tags: ['ransomware'],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ];
 
     const { searchArticles } = await import('@/lib/db/queries/articles');
@@ -254,8 +398,26 @@ describe('Database Queries — Articles', () => {
 
   it('14. getAnalysts() returns array of analysts', async () => {
     mockSelectResult = [
-      { id: 'a1', name: 'Viktor Volkov', title: 'Lead APT Analyst', bio: '...', nationality: 'Russia', specializations: ['APT'], articleCount: 42, createdAt: new Date() },
-      { id: 'a2', name: 'Sarah Chen', title: 'CTI Researcher', bio: '...', nationality: 'United States', specializations: ['OSINT'], articleCount: 35, createdAt: new Date() },
+      {
+        id: 'a1',
+        name: 'Viktor Volkov',
+        title: 'Lead APT Analyst',
+        bio: '...',
+        nationality: 'Russia',
+        specializations: ['APT'],
+        articleCount: 42,
+        createdAt: new Date(),
+      },
+      {
+        id: 'a2',
+        name: 'Sarah Chen',
+        title: 'CTI Researcher',
+        bio: '...',
+        nationality: 'United States',
+        specializations: ['OSINT'],
+        articleCount: 35,
+        createdAt: new Date(),
+      },
     ];
 
     const { getAnalysts } = await import('@/lib/db/queries/analysts');

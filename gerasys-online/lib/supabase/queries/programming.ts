@@ -1,5 +1,5 @@
-import { getSupabaseClient } from '../client';
 import type { ProgrammingLang } from '@/lib/types';
+import { getSupabaseClient } from '../client';
 
 function mapProgrammingLang(dbLang: any): ProgrammingLang {
   if (!dbLang) return null as any;
@@ -40,10 +40,7 @@ export async function getProgrammingLangBySlug(slug: string, env?: any) {
 
 export async function getAllProgrammingLangSlugs(limit = 100, env?: any) {
   const supabase = getSupabaseClient(env);
-  const { data, error } = await supabase
-    .from('programming_langs')
-    .select('slug')
-    .limit(limit);
+  const { data, error } = await supabase.from('programming_langs').select('slug').limit(limit);
   if (error) return [];
   return (data ?? []).map((r) => r.slug);
 }

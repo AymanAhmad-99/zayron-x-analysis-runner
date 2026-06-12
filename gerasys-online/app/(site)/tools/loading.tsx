@@ -8,7 +8,11 @@ export default function ToolsLoading() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="card-article p-5" style={{ animation: `fade-up 0.5s ease-out ${i * 50}ms both` }}>
+          <div
+            key={i}
+            className="card-article p-5"
+            style={{ animation: `fade-up 0.5s ease-out ${i * 50}ms both` }}
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className="skeleton w-10 h-10 rounded-lg shrink-0" />
               <div className="flex-1 space-y-2">

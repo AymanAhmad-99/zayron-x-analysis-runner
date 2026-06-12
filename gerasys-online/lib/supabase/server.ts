@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 declare global {
   var sessionRefreshQueue: Map<string, { cookies: any[]; expiry: number }> | undefined;
@@ -22,38 +22,44 @@ export async function createClient() {
               cookieStore.set(name, value, options);
             }
           } catch (error) {
-            console.warn(JSON.stringify({
-              event: "SESSION_REFRESH_COOKIE_WRITE_FAILED",
-              error: error instanceof Error ? error.message : String(error),
-              cookies: cookiesToSet.map(c => c.name)
-            }));
-            
-            const oldRefreshToken = cookieStore.getAll().find(c => c.name.endsWith('-refresh-token'))?.value;
+            console.warn(
+              JSON.stringify({
+                event: 'SESSION_REFRESH_COOKIE_WRITE_FAILED',
+                error: error instanceof Error ? error.message : String(error),
+                cookies: cookiesToSet.map((c) => c.name),
+              }),
+            );
+
+            const oldRefreshToken = cookieStore
+              .getAll()
+              .find((c) => c.name.endsWith('-refresh-token'))?.value;
             if (oldRefreshToken) {
               if (!(globalThis as any).sessionRefreshQueue) {
                 (globalThis as any).sessionRefreshQueue = new Map();
               }
               (globalThis as any).sessionRefreshQueue.set(oldRefreshToken, {
                 cookies: cookiesToSet,
-                expiry: Date.now() + 60000
+                expiry: Date.now() + 60000,
               });
             }
           }
         },
       },
-    }
+    },
   );
 
   const originalGetUser = client.auth.getUser.bind(client.auth);
   client.auth.getUser = async (jwt?: string) => {
     if (process.env.CHAOS_FORCE_SESSION_EXPIRY === 'true') {
       try {
-        const { data: { session } } = await client.auth.getSession();
+        const {
+          data: { session },
+        } = await client.auth.getSession();
         if (session?.refresh_token) {
           await client.auth.refreshSession({ refresh_token: session.refresh_token });
         }
       } catch (err) {
-        console.error("Chaos session expiry simulation failed:", err);
+        console.error('Chaos session expiry simulation failed:', err);
       }
     }
     return originalGetUser(jwt);
@@ -98,38 +104,44 @@ export async function createAdminClient() {
               cookieStore.set(name, value, options);
             }
           } catch (error) {
-            console.warn(JSON.stringify({
-              event: "SESSION_REFRESH_COOKIE_WRITE_FAILED",
-              error: error instanceof Error ? error.message : String(error),
-              cookies: cookiesToSet.map(c => c.name)
-            }));
-            
-            const oldRefreshToken = cookieStore.getAll().find(c => c.name.endsWith('-refresh-token'))?.value;
+            console.warn(
+              JSON.stringify({
+                event: 'SESSION_REFRESH_COOKIE_WRITE_FAILED',
+                error: error instanceof Error ? error.message : String(error),
+                cookies: cookiesToSet.map((c) => c.name),
+              }),
+            );
+
+            const oldRefreshToken = cookieStore
+              .getAll()
+              .find((c) => c.name.endsWith('-refresh-token'))?.value;
             if (oldRefreshToken) {
               if (!(globalThis as any).sessionRefreshQueue) {
                 (globalThis as any).sessionRefreshQueue = new Map();
               }
               (globalThis as any).sessionRefreshQueue.set(oldRefreshToken, {
                 cookies: cookiesToSet,
-                expiry: Date.now() + 60000
+                expiry: Date.now() + 60000,
               });
             }
           }
         },
       },
-    }
+    },
   );
 
   const originalGetUser = client.auth.getUser.bind(client.auth);
   client.auth.getUser = async (jwt?: string) => {
     if (process.env.CHAOS_FORCE_SESSION_EXPIRY === 'true') {
       try {
-        const { data: { session } } = await client.auth.getSession();
+        const {
+          data: { session },
+        } = await client.auth.getSession();
         if (session?.refresh_token) {
           await client.auth.refreshSession({ refresh_token: session.refresh_token });
         }
       } catch (err) {
-        console.error("Chaos session expiry simulation failed:", err);
+        console.error('Chaos session expiry simulation failed:', err);
       }
     }
     return originalGetUser(jwt);

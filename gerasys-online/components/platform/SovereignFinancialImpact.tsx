@@ -1,25 +1,65 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { Zap, ShieldAlert, ShieldCheck } from "@/lib/icons";
+import { ShieldAlert, ShieldCheck, Zap } from '@/lib/icons';
+import { useEffect, useState } from 'react';
 
 const ASSET_PROFILES = [
-  { id: "smb", label: "Corporate Workspace & Domain Core (SMB)", baseValue: 150000, description: "Office 365, internal messaging, single corporate domain, local workstations." },
-  { id: "fintech", label: "High-Growth FinTech Gateway (API Nodes)", baseValue: 4800000, description: "Customer ledger DB, payment API endpoints, high-availability clusters." },
-  { id: "enterprise", label: "Enterprise Hybrid Cloud Core (Multi-Region)", baseValue: 42000000, description: "AWS/Azure Kubernetes clusters, LDAP, data warehousing, active AD forest." },
-  { id: "critical", label: "Sovereign Strategic Operations (SCADA / DNS)", baseValue: 350000000, description: "Power grid command nodes, Tier-1 root server arrays, national SCADA systems." },
+  {
+    id: 'smb',
+    label: 'Corporate Workspace & Domain Core (SMB)',
+    baseValue: 150000,
+    description: 'Office 365, internal messaging, single corporate domain, local workstations.',
+  },
+  {
+    id: 'fintech',
+    label: 'High-Growth FinTech Gateway (API Nodes)',
+    baseValue: 4800000,
+    description: 'Customer ledger DB, payment API endpoints, high-availability clusters.',
+  },
+  {
+    id: 'enterprise',
+    label: 'Enterprise Hybrid Cloud Core (Multi-Region)',
+    baseValue: 42000000,
+    description: 'AWS/Azure Kubernetes clusters, LDAP, data warehousing, active AD forest.',
+  },
+  {
+    id: 'critical',
+    label: 'Sovereign Strategic Operations (SCADA / DNS)',
+    baseValue: 350000000,
+    description: 'Power grid command nodes, Tier-1 root server arrays, national SCADA systems.',
+  },
 ] as const;
 
 const THREAT_VECTORS = [
-  { id: "phishing", label: "Phishing & Stealer Injection", multiplier: 0.15, description: "Credential stealing via spear-phishing or loader-infected attachments." },
-  { id: "cve", label: "Zero-Day Remote Code Execution (RCE)", multiplier: 1.4, description: "Unauthenticated perimeter entry bypass targeting web interfaces." },
-  { id: "ransomware", label: "Double-Extortion Ransomware Payload", multiplier: 2.5, description: "Volume shadow copy wipe, local drive encryption, database exfiltration." },
-  { id: "apt", label: "Nation-State Advanced Persistent Threat (APT)", multiplier: 3.8, description: "Active system persistence, persistent C2 channels, stealth data leakage." },
+  {
+    id: 'phishing',
+    label: 'Phishing & Stealer Injection',
+    multiplier: 0.15,
+    description: 'Credential stealing via spear-phishing or loader-infected attachments.',
+  },
+  {
+    id: 'cve',
+    label: 'Zero-Day Remote Code Execution (RCE)',
+    multiplier: 1.4,
+    description: 'Unauthenticated perimeter entry bypass targeting web interfaces.',
+  },
+  {
+    id: 'ransomware',
+    label: 'Double-Extortion Ransomware Payload',
+    multiplier: 2.5,
+    description: 'Volume shadow copy wipe, local drive encryption, database exfiltration.',
+  },
+  {
+    id: 'apt',
+    label: 'Nation-State Advanced Persistent Threat (APT)',
+    multiplier: 3.8,
+    description: 'Active system persistence, persistent C2 channels, stealth data leakage.',
+  },
 ] as const;
 
 export function SovereignFinancialImpact() {
-  const [selectedAsset, setSelectedAsset] = useState<string>("smb");
-  const [selectedThreat, setSelectedThreat] = useState<string>("phishing");
+  const [selectedAsset, setSelectedAsset] = useState<string>('smb');
+  const [selectedThreat, setSelectedThreat] = useState<string>('phishing');
   const [impactScore, setImpactScore] = useState<number>(22500);
   const [displayScore, setDisplayScore] = useState<number>(22500);
 
@@ -36,7 +76,7 @@ export function SovereignFinancialImpact() {
   // Tick up display score smoothly for premium micro-animation feel
   useEffect(() => {
     if (displayScore === impactScore) return;
-    
+
     const duration = 800; // ms
     const startTime = performance.now();
     const startVal = displayScore;
@@ -47,7 +87,7 @@ export function SovereignFinancialImpact() {
     const tick = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Easing out quad
       const easedProgress = progress * (2 - progress);
       const current = Math.round(startVal + (targetVal - startVal) * easedProgress);
@@ -63,16 +103,15 @@ export function SovereignFinancialImpact() {
   }, [impactScore]);
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
       maximumFractionDigits: 0,
     }).format(val);
   };
 
   return (
     <div className="bg-white border border-neutral-200 rounded-lg p-8 shadow-sm hover:shadow-md hover:border-neutral-300 transition-all duration-300 my-8 font-sans">
-      
       {/* Title Ribbon */}
       <div className="flex items-center gap-2 mb-6 pb-4 border-b border-dashed border-neutral-200">
         <Zap className="w-5 h-5 text-[#733DD9]" fill="#733DD9" />
@@ -82,7 +121,8 @@ export function SovereignFinancialImpact() {
       </div>
 
       <p className="text-xs text-[#050505] leading-relaxed mb-6">
-        Simulate corporate exposure by aligning threat telemetry against sovereign asset profiles. Dynamic vector calculation maps baseline breach damage thresholds in real-time.
+        Simulate corporate exposure by aligning threat telemetry against sovereign asset profiles.
+        Dynamic vector calculation maps baseline breach damage thresholds in real-time.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -98,8 +138,8 @@ export function SovereignFinancialImpact() {
                 onClick={() => setSelectedAsset(profile.id)}
                 className={`w-full text-left p-3.5 border rounded transition-all flex flex-col justify-between ${
                   selectedAsset === profile.id
-                    ? "border-[#733DD9] bg-[#733DD9]/5 shadow-sm"
-                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
+                    ? 'border-[#733DD9] bg-[#733DD9]/5 shadow-sm'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
                 }`}
               >
                 <div className="flex justify-between items-center w-full">
@@ -128,8 +168,8 @@ export function SovereignFinancialImpact() {
                 onClick={() => setSelectedThreat(vector.id)}
                 className={`w-full text-left p-3.5 border rounded transition-all flex flex-col justify-between ${
                   selectedThreat === vector.id
-                    ? "border-[#733DD9] bg-[#733DD9]/5 shadow-sm"
-                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
+                    ? 'border-[#733DD9] bg-[#733DD9]/5 shadow-sm'
+                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
                 }`}
               >
                 <div className="flex justify-between items-center w-full">

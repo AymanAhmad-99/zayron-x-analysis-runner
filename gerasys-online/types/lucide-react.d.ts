@@ -1,6 +1,6 @@
 /// <reference types="react" />
 
-declare module "lucide-react/dist/esm/icons/*.js" {
+declare module 'lucide-react/dist/esm/icons/*.js' {
   interface LucideIconProps extends React.SVGProps<SVGSVGElement> {
     size?: number | string;
     color?: string;

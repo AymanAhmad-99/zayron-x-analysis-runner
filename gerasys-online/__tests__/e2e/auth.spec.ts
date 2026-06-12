@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 // ─────────────────────────────────────────────
 // 5 E2E Tests — Authentication Flows
@@ -47,7 +47,9 @@ test.describe('Authentication', () => {
     // Wait for error message to appear
     await page.waitForTimeout(1500);
     // Supabase returns an error message — check for error container or red text
-    const errorText = page.locator('.text-\\[\\#DC2626\\], [class*="text-red"], [class*="error"]').first();
+    const errorText = page
+      .locator('.text-\\[\\#DC2626\\], [class*="text-red"], [class*="error"]')
+      .first();
     // Error may or may not be visible depending on Supabase response time
     const hasError = await errorText.isVisible().catch(() => false);
     // If no specific error class, at least check the page is still /login

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { SovereignGateModal } from "@/components/platform/SovereignGateModal";
-import { Lock, Play, Download, Check, Copy } from "@/lib/icons";
+import { SovereignGateModal } from '@/components/platform/SovereignGateModal';
+import { Check, Copy, Download, Lock, Play } from '@/lib/icons';
+import { useState } from 'react';
 
 interface ThreatDetailClientProps {
   threatId: string;
@@ -37,20 +37,30 @@ export function ThreatDetailClient({
 
     setIsRemediating(true);
     try {
-      const res = await fetch("/api/remediate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const csrfToken =
+        typeof document !== 'undefined'
+          ? document.cookie.match(/(?:^|; )csrf-token=([^;]*)/)?.[1]
+          : null;
+
+      const res = await fetch('/api/remediate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+        },
         body: JSON.stringify({ threatId, threatTitle }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
         setRemediated(true);
-        alert(`[AUTONOMOUS REMEDIATION SUCCESS]\n\nSuccessfully deployed patch mitigation rules across ${data.telemetry.nodesPatched} nodes.\nMitigated impact: $${data.telemetry.blastRadiusMitigatedUSD.toLocaleString()} USD.`);
+        alert(
+          `[AUTONOMOUS REMEDIATION SUCCESS]\n\nSuccessfully deployed patch mitigation rules across ${data.telemetry.nodesPatched} nodes.\nMitigated impact: $${data.telemetry.blastRadiusMitigatedUSD.toLocaleString()} USD.`,
+        );
       } else {
-        alert(`Error: ${data.error || "Failed to trigger remediation."}`);
+        alert(`Error: ${data.error || 'Failed to trigger remediation.'}`);
       }
     } catch {
-      alert("Network communication error.");
+      alert('Network communication error.');
     } finally {
       setIsRemediating(false);
     }
@@ -61,12 +71,12 @@ export function ThreatDetailClient({
       setIsModalOpen(true);
       return;
     }
-    window.open(`/api/download-sitrep?threatId=${threatId}`, "_blank");
+    window.open(`/api/download-sitrep?threatId=${threatId}`, '_blank');
   };
 
-  const copyToClipboard = (text: string, type: "yara" | "sigma") => {
+  const copyToClipboard = (text: string, type: 'yara' | 'sigma') => {
     navigator.clipboard.writeText(text);
-    if (type === "yara") {
+    if (type === 'yara') {
       setCopiedYara(true);
       setTimeout(() => setCopiedYara(false), 2000);
     } else {
@@ -79,7 +89,6 @@ export function ThreatDetailClient({
     <div className="space-y-12 relative">
       {/* Premium Content Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
         {/* YARA Section */}
         <div className="border border-neutral-200 p-6 bg-white relative">
           <div className="flex items-center justify-between border-b border-neutral-100 pb-3 mb-4">
@@ -88,11 +97,11 @@ export function ThreatDetailClient({
             </span>
             {isSubscriber && yaraRules && (
               <button
-                onClick={() => copyToClipboard(yaraRules, "yara")}
+                onClick={() => copyToClipboard(yaraRules, 'yara')}
                 className="text-[10px] font-mono uppercase text-neutral-500 hover:text-[#733DD9] cursor-pointer flex items-center gap-1"
               >
                 {copiedYara ? <Check size={12} /> : <Copy size={12} />}
-                {copiedYara ? "Copied" : "Copy Code"}
+                {copiedYara ? 'Copied' : 'Copy Code'}
               </button>
             )}
           </div>
@@ -125,11 +134,11 @@ export function ThreatDetailClient({
             </span>
             {isSubscriber && sigmaRules && (
               <button
-                onClick={() => copyToClipboard(sigmaRules, "sigma")}
+                onClick={() => copyToClipboard(sigmaRules, 'sigma')}
                 className="text-[10px] font-mono uppercase text-neutral-500 hover:text-[#733DD9] cursor-pointer flex items-center gap-1"
               >
                 {copiedSigma ? <Check size={12} /> : <Copy size={12} />}
-                {copiedSigma ? "Copied" : "Copy Code"}
+                {copiedSigma ? 'Copied' : 'Copy Code'}
               </button>
             )}
           </div>
@@ -153,12 +162,10 @@ export function ThreatDetailClient({
             </div>
           )}
         </div>
-
       </div>
 
       {/* Indicators & Targets */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
         {/* Indicators of Compromise */}
         <div className="border border-neutral-200 p-6 bg-white">
           <h4 className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#050505] font-black border-b border-neutral-100 pb-3 mb-4">
@@ -166,8 +173,10 @@ export function ThreatDetailClient({
           </h4>
           {isSubscriber && rawIocs ? (
             <div className="text-xs font-mono text-neutral-700 leading-relaxed bg-[#FAFAFA] p-4 border border-neutral-100">
-              {rawIocs.split("\n").map((line, idx) => (
-                <div key={idx} className="py-0.5">{line}</div>
+              {rawIocs.split('\n').map((line, idx) => (
+                <div key={idx} className="py-0.5">
+                  {line}
+                </div>
               ))}
             </div>
           ) : (
@@ -186,7 +195,7 @@ export function ThreatDetailClient({
           </h4>
           {isSubscriber && unmaskedEntities ? (
             <div className="flex flex-wrap gap-2">
-              {unmaskedEntities.split(",").map((ent, idx) => (
+              {unmaskedEntities.split(',').map((ent, idx) => (
                 <span
                   key={idx}
                   className="text-[10px] font-mono uppercase tracking-wider bg-white border border-[#733DD9]/20 text-[#733DD9] px-2.5 py-1"
@@ -203,7 +212,6 @@ export function ThreatDetailClient({
             </div>
           )}
         </div>
-
       </div>
 
       {/* Action / Gate Overlay (Frosted Glass Vault over redacted structures) */}
@@ -211,20 +219,21 @@ export function ThreatDetailClient({
         <div className="absolute inset-0 z-30 flex items-center justify-center backdrop-blur-md bg-white/40 border border-neutral-300 p-8 text-center overflow-hidden">
           {/* Symmetrical wireframes */}
           <div className="absolute inset-0 opacity-[0.01] bg-[radial-gradient(#000_1px,transparent_1px)] bg-[size:16px_16px]"></div>
-          
+
           <div className="max-w-xl mx-auto space-y-5 relative z-40 py-8 bg-white border border-neutral-200 shadow-xl p-8">
             <div className="w-12 h-12 border border-neutral-200 flex items-center justify-center mx-auto bg-[#FAFAFA] rounded-none">
               <Lock className="w-5 h-5 text-[#733DD9]" />
             </div>
-            
+
             <h3 className="text-sm font-black tracking-widest text-[#050505] uppercase font-sans">
               REMEDIATION BLUEPRINT LOCKED
             </h3>
-            
+
             <p className="text-xs text-neutral-500 leading-relaxed">
-              Payload redaction enforced. Cryptographic indicators and automated remediation blueprints require clearance tier synchronization.
+              Payload redaction enforced. Cryptographic indicators and automated remediation
+              blueprints require clearance tier synchronization.
             </p>
-            
+
             <button
               onClick={() => setIsModalOpen(true)}
               className="bg-[#050505] text-white hover:shadow-[0_0_15px_rgba(115,61,217,0.4)] font-mono font-bold text-xs uppercase tracking-widest py-4 px-8 mt-2 cursor-pointer transition-all duration-300 rounded-none border-none"
@@ -265,7 +274,7 @@ export function ThreatDetailClient({
               className="bg-[#050505] text-white hover:bg-[#733DD9] disabled:opacity-50 disabled:hover:bg-[#050505] font-mono font-bold text-xs uppercase tracking-wider py-3.5 px-6 flex items-center gap-2 cursor-pointer transition-colors"
             >
               {remediated ? <Check size={13} /> : <Play size={13} />}
-              {isRemediating ? "PROCESSING..." : remediated ? "REMEDIATED" : "AUTO-REMEDIATE"}
+              {isRemediating ? 'PROCESSING...' : remediated ? 'REMEDIATED' : 'AUTO-REMEDIATE'}
             </button>
           </div>
         </div>

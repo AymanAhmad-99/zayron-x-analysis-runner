@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { Shield, RefreshCw, ArrowLeft } from "@/lib/icons";
-import Link from "next/link";
+import { ArrowLeft, RefreshCw, Shield } from '@/lib/icons';
+import Link from 'next/link';
+import { useEffect } from 'react';
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -11,7 +11,7 @@ interface ErrorProps {
 
 export default function SiteError({ error, reset }: ErrorProps) {
   useEffect(() => {
-    console.error("ZAYRON-X — Site Error Boundary:", error);
+    console.error('ZAYRON-X — Site Error Boundary:', error);
   }, [error]);
 
   return (
@@ -27,8 +27,8 @@ export default function SiteError({ error, reset }: ErrorProps) {
             SIGINT Loss
           </h1>
           <p className="text-[#888888] text-sm font-ui leading-relaxed max-w-md mx-auto">
-            A signal interruption has occurred in the intelligence pipeline.
-            This may be a temporary infrastructure disruption.
+            A signal interruption has occurred in the intelligence pipeline. This may be a temporary
+            infrastructure disruption.
           </p>
         </div>
 
@@ -38,28 +38,20 @@ export default function SiteError({ error, reset }: ErrorProps) {
             Error Classification
           </p>
           <p className="text-xs text-[#CCCCCC] font-mono leading-relaxed break-all">
-            {error.message || "UNKNOWN SIGNAL DEGRADATION"}
+            {error.message || 'UNKNOWN SIGNAL DEGRADATION'}
           </p>
           {error.digest && (
-            <p className="text-[10px] text-[#555555] font-mono mt-2">
-              REF: {error.digest}
-            </p>
+            <p className="text-[10px] text-[#555555] font-mono mt-2">REF: {error.digest}</p>
           )}
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-center gap-4">
-          <button
-            onClick={reset}
-            className="btn-primary"
-          >
+          <button onClick={reset} className="btn-primary">
             <RefreshCw size={14} />
             Re-establish Uplink
           </button>
-          <Link
-            href="/"
-            className="btn-outline"
-          >
+          <Link href="/" className="btn-outline">
             <ArrowLeft size={14} />
             Command Center
           </Link>

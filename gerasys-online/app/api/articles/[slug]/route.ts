@@ -1,12 +1,9 @@
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from "next/server";
-import { getArticleBySlug } from "@/lib/supabase/queries/articles";
+import { getArticleBySlug } from '@/lib/supabase/queries/articles';
+import { NextResponse } from 'next/server';
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
     const article = await getArticleBySlug(slug);
@@ -23,10 +20,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("API /articles/[slug] error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch article" },
-      { status: 500 }
-    );
+    console.error('API /articles/[slug] error:', error);
+    return NextResponse.json({ error: 'Failed to fetch article' }, { status: 500 });
   }
 }

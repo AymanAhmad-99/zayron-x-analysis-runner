@@ -3,10 +3,6 @@ interface CategoryBadgeProps {
   className?: string;
 }
 
-export function CategoryBadge({ category, className = "" }: CategoryBadgeProps) {
-  return (
-    <span className={`eyebrow text-[0.62rem] ${className}`}>
-      {category}
-    </span>
-  );
+export function CategoryBadge({ category, className = '' }: CategoryBadgeProps) {
+  return <span className={`eyebrow text-[0.62rem] ${className}`}>{category}</span>;
 }

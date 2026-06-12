@@ -8,9 +8,9 @@ interface AuthorCardProps {
 
 function getInitials(name: string): string {
   return name
-    .split(" ")
+    .split(' ')
     .map((w) => w[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 }
@@ -28,18 +28,10 @@ export function AuthorCard({
         {getInitials(authorName)}
       </div>
       <div className="min-w-0">
-        <h3 className="font-display font-black text-lg text-black">
-          {authorName}
-        </h3>
-        {title && (
-          <p className="text-sm text-[#444444] font-mono font-medium mt-0.5">
-            {title}
-          </p>
-        )}
+        <h3 className="font-display font-black text-lg text-black">{authorName}</h3>
+        {title && <p className="text-sm text-[#444444] font-mono font-medium mt-0.5">{title}</p>}
         {bio && (
-          <p className="text-sm text-[#444444] mt-2 font-body leading-loose max-w-xl">
-            {bio}
-          </p>
+          <p className="text-sm text-[#444444] mt-2 font-body leading-loose max-w-xl">{bio}</p>
         )}
         {specializations && specializations.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
@@ -55,8 +47,7 @@ export function AuthorCard({
         )}
         {articleCount !== undefined && articleCount > 0 && (
           <p className="text-xs text-[#666666] mt-2 font-mono uppercase tracking-wider">
-            {articleCount} intelligence report{articleCount !== 1 ? "s" : ""}{" "}
-            published
+            {articleCount} intelligence report{articleCount !== 1 ? 's' : ''} published
           </p>
         )}
       </div>

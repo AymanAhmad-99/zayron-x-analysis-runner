@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { BarChart3, ChevronDown, ChevronRight } from "@/lib/icons";
-import { SovereignFinancialImpact } from "./SovereignFinancialImpact";
+import { BarChart3, ChevronDown, ChevronRight } from '@/lib/icons';
+import { useState } from 'react';
+import { SovereignFinancialImpact } from './SovereignFinancialImpact';
 
 interface BlastRadiusProps {
   financialExposure?: string | null;
@@ -16,9 +16,9 @@ export function FinancialBlastRadius({
   mitigationImpact,
 }: BlastRadiusProps) {
   const [showCalculator, setShowCalculator] = useState(false);
-  const exposure = financialExposure || "$4.2M – $8.5M";
-  const risk = regulatoryRisk || "CRITICAL";
-  const impact = mitigationImpact || "HIGH YIELD";
+  const exposure = financialExposure || '$4.2M – $8.5M';
+  const risk = regulatoryRisk || 'CRITICAL';
+  const impact = mitigationImpact || 'HIGH YIELD';
 
   return (
     <div className="space-y-4">

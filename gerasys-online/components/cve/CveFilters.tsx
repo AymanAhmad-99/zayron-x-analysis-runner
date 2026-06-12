@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { Search } from "@/lib/icons";
-import { useState, type FormEvent } from "react";
+import { Search } from '@/lib/icons';
+import { type FormEvent, useState } from 'react';
 
 interface CveFiltersProps {
   onSearch: (query: string) => void;
   onSeverityChange: (severity: string) => void;
 }
 
-const severities = ["All", "Critical", "High", "Medium", "Low"];
+const severities = ['All', 'Critical', 'High', 'Medium', 'Low'];
 
 export function CveFilters({ onSearch, onSeverityChange }: CveFiltersProps) {
-  const [query, setQuery] = useState("");
-  const [activeSeverity, setActiveSeverity] = useState("All");
+  const [query, setQuery] = useState('');
+  const [activeSeverity, setActiveSeverity] = useState('All');
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -21,7 +21,7 @@ export function CveFilters({ onSearch, onSeverityChange }: CveFiltersProps) {
 
   function handleSeverity(severity: string) {
     setActiveSeverity(severity);
-    onSeverityChange(severity === "All" ? "" : severity);
+    onSeverityChange(severity === 'All' ? '' : severity);
   }
 
   return (
@@ -43,8 +43,8 @@ export function CveFilters({ onSearch, onSeverityChange }: CveFiltersProps) {
             onClick={() => handleSeverity(s)}
             className={`px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all font-ui ${
               activeSeverity === s
-                ? "bg-[#D2B48C] text-white shadow-sm"
-                : "bg-white border border-[#E2E8F0] text-[#475569] hover:border-[#D2B48C] hover:text-[#D2B48C]"
+                ? 'bg-[#D2B48C] text-white shadow-sm'
+                : 'bg-white border border-[#E2E8F0] text-[#475569] hover:border-[#D2B48C] hover:text-[#D2B48C]'
             }`}
           >
             {s}

@@ -1,5 +1,5 @@
-import { getSupabaseClient, getSupabaseAdmin } from '../client';
 import type { CVE } from '@/lib/types';
+import { getSupabaseAdmin, getSupabaseClient } from '../client';
 
 function mapCVE(dbCVE: any): CVE {
   if (!dbCVE) return null as any;
@@ -93,20 +93,16 @@ export async function searchCVEs(query: string, limit = 20, env?: any) {
 
 export async function getCVECount(env?: any) {
   const supabase = getSupabaseClient(env);
-  const { count, error } = await supabase
-    .from('cves')
-    .select('*', { count: 'exact', head: true });
+  const { count, error } = await supabase.from('cves').select('*', { count: 'exact', head: true });
   if (error) return 0;
   return count ?? 0;
 }
 
 export async function getCVESeverityDistribution(env?: any) {
   const supabase = getSupabaseClient(env);
-  const { data, error } = await supabase
-    .from('cves')
-    .select('severity');
+  const { data, error } = await supabase.from('cves').select('severity');
   if (error) return [];
-  
+
   const counts: Record<string, number> = {};
   for (const row of data ?? []) {
     const sev = row.severity || 'Unknown';
@@ -170,10 +166,7 @@ export async function updateCVE(id: string, data: any, env?: any) {
 
 export async function deleteCVE(id: string, env?: any) {
   const supabase = getSupabaseAdmin(env);
-  const { error } = await supabase
-    .from('cves')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabase.from('cves').delete().eq('id', id);
   if (error) throw error;
 }
 

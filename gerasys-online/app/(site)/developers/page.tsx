@@ -1,100 +1,138 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Code, Database, Globe, RefreshCw, Shield, Network, Zap } from "@/lib/icons";
+import { Code, Database, Globe, Network, RefreshCw, Shield, Zap } from '@/lib/icons';
+import { useState } from 'react';
 
 interface EndpointInfo {
-  method: "GET" | "POST";
+  method: 'GET' | 'POST';
   path: string;
   description: string;
   parameters: { name: string; type: string; req: boolean; desc: string }[];
   response: string;
 }
 
-const ENDPOINTS: Record<"briefings" | "cves" | "radar", EndpointInfo> = {
+const ENDPOINTS: Record<'briefings' | 'cves' | 'radar', EndpointInfo> = {
   briefings: {
-    method: "GET",
-    path: "/api/v1/briefings",
-    description: "Stream high-fidelity, processed active B2B security briefings parsed by ZAYRON-X AI.",
+    method: 'GET',
+    path: '/api/v1/briefings',
+    description:
+      'Stream high-fidelity, processed active B2B security briefings parsed by ZAYRON-X AI.',
     parameters: [
-      { name: "limit", type: "integer", req: false, desc: "Number of briefings to fetch (default: 10, max: 100)" },
-      { name: "category", type: "string", req: false, desc: "Filter by threat sector category (e.g. cybersecurity)" },
-      { name: "severity", type: "string", req: false, desc: "Filter by risk level (CRITICAL, HIGH, MEDIUM)" },
+      {
+        name: 'limit',
+        type: 'integer',
+        req: false,
+        desc: 'Number of briefings to fetch (default: 10, max: 100)',
+      },
+      {
+        name: 'category',
+        type: 'string',
+        req: false,
+        desc: 'Filter by threat sector category (e.g. cybersecurity)',
+      },
+      {
+        name: 'severity',
+        type: 'string',
+        req: false,
+        desc: 'Filter by risk level (CRITICAL, HIGH, MEDIUM)',
+      },
     ],
     response: JSON.stringify(
       {
-        status: "success",
-        timestamp: "2026-05-21T14:55:34Z",
+        status: 'success',
+        timestamp: '2026-05-21T14:55:34Z',
         results: 1,
         data: [
           {
-            id: "art_90bf39a1c890",
-            title: "Zero-Day Authentication Bypass in Enterprise SaaS Gateways",
-            slug: "zeroday-auth-bypass-enterprise-saas",
-            category: "cybersecurity",
-            severity: "CRITICAL",
-            financialExposure: "$5.8M",
-            mitigationImpact: "HIGH YIELD",
-            iocs: ["185.220.101.4", "auth-bypass-exploit.py", "SHA-256: 4a2d8b..."],
-            publishedAt: "2026-05-21T11:20:00Z"
-          }
-        ]
+            id: 'art_90bf39a1c890',
+            title: 'Zero-Day Authentication Bypass in Enterprise SaaS Gateways',
+            slug: 'zeroday-auth-bypass-enterprise-saas',
+            category: 'cybersecurity',
+            severity: 'CRITICAL',
+            financialExposure: '$5.8M',
+            mitigationImpact: 'HIGH YIELD',
+            iocs: ['185.220.101.4', 'auth-bypass-exploit.py', 'SHA-256: 4a2d8b...'],
+            publishedAt: '2026-05-21T11:20:00Z',
+          },
+        ],
       },
       null,
-      2
-    )
+      2,
+    ),
   },
   cves: {
-    method: "GET",
-    path: "/api/v1/cves",
-    description: "Retrieve real-time vulnerability tracking records synchronized with global CVE indices.",
+    method: 'GET',
+    path: '/api/v1/cves',
+    description:
+      'Retrieve real-time vulnerability tracking records synchronized with global CVE indices.',
     parameters: [
-      { name: "cveId", type: "string", req: false, desc: "Exact CVE code (e.g., CVE-2026-0144)" },
-      { name: "score", type: "float", req: false, desc: "Minimum CVSS threshold score (e.g., 9.0)" },
+      { name: 'cveId', type: 'string', req: false, desc: 'Exact CVE code (e.g., CVE-2026-0144)' },
+      {
+        name: 'score',
+        type: 'float',
+        req: false,
+        desc: 'Minimum CVSS threshold score (e.g., 9.0)',
+      },
     ],
     response: JSON.stringify(
       {
-        status: "success",
-        timestamp: "2026-05-21T14:55:34Z",
+        status: 'success',
+        timestamp: '2026-05-21T14:55:34Z',
         cveIndexCount: 12480,
         results: [
           {
-            cveId: "CVE-2026-0144",
+            cveId: 'CVE-2026-0144',
             cvssScore: 9.8,
-            vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-            description: "Remote Code Execution vulnerability in core SSL handshake decryption buffers.",
-            remediation: "Deploy Cloudflare WAF buffer-check rule 88401 immediately."
-          }
-        ]
+            vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+            description:
+              'Remote Code Execution vulnerability in core SSL handshake decryption buffers.',
+            remediation: 'Deploy Cloudflare WAF buffer-check rule 88401 immediately.',
+          },
+        ],
       },
       null,
-      2
-    )
+      2,
+    ),
   },
   radar: {
-    method: "GET",
-    path: "/api/v1/radar",
-    description: "Fetch live infrastructure diagnostic records and node connectivity metrics.",
+    method: 'GET',
+    path: '/api/v1/radar',
+    description: 'Fetch live infrastructure diagnostic records and node connectivity metrics.',
     parameters: [
-      { name: "nodeId", type: "string", req: false, desc: "Target infrastructure asset key (e.g., corp-dns)" }
+      {
+        name: 'nodeId',
+        type: 'string',
+        req: false,
+        desc: 'Target infrastructure asset key (e.g., corp-dns)',
+      },
     ],
     response: JSON.stringify(
       {
-        status: "success",
+        status: 'success',
         nodesCount: 4,
         nodes: [
-          { name: "Office 365 Tenant", type: "SaaS Connection", status: "SECURE", telemetry: "Active session monitoring" },
-          { name: "Corporate DNS", type: "Domain MX/TXT", status: "WARNING", telemetry: "Missing SPF hard-fail policy flag" }
-        ]
+          {
+            name: 'Office 365 Tenant',
+            type: 'SaaS Connection',
+            status: 'SECURE',
+            telemetry: 'Active session monitoring',
+          },
+          {
+            name: 'Corporate DNS',
+            type: 'Domain MX/TXT',
+            status: 'WARNING',
+            telemetry: 'Missing SPF hard-fail policy flag',
+          },
+        ],
       },
       null,
-      2
-    )
-  }
+      2,
+    ),
+  },
 };
 
 export default function DeveloperPortalPage() {
-  const [activeTab, setActiveTab] = useState<"briefings" | "cves" | "radar">("briefings");
+  const [activeTab, setActiveTab] = useState<'briefings' | 'cves' | 'radar'>('briefings');
   const [isLoading, setIsLoading] = useState(false);
   const [responseOutput, setResponseOutput] = useState(ENDPOINTS.briefings.response);
   const [statusCode, setStatusCode] = useState<number | null>(200);
@@ -111,15 +149,15 @@ export default function DeveloperPortalPage() {
     }, 800);
   };
 
-  const handleTabChange = (tab: "briefings" | "cves" | "radar") => {
+  const handleTabChange = (tab: 'briefings' | 'cves' | 'radar') => {
     setActiveTab(tab);
     setResponseOutput(ENDPOINTS[tab].response);
   };
 
   return (
-    <main className="min-h-screen bg-[#06090F] text-white">
+    <main className="min-h-screen bg-black text-white">
       {/* Hero Section */}
-      <section className="relative py-24 px-6 lg:px-10 border-b border-slate-900 overflow-hidden">
+      <section className="relative py-24 px-6 lg:px-10 border-b border-slate-800 overflow-hidden">
         {/* Glow Effects */}
         <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -135,19 +173,21 @@ export default function DeveloperPortalPage() {
                 Enterprise Ingestion Protocols & <span className="text-blue-500">API Gates</span>
               </h1>
               <p className="text-sm md:text-base text-slate-400 leading-relaxed max-w-xl font-sans mb-8">
-                Automate machine-to-machine threat intelligence integration. Stream real-time CVE indices and OSINT briefings directly into your security stack via standard STIX/TAXII protocols or our secure JSON API gateway.
+                Automate machine-to-machine threat intelligence integration. Stream real-time CVE
+                indices and OSINT briefings directly into your security stack via standard
+                STIX/TAXII protocols or our secure JSON API gateway.
               </p>
-              
+
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-950/80 border border-slate-800 rounded font-mono text-[10px] text-slate-400">
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-black/80 border border-slate-800 rounded font-mono text-[10px] text-slate-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   API v1.0.0 (STABLE)
                 </span>
-                <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-950/80 border border-slate-800 rounded font-mono text-[10px] text-slate-400">
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-black/80 border border-slate-800 rounded font-mono text-[10px] text-slate-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   SIEM INTEGRATION READY
                 </span>
-                <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-950/80 border border-slate-800 rounded font-mono text-[10px] text-slate-400">
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-black/80 border border-slate-800 rounded font-mono text-[10px] text-slate-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   TAXII 2.1 COMPLIANT
                 </span>
@@ -155,16 +195,20 @@ export default function DeveloperPortalPage() {
             </div>
 
             {/* Code Watermark Detail */}
-            <div className="hidden lg:block shrink-0 bg-[#0F172A] border border-slate-800 rounded-xl p-6 font-mono text-[10px] text-slate-500 shadow-2xl min-w-[340px] select-none opacity-80">
+            <div className="hidden lg:block shrink-0 bg-black border border-slate-800 rounded-xl p-6 font-mono text-[10px] text-slate-500 shadow-2xl min-w-[340px] select-none opacity-80 animate-fade-in">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-4">
                 <span>STIX/TAXII Feed Sync</span>
                 <span className="text-blue-400">ONLINE</span>
               </div>
               <p className="leading-relaxed">
-                $ taxii2-client fetch-feed --id zayron-x-intel<br/>
-                [INFO] Telemetry sync initialized.<br/>
-                [INFO] Handshake complete: TLP:AMBER approved<br/>
-                [INFO] Indexed 1,480 IOC parameters.<br/>
+                $ taxii2-client fetch-feed --id zayron-x-intel
+                <br />
+                [INFO] Telemetry sync initialized.
+                <br />
+                [INFO] Handshake complete: TLP:AMBER approved
+                <br />
+                [INFO] Indexed 1,480 IOC parameters.
+                <br />
                 [SUCCESS] Stream connected to Splunk collector...
               </p>
             </div>
@@ -175,24 +219,28 @@ export default function DeveloperPortalPage() {
       {/* Interactive API Sandbox */}
       <section className="py-20 px-6 lg:px-10 max-w-[1200px] mx-auto">
         <div className="text-center max-w-xl mx-auto mb-14">
-          <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold block mb-2">Sandbox Console</span>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white">Interactive Endpoint Explorer</h2>
+          <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold block mb-2">
+            Sandbox Console
+          </span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white">
+            Interactive Endpoint Explorer
+          </h2>
         </div>
 
         {/* Tab Selection */}
-        <div className="flex justify-center border-b border-slate-850 mb-10">
-          <div className="flex gap-2 p-1 bg-slate-950 border border-slate-850 rounded-lg">
-            {(["briefings", "cves", "radar"] as const).map((tab) => (
+        <div className="flex justify-center border-b border-slate-800 mb-10">
+          <div className="flex gap-2 p-1 bg-black border border-slate-800 rounded-lg">
+            {(['briefings', 'cves', 'radar'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
                 className={`px-6 py-2.5 rounded-md font-mono text-xs font-bold transition-all uppercase cursor-pointer ${
                   activeTab === tab
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/10"
-                    : "text-slate-400 hover:text-white"
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/10'
+                    : 'text-slate-400 hover:text-white'
                 }`}
               >
-                {tab === "briefings" ? "GET briefings" : tab === "cves" ? "GET cves" : "GET radar"}
+                {tab === 'briefings' ? 'GET briefings' : tab === 'cves' ? 'GET cves' : 'GET radar'}
               </button>
             ))}
           </div>
@@ -201,7 +249,7 @@ export default function DeveloperPortalPage() {
         {/* Interactive EndpointPreviewCard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Endpoint documentation (5 cols) */}
-          <div className="lg:col-span-5 bg-[#0B0F19] border border-slate-800 rounded-xl p-6 flex flex-col justify-between shadow-lg">
+          <div className="lg:col-span-5 bg-black border border-slate-800 rounded-xl p-6 flex flex-col justify-between shadow-lg">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 font-mono text-[9px] font-bold rounded uppercase tracking-wider">
@@ -223,17 +271,22 @@ export default function DeveloperPortalPage() {
                 </h4>
                 <div className="space-y-4">
                   {activeEndpoint.parameters.map((param) => (
-                    <div key={param.name} className="flex justify-between items-start text-[11px] font-mono leading-normal">
+                    <div
+                      key={param.name}
+                      className="flex justify-between items-start text-[11px] font-mono leading-normal"
+                    >
                       <div>
                         <span className="text-white font-bold">{param.name}</span>
                         {param.req && (
-                          <span className="text-red-400 text-[8px] uppercase font-bold ml-1.5">Required</span>
+                          <span className="text-red-400 text-[8px] uppercase font-bold ml-1.5">
+                            Required
+                          </span>
                         )}
-                        <p className="text-[10px] text-slate-400 mt-1 font-sans">
-                          {param.desc}
-                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1 font-sans">{param.desc}</p>
                       </div>
-                      <span className="text-slate-500 text-[10px] font-semibold">({param.type})</span>
+                      <span className="text-slate-500 text-[10px] font-semibold">
+                        ({param.type})
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -263,9 +316,9 @@ export default function DeveloperPortalPage() {
           </div>
 
           {/* Code Output Terminal (7 cols) */}
-          <div className="lg:col-span-7 bg-[#03060E] border border-slate-850 rounded-xl overflow-hidden flex flex-col justify-between shadow-lg font-mono">
+          <div className="lg:col-span-7 bg-black border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between shadow-lg font-mono">
             {/* Terminal Header */}
-            <div className="bg-slate-950/80 border-b border-slate-850 px-5 py-3 flex items-center justify-between text-[10px] text-slate-500">
+            <div className="bg-black/80 border-b border-slate-800 px-5 py-3 flex items-center justify-between text-[10px] text-slate-500">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500/50" />
@@ -287,10 +340,12 @@ export default function DeveloperPortalPage() {
             {/* Terminal Screen */}
             <div className="p-5 overflow-auto max-h-[360px] text-[11px] text-[#A0AEC0] relative">
               {isLoading && (
-                <div className="absolute inset-0 bg-[#03060E]/80 backdrop-blur-sm flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
                   <div className="flex flex-col items-center gap-3">
                     <RefreshCw className="w-6 h-6 text-blue-500 animate-spin" />
-                    <span className="text-[10px] tracking-widest text-slate-400 font-bold uppercase animate-pulse">QUERYING APEX FEED...</span>
+                    <span className="text-[10px] tracking-widest text-slate-400 font-bold uppercase animate-pulse">
+                      QUERYING APEX FEED...
+                    </span>
                   </div>
                 </div>
               )}
@@ -300,7 +355,7 @@ export default function DeveloperPortalPage() {
             </div>
 
             {/* Terminal Footer */}
-            <div className="bg-slate-950/40 border-t border-slate-850 px-5 py-2.5 text-[9px] text-slate-500 flex justify-between select-none">
+            <div className="bg-black/40 border-t border-slate-800 px-5 py-2.5 text-[9px] text-slate-500 flex justify-between select-none">
               <span>HOST: api.zayron-x.io</span>
               <span>SECURED OVER SSL/TLS</span>
             </div>
@@ -309,9 +364,8 @@ export default function DeveloperPortalPage() {
       </section>
 
       {/* SIEM & TAXII Schematic */}
-      <section className="py-20 px-6 lg:px-10 border-t border-slate-900 bg-[#03060E]">
+      <section className="py-20 px-6 lg:px-10 border-t border-slate-800 bg-black">
         <div className="max-w-[1200px] mx-auto">
-          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Diagram details */}
             <div>
@@ -323,47 +377,64 @@ export default function DeveloperPortalPage() {
                 Secure STIX/TAXII SIEM Integration
               </h2>
               <p className="text-xs md:text-sm text-slate-400 leading-relaxed mb-6 font-sans">
-                ZAYRON-X acts as a secure transit broker. Once threat vectors or Indicators of Compromise (IoCs) are verified by the Autonomous CISO, they are compiled into standard **STIX 2.1 Object packages** and pushed to our secure TAXII Server.
+                ZAYRON-X acts as a secure transit broker. Once threat vectors or Indicators of
+                Compromise (IoCs) are verified by the Autonomous CISO, they are compiled into
+                standard **STIX 2.1 Object packages** and pushed to our secure TAXII Server.
               </p>
-              
+
               <div className="space-y-4 font-sans text-xs">
                 <div className="flex gap-3">
-                  <span className="w-5 h-5 rounded bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-blue-400 shrink-0">1</span>
+                  <span className="w-5 h-5 rounded bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-blue-400 shrink-0">
+                    1
+                  </span>
                   <div>
                     <strong className="text-white block mb-1">OSINT & Telemetry Ingestion</strong>
-                    <span className="text-slate-400">60+ security feeds monitored 24/7/365 to verify real-world active threats.</span>
+                    <span className="text-slate-400">
+                      60+ security feeds monitored 24/7/365 to verify real-world active threats.
+                    </span>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <span className="w-5 h-5 rounded bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-blue-400 shrink-0">2</span>
+                  <span className="w-5 h-5 rounded bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-blue-400 shrink-0">
+                    2
+                  </span>
                   <div>
                     <strong className="text-white block mb-1">Autonomous CISO Audit</strong>
-                    <span className="text-slate-400">Verifies indicators, calculates financial blast radius impact, and auto-generates playbooks.</span>
+                    <span className="text-slate-400">
+                      Verifies indicators, calculates financial blast radius impact, and
+                      auto-generates playbooks.
+                    </span>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <span className="w-5 h-5 rounded bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-blue-400 shrink-0">3</span>
+                  <span className="w-5 h-5 rounded bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-blue-400 shrink-0">
+                    3
+                  </span>
                   <div>
                     <strong className="text-white block mb-1">Automated SIEM Sync</strong>
-                    <span className="text-slate-400">Pushes STIX objects cleanly into your Splunk, Microsoft Sentinel, or Datadog environment.</span>
+                    <span className="text-slate-400">
+                      Pushes STIX objects cleanly into your Splunk, Microsoft Sentinel, or Datadog
+                      environment.
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Beautiful CSS Schematic Visual representation */}
-            <div className="bg-[#0B0F19] border border-slate-800 rounded-xl p-8 flex flex-col gap-6 shadow-2xl relative overflow-hidden font-mono text-[10px] text-slate-400 select-none min-h-[350px] justify-between">
-              
+            <div className="bg-black border border-slate-800 rounded-xl p-8 flex flex-col gap-6 shadow-2xl relative overflow-hidden font-mono text-[10px] text-slate-400 select-none min-h-[350px] justify-between">
               {/* Grid backgrounds */}
               <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
 
-              <div className="flex items-center justify-between border-b border-slate-850 pb-2.5">
-                <span className="font-extrabold text-white text-[11px]">ZAYRON-X DATA TRANSMISSION PATHWAY</span>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span className="font-extrabold text-white text-[11px]">
+                  ZAYRON-X DATA TRANSMISSION PATHWAY
+                </span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
 
               {/* Node 1 */}
-              <div className="flex items-center justify-between p-3.5 bg-[#03060E] border border-slate-850 rounded-lg relative z-10">
+              <div className="flex items-center justify-between p-3.5 bg-black border border-slate-800 rounded-lg relative z-10">
                 <div className="flex items-center gap-2">
                   <Globe className="w-4 h-4 text-blue-400" />
                   <div>
@@ -382,12 +453,14 @@ export default function DeveloperPortalPage() {
               </div>
 
               {/* Node 2 */}
-              <div className="flex items-center justify-between p-3.5 bg-[#03060E] border border-slate-850 rounded-lg relative z-10">
+              <div className="flex items-center justify-between p-3.5 bg-black border border-slate-800 rounded-lg relative z-10">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-emerald-400 animate-pulse" />
                   <div>
                     <span className="text-white font-bold block">Autonomous CISO Engine</span>
-                    <span className="text-[8px] text-slate-500">AI Vulnerability Triage & Scoring</span>
+                    <span className="text-[8px] text-slate-500">
+                      AI Vulnerability Triage & Scoring
+                    </span>
                   </div>
                 </div>
                 <span className="text-emerald-400 font-bold">98.4% CONF</span>
@@ -401,20 +474,20 @@ export default function DeveloperPortalPage() {
               </div>
 
               {/* Node 3 */}
-              <div className="flex items-center justify-between p-3.5 bg-[#03060E] border border-slate-850 rounded-lg relative z-10">
+              <div className="flex items-center justify-between p-3.5 bg-black border border-slate-800 rounded-lg relative z-10">
                 <div className="flex items-center gap-2">
                   <Database className="w-4 h-4 text-blue-400" />
                   <div>
                     <span className="text-white font-bold block">Corporate SIEM Gateway</span>
-                    <span className="text-[8px] text-slate-500">Splunk / Microsoft Sentinel / Datadog</span>
+                    <span className="text-[8px] text-slate-500">
+                      Splunk / Microsoft Sentinel / Datadog
+                    </span>
                   </div>
                 </div>
                 <span className="text-blue-400 font-bold">Active Sync</span>
               </div>
-
             </div>
           </div>
-
         </div>
       </section>
     </main>

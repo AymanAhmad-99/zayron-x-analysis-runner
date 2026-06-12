@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
-import { formatDate } from "@/lib/utils/formatDate";
-import type { CategoryType } from "@/lib/types";
+import type { CategoryType } from '@/lib/types';
+import { formatDate } from '@/lib/utils/formatDate';
+import type { Metadata } from 'next';
+import { notFound, redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: "Feed Detail",
+  title: 'Feed Detail',
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,19 +15,19 @@ interface Props {
 }
 
 async function handlePromote(formData: FormData) {
-  "use server";
+  'use server';
 
-  const id = formData.get("id") as string;
-  const title = formData.get("title") as string;
-  const content = formData.get("content") as string;
-  const excerpt = (formData.get("excerpt") as string) || content.substring(0, 240);
-  const author = (formData.get("author") as string) || "Zayron Intel";
-  const category = (formData.get("category") as string) || "Intelligence";
+  const id = formData.get('id') as string;
+  const title = formData.get('title') as string;
+  const content = formData.get('content') as string;
+  const excerpt = (formData.get('excerpt') as string) || content.substring(0, 240);
+  const author = (formData.get('author') as string) || 'Zayron Intel';
+  const category = (formData.get('category') as string) || 'Intelligence';
 
   try {
-    const { getRawFeedById } = await import("@/lib/supabase/queries/rawFeeds");
-    const { createArticle } = await import("@/lib/supabase/queries/articles");
-    const { promoteRawFeed } = await import("@/lib/supabase/queries/rawFeeds");
+    const { getRawFeedById } = await import('@/lib/supabase/queries/rawFeeds');
+    const { createArticle } = await import('@/lib/supabase/queries/articles');
+    const { promoteRawFeed } = await import('@/lib/supabase/queries/rawFeeds');
 
     const feed = await getRawFeedById(Number(id));
     if (!id || !title || !content) return;
@@ -36,8 +36,8 @@ async function handlePromote(formData: FormData) {
       title,
       slug: title
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, ""),
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, ''),
       content,
       excerpt,
       author,
@@ -53,7 +53,7 @@ async function handlePromote(formData: FormData) {
     // DB not available
   }
 
-  redirect("/admin/feeds");
+  redirect('/admin/feeds');
 }
 
 export default async function FeedDetailPage({ params, searchParams }: Props) {
@@ -62,7 +62,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
   let feed: any = null;
 
   try {
-    const { getRawFeedById } = await import("@/lib/supabase/queries/rawFeeds");
+    const { getRawFeedById } = await import('@/lib/supabase/queries/rawFeeds');
     feed = await getRawFeedById(Number(id));
   } catch {
     // DB not available
@@ -70,7 +70,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
 
   if (!feed) notFound();
 
-  const isPromote = action === "promote";
+  const isPromote = action === 'promote';
 
   return (
     <div className="p-8 max-w-[1200px] mx-auto">
@@ -104,9 +104,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
               <h2 className="text-[10px] font-ui font-semibold text-copper uppercase tracking-widest mb-3">
                 Translation
               </h2>
-              <div className="text-sm leading-relaxed text-white">
-                {feed.translatedContent}
-              </div>
+              <div className="text-sm leading-relaxed text-white">{feed.translatedContent}</div>
             </div>
           )}
 
@@ -116,9 +114,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
               <h2 className="text-[10px] font-ui font-semibold text-copper uppercase tracking-widest mb-3">
                 Analyst Notes
               </h2>
-              <p className="text-sm text-white/80 leading-relaxed">
-                {feed.analysis}
-              </p>
+              <p className="text-sm text-white/80 leading-relaxed">{feed.analysis}</p>
             </div>
           )}
 
@@ -137,7 +133,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
                   <input
                     type="text"
                     name="title"
-                    defaultValue={feed.translatedTitle ?? ""}
+                    defaultValue={feed.translatedTitle ?? ''}
                     placeholder="Article title"
                     className="w-full text-sm bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-copper/50 font-ui"
                     required
@@ -163,7 +159,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
                     <input
                       type="text"
                       name="excerpt"
-                      defaultValue={feed.translatedContent?.substring(0, 240) ?? ""}
+                      defaultValue={feed.translatedContent?.substring(0, 240) ?? ''}
                       placeholder="Brief summary"
                       className="w-full text-sm bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-copper/50 font-ui"
                     />
@@ -189,12 +185,12 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
                     defaultValue="Intelligence"
                     className="w-full text-sm bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-copper/50 font-ui"
                   >
-                    {["Intelligence", "Vulnerabilities", "Ransomware", "Nation State", "Tools"].map(
+                    {['Intelligence', 'Vulnerabilities', 'Ransomware', 'Nation State', 'Tools'].map(
                       (cat) => (
                         <option key={cat} value={cat}>
                           {cat}
                         </option>
-                      )
+                      ),
                     )}
                   </select>
                 </div>
@@ -237,24 +233,24 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
                 <dd>
                   <span
                     className={`inline-flex items-center gap-1.5 text-[9px] font-ui font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${
-                      feed.status === "pending"
-                        ? "text-amber-400 bg-amber-500/10 border border-amber-500/20"
-                        : feed.status === "translated"
-                        ? "text-blue-400 bg-blue-500/10 border border-blue-500/20"
-                        : feed.status === "promoted"
-                        ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
-                        : "text-[#6B6258] bg-[#1a1a1a] border border-[#2a2a2a]"
+                      feed.status === 'pending'
+                        ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                        : feed.status === 'translated'
+                          ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20'
+                          : feed.status === 'promoted'
+                            ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                            : 'text-[#6B6258] bg-[#1a1a1a] border border-[#2a2a2a]'
                     }`}
                   >
                     <span
                       className={`w-1.5 h-1.5 rounded-full ${
-                        feed.status === "pending"
-                          ? "bg-amber-400"
-                          : feed.status === "translated"
-                          ? "bg-blue-400"
-                          : feed.status === "promoted"
-                          ? "bg-emerald-400"
-                          : "bg-[#6B6258]"
+                        feed.status === 'pending'
+                          ? 'bg-amber-400'
+                          : feed.status === 'translated'
+                            ? 'bg-blue-400'
+                            : feed.status === 'promoted'
+                              ? 'bg-emerald-400'
+                              : 'bg-[#6B6258]'
                       }`}
                     />
                     {feed.status}
@@ -274,7 +270,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
               <div>
                 <dt className="text-[#6B6258] font-ui">Received</dt>
                 <dd className="font-mono text-white">
-                  {feed.timestamp ? formatDate(feed.timestamp) : "—"}
+                  {feed.timestamp ? formatDate(feed.timestamp) : '—'}
                 </dd>
               </div>
               {feed.promptTokens && (
@@ -286,9 +282,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
               {feed.completionTokens && (
                 <div>
                   <dt className="text-[#6B6258] font-ui">Completion Tokens</dt>
-                  <dd className="font-mono text-white">
-                    {feed.completionTokens.toLocaleString()}
-                  </dd>
+                  <dd className="font-mono text-white">{feed.completionTokens.toLocaleString()}</dd>
                 </div>
               )}
             </dl>
@@ -299,7 +293,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
               Actions
             </h3>
             <div className="space-y-2">
-              {feed.status === "pending" && (
+              {feed.status === 'pending' && (
                 <a
                   href={`/admin/feeds/${feed.id}?action=translate`}
                   className="block w-full text-center text-sm font-semibold bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-500 transition-colors font-ui"
@@ -307,7 +301,7 @@ export default async function FeedDetailPage({ params, searchParams }: Props) {
                   Translate
                 </a>
               )}
-              {(feed.status === "pending" || feed.status === "translated") && (
+              {(feed.status === 'pending' || feed.status === 'translated') && (
                 <a
                   href={`/admin/feeds/${feed.id}?action=promote`}
                   className="block w-full text-center text-sm font-semibold bg-copper text-white px-4 py-2.5 rounded-lg hover:bg-copper/80 transition-colors font-ui"

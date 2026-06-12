@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Contact ZAYRON-X for inquiries, tips, or feedback.",
+  title: 'Contact Us',
+  description: 'Contact ZAYRON-X for inquiries, tips, or feedback.',
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/contact`,
   },
@@ -21,7 +21,9 @@ export default function ContactPage() {
       <div className="bg-white border border-[var(--color-border)] rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <h3 className="font-display font-bold text-[var(--color-obsidian)]">Security Research</h3>
+            <h3 className="font-display font-bold text-[var(--color-obsidian)]">
+              Security Research
+            </h3>
             <p className="text-sm text-[var(--color-stone)] font-ui">
               Share vulnerability disclosures or threat intelligence tips.
             </p>
@@ -34,9 +36,7 @@ export default function ContactPage() {
           </div>
           <div>
             <h3 className="font-display font-bold text-[var(--color-obsidian)]">General</h3>
-            <p className="text-sm text-[var(--color-stone)] font-ui">
-              For all other inquiries.
-            </p>
+            <p className="text-sm text-[var(--color-stone)] font-ui">For all other inquiries.</p>
           </div>
         </div>
       </div>

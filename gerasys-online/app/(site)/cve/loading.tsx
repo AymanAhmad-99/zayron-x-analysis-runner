@@ -15,7 +15,11 @@ export default function CVELoading() {
       {/* CVE list skeleton */}
       <div className="space-y-3">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="card-article p-4 flex items-start gap-4" style={{ animation: `fade-up 0.4s ease-out ${i * 40}ms both` }}>
+          <div
+            key={i}
+            className="card-article p-4 flex items-start gap-4"
+            style={{ animation: `fade-up 0.4s ease-out ${i * 40}ms both` }}
+          >
             <div className="skeleton h-6 w-16 rounded shrink-0" />
             <div className="flex-1 space-y-2">
               <div className="skeleton h-4 w-40" />

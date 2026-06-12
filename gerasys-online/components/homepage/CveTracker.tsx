@@ -1,6 +1,6 @@
-import { type CVE } from "@/lib/types";
-import { formatDateShort } from "@/lib/utils/formatDate";
-import { SeverityBadge } from "@/components/cve/SeverityBadge";
+import { SeverityBadge } from '@/components/cve/SeverityBadge';
+import type { CVE } from '@/lib/types';
+import { formatDateShort } from '@/lib/utils/formatDate';
 
 interface CveTrackerProps {
   cves: CVE[];
@@ -60,13 +60,13 @@ export function CveTracker({ cves }: CveTrackerProps) {
                     <SeverityBadge severity={cve.severity} />
                   </td>
                   <td className="py-5 px-6 font-mono text-[#0F172A] font-semibold">
-                    {cve.cvssScore ?? "—"}
+                    {cve.cvssScore ?? '—'}
                   </td>
                   <td className="py-5 px-6 text-[#475569] text-xs hidden md:table-cell font-ui">
-                    {cve.affectedProduct ?? cve.vendor ?? "—"}
+                    {cve.affectedProduct ?? cve.vendor ?? '—'}
                   </td>
                   <td className="py-5 px-6 text-[#94A3B8] text-xs hidden lg:table-cell font-ui">
-                    {cve.publishedDate ? formatDateShort(cve.publishedDate) : "—"}
+                    {cve.publishedDate ? formatDateShort(cve.publishedDate) : '—'}
                   </td>
                 </tr>
               ))}

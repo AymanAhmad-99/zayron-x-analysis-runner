@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Vulnerability Disclosure Policy",
-  description: "ZAYRON-X Vulnerability Disclosure Policy — responsible disclosure guidelines",
+  title: 'Vulnerability Disclosure Policy',
+  description: 'ZAYRON-X Vulnerability Disclosure Policy — responsible disclosure guidelines',
 };
 
 export default function VdpPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-white dark:bg-black">
       <main id="main-content" className="max-w-[780px] mx-auto px-6 lg:px-10 py-16">
         <Link
           href="/"
@@ -27,16 +27,22 @@ export default function VdpPage() {
           <h2>Our Commitment</h2>
           <p>
             ZAYRON-X Intelligence Corp. is committed to maintaining the security of our platform and
-            protecting our users&apos; data. We value the security research community and believe that
-            responsible disclosure of security vulnerabilities helps us keep our platform safe.
+            protecting our users&apos; data. We value the security research community and believe
+            that responsible disclosure of security vulnerabilities helps us keep our platform safe.
           </p>
 
           <h2>Scope</h2>
           <p>This policy applies to the following systems:</p>
           <ul>
-            <li><strong>zayron-x.com</strong> — Main web application</li>
-            <li><strong>api.zayron-x.com</strong> — Public API endpoints</li>
-            <li><strong>ZAYRON-X Cloudflare Workers</strong> — Edge compute infrastructure</li>
+            <li>
+              <strong>zayron-x.com</strong> — Main web application
+            </li>
+            <li>
+              <strong>api.zayron-x.com</strong> — Public API endpoints
+            </li>
+            <li>
+              <strong>ZAYRON-X Cloudflare Workers</strong> — Edge compute infrastructure
+            </li>
           </ul>
           <p>
             The following are <strong>out of scope</strong>:
@@ -50,7 +56,7 @@ export default function VdpPage() {
 
           <h2>How to Report</h2>
           <p>
-            Send vulnerability reports to:{" "}
+            Send vulnerability reports to:{' '}
             <a href="mailto:security@zayron-x.com">security@zayron-x.com</a>
           </p>
           <p>Please include:</p>
@@ -61,14 +67,12 @@ export default function VdpPage() {
             <li>Your contact information for follow-up</li>
           </ul>
           <p>
-            You may encrypt sensitive reports with our PGP key:{" "}
+            You may encrypt sensitive reports with our PGP key:{' '}
             <a href="/pgp-key.asc">Download PGP Key</a>
           </p>
 
           <h2>Safe Harbor</h2>
-          <p>
-            ZAYRON-X will not pursue legal action against researchers who:
-          </p>
+          <p>ZAYRON-X will not pursue legal action against researchers who:</p>
           <ul>
             <li>Report vulnerabilities in good faith</li>
             <li>Avoid privacy violations, data destruction, or service disruption</li>
@@ -110,8 +114,8 @@ export default function VdpPage() {
 
           <h2>Recognition</h2>
           <p>
-            We maintain a Hall of Fame for researchers who responsibly disclose valid vulnerabilities.
-            With your permission, we will acknowledge your contribution publicly.
+            We maintain a Hall of Fame for researchers who responsibly disclose valid
+            vulnerabilities. With your permission, we will acknowledge your contribution publicly.
           </p>
 
           <h2>Out of Scope Findings</h2>

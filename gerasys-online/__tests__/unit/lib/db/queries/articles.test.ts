@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 // Mock the postgres client before any imports that depend on it.
 // Drizzle's postgres-js driver will throw if DATABASE_URL is unset,
@@ -31,16 +31,13 @@ vi.mock('drizzle-orm/neon-serverless', () => ({
 
 // Ensure DATABASE_URL is set before the db module initializes.
 beforeAll(() => {
-  process.env.DATABASE_URL =
-    'postgresql://postgres.mock:mock@127.0.0.1:5432/postgres';
+  process.env.DATABASE_URL = 'postgresql://postgres.mock:mock@127.0.0.1:5432/postgres';
 });
 
 describe('getArticles', () => {
   it('returns an array when the database returns an empty array', async () => {
     // Dynamic import so the mock is in place before the module evaluates.
-    const { getArticles } = await import(
-      '@/lib/db/queries/articles'
-    );
+    const { getArticles } = await import('@/lib/db/queries/articles');
     const result = await getArticles(1, 12);
     expect(Array.isArray(result)).toBe(true);
   });

@@ -1,5 +1,5 @@
-import { getSupabaseClient, getSupabaseAdmin } from '../client';
 import type { Article } from '@/lib/types';
+import { getSupabaseAdmin, getSupabaseClient } from '../client';
 
 function mapArticle(dbArticle: any): Article {
   if (!dbArticle) return null as any;
@@ -128,7 +128,12 @@ export async function getTrendingArticles(limit = 5, env?: any) {
   return (data ?? []).map(mapArticle);
 }
 
-export async function getRelatedArticles(category: string, excludeSlug: string, limit = 3, env?: any) {
+export async function getRelatedArticles(
+  category: string,
+  excludeSlug: string,
+  limit = 3,
+  env?: any,
+) {
   const supabase = getSupabaseClient(env);
   const { data, error } = await supabase
     .from('articles')
@@ -149,12 +154,12 @@ export async function getCategoriesWithCounts(env?: any) {
     .select('category')
     .eq('is_published', true);
   if (error) return [];
-  
+
   const counts: Record<string, number> = {};
   for (const row of data ?? []) {
     counts[row.category] = (counts[row.category] || 0) + 1;
   }
-  
+
   return Object.entries(counts)
     .map(([category, count]) => ({ category, count }))
     .sort((a, b) => b.count - a.count);
@@ -180,13 +185,16 @@ export async function incrementArticleViews(idOrSlug: string, env?: any) {
     if (isUuid) {
       const { data } = await supabase.from('articles').select('views').eq('id', idOrSlug).single();
       if (data) {
-        await supabase.from('articles').update({ views: (data.views || 0) + 1 }).eq('id', idOrSlug);
+        await supabase
+          .from('articles')
+          .update({ views: (data.views || 0) + 1 })
+          .eq('id', idOrSlug);
       }
     } else {
       await supabase.rpc('increment_views', { article_slug: idOrSlug });
     }
   } catch (error) {
-    console.error("Error incrementing views:", error);
+    console.error('Error incrementing views:', error);
   }
 }
 
@@ -240,7 +248,7 @@ export async function getAllArticlesAdmin(page = 1, pageSize = 50, env?: any) {
 export async function updateArticle(id: string, data: Record<string, any>, env?: any) {
   const supabase = getSupabaseAdmin(env);
   const dbData: Record<string, any> = {};
-  
+
   const mappings: Record<string, string> = {
     title: 'title',
     slug: 'slug',
@@ -269,13 +277,13 @@ export async function updateArticle(id: string, data: Record<string, any>, env?:
     cvssV4Score: 'cvss_v4_score',
     publishedAt: 'published_at',
   };
-  
+
   for (const [key, val] of Object.entries(data)) {
     const dbKey = mappings[key] || key;
     dbData[dbKey] = val;
   }
   dbData.updated_at = new Date().toISOString();
-  
+
   const { data: result, error } = await supabase
     .from('articles')
     .update(dbData)
@@ -288,21 +296,15 @@ export async function updateArticle(id: string, data: Record<string, any>, env?:
 
 export async function deleteArticle(id: string, env?: any) {
   const supabase = getSupabaseAdmin(env);
-  const { error } = await supabase
-    .from('articles')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabase.from('articles').delete().eq('id', id);
   if (error) throw error;
 }
 
 export async function getAllTags(env?: any) {
   const supabase = getSupabaseClient(env);
-  const { data, error } = await supabase
-    .from('articles')
-    .select('tags')
-    .eq('is_published', true);
+  const { data, error } = await supabase.from('articles').select('tags').eq('is_published', true);
   if (error) return [];
-  
+
   const counts: Record<string, number> = {};
   for (const row of data ?? []) {
     if (row.tags && Array.isArray(row.tags)) {
@@ -313,7 +315,7 @@ export async function getAllTags(env?: any) {
       }
     }
   }
-  
+
   return Object.entries(counts)
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count)
@@ -323,7 +325,7 @@ export async function getAllTags(env?: any) {
 export async function createArticle(data: Record<string, any>, env?: any) {
   const supabase = getSupabaseAdmin(env);
   const dbData: Record<string, any> = {};
-  
+
   const mappings: Record<string, string> = {
     title: 'title',
     slug: 'slug',
@@ -352,17 +354,24 @@ export async function createArticle(data: Record<string, any>, env?: any) {
     cvssV4Score: 'cvss_v4_score',
     publishedAt: 'published_at',
   };
-  
+
   for (const [key, val] of Object.entries(data)) {
     const dbKey = mappings[key] || key;
     dbData[dbKey] = val;
   }
-  
-  const { data: result, error } = await supabase
-    .from('articles')
-    .insert(dbData)
-    .select()
-    .single();
+
+  const { data: result, error } = await supabase.from('articles').insert(dbData).select().single();
   if (error) throw error;
   return mapArticle(result);
+}
+
+export async function getArticlesCountByCategory(category: string, env?: any) {
+  const supabase = getSupabaseClient(env);
+  const { count, error } = await supabase
+    .from('articles')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_published', true)
+    .ilike('category', category);
+  if (error) return 0;
+  return count ?? 0;
 }

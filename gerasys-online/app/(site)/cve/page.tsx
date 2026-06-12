@@ -1,13 +1,14 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import type { Metadata } from "next";
-import { CveTable } from "@/components/cve/CveTable";
-import { getCVEs, getCVECount } from "@/lib/supabase/queries/cves";
+import { CveTable } from '@/components/cve/CveTable';
+import { getCVECount, getCVEs } from '@/lib/supabase/queries/cves';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "CVE Tracker",
-  description: "Live Common Vulnerabilities and Exposures (CVE) database. Track, filter, and analyze security vulnerabilities.",
+  title: 'CVE Tracker',
+  description:
+    'Live Common Vulnerabilities and Exposures (CVE) database. Track, filter, and analyze security vulnerabilities.',
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/cve`,
   },
@@ -21,10 +22,7 @@ export default async function CVEPage({ searchParams }: Props) {
   const { page: pageStr } = await searchParams;
   const page = Number(pageStr) || 1;
 
-  const [cves, totalCount] = await Promise.all([
-    getCVEs(page, 25),
-    getCVECount(),
-  ]);
+  const [cves, totalCount] = await Promise.all([getCVEs(page, 25), getCVECount()]);
 
   const totalPages = Math.ceil(totalCount / 25);
 
@@ -33,9 +31,7 @@ export default async function CVEPage({ searchParams }: Props) {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-10">
           <p className="section-label">Vulnerability Database</p>
-          <h1 className="font-display text-3xl font-bold text-[#0F172A] mt-2">
-            CVE Tracker
-          </h1>
+          <h1 className="font-display text-3xl font-bold text-[#0F172A] mt-2">CVE Tracker</h1>
           <p className="text-[#475569] mt-2 font-ui">
             Tracking {totalCount.toLocaleString()} vulnerabilities in real-time.
           </p>

@@ -1,13 +1,13 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { SeverityBadge } from "@/components/cve/SeverityBadge";
-import { formatDateShort } from "@/lib/utils/formatDate";
+import { SeverityBadge } from '@/components/cve/SeverityBadge';
+import { formatDateShort } from '@/lib/utils/formatDate';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "CVEs",
+  title: 'CVEs',
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 interface Props {
   searchParams: Promise<{ page?: string }>;
@@ -20,7 +20,7 @@ export default async function AdminCVEsPage({ searchParams }: Props) {
   let total = 0;
 
   try {
-    const { getCVEs, getCVECount } = await import("@/lib/supabase/queries/cves");
+    const { getCVEs, getCVECount } = await import('@/lib/supabase/queries/cves');
     [cves, total] = await Promise.all([getCVEs(page, 50), getCVECount()]);
   } catch {
     // DB not available
@@ -82,7 +82,7 @@ export default async function AdminCVEsPage({ searchParams }: Props) {
                   <td className="py-6 px-8">
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] font-mono text-neutral-400 w-5 shrink-0">
-                        {String(idx + 1).padStart(2, "0")}
+                        {String(idx + 1).padStart(2, '0')}
                       </span>
                       <span className="text-sm font-mono font-semibold text-[#050505] group-hover:text-[#733DD9] transition-colors">
                         {cve.cveId}
@@ -93,30 +93,30 @@ export default async function AdminCVEsPage({ searchParams }: Props) {
                     <SeverityBadge severity={cve.severity} />
                   </td>
                   <td className="py-6 px-8 font-mono text-sm text-neutral-700 font-semibold">
-                    {cve.cvssScore ?? "—"}
+                    {cve.cvssScore ?? '—'}
                   </td>
                   <td className="py-6 px-8 text-xs text-neutral-600 hidden md:table-cell font-ui">
-                    {cve.affectedProduct ?? "—"}
+                    {cve.affectedProduct ?? '—'}
                   </td>
                   <td className="py-6 px-8 hidden md:table-cell">
                     <span
                       className={`inline-flex items-center gap-1.5 text-[9px] font-ui font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-transparent ${
-                        cve.status?.toLowerCase() === "active"
-                          ? "text-red-600 border-red-500/20"
-                          : "text-emerald-600 border-emerald-500/20"
+                        cve.status?.toLowerCase() === 'active'
+                          ? 'text-red-600 border-red-500/20'
+                          : 'text-emerald-600 border-emerald-500/20'
                       }`}
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full ${
-                          cve.status?.toLowerCase() === "active" ? "bg-red-500" : "bg-emerald-500"
+                          cve.status?.toLowerCase() === 'active' ? 'bg-red-500' : 'bg-emerald-500'
                         }`}
                       />
-                      {cve.status ?? "Unknown"}
+                      {cve.status ?? 'Unknown'}
                     </span>
                   </td>
                   <td className="py-6 px-8 hidden lg:table-cell">
                     <span className="text-xs font-mono text-neutral-500">
-                      {cve.publishedDate ? formatDateShort(cve.publishedDate) : "—"}
+                      {cve.publishedDate ? formatDateShort(cve.publishedDate) : '—'}
                     </span>
                   </td>
                 </tr>

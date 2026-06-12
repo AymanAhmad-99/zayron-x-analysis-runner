@@ -1,18 +1,22 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const currentYear = new Date().getFullYear();
 
 export function Footer() {
   return (
-    <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800" aria-label="Site footer">
+    <footer
+      className="bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800"
+      aria-label="Site footer"
+    >
       <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
-
         {/* 5-column grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-14">
-
           {/* Column 1 — Corporate Identity */}
           <div>
-            <h4 className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5" id="footer-corporate">
+            <h4
+              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
+              id="footer-corporate"
+            >
               Corporate
             </h4>
             <ul className="space-y-3" aria-labelledby="footer-corporate">
@@ -22,15 +26,18 @@ export function Footer() {
                 </span>
               </li>
               <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 leading-relaxed">
-                Global Headquarters<br />
+                Global Headquarters
+                <br />
                 Silicon Valley, California, USA
               </li>
               <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 leading-relaxed">
-                North American Threat Ops<br />
+                North American Threat Ops
+                <br />
                 Toronto, Canada
               </li>
               <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 leading-relaxed">
-                EU Data Node<br />
+                EU Data Node
+                <br />
                 Frankfurt, Germany
               </li>
             </ul>
@@ -38,7 +45,10 @@ export function Footer() {
 
           {/* Column 2 — Compliance & Certifications */}
           <div>
-            <h4 className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5" id="footer-compliance">
+            <h4
+              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
+              id="footer-compliance"
+            >
               Compliance
             </h4>
             <ul className="space-y-2.5" aria-labelledby="footer-compliance">
@@ -59,7 +69,10 @@ export function Footer() {
 
           {/* Column 3 — Tactical Operations */}
           <div>
-            <h4 className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5" id="footer-ops">
+            <h4
+              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
+              id="footer-ops"
+            >
               Operations
             </h4>
             <ul className="space-y-2.5" aria-labelledby="footer-ops">
@@ -82,7 +95,10 @@ export function Footer() {
 
           {/* Column 4 — Legal & Policies */}
           <div>
-            <h4 className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5" id="footer-legal">
+            <h4
+              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
+              id="footer-legal"
+            >
               Legal
             </h4>
             <ul className="space-y-2.5" aria-labelledby="footer-legal">
@@ -115,7 +131,10 @@ export function Footer() {
 
           {/* Column 5 — Infrastructure */}
           <div>
-            <h4 className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5" id="footer-infra">
+            <h4
+              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
+              id="footer-infra"
+            >
               Infrastructure
             </h4>
             <ul className="space-y-2.5" aria-labelledby="footer-infra">
@@ -124,7 +143,10 @@ export function Footer() {
                   href="/status"
                   className="text-[0.72rem] text-slate-500 dark:text-slate-400 hover:text-[#2563EB] dark:hover:text-[#733DD9] transition-colors duration-300 inline-flex items-center gap-1.5"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" aria-hidden="true" />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"
+                    aria-hidden="true"
+                  />
                   Platform Status
                 </Link>
               </li>
@@ -136,7 +158,6 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
         </div>
 
         {/* Bottom bar */}
@@ -148,7 +169,6 @@ export function Footer() {
             TLP:AMBER — CLASSIFIED INTELLIGENCE PLATFORM
           </span>
         </div>
-
       </div>
     </footer>
   );

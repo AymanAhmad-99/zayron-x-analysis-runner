@@ -1,5 +1,5 @@
-import { getSupabaseClient } from '../client';
 import type { Analyst } from '@/lib/types';
+import { getSupabaseClient } from '../client';
 
 function mapAnalyst(dbAnalyst: any): Analyst {
   if (!dbAnalyst) return null as any;

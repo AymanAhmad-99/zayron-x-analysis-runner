@@ -1,35 +1,35 @@
-import type { Metadata } from "next";
-import Link from "next/link";
 import {
-  Radio,
-  Search,
-  CheckCircle,
-  XCircle,
   ArrowUpRight,
-  MessageSquare,
-  Globe,
+  Bot,
+  CheckCircle,
   Clock,
+  ExternalLink,
   FileText,
   Flag,
-  Bot,
-  ExternalLink,
+  Globe,
+  MessageSquare,
+  Radio,
+  Search,
   Trash2,
-} from "@/lib/icons";
+  XCircle,
+} from '@/lib/icons';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Raw Feeds",
+  title: 'Raw Feeds',
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 /* ── Server Actions ── */
 async function discardFeed(formData: FormData) {
-  "use server";
-  const id = formData.get("id") as string;
+  'use server';
+  const id = formData.get('id') as string;
   if (!id) return;
   try {
-    const { updateRawFeed } = await import("@/lib/supabase/queries/rawFeeds");
-    await updateRawFeed(Number(id), { status: "discarded" });
+    const { updateRawFeed } = await import('@/lib/supabase/queries/rawFeeds');
+    await updateRawFeed(Number(id), { status: 'discarded' });
   } catch {
     // silently fail
   }
@@ -52,102 +52,103 @@ interface FeedItem {
 const MOCK_FEEDS: FeedItem[] = [
   {
     id: 1,
-    sourceChannel: "threat_intel_ru",
+    sourceChannel: 'threat_intel_ru',
     rawContent:
-      "⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: В Fortinet FortiOS обнаружена критическая уязвимость CVE-2026-27893, позволяющая удаленно выполнить код без аутентификации. Затронуты версии 7.0.x до 7.0.16. Немедленно обновите системы.",
+      '⚠️ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: В Fortinet FortiOS обнаружена критическая уязвимость CVE-2026-27893, позволяющая удаленно выполнить код без аутентификации. Затронуты версии 7.0.x до 7.0.16. Немедленно обновите системы.',
     translatedContent:
-      "CRITICAL VULNERABILITY: A critical vulnerability CVE-2026-27893 has been discovered in Fortinet FortiOS, allowing unauthenticated remote code execution. Affected versions 7.0.x through 7.0.16. Update systems immediately.",
-    translatedTitle: "Critical RCE in Fortinet FortiOS — CVE-2026-27893",
-    originalLanguage: "ru",
-    status: "pending",
+      'CRITICAL VULNERABILITY: A critical vulnerability CVE-2026-27893 has been discovered in Fortinet FortiOS, allowing unauthenticated remote code execution. Affected versions 7.0.x through 7.0.16. Update systems immediately.',
+    translatedTitle: 'Critical RCE in Fortinet FortiOS — CVE-2026-27893',
+    originalLanguage: 'ru',
+    status: 'pending',
     aiGeneratedFlag: false,
     analysis:
-      "High-priority vulnerability with active exploitation reports in the wild. Recommend immediate publication.",
-    timestamp: new Date("2026-05-10T08:23:00Z"),
+      'High-priority vulnerability with active exploitation reports in the wild. Recommend immediate publication.',
+    timestamp: new Date('2026-05-10T08:23:00Z'),
   },
   {
     id: 2,
-    sourceChannel: "ransomware_feed",
+    sourceChannel: 'ransomware_feed',
     rawContent:
-      "LockBit 5.0 has claimed responsibility for the attack on a major European energy distributor. They threaten to release 80GB of stolen data if ransom is not paid within 72 hours. Samples of the data have been posted on their leak site.",
+      'LockBit 5.0 has claimed responsibility for the attack on a major European energy distributor. They threaten to release 80GB of stolen data if ransom is not paid within 72 hours. Samples of the data have been posted on their leak site.',
     translatedContent: null,
     translatedTitle: null,
-    originalLanguage: "en",
-    status: "pending",
+    originalLanguage: 'en',
+    status: 'pending',
     aiGeneratedFlag: false,
     analysis: null,
-    timestamp: new Date("2026-05-10T06:45:00Z"),
+    timestamp: new Date('2026-05-10T06:45:00Z'),
   },
   {
     id: 3,
-    sourceChannel: "apt_watch_telegram",
+    sourceChannel: 'apt_watch_telegram',
     rawContent:
       "LATAM: APT-C-36 campaigns targeting Colombian government entities have intensified. New phishing lures using themed documents related to tax authority. Delivers updated version of the 'Blind Eagle' implant with enhanced evasion capabilities.",
     translatedContent:
-      "A new phishing campaign targeting Colombian government entities uses tax-themed lures to deliver an updated Blind Eagle implant with enhanced evasion.",
-    translatedTitle: "APT-C-36 Intensifies Operations Against Colombian Government",
-    originalLanguage: "en",
-    status: "translated",
+      'A new phishing campaign targeting Colombian government entities uses tax-themed lures to deliver an updated Blind Eagle implant with enhanced evasion.',
+    translatedTitle: 'APT-C-36 Intensifies Operations Against Colombian Government',
+    originalLanguage: 'en',
+    status: 'translated',
     aiGeneratedFlag: false,
     analysis:
-      "Consistent with ongoing APT-C-36 activity. The tax-themed lures align with the current filing season in Colombia.",
-    timestamp: new Date("2026-05-10T04:12:00Z"),
+      'Consistent with ongoing APT-C-36 activity. The tax-themed lures align with the current filing season in Colombia.',
+    timestamp: new Date('2026-05-10T04:12:00Z'),
   },
   {
     id: 4,
-    sourceChannel: "dark_web_broker_channel",
+    sourceChannel: 'dark_web_broker_channel',
     rawContent:
-      "SELLING: Zero-day exploit for Microsoft Exchange Server 2025. Price: 2.5 BTC. Proof available upon request. No LE, no journalists. Serious buyers only. Contact: @dark_0day_broker",
+      'SELLING: Zero-day exploit for Microsoft Exchange Server 2025. Price: 2.5 BTC. Proof available upon request. No LE, no journalists. Serious buyers only. Contact: @dark_0day_broker',
     translatedContent: null,
     translatedTitle: null,
-    originalLanguage: "en",
-    status: "pending",
+    originalLanguage: 'en',
+    status: 'pending',
     aiGeneratedFlag: true,
     analysis:
-      "AI-generated flag triggered. Content resembles common scam patterns on dark web markets. Verify before processing.",
-    timestamp: new Date("2026-05-09T23:55:00Z"),
+      'AI-generated flag triggered. Content resembles common scam patterns on dark web markets. Verify before processing.',
+    timestamp: new Date('2026-05-09T23:55:00Z'),
   },
   {
     id: 5,
-    sourceChannel: "osint_brazil",
+    sourceChannel: 'osint_brazil',
     rawContent:
-      "Nova campanha de phishing visa clientes do Banco do Brasil e Nubank. Os golpistas estão usando mensagens SMS и Telegram com links maliciosos que imitam as páginas de login legítimas. Mais de 500 vítimas relatadas nas últimas 48 horas.",
+      'Nova campanha de phishing visa clientes do Banco do Brasil e Nubank. Os golpistas estão usando mensagens SMS и Telegram com links maliciosos que imitam as páginas de login legítimas. Mais de 500 vítimas relatadas nas últimas 48 horas.',
     translatedContent:
-      "New phishing campaign targets Banco do Brasil and Nubank customers. Scammers use SMS and Telegram messages with malicious links mimicking legitimate login pages. Over 500 victims reported in the last 48 hours.",
-    translatedTitle: "Large-Scale Phishing Campaign Targets Brazilian Banks",
-    originalLanguage: "pt",
-    status: "translated",
+      'New phishing campaign targets Banco do Brasil and Nubank customers. Scammers use SMS and Telegram messages with malicious links mimicking legitimate login pages. Over 500 victims reported in the last 48 hours.',
+    translatedTitle: 'Large-Scale Phishing Campaign Targets Brazilian Banks',
+    originalLanguage: 'pt',
+    status: 'translated',
     aiGeneratedFlag: false,
-    analysis: "Automated botnet infrastructure detected. Campaign uses Telegram bots for C2 communication.",
-    timestamp: new Date("2026-05-09T21:30:00Z"),
+    analysis:
+      'Automated botnet infrastructure detected. Campaign uses Telegram bots for C2 communication.',
+    timestamp: new Date('2026-05-09T21:30:00Z'),
   },
   {
     id: 6,
-    sourceChannel: "vuln_disclosure",
+    sourceChannel: 'vuln_disclosure',
     rawContent:
-      "New SmokeLoader variant (v4.3) detected in the wild. Key changes: uses kernel callback hijacking for EDR evasion, adds AES-256 encryption for C2 traffic, drops Amadey loader as secondary payload. Sample hash: a3f8c9d1e2b4...",
+      'New SmokeLoader variant (v4.3) detected in the wild. Key changes: uses kernel callback hijacking for EDR evasion, adds AES-256 encryption for C2 traffic, drops Amadey loader as secondary payload. Sample hash: a3f8c9d1e2b4...',
     translatedContent: null,
     translatedTitle: null,
-    originalLanguage: "en",
-    status: "pending",
+    originalLanguage: 'en',
+    status: 'pending',
     aiGeneratedFlag: false,
     analysis: null,
-    timestamp: new Date("2026-05-09T19:15:00Z"),
+    timestamp: new Date('2026-05-09T19:15:00Z'),
   },
   {
     id: 7,
-    sourceChannel: "threat_intel_ru",
+    sourceChannel: 'threat_intel_ru',
     rawContent:
       "Хакерская группа 'Sandworm' (APT-44) атакует украинские энергетические компании через новую вредоносную программу 'PolarBear'. Используется фишинг с темами восстановления инфраструктуры.",
     translatedContent:
       "Sandworm APT-44 is attacking Ukrainian energy companies via new malware 'PolarBear'. Uses infrastructure restoration-themed phishing.",
-    translatedTitle: "Sandworm APT-44 Targets Ukrainian Energy Sector with PolarBear Malware",
-    originalLanguage: "ru",
-    status: "translated",
+    translatedTitle: 'Sandworm APT-44 Targets Ukrainian Energy Sector with PolarBear Malware',
+    originalLanguage: 'ru',
+    status: 'translated',
     aiGeneratedFlag: false,
     analysis:
-      "Geopolitical context aligns with ongoing conflict. Sandworm activity historically peaks during infrastructure rebuilding periods.",
-    timestamp: new Date("2026-05-09T14:00:00Z"),
+      'Geopolitical context aligns with ongoing conflict. Sandworm activity historically peaks during infrastructure rebuilding periods.',
+    timestamp: new Date('2026-05-09T14:00:00Z'),
   },
 ];
 
@@ -159,10 +160,10 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
   const { id: selectedId } = await searchParams;
 
   let feeds: FeedItem[] = MOCK_FEEDS;
-  let pendingCount = MOCK_FEEDS.filter((f) => f.status === "pending").length;
+  let pendingCount = MOCK_FEEDS.filter((f) => f.status === 'pending').length;
 
   try {
-    const { getRawFeeds, getPendingFeedCount } = await import("@/lib/supabase/queries/rawFeeds");
+    const { getRawFeeds, getPendingFeedCount } = await import('@/lib/supabase/queries/rawFeeds');
     const [dbFeeds, dbPendingCount] = await Promise.all([
       getRawFeeds(1, 50),
       getPendingFeedCount(),
@@ -188,14 +189,14 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
   }
 
   const selectedFeed = selectedId
-    ? feeds.find((f) => String(f.id) === selectedId) ?? feeds[0]
+    ? (feeds.find((f) => String(f.id) === selectedId) ?? feeds[0])
     : feeds[0];
 
   const statusStyles: Record<string, string> = {
-    pending: "text-amber-600 border-amber-500/20 bg-transparent",
-    translated: "text-blue-600 border-blue-500/20 bg-transparent",
-    promoted: "text-emerald-600 border-emerald-500/20 bg-transparent",
-    discarded: "text-red-600 border-red-500/20 bg-transparent",
+    pending: 'text-amber-600 border-amber-500/20 bg-transparent',
+    translated: 'text-blue-600 border-blue-500/20 bg-transparent',
+    promoted: 'text-emerald-600 border-emerald-500/20 bg-transparent',
+    discarded: 'text-red-600 border-red-500/20 bg-transparent',
   };
 
   return (
@@ -252,8 +253,8 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
                     href={`/admin/feeds?id=${feed.id}`}
                     className={`block px-4 py-4 transition-all duration-200 ${
                       isSelected
-                        ? "bg-[#733DD9]/[0.04] border-l-2 border-[#733DD9]"
-                        : "border-l-2 border-transparent hover:bg-neutral-50"
+                        ? 'bg-[#733DD9]/[0.04] border-l-2 border-[#733DD9]'
+                        : 'border-l-2 border-transparent hover:bg-neutral-50'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3 mb-1.5">
@@ -282,13 +283,13 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
                       <span className="flex items-center gap-1 text-[10px] text-neutral-400 font-mono">
                         <Clock className="w-3 h-3" />
                         {feed.timestamp
-                          ? new Intl.DateTimeFormat("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
+                          ? new Intl.DateTimeFormat('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
                             }).format(new Date(feed.timestamp))
-                          : "—"}
+                          : '—'}
                       </span>
                       {feed.aiGeneratedFlag && (
                         <span className="flex items-center gap-1 text-[10px] text-red-600 font-ui font-semibold">
@@ -343,15 +344,15 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
                       <span className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-ui">
                         <Clock className="w-3.5 h-3.5" />
                         {selectedFeed.timestamp
-                          ? new Intl.DateTimeFormat("en-US", {
-                              weekday: "short",
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
+                          ? new Intl.DateTimeFormat('en-US', {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
                             }).format(new Date(selectedFeed.timestamp))
-                          : "Unknown"}
+                          : 'Unknown'}
                       </span>
                     </div>
                   </div>
@@ -410,8 +411,8 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
                     Full Details
                   </Link>
                   <div className="flex items-center gap-3">
-                    {(selectedFeed.status === "pending" ||
-                      selectedFeed.status === "translated") && (
+                    {(selectedFeed.status === 'pending' ||
+                      selectedFeed.status === 'translated') && (
                       <form action={discardFeed}>
                         <input type="hidden" name="id" value={selectedFeed.id} />
                         <button
@@ -423,8 +424,8 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
                         </button>
                       </form>
                     )}
-                    {(selectedFeed.status === "pending" ||
-                      selectedFeed.status === "translated") && (
+                    {(selectedFeed.status === 'pending' ||
+                      selectedFeed.status === 'translated') && (
                       <Link
                         href={`/admin/feeds/${selectedFeed.id}?action=promote`}
                         className="flex items-center gap-1.5 px-5 py-2 text-xs font-ui font-semibold text-white bg-[#733DD9] hover:bg-[#5B21B6] rounded-lg transition-all duration-200 shadow-sm"
@@ -434,13 +435,13 @@ export default async function AdminFeedsPage({ searchParams }: Props) {
                         <ArrowUpRight className="w-3 h-3" />
                       </Link>
                     )}
-                    {selectedFeed.status === "promoted" && (
+                    {selectedFeed.status === 'promoted' && (
                       <span className="flex items-center gap-1.5 text-xs font-ui font-semibold text-emerald-600">
                         <CheckCircle className="w-4 h-4" />
                         Promoted to Article
                       </span>
                     )}
-                    {selectedFeed.status === "discarded" && (
+                    {selectedFeed.status === 'discarded' && (
                       <span className="flex items-center gap-1.5 text-xs font-ui font-semibold text-red-600">
                         <XCircle className="w-4 h-4" />
                         Discarded

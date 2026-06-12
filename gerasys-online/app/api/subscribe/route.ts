@@ -1,27 +1,27 @@
-import { NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase/client";
-import { subscribeLimiter, checkRateLimit } from "@/lib/cache/ratelimit";
+import { checkRateLimit, subscribeLimiter } from '@/lib/cache/ratelimit';
+import { getSupabaseAdmin } from '@/lib/supabase/client';
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
     // Rate limit: 3 requests per 60s per IP
     const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-      request.headers.get("x-real-ip") ??
-      "unknown";
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      request.headers.get('x-real-ip') ??
+      'unknown';
 
     const { allowed, remaining } = await checkRateLimit(subscribeLimiter, `sub:${ip}`);
 
     if (!allowed) {
       return NextResponse.json(
-        { error: "Too many requests. Please try again shortly." },
+        { error: 'Too many requests. Please try again shortly.' },
         {
           status: 429,
           headers: {
-            "Retry-After": "60",
-            "X-RateLimit-Remaining": String(remaining),
+            'Retry-After': '60',
+            'X-RateLimit-Remaining': String(remaining),
           },
-        }
+        },
       );
     }
 
@@ -29,10 +29,7 @@ export async function POST(request: Request) {
     const email = body.email?.trim().toLowerCase();
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { error: "Valid email address required." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Valid email address required.' }, { status: 400 });
     }
 
     const supabase = getSupabaseAdmin(process.env);
@@ -48,10 +45,7 @@ export async function POST(request: Request) {
 
     if (existing && existing[0]) {
       if (existing[0].is_active) {
-        return NextResponse.json(
-          { error: "Email already subscribed." },
-          { status: 409 }
-        );
+        return NextResponse.json({ error: 'Email already subscribed.' }, { status: 409 });
       }
       // Re-activate
       const { error: updateError } = await supabase
@@ -59,27 +53,22 @@ export async function POST(request: Request) {
         .update({ is_active: true })
         .eq('email', email);
       if (updateError) throw updateError;
-      return NextResponse.json({ success: true, message: "Subscription reactivated." });
+      return NextResponse.json({ success: true, message: 'Subscription reactivated.' });
     }
 
     // Create
-    const { error: insertError } = await supabase
-      .from('subscribers')
-      .insert({ email });
+    const { error: insertError } = await supabase.from('subscribers').insert({ email });
     if (insertError) throw insertError;
 
     return NextResponse.json(
-      { success: true, message: "Successfully subscribed." },
+      { success: true, message: 'Successfully subscribed.' },
       {
         status: 201,
-        headers: { "X-RateLimit-Remaining": String(remaining) },
-      }
+        headers: { 'X-RateLimit-Remaining': String(remaining) },
+      },
     );
   } catch (error) {
-    console.error("API /subscribe error:", error);
-    return NextResponse.json(
-      { error: "Subscription failed. Please try again." },
-      { status: 500 }
-    );
+    console.error('API /subscribe error:', error);
+    return NextResponse.json({ error: 'Subscription failed. Please try again.' }, { status: 500 });
   }
 }

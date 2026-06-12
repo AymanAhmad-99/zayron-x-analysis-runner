@@ -21,7 +21,7 @@ const IS_DEV = process.env.NODE_ENV === 'development';
 if (!IS_DEV && !SENTRY_DSN) {
   console.warn(
     '[SENTRY] NEXT_PUBLIC_SENTRY_DSN is not set — error reporting is DISABLED.\n' +
-    '  Upload it with: wrangler secret put NEXT_PUBLIC_SENTRY_DSN',
+      '  Upload it with: wrangler secret put NEXT_PUBLIC_SENTRY_DSN',
   );
 }
 

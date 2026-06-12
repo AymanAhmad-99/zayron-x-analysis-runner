@@ -2,51 +2,58 @@
 // Uses Workbox-like patterns for cache management.
 // ═══════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = "zayron-x-v2";
+const CACHE_VERSION = 'zayron-x-v2';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const API_CACHE = `${CACHE_VERSION}-api`;
 
 // Assets to pre-cache on install
-const PRECACHE_URLS = [
-  "/",
-  "/offline",
-  "/cve",
-  "/search",
-];
+const PRECACHE_URLS = ['/', '/offline', '/cve', '/search'];
 
 // ── Install — pre-cache critical pages ────────────────────────
-self.addEventListener("install", (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => {
-      return cache.addAll(PRECACHE_URLS);
-    }).then(() => self.skipWaiting())
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) => {
+        return cache.addAll(PRECACHE_URLS);
+      })
+      .then(() => self.skipWaiting()),
   );
 });
 
 // ── Activate — clean old caches ───────────────────────────────
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key.startsWith("zayron-x-") && key !== STATIC_CACHE && key !== PAGE_CACHE && key !== API_CACHE)
-          .map((key) => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys
+            .filter(
+              (key) =>
+                key.startsWith('zayron-x-') &&
+                key !== STATIC_CACHE &&
+                key !== PAGE_CACHE &&
+                key !== API_CACHE,
+            )
+            .map((key) => caches.delete(key)),
+        );
+      })
+      .then(() => self.clients.claim()),
   );
 });
 
 // ── Fetch — strategy per request type ─────────────────────────
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Skip non-GET requests
-  if (request.method !== "GET") return;
+  if (request.method !== 'GET') return;
 
   // ── API responses — Stale While Revalidate ──────────────────
-  if (url.pathname.startsWith("/api/")) {
+  if (url.pathname.startsWith('/api/')) {
     event.respondWith(staleWhileRevalidate(request, API_CACHE));
     return;
   }
@@ -54,14 +61,14 @@ self.addEventListener("fetch", (event) => {
   // ── Static assets (JS, CSS, fonts, images) — Cache First ───
   if (
     url.pathname.match(/\.(js|css|woff2?|ttf|svg|png|jpg|jpeg|webp|avif|ico)$/) ||
-    url.pathname.startsWith("/_next/static")
+    url.pathname.startsWith('/_next/static')
   ) {
     event.respondWith(cacheFirst(request, STATIC_CACHE));
     return;
   }
 
   // ── Page navigations — Network First ────────────────────────
-  if (request.mode === "navigate") {
+  if (request.mode === 'navigate') {
     event.respondWith(networkFirst(request, PAGE_CACHE));
     return;
   }
@@ -85,7 +92,7 @@ async function cacheFirst(request, cacheName) {
     }
     return response;
   } catch {
-    return new Response("Offline — resource unavailable", { status: 503 });
+    return new Response('Offline — resource unavailable', { status: 503 });
   }
 }
 
@@ -104,12 +111,12 @@ async function networkFirst(request, cacheName) {
     if (cached) return cached;
 
     // If it's a navigation, show the offline page
-    if (request.mode === "navigate") {
-      const offlinePage = await cache.match("/offline");
+    if (request.mode === 'navigate') {
+      const offlinePage = await cache.match('/offline');
       if (offlinePage) return offlinePage;
     }
 
-    return new Response("Offline", { status: 503 });
+    return new Response('Offline', { status: 503 });
   }
 }
 

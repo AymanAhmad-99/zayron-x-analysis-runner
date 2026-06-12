@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { Article } from "@/lib/types";
-import { Download, FileText, CheckCircle2 } from "@/lib/icons";
-import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
+import { useSecurityGating } from '@/components/platform/SecurityGatingContext';
+import { CheckCircle2, Download, FileText } from '@/lib/icons';
+import type { Article } from '@/lib/types';
 
 interface SitrepExporterProps {
   articles: Article[];
@@ -13,14 +13,14 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
 
   const handleExport = () => {
     gateAction(() => {
-      const printWindow = window.open("", "_blank");
+      const printWindow = window.open('', '_blank');
       if (!printWindow) return;
 
       const doc = printWindow.document;
-      doc.title = "ZAYRON-X Executive CISO SITREP Report";
+      doc.title = 'ZAYRON-X Executive CISO SITREP Report';
 
       // 1. Programmatic Style Generation
-      const style = doc.createElement("style");
+      const style = doc.createElement('style');
       style.textContent = `
         body { 
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
@@ -177,46 +177,50 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
       const body = doc.body;
 
       // Header
-      const header = doc.createElement("div");
-      header.className = "header";
-      const logo = doc.createElement("div");
-      logo.className = "logo";
-      logo.textContent = "ZAYRON";
-      const logoSpan = doc.createElement("span");
-      logoSpan.textContent = "-X";
+      const header = doc.createElement('div');
+      header.className = 'header';
+      const logo = doc.createElement('div');
+      logo.className = 'logo';
+      logo.textContent = 'ZAYRON';
+      const logoSpan = doc.createElement('span');
+      logoSpan.textContent = '-X';
       logo.appendChild(logoSpan);
       header.appendChild(logo);
 
-      const classification = doc.createElement("div");
-      classification.className = "classification";
-      classification.textContent = "TLP:AMBER · EXECUTIVE ACCESS ONLY";
+      const classification = doc.createElement('div');
+      classification.className = 'classification';
+      classification.textContent = 'TLP:AMBER · EXECUTIVE ACCESS ONLY';
       header.appendChild(classification);
       body.appendChild(header);
 
       // Main Title
-      const h1 = doc.createElement("h1");
-      h1.className = "title";
-      h1.textContent = "AUTONOMOUS AI CISO WEEKLY SITREP";
+      const h1 = doc.createElement('h1');
+      h1.className = 'title';
+      h1.textContent = 'AUTONOMOUS AI CISO WEEKLY SITREP';
       body.appendChild(h1);
 
-      const subtitle = doc.createElement("p");
-      subtitle.className = "subtitle";
-      const dateStr = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
+      const subtitle = doc.createElement('p');
+      subtitle.className = 'subtitle';
+      const dateStr = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
       subtitle.textContent = `Executive readiness audit report compiled automatically by ZAYRON-X on ${dateStr}.`;
       body.appendChild(subtitle);
 
       // Meta Grid
-      const metaGrid = doc.createElement("div");
-      metaGrid.className = "meta-grid";
+      const metaGrid = doc.createElement('div');
+      metaGrid.className = 'meta-grid';
 
       const createMetaCard = (label: string, value: string, color?: string) => {
-        const card = doc.createElement("div");
-        card.className = "meta-card";
-        const l = doc.createElement("div");
-        l.className = "meta-label";
+        const card = doc.createElement('div');
+        card.className = 'meta-card';
+        const l = doc.createElement('div');
+        l.className = 'meta-label';
         l.textContent = label;
-        const v = doc.createElement("div");
-        v.className = "meta-value";
+        const v = doc.createElement('div');
+        v.className = 'meta-value';
         v.textContent = value;
         if (color) v.style.color = color;
         card.appendChild(l);
@@ -224,67 +228,76 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
         return card;
       };
 
-      metaGrid.appendChild(createMetaCard("Security Posture Status", "87% SECURE", "#733DD9"));
-      metaGrid.appendChild(createMetaCard("Nodes Monitored", "4 Active Connections"));
-      metaGrid.appendChild(createMetaCard("Active Threats Cataloged", `${articles.length} Active Dossiers`));
+      metaGrid.appendChild(createMetaCard('Security Posture Status', '87% SECURE', '#733DD9'));
+      metaGrid.appendChild(createMetaCard('Nodes Monitored', '4 Active Connections'));
+      metaGrid.appendChild(
+        createMetaCard('Active Threats Cataloged', `${articles.length} Active Dossiers`),
+      );
       body.appendChild(metaGrid);
 
       // Section Title
-      const sectionTitle = doc.createElement("div");
-      sectionTitle.className = "section-title";
-      sectionTitle.textContent = "Critical Indicators & Actionable Risks";
+      const sectionTitle = doc.createElement('div');
+      sectionTitle.className = 'section-title';
+      sectionTitle.textContent = 'Critical Indicators & Actionable Risks';
       body.appendChild(sectionTitle);
 
       // Table
-      const table = doc.createElement("table");
-      const thead = doc.createElement("thead");
-      const trHead = doc.createElement("tr");
-      ["Incident details & classification", "Threat Impact", "Exposure Risk", "Remediation Status"].forEach(text => {
-        const th = doc.createElement("th");
+      const table = doc.createElement('table');
+      const thead = doc.createElement('thead');
+      const trHead = doc.createElement('tr');
+      [
+        'Incident details & classification',
+        'Threat Impact',
+        'Exposure Risk',
+        'Remediation Status',
+      ].forEach((text) => {
+        const th = doc.createElement('th');
         th.textContent = text;
         trHead.appendChild(th);
       });
       thead.appendChild(trHead);
       table.appendChild(thead);
 
-      const tbody = doc.createElement("tbody");
-      articles.slice(0, 5).forEach(article => {
-        const tr = doc.createElement("tr");
+      const tbody = doc.createElement('tbody');
+      articles.slice(0, 5).forEach((article) => {
+        const tr = doc.createElement('tr');
 
         // Cell 1
-        const td1 = doc.createElement("td");
-        const strong = doc.createElement("strong");
+        const td1 = doc.createElement('td');
+        const strong = doc.createElement('strong');
         strong.textContent = article.title;
         td1.appendChild(strong);
-        const sector = doc.createElement("div");
-        sector.style.fontSize = "11px";
-        sector.style.color = "#733DD9";
-        sector.style.marginTop = "4px";
-        sector.textContent = `Sector: ${(article.category || 'unknown').toUpperCase().replace("_", " ")}`;
+        const sector = doc.createElement('div');
+        sector.style.fontSize = '11px';
+        sector.style.color = '#733DD9';
+        sector.style.marginTop = '4px';
+        sector.textContent = `Sector: ${(article.category || 'unknown').toUpperCase().replace('_', ' ')}`;
         td1.appendChild(sector);
         tr.appendChild(td1);
 
         // Cell 2
-        const td2 = doc.createElement("td");
-        const badge = doc.createElement("span");
-        const isCritical = (article.regulatoryRisk || "CRITICAL").toLowerCase().includes("critical");
-        badge.className = `badge ${isCritical ? "badge-critical" : "badge-high"}`;
-        badge.textContent = isCritical ? "Critical" : "High";
+        const td2 = doc.createElement('td');
+        const badge = doc.createElement('span');
+        const isCritical = (article.regulatoryRisk || 'CRITICAL')
+          .toLowerCase()
+          .includes('critical');
+        badge.className = `badge ${isCritical ? 'badge-critical' : 'badge-high'}`;
+        badge.textContent = isCritical ? 'Critical' : 'High';
         td2.appendChild(badge);
         tr.appendChild(td2);
 
         // Cell 3
-        const td3 = doc.createElement("td");
-        td3.style.fontFamily = "monospace";
-        td3.style.fontWeight = "bold";
-        td3.textContent = article.financialExposure || "$4.2M";
+        const td3 = doc.createElement('td');
+        td3.style.fontFamily = 'monospace';
+        td3.style.fontWeight = 'bold';
+        td3.textContent = article.financialExposure || '$4.2M';
         tr.appendChild(td3);
 
         // Cell 4
-        const td4 = doc.createElement("td");
-        td4.style.color = "#733DD9";
-        td4.style.fontWeight = "bold";
-        td4.textContent = "Remediation Deployed";
+        const td4 = doc.createElement('td');
+        td4.style.color = '#733DD9';
+        td4.style.fontWeight = 'bold';
+        td4.textContent = 'Remediation Deployed';
         tr.appendChild(td4);
 
         tbody.appendChild(tr);
@@ -293,25 +306,37 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
       body.appendChild(table);
 
       // Compliance Framework
-      const compTitle = doc.createElement("div");
-      compTitle.className = "section-title";
-      compTitle.textContent = "Compliance Readiness Framework Alignment";
+      const compTitle = doc.createElement('div');
+      compTitle.className = 'section-title';
+      compTitle.textContent = 'Compliance Readiness Framework Alignment';
       body.appendChild(compTitle);
 
-      const checklist = doc.createElement("div");
-      checklist.className = "checklist";
+      const checklist = doc.createElement('div');
+      checklist.className = 'checklist';
 
       const items = [
-        { title: "ID.AM (Asset Vulnerability Tracking)", text: "Verified automatic coverage sweeps across corporate SaaS and DNS connections." },
-        { title: "PR.AC (MFA & Identity Verification)", text: "Allowance filters active; admin panel fully gated with multi-factor check bounds." },
-        { title: "DE.AE (Continuous Threat Intelligence Ingestion)", text: "Active scanning operational on 60+ threat feeds, logs indexed in Supabase database." },
-        { title: "RS.RP (Mitigation Response Integration)", text: "WAF rule and active mitigation mapping playbooks ready for one-click deployment." }
+        {
+          title: 'ID.AM (Asset Vulnerability Tracking)',
+          text: 'Verified automatic coverage sweeps across corporate SaaS and DNS connections.',
+        },
+        {
+          title: 'PR.AC (MFA & Identity Verification)',
+          text: 'Allowance filters active; admin panel fully gated with multi-factor check bounds.',
+        },
+        {
+          title: 'DE.AE (Continuous Threat Intelligence Ingestion)',
+          text: 'Active scanning operational on 60+ threat feeds, logs indexed in Supabase database.',
+        },
+        {
+          title: 'RS.RP (Mitigation Response Integration)',
+          text: 'WAF rule and active mitigation mapping playbooks ready for one-click deployment.',
+        },
       ];
 
-      items.forEach(item => {
-        const div = doc.createElement("div");
-        div.className = "checklist-item";
-        const s = doc.createElement("strong");
+      items.forEach((item) => {
+        const div = doc.createElement('div');
+        div.className = 'checklist-item';
+        const s = doc.createElement('strong');
         s.textContent = item.title;
         div.appendChild(s);
         const t = doc.createTextNode(item.text);
@@ -321,13 +346,14 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
       body.appendChild(checklist);
 
       // Footer
-      const footer = doc.createElement("div");
-      footer.className = "footer";
-      footer.textContent = "REPORT ISSUED SECURELY BY ZAYRON-X AI CISO CONTROLLER · AUDIT ALIGNED SECURE LOGS · TLP:AMBER";
+      const footer = doc.createElement('div');
+      footer.className = 'footer';
+      footer.textContent =
+        'REPORT ISSUED SECURELY BY ZAYRON-X AI CISO CONTROLLER · AUDIT ALIGNED SECURE LOGS · TLP:AMBER';
       body.appendChild(footer);
 
       // 3. Programmatic Print/Close Trigger
-      const script = doc.createElement("script");
+      const script = doc.createElement('script');
       script.textContent = `
         window.onload = function() {
           window.print();
@@ -335,7 +361,7 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
         };
       `;
       doc.body.appendChild(script);
-      
+
       doc.close();
     });
   };
@@ -361,13 +387,17 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
 
           <div className="flex items-center justify-between border-b border-neutral-200 pb-2 mb-3">
             <span className="font-extrabold text-[#050505] text-[10px]">CISO SITREP REPORT</span>
-            <span className="text-[8px] text-[#733DD9] font-bold px-1.5 py-0.5 rounded-none bg-[#733DD9]/10 border border-[#733DD9]/20">TLP:AMBER</span>
+            <span className="text-[8px] text-[#733DD9] font-bold px-1.5 py-0.5 rounded-none bg-[#733DD9]/10 border border-[#733DD9]/20">
+              TLP:AMBER
+            </span>
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between items-center text-neutral-400">
               <span>REPORT DATE:</span>
-              <span className="text-[#050505] font-semibold">{new Date().toLocaleDateString()}</span>
+              <span className="text-[#050505] font-semibold">
+                {new Date().toLocaleDateString()}
+              </span>
             </div>
             <div className="flex justify-between items-center text-neutral-400">
               <span>THREAT LEVEL:</span>

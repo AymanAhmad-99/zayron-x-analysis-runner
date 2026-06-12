@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Share2, Twitter, Facebook, LinkIcon } from "@/lib/icons";
-import { useState } from "react";
+import { Facebook, LinkIcon, Share2, Twitter } from '@/lib/icons';
+import { useState } from 'react';
 
 interface ShareButtonsProps {
   url: string;

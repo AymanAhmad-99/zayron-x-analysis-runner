@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const BASE_URL = process.env.TEST_BASE_URL ?? 'http://localhost:3000';
 
@@ -26,7 +26,11 @@ describe('API Integration Tests', () => {
   beforeAll(async () => {
     serverAvailable = !(await skipIfNoServer());
     if (!serverAvailable) {
-      console.warn('[INTEGRATION] No server detected at', BASE_URL, '— skipping integration tests.');
+      console.warn(
+        '[INTEGRATION] No server detected at',
+        BASE_URL,
+        '— skipping integration tests.',
+      );
     }
   });
 

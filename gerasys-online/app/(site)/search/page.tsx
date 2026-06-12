@@ -1,21 +1,21 @@
 export const revalidate = 0;
 
-import type { Metadata } from "next";
-import { searchArticles } from "@/lib/supabase/queries/articles";
-import { ArticleCard } from "@/components/ui/ArticleCard";
+import { ArticleCard } from '@/components/ui/ArticleCard';
+import { searchArticles } from '@/lib/supabase/queries/articles';
+import type { Metadata } from 'next';
 
 interface Props {
   searchParams: Promise<{ q?: string }>;
 }
 
 export const metadata: Metadata = {
-  title: "Search Intelligence",
-  description: "Search ZAYRON-X threat intelligence database.",
+  title: 'Search Intelligence',
+  description: 'Search ZAYRON-X threat intelligence database.',
 };
 
 export default async function SearchPage({ searchParams }: Props) {
   const { q } = await searchParams;
-  const query = q?.trim() ?? "";
+  const query = q?.trim() ?? '';
   let articles: Awaited<ReturnType<typeof searchArticles>> = [];
   if (query) {
     try {
@@ -31,11 +31,11 @@ export default async function SearchPage({ searchParams }: Props) {
         <div className="mb-10">
           <p className="section-label">Search</p>
           <h1 className="font-display text-3xl font-bold text-[#0F172A] mt-2">
-            {query ? `Results for "${query}"` : "Search Intelligence Database"}
+            {query ? `Results for "${query}"` : 'Search Intelligence Database'}
           </h1>
           {query && (
             <p className="text-[#475569] mt-2 font-ui">
-              {articles.length} result{articles.length !== 1 ? "s" : ""} found
+              {articles.length} result{articles.length !== 1 ? 's' : ''} found
             </p>
           )}
         </div>

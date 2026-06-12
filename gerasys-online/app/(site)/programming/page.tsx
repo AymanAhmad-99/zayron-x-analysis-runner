@@ -1,15 +1,15 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import type { Metadata } from "next";
-import { getProgrammingLanguages } from "@/lib/supabase/queries/programming";
-import { Code2, Shield, ArrowRight, Cpu, Braces } from "@/lib/icons";
-import Link from "next/link";
+import { ArrowRight, Braces, Code2, Cpu, Shield } from '@/lib/icons';
+import { getProgrammingLanguages } from '@/lib/supabase/queries/programming';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Programming Hub — Secure Code Intelligence",
+  title: 'Programming Hub — Secure Code Intelligence',
   description:
-    "Production-grade security engineering resources. Rust, Python, Go, and more — code snippets, security patterns, and tooling.",
+    'Production-grade security engineering resources. Rust, Python, Go, and more — code snippets, security patterns, and tooling.',
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/programming`,
   },
@@ -40,8 +40,8 @@ export default async function ProgrammingHubPage() {
             </div>
           </div>
           <p className="text-[#4B5563] text-base max-w-2xl leading-relaxed">
-            Production-grade security engineering patterns, code snippets, and
-            language-specific tooling. Curated by ZAYRON-X analysts.
+            Production-grade security engineering patterns, code snippets, and language-specific
+            tooling. Curated by ZAYRON-X analysts.
           </p>
         </div>
       </section>
@@ -57,17 +57,14 @@ export default async function ProgrammingHubPage() {
               No Languages Indexed Yet
             </h2>
             <p className="text-sm text-[#4B5563] max-w-md mx-auto leading-relaxed">
-              Our analysts are compiling secure coding patterns. Language profiles
-              will appear here once indexed.
+              Our analysts are compiling secure coding patterns. Language profiles will appear here
+              once indexed.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {languages.map((lang) => (
-              <div
-                key={lang.id}
-                className="card-bento p-8 flex flex-col group"
-              >
+              <div key={lang.id} className="card-bento p-8 flex flex-col group">
                 {/* Language name */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-[#D2B48C]/8 border border-[#D2B48C]/15 flex items-center justify-center">
@@ -97,7 +94,7 @@ export default async function ProgrammingHubPage() {
                   <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-4 mb-4 overflow-x-auto">
                     <pre className="text-xs font-mono text-[#4B5563] leading-relaxed whitespace-pre-wrap">
                       {lang.codeSnippet.substring(0, 200)}
-                      {(lang.codeSnippet?.length ?? 0) > 200 ? "..." : ""}
+                      {(lang.codeSnippet?.length ?? 0) > 200 ? '...' : ''}
                     </pre>
                   </div>
                 )}
@@ -128,7 +125,7 @@ export default async function ProgrammingHubPage() {
                 <div className="flex items-center justify-between pt-4 border-t border-[#E2E8F0]">
                   <span className="text-[10px] text-[#9CA3AF] font-mono">
                     {lang.articleCount} article
-                    {lang.articleCount !== 1 ? "s" : ""}
+                    {lang.articleCount !== 1 ? 's' : ''}
                   </span>
                   <Link
                     href={`/search?q=${encodeURIComponent(lang.name)}+security`}

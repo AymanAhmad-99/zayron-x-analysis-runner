@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { getToolBySlug } from "@/lib/supabase/queries/tools";
-import { Star, ExternalLink, GitFork } from "@/lib/icons";
+import { ExternalLink, GitFork, Star } from '@/lib/icons';
+import { getToolBySlug } from '@/lib/supabase/queries/tools';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   } catch (error) {
     console.error(`generateMetadata failed for tool "${slug}":`, error);
   }
-  if (!tool) return { title: "Tool Not Found" };
+  if (!tool) return { title: 'Tool Not Found' };
 
   return {
     title: `${tool.name} — Tool Review`,
@@ -42,9 +42,13 @@ export default async function ToolDetailPage({ params }: Props) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <nav className="flex items-center gap-2 text-xs text-[#475569] mb-6 font-ui">
-        <a href="/" className="hover:text-[#D2B48C]">Home</a>
+        <a href="/" className="hover:text-[#D2B48C]">
+          Home
+        </a>
         <span>/</span>
-        <a href="/tools" className="hover:text-[#D2B48C]">Tools</a>
+        <a href="/tools" className="hover:text-[#D2B48C]">
+          Tools
+        </a>
         <span>/</span>
         <span className="text-[#0F172A]">{tool.name}</span>
       </nav>
@@ -55,9 +59,7 @@ export default async function ToolDetailPage({ params }: Props) {
             <span className="text-[10px] uppercase font-bold text-[#D2B48C] tracking-wider font-ui">
               {tool.category}
             </span>
-            <h1 className="font-display text-3xl font-bold text-[#0F172A] mt-1">
-              {tool.name}
-            </h1>
+            <h1 className="font-display text-3xl font-bold text-[#0F172A] mt-1">{tool.name}</h1>
           </div>
           {tool.rating && (
             <span className="flex items-center gap-1.5 text-sm bg-[#C6A664]/10 text-[#C6A664] font-bold px-3 py-1.5 rounded-lg">
@@ -67,9 +69,7 @@ export default async function ToolDetailPage({ params }: Props) {
           )}
         </div>
 
-        <p className="text-[#475569] font-body leading-relaxed mb-6">
-          {tool.description}
-        </p>
+        <p className="text-[#475569] font-body leading-relaxed mb-6">{tool.description}</p>
 
         <div className="flex flex-wrap gap-4 items-center pt-4 border-t border-[#E2E8F0]">
           {tool.stars !== null && (

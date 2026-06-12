@@ -1,5 +1,5 @@
-import { getSupabaseAdmin } from '../client';
 import type { RawFeed } from '@/lib/types';
+import { getSupabaseAdmin } from '../client';
 
 function mapRawFeed(dbFeed: any): RawFeed {
   if (!dbFeed) return null as any;
@@ -38,11 +38,7 @@ export async function getRawFeeds(page = 1, pageSize = 50, env?: any) {
 
 export async function getRawFeedById(id: number, env?: any) {
   const supabase = getSupabaseAdmin(env);
-  const { data, error } = await supabase
-    .from('raw_feeds')
-    .select('*')
-    .eq('id', id)
-    .limit(1);
+  const { data, error } = await supabase.from('raw_feeds').select('*').eq('id', id).limit(1);
   if (error || !data || data.length === 0) return null;
   return mapRawFeed(data[0]);
 }
@@ -123,10 +119,7 @@ export async function promoteRawFeed(id: number, env?: any) {
 
 export async function deleteRawFeed(id: number, env?: any) {
   const supabase = getSupabaseAdmin(env);
-  const { error } = await supabase
-    .from('raw_feeds')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabase.from('raw_feeds').delete().eq('id', id);
   if (error) throw error;
 }
 
@@ -134,17 +127,23 @@ export async function getDarkwebFeeds(limit = 30, env?: any) {
   const supabase = getSupabaseAdmin(env);
   const { data, error } = await supabase
     .from('raw_feeds')
-    .select('id, source_channel, raw_content, original_language, category, status, translated_title, analysis, ai_generated_flag, prompt_tokens, completion_tokens, timestamp, created_at, promoted_at, meta_data')
+    .select(
+      'id, source_channel, raw_content, original_language, category, status, translated_title, analysis, ai_generated_flag, prompt_tokens, completion_tokens, timestamp, created_at, promoted_at, meta_data',
+    )
     .like('source_channel', 'darkweb_%')
     .order('created_at', { ascending: false })
     .limit(limit);
   if (error) return [];
   return (data ?? []).map((feed) => {
     const mapped = mapRawFeed(feed);
-    mapped.intel_comparison = "Forensic mapping: Payload matches ransomware fingerprint profiles from Q1 2026 active campaigns.";
-    mapped.intelComparison = "Forensic mapping: Payload matches ransomware fingerprint profiles from Q1 2026 active campaigns.";
-    mapped.researcher_note = "Security directive: Review compromised endpoint credentials and trace onion router entry nodes.";
-    mapped.researcherNote = "Security directive: Review compromised endpoint credentials and trace onion router entry nodes.";
+    mapped.intel_comparison =
+      'Forensic mapping: Payload matches ransomware fingerprint profiles from Q1 2026 active campaigns.';
+    mapped.intelComparison =
+      'Forensic mapping: Payload matches ransomware fingerprint profiles from Q1 2026 active campaigns.';
+    mapped.researcher_note =
+      'Security directive: Review compromised endpoint credentials and trace onion router entry nodes.';
+    mapped.researcherNote =
+      'Security directive: Review compromised endpoint credentials and trace onion router entry nodes.';
     return mapped;
   });
 }

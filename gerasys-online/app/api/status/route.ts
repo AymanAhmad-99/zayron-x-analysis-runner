@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 // ═══════════════════════════════════════════════════════════════
 // ZAYRON-X — Platform Health Endpoint
@@ -10,11 +10,11 @@ import { NextResponse } from "next/server";
 // Compatible with Cloudflare Workers (OpenNext) and Node.js.
 // ═══════════════════════════════════════════════════════════════
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 // ── Types ────────────────────────────────────────────────────
 
-type HealthStatus = "healthy" | "degraded" | "unhealthy" | "unknown";
+type HealthStatus = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
 
 interface HealthCheck {
   status: HealthStatus;
@@ -40,7 +40,7 @@ interface HealthResponse {
 /** Cross-runtime high-resolution timing (works on Workers + Node.js). */
 function nowMs(): number {
   // performance.now() exists on Workers; Date.now() is the fallback.
-  return typeof performance !== "undefined" ? performance.now() : Date.now();
+  return typeof performance !== 'undefined' ? performance.now() : Date.now();
 }
 
 function elapsedMs(startMs: number): number {
@@ -66,7 +66,11 @@ async function checkSupabase(): Promise<HealthCheck> {
     const key = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!url || !key) {
-      return { status: "unhealthy", latencyMs: 0, message: "Missing SUPABASE_URL or SUPABASE_ANON_KEY" };
+      return {
+        status: 'unhealthy',
+        latencyMs: 0,
+        message: 'Missing SUPABASE_URL or SUPABASE_ANON_KEY',
+      };
     }
 
     const controller = new AbortController();
@@ -81,12 +85,12 @@ async function checkSupabase(): Promise<HealthCheck> {
     const latencyMs = elapsedMs(start);
 
     if (res.ok || res.status === 200) {
-      return { status: "healthy", latencyMs };
+      return { status: 'healthy', latencyMs };
     }
-    return { status: "degraded", latencyMs, message: `HTTP ${res.status}` };
+    return { status: 'degraded', latencyMs, message: `HTTP ${res.status}` };
   } catch (error: any) {
     const latencyMs = elapsedMs(start);
-    return { status: "unhealthy", latencyMs, message: error.message ?? "Unknown error" };
+    return { status: 'unhealthy', latencyMs, message: error.message ?? 'Unknown error' };
   }
 }
 
@@ -97,7 +101,11 @@ async function checkRedis(): Promise<HealthCheck> {
     const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
     if (!redisUrl || !redisToken) {
-      return { status: "unknown", latencyMs: 0, message: "UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not configured" };
+      return {
+        status: 'unknown',
+        latencyMs: 0,
+        message: 'UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not configured',
+      };
     }
 
     const controller = new AbortController();
@@ -112,13 +120,13 @@ async function checkRedis(): Promise<HealthCheck> {
     const latencyMs = elapsedMs(start);
     const body = await res.text();
 
-    if (res.ok && body.includes("PONG")) {
-      return { status: "healthy", latencyMs };
+    if (res.ok && body.includes('PONG')) {
+      return { status: 'healthy', latencyMs };
     }
-    return { status: "degraded", latencyMs, message: `Unexpected response: ${body.slice(0, 80)}` };
+    return { status: 'degraded', latencyMs, message: `Unexpected response: ${body.slice(0, 80)}` };
   } catch (error: any) {
     const latencyMs = elapsedMs(start);
-    return { status: "unhealthy", latencyMs, message: error.message ?? "Unknown error" };
+    return { status: 'unhealthy', latencyMs, message: error.message ?? 'Unknown error' };
   }
 }
 
@@ -136,24 +144,24 @@ async function checkKV(): Promise<HealthCheck> {
     if (!kvBinding) {
       const isWorkerEnv = !!(process.env.CF_PAGES || (globalThis as any).addEventListener);
       return {
-        status: isWorkerEnv ? "degraded" : "unknown",
+        status: isWorkerEnv ? 'degraded' : 'unknown',
         latencyMs: 0,
         message: isWorkerEnv
-          ? "KV binding ZAYRON_CACHE not found in Worker context"
-          : "KV not available in local dev — deploy to Cloudflare to verify",
+          ? 'KV binding ZAYRON_CACHE not found in Worker context'
+          : 'KV not available in local dev — deploy to Cloudflare to verify',
       };
     }
 
     // Write + read a health-check key to verify the binding is functional.
-    const healthKey = "__health_check__";
+    const healthKey = '__health_check__';
     await kvBinding.put(healthKey, String(Date.now()), { expirationTtl: 60 });
     await kvBinding.get(healthKey);
 
     const latencyMs = elapsedMs(start);
-    return { status: "healthy", latencyMs };
+    return { status: 'healthy', latencyMs };
   } catch (error: any) {
     const latencyMs = elapsedMs(start);
-    return { status: "unhealthy", latencyMs, message: error.message ?? "Unknown error" };
+    return { status: 'unhealthy', latencyMs, message: error.message ?? 'Unknown error' };
   }
 }
 
@@ -163,7 +171,7 @@ async function checkGemini(): Promise<HealthCheck> {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      return { status: "unknown", latencyMs: 0, message: "GEMINI_API_KEY not configured" };
+      return { status: 'unknown', latencyMs: 0, message: 'GEMINI_API_KEY not configured' };
     }
 
     // Lightweight: list available models (does not consume LLM quota).
@@ -179,13 +187,17 @@ async function checkGemini(): Promise<HealthCheck> {
     const latencyMs = elapsedMs(start);
 
     if (res.ok) {
-      return { status: "healthy", latencyMs };
+      return { status: 'healthy', latencyMs };
     }
     const body = await res.json().catch(() => ({}));
-    return { status: "degraded", latencyMs, message: (body as any).error?.message ?? `HTTP ${res.status}` };
+    return {
+      status: 'degraded',
+      latencyMs,
+      message: (body as any).error?.message ?? `HTTP ${res.status}`,
+    };
   } catch (error: any) {
     const latencyMs = elapsedMs(start);
-    return { status: "unhealthy", latencyMs, message: error.message ?? "Unknown error" };
+    return { status: 'unhealthy', latencyMs, message: error.message ?? 'Unknown error' };
   }
 }
 
@@ -196,7 +208,7 @@ const startTime = Date.now();
 // ── Route Handler ────────────────────────────────────────────
 
 export async function GET(): Promise<NextResponse<HealthResponse>> {
-  const worker: HealthCheck = { status: "healthy", latencyMs: 0, message: "Responding" };
+  const worker: HealthCheck = { status: 'healthy', latencyMs: 0, message: 'Responding' };
 
   // Fan-out all dependency checks concurrently
   const [supabase, redis, kv, gemini] = await Promise.all([
@@ -208,7 +220,7 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
 
   const overall = [worker, supabase, redis, kv, gemini].reduce<HealthStatus>(
     (acc, c) => worst(acc, c.status),
-    "healthy",
+    'healthy',
   );
 
   const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
@@ -221,14 +233,14 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
   };
 
   return NextResponse.json(response, {
-    status: overall === "healthy" ? 200 : overall === "degraded" ? 200 : 503,
+    status: overall === 'healthy' ? 200 : overall === 'degraded' ? 200 : 503,
     headers: {
-      "Cache-Control": "no-store",
-      "X-Health-Overall": overall,
-      "X-Health-Supabase": supabase.status,
-      "X-Health-Redis": redis.status,
-      "X-Health-KV": kv.status,
-      "X-Health-Gemini": gemini.status,
+      'Cache-Control': 'no-store',
+      'X-Health-Overall': overall,
+      'X-Health-Supabase': supabase.status,
+      'X-Health-Redis': redis.status,
+      'X-Health-KV': kv.status,
+      'X-Health-Gemini': gemini.status,
     },
   });
 }

@@ -1,42 +1,58 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation';
 
-import type { Metadata } from "next";
-import { ArticleCard } from "@/components/ui/ArticleCard";
+import { ArticleCard } from '@/components/ui/ArticleCard';
+import { getCached } from '@/lib/cache/redis';
+import { ArrowLeft, Code, Network, Radar, Radio, Shield, Tag } from '@/lib/icons';
+import { type SiloId, getSiloColorClass, getSiloForCategory } from '@/lib/silos';
 import {
+  getAllTags,
   getArticlesByCategory,
   getCategoriesWithCounts,
-  getAllTags,
-} from "@/lib/supabase/queries/articles";
-import { getCached } from "@/lib/cache/redis";
-import {
-  getSiloForCategory,
-  getSiloColorClass,
-  type SiloId,
-} from "@/lib/silos";
-import { Shield, Code, Network, Radar, ArrowLeft, Radio, Tag } from "@/lib/icons";
-import Link from "next/link";
+  getArticlesCountByCategory,
+} from '@/lib/supabase/queries/articles';
+import { getCategoryPageMetadata, getCategoryNavigationJsonLd } from '@/lib/seo/metadata';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 /* Map URL slug → DB category enum value.
    generateStaticParams produces kebab-case slugs from the enum;
    this reverses that so queries match the actual column values. */
 const SLUG_TO_DB_CATEGORY: Record<string, string> = {
-  vulnerabilities: "vulnerabilities",
-  "threat-intel": "threat_intel",
-  osint: "osint",
-  "cyber-news": "cyber_news",
+  malware: 'MALWARE',
+  'threat-actors': 'THREAT_ACTOR',
+  'threat-actor': 'THREAT_ACTOR',
+  vulnerabilities: 'VULNERABILITY',
+  vulnerability: 'VULNERABILITY',
+  exploits: 'EXPLOIT',
+  exploit: 'EXPLOIT',
+  'dark-web': 'DARK_WEB',
+  dark_web: 'DARK_WEB',
+  osint: 'OSINT',
 };
 
 function slugToDbCategory(slug: string): string {
-  return SLUG_TO_DB_CATEGORY[slug] ?? slug.replace(/-/g, "_");
+  const normalized = slug.toLowerCase();
+  return SLUG_TO_DB_CATEGORY[normalized] ?? normalized.toUpperCase();
 }
 
 function formatCategoryDisplay(slug: string): string {
-  return slug
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const friendlyNames: Record<string, string> = {
+    malware: 'Malware',
+    'threat-actors': 'Threat Actors',
+    'threat-actor': 'Threat Actors',
+    vulnerabilities: 'Vulnerabilities',
+    vulnerability: 'Vulnerabilities',
+    exploits: 'Exploits',
+    exploit: 'Exploits',
+    'dark-web': 'Dark Web',
+    dark_web: 'Dark Web',
+    osint: 'OSINT',
+  };
+  const normalized = slug.toLowerCase();
+  return friendlyNames[normalized] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -48,27 +64,27 @@ const SILO_ICONS: Record<SiloId, React.ComponentType<{ size?: number; className?
 type Props = {
   params: Promise<{ category: string }>;
   searchParams?: Promise<{ page?: string }>;
-}
+};
 
 function getSiloHeroClass(siloId: SiloId): string {
   switch (siloId) {
-    case "cybersecurity":
-      return "silo-cyber-hero";
-    case "programming":
-      return "silo-programming-hero";
-    case "networking":
-      return "silo-networking-hero";
+    case 'cybersecurity':
+      return 'silo-cyber-hero';
+    case 'programming':
+      return 'silo-programming-hero';
+    case 'networking':
+      return 'silo-networking-hero';
   }
 }
 
 function getSectionTitle(siloId: SiloId): string {
   switch (siloId) {
-    case "cybersecurity":
-      return "Tactical Intelligence Dossier";
-    case "programming":
-      return "Secure Engineering Repository";
-    case "networking":
-      return "Network Forensics Archive";
+    case 'cybersecurity':
+      return 'Tactical Intelligence Dossier';
+    case 'programming':
+      return 'Secure Engineering Repository';
+    case 'networking':
+      return 'Network Forensics Archive';
   }
 }
 
@@ -77,24 +93,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { category } = await params;
     if (!category) {
       return {
-        title: "Intelligence Reports — ZAYRON-X",
+        title: 'Intelligence Reports — ZAYRON-X',
       };
     }
-    const label = category
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-    const silo = getSiloForCategory(label);
-    return {
-      title: `${label} — ${silo?.label ?? "Intelligence"} Reports`,
-      description: `Latest ${label} intelligence reports and analysis from ZAYRON-X. ${silo?.description ?? ""}`,
-      alternates: {
-        canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/intelligence/${category}`,
-      },
-    };
+    return getCategoryPageMetadata(category);
   } catch (error) {
-    console.error("EDGE METADATA CRASH AVOIDED:", error);
+    console.error('EDGE METADATA CRASH AVOIDED:', error);
     return {
-      title: "Intelligence Reports — ZAYRON-X",
+      title: 'Intelligence Reports — ZAYRON-X',
     };
   }
 }
@@ -124,7 +130,10 @@ function ZeroIntelReport({ categoryName }: { categoryName: string }) {
           {/* Animated radar icon */}
           <div className="relative mb-8">
             <div className="w-24 h-24 rounded-full border border-[#E2E8F0] bg-white flex items-center justify-center relative">
-              <div className="absolute inset-0 rounded-full border border-[#FFD700]/20 animate-ping" style={{ animationDuration: "3s" }} />
+              <div
+                className="absolute inset-0 rounded-full border border-[#FFD700]/20 animate-ping"
+                style={{ animationDuration: '3s' }}
+              />
               <div className="absolute inset-2 rounded-full border border-[#FFD700]/10" />
               <Radar size={32} className="text-[#B8860B] animate-pulse" />
             </div>
@@ -133,22 +142,31 @@ function ZeroIntelReport({ categoryName }: { categoryName: string }) {
           {/* Alert message */}
           <div className="mb-8 px-6 py-5 rounded-xl border border-[#DC2626]/10 bg-[#DC2626]/[0.02] max-w-lg w-full">
             <p className="text-[#DC2626] font-mono text-sm leading-loose">
-              🚨 Zx Sector Scan: <span className="font-bold text-[#111827]">{categoryName}</span> — No intelligence intercepted in the last 24h. The Radar is actively monitoring.
+              🚨 Zx Sector Scan: <span className="font-bold text-[#111827]">{categoryName}</span> —
+              No intelligence intercepted in the last 24h. The Radar is actively monitoring.
             </p>
           </div>
 
           {/* Status details */}
           <div className="space-y-3 mb-10 w-full max-w-md">
             <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-white border border-[#E2E8F0]">
-              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">Sector</span>
-              <span className="text-sm text-[#111827] font-semibold font-display">{categoryName}</span>
+              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+                Sector
+              </span>
+              <span className="text-sm text-[#111827] font-semibold font-display">
+                {categoryName}
+              </span>
             </div>
             <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-white border border-[#E2E8F0]">
-              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">Reports Found</span>
+              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+                Reports Found
+              </span>
               <span className="text-sm text-[#DC2626] font-bold font-mono">0</span>
             </div>
             <div className="flex items-center justify-between px-5 py-3 rounded-lg bg-white border border-[#E2E8F0]">
-              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">Radar Status</span>
+              <span className="text-[10px] text-[#9CA3AF] font-mono uppercase tracking-wider">
+                Radar Status
+              </span>
               <span className="text-sm text-[#16A34A] font-semibold font-mono flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
                 ACTIVE
@@ -183,10 +201,7 @@ function ZeroIntelReport({ categoryName }: { categoryName: string }) {
   );
 }
 
-export default async function IntelligenceCategoryPage({
-  params,
-  searchParams,
-}: Props) {
+export default async function IntelligenceCategoryPage({ params, searchParams }: Props) {
   const { category } = await params;
 
   if (!category) {
@@ -201,27 +216,32 @@ export default async function IntelligenceCategoryPage({
       page = Number(pageStr) || 1;
     }
   } catch (error) {
-    console.error("EDGE SEARCHPARAMS RESOLVE ERROR AVOIDED:", error);
+    console.error('EDGE SEARCHPARAMS RESOLVE ERROR AVOIDED:', error);
   }
 
   const dbCategory = slugToDbCategory(category);
   const displayCategory = formatCategoryDisplay(category);
   const silo = getSiloForCategory(displayCategory);
-  const siloId = silo?.id ?? "cybersecurity";
-  const siloColorClass = silo ? getSiloColorClass(silo.id) : "";
+  const siloId = silo?.id ?? 'cybersecurity';
+  const siloColorClass = silo ? getSiloColorClass(silo.id) : '';
   const heroClass = getSiloHeroClass(siloId);
 
   let articles: Awaited<ReturnType<typeof getArticlesByCategory>> = [];
   let allTags: Awaited<ReturnType<typeof getAllTags>> = [];
   try {
     [articles, allTags] = await Promise.all([
-      getCached(process.env, `intel:category:${dbCategory}:page:${page}`, () => getArticlesByCategory(dbCategory, page, 12, process.env), 300),
-      getCached(process.env, "intel:all_tags", () => getAllTags(process.env), 300),
+      getCached(
+        process.env,
+        `intel:category:${dbCategory}:page:${page}`,
+        () => getArticlesByCategory(dbCategory, page, 12, process.env),
+        300,
+      ),
+      getCached(process.env, 'intel:all_tags', () => getAllTags(process.env), 300),
     ]);
   } catch (error) {
     console.error(
       `EDGE DB CRASH AVOIDED: IntelligenceCategoryPage fetch failed for "${dbCategory}":`,
-      error
+      error,
     );
     articles = [];
     allTags = [];
@@ -233,12 +253,17 @@ export default async function IntelligenceCategoryPage({
   }
 
   const SiloIcon = silo ? SILO_ICONS[silo.id] : Shield;
-  const sectionTitle = silo ? getSectionTitle(silo.id) : "Intelligence Archive";
-  const classification =
-    silo?.tagline ?? "INTELLIGENCE REPORT — FOR OFFICIAL USE ONLY";
+  const sectionTitle = silo ? getSectionTitle(silo.id) : 'Intelligence Archive';
+  const classification = silo?.tagline ?? 'INTELLIGENCE REPORT — FOR OFFICIAL USE ONLY';
+
+  const jsonLd = getCategoryNavigationJsonLd();
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Compartmentalized Category Hero */}
       <section className={`relative border-b border-[#E2E8F0] ${heroClass}`}>
         <div className="absolute top-3 right-6 z-10">
@@ -276,7 +301,7 @@ export default async function IntelligenceCategoryPage({
               {articles.length}
             </span>
             <span className="text-xs text-[#9CA3AF] font-ui uppercase tracking-wider">
-              Reports {page > 1 ? `(Page ${page})` : "Available"}
+              Reports {page > 1 ? `(Page ${page})` : 'Available'}
             </span>
           </div>
         </div>

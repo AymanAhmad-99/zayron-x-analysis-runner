@@ -1,6 +1,6 @@
-import { type Article } from "@/lib/types";
-import Link from "next/link";
-import { TrendingWidget } from "@/components/homepage/TrendingWidget";
+import { TrendingWidget } from '@/components/homepage/TrendingWidget';
+import type { Article } from '@/lib/types';
+import Link from 'next/link';
 
 interface ArticleSidebarProps {
   trending: Article[];
@@ -11,9 +11,7 @@ export function ArticleSidebar({ trending }: ArticleSidebarProps) {
     <aside className="space-y-0">
       {/* Intel Briefing CTA */}
       <div className="bg-white border border-[#222222] p-5 text-center">
-        <h3 className="font-display font-black text-black text-lg">
-          Intelligence Briefing
-        </h3>
+        <h3 className="font-display font-black text-black text-lg">Intelligence Briefing</h3>
         <p className="text-xs text-[#444444] mt-2 font-ui leading-relaxed">
           Daily threat intelligence delivered to your inbox. No noise.
         </p>

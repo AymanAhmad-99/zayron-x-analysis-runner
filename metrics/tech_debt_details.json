@@ -1,0 +1,27 @@
+[
+  {
+    "file": "audits/arch_analyzer.py",
+    "line": 148,
+    "text": "\"\"\"Builds import map and parses TODOs/documentation lines.\"\"\""
+  },
+  {
+    "file": "audits/arch_analyzer.py",
+    "line": 165,
+    "text": "# Calculate doc lines and check TODOs"
+  },
+  {
+    "file": "audits/arch_analyzer.py",
+    "line": 166,
+    "text": "if \"TODO\" in line:"
+  },
+  {
+    "file": "audits/arch_analyzer.py",
+    "line": 533,
+    "text": "# Mathematical derivation based on TODOs, dead code files, and unresolved imports"
+  },
+  {
+    "file": "gerasys-online/lib/pipeline/telegram-prompt.ts",
+    "line": 49,
+    "text": "- Include input validation, error handling, and secure configuration. No placeholder comments like \"// TODO: validate input.\""
+  }
+]

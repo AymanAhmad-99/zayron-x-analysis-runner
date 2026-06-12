@@ -1,9 +1,9 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import { notFound, redirect } from "next/navigation";
-import type { Metadata } from "next";
-import { getArticleBySlug } from "@/lib/supabase/queries/articles";
+import { getArticleBySlug } from '@/lib/supabase/queries/articles';
+import type { Metadata } from 'next';
+import { notFound, redirect } from 'next/navigation';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     article = await getArticleBySlug(slug);
   } catch {}
-  if (!article) return { title: "Report Not Found" };
+  if (!article) return { title: 'Report Not Found' };
 
   return {
     title: article.title,
@@ -32,6 +32,6 @@ export default async function ArticleRedirectPage({ params }: Props) {
   if (!article) notFound();
 
   // Redirect old /article/[slug] to /intelligence/[category]/[slug]
-  const category = (article.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-");
+  const category = (article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-');
   redirect(`/intelligence/${category}/${article.slug}`);
 }

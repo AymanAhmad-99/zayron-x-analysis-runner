@@ -9,7 +9,11 @@ export default function ProgrammingLoading() {
       {/* Lang grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="card-article p-5 flex flex-col items-center text-center" style={{ animation: `fade-up 0.4s ease-out ${i * 50}ms both` }}>
+          <div
+            key={i}
+            className="card-article p-5 flex flex-col items-center text-center"
+            style={{ animation: `fade-up 0.4s ease-out ${i * 50}ms both` }}
+          >
             <div className="skeleton w-12 h-12 rounded-xl mb-3" />
             <div className="skeleton h-4 w-20 mb-1" />
             <div className="skeleton h-3 w-16" />
@@ -20,7 +24,11 @@ export default function ProgrammingLoading() {
       <div className="skeleton h-3 w-32 mb-4" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="card-article overflow-hidden" style={{ animation: `fade-up 0.5s ease-out ${i * 60}ms both` }}>
+          <div
+            key={i}
+            className="card-article overflow-hidden"
+            style={{ animation: `fade-up 0.5s ease-out ${i * 60}ms both` }}
+          >
             <div className="skeleton aspect-[16/9] w-full rounded-none" />
             <div className="p-5 space-y-2">
               <div className="skeleton h-3 w-20" />

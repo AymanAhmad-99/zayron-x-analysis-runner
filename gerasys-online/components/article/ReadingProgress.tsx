@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export function ReadingProgress({ color }: { color?: string }) {
   const [progress, setProgress] = useState(0);
@@ -14,8 +14,8 @@ export function ReadingProgress({ color }: { color?: string }) {
       }
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
@@ -31,7 +31,7 @@ export function ReadingProgress({ color }: { color?: string }) {
         className="h-full transition-[width] duration-150 ease-out"
         style={{
           width: `${progress}%`,
-          backgroundColor: color ?? "#733DD9",
+          backgroundColor: color ?? '#733DD9',
         }}
       />
     </div>

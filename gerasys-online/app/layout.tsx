@@ -1,69 +1,69 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display, JetBrains_Mono } from "next/font/google";
-import "@/styles/globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { Providers } from "@/app/providers";
-import { ScrollToTop } from "@/components/ui/ScrollToTop";
-import { PwaInstallPrompt } from "@/components/ui/PwaInstallPrompt";
+import type { Metadata, Viewport } from 'next';
+import { Inter, JetBrains_Mono, Playfair_Display } from 'next/font/google';
+import '@/styles/globals.css';
+import { Providers } from '@/app/providers';
+import { Footer } from '@/components/layout/Footer';
+import { Header } from '@/components/layout/Header';
+import { PwaInstallPrompt } from '@/components/ui/PwaInstallPrompt';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 /* ── Typography ── */
 const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800', '900'],
+  style: ['normal', 'italic'],
 });
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
 });
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#050505" },
+    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
+    { media: '(prefers-color-scheme: dark)', color: '#050505' },
   ],
 };
 
 export const metadata: Metadata = {
   title: {
-    default: "ZAYRON-X — Cyber Threat Intelligence",
-    template: "%s | ZAYRON-X",
+    default: 'ZAYRON-X — Cyber Threat Intelligence',
+    template: '%s | ZAYRON-X',
   },
   description:
-    "ZAYRON-X: Nation-state grade cyber threat intelligence platform. Real-time CVE tracking, APT analysis, and cybersecurity research from 60+ global sources.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://zayron-x.com"),
-  openGraph: { type: "website", locale: "en_US", siteName: "ZAYRON-X" },
-  twitter: { card: "summary_large_image", site: "@zayronx" },
-  robots: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" },
-  manifest: "/manifest.json",
+    'ZAYRON-X: Nation-state grade cyber threat intelligence platform. Real-time CVE tracking, APT analysis, and cybersecurity research from 60+ global sources.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zayron-x.com'),
+  openGraph: { type: 'website', locale: 'en_US', siteName: 'ZAYRON-X' },
+  twitter: { card: 'summary_large_image', site: '@zayronx' },
+  robots: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "ZAYRON-X",
+    statusBarStyle: 'black-translucent',
+    title: 'ZAYRON-X',
   },
   other: {
-    "mobile-web-app-capable": "yes",
+    'mobile-web-app-capable': 'yes',
   },
 };
 
-import { SecurityGatingProvider } from "@/components/platform/SecurityGatingContext";
+import { SecurityGatingProvider } from '@/components/platform/SecurityGatingContext';
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -74,8 +74,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#050505" />
       </head>
       <body
-        className={`min-h-screen bg-white dark:bg-slate-950 text-[#0F172A] dark:text-slate-200 antialiased flex flex-col ${playfair.variable} ${inter.variable} ${jetbrainsMono.variable}`}
-        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+        className={`min-h-screen bg-white dark:bg-black text-[#0F172A] dark:text-white antialiased flex flex-col ${playfair.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+        style={{ fontFamily: 'var(--font-inter), sans-serif' }}
       >
         <Providers>
           <SecurityGatingProvider>
@@ -90,7 +90,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               Skip to content
             </a>
             <Header />
-            <div id="main-content" className="flex-1" tabIndex={-1}>{children}</div>
+            <div id="main-content" className="flex-1" tabIndex={-1}>
+              {children}
+            </div>
             <Footer />
             <ScrollToTop />
             <PwaInstallPrompt />

@@ -1,18 +1,19 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
-import { z } from "zod";
+import type React from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
 
 const authGatingSchema = z.object({
-  fullName: z.string().min(2, "Full Name required."),
-  clearanceEmail: z.string().email("Invalid email address."),
+  fullName: z.string().min(2, 'Full Name required.'),
+  clearanceEmail: z.string().email('Invalid email address.'),
   password: z
     .string()
-    .min(12, "Minimum 12 characters required.")
-    .regex(/[A-Z]/, "Missing uppercase letter.")
-    .regex(/[a-z]/, "Missing lowercase letter.")
-    .regex(/[0-9]/, "Missing number.")
-    .regex(/[@$!%*?&]/, "Missing special character."),
+    .min(12, 'Minimum 12 characters required.')
+    .regex(/[A-Z]/, 'Missing uppercase letter.')
+    .regex(/[a-z]/, 'Missing lowercase letter.')
+    .regex(/[0-9]/, 'Missing number.')
+    .regex(/[@$!%*?&]/, 'Missing special character.'),
 });
 
 type AuthFields = z.infer<typeof authGatingSchema>;
@@ -29,9 +30,9 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
   const [isOpen, setIsOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
-  const [fullName, setFullName] = useState("");
-  const [clearanceEmail, setClearanceEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [clearanceEmail, setClearanceEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof AuthFields, string>>>({});
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -39,8 +40,8 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
   const previousActiveElement = useRef<Element | null>(null);
 
   useEffect(() => {
-    const cached = localStorage.getItem("zx_auth_clearance");
-    if (cached === "true") setIsAuthenticated(true);
+    const cached = localStorage.getItem('zx_auth_clearance');
+    if (cached === 'true') setIsAuthenticated(true);
   }, []);
 
   const gateAction = (onSuccess: () => void) => {
@@ -71,24 +72,24 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
 
     // Focus first input in modal
     const timer = setTimeout(() => {
-      const firstInput = modalRef.current?.querySelector("input");
+      const firstInput = modalRef.current?.querySelector('input');
       firstInput?.focus();
     }, 100);
 
     function handleTab(e: KeyboardEvent) {
       if (!modalRef.current) return;
       const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-        'input, button, [tabindex]:not([tabindex="-1"])'
+        'input, button, [tabindex]:not([tabindex="-1"])',
       );
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
 
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         handleClose();
         return;
       }
 
-      if (e.key !== "Tab") return;
+      if (e.key !== 'Tab') return;
 
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
@@ -100,13 +101,13 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
     }
 
     // Lock body scroll
-    document.body.style.overflow = "hidden";
-    document.addEventListener("keydown", handleTab);
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleTab);
 
     return () => {
       clearTimeout(timer);
-      document.body.style.overflow = "";
-      document.removeEventListener("keydown", handleTab);
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleTab);
     };
   }, [isOpen, handleClose]);
 
@@ -126,11 +127,11 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
     }
 
     setIsAuthenticated(true);
-    localStorage.setItem("zx_auth_clearance", "true");
+    localStorage.setItem('zx_auth_clearance', 'true');
     setIsOpen(false);
-    setFullName("");
-    setClearanceEmail("");
-    setPassword("");
+    setFullName('');
+    setClearanceEmail('');
+    setPassword('');
     setErrors({});
 
     if (pendingAction) {
@@ -153,7 +154,7 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
         >
           <div
             ref={modalRef}
-            className="bg-white dark:bg-slate-950 max-w-md w-full p-8 border border-neutral-200 dark:border-slate-800 shadow-2xl rounded-none relative font-sans text-[#050505] dark:text-slate-100"
+            className="bg-white dark:bg-black max-w-md w-full p-8 border border-neutral-200 dark:border-slate-800 shadow-2xl rounded-none relative font-sans text-[#050505] dark:text-slate-100"
           >
             {/* Close button */}
             <button
@@ -172,15 +173,22 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
               <h3 id="security-modal-title" className="text-lg font-black tracking-tight uppercase">
                 SECURITY ACCESS RESTRICTED
               </h3>
-              <p id="security-modal-desc" className="text-xs text-neutral-500 dark:text-slate-400 leading-relaxed mt-2">
-                Advanced remediation payload compilation, automated script mitigation, and official Executive SITREPs require an accredited corporate operator profile clearance.
+              <p
+                id="security-modal-desc"
+                className="text-xs text-neutral-500 dark:text-slate-400 leading-relaxed mt-2"
+              >
+                Advanced remediation payload compilation, automated script mitigation, and official
+                Executive SITREPs require an accredited corporate operator profile clearance.
               </p>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 mb-1.5" htmlFor="modal-fullname">
+                <label
+                  className="block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 mb-1.5"
+                  htmlFor="modal-fullname"
+                >
                   Full Name
                 </label>
                 <input
@@ -189,13 +197,23 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="e.g. CISO Operational Node"
-                  className="w-full bg-neutral-50/50 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 px-3.5 py-2.5 text-xs rounded-none focus:outline-none focus:border-[#733DD9] dark:focus:border-[#733DD9] transition-colors dark:text-slate-100"
+                  className="w-full bg-neutral-50/50 dark:bg-black border border-neutral-200 dark:border-slate-800 px-3.5 py-2.5 text-xs rounded-none focus:outline-none focus:border-[#733DD9] dark:focus:border-[#733DD9] transition-colors dark:text-slate-100"
                 />
-                {errors.fullName && <p className="text-[10px] font-mono text-red-600 dark:text-red-400 mt-1" role="alert">{errors.fullName}</p>}
+                {errors.fullName && (
+                  <p
+                    className="text-[10px] font-mono text-red-600 dark:text-red-400 mt-1"
+                    role="alert"
+                  >
+                    {errors.fullName}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 mb-1.5" htmlFor="modal-email">
+                <label
+                  className="block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 mb-1.5"
+                  htmlFor="modal-email"
+                >
                   Clearance Email
                 </label>
                 <input
@@ -204,13 +222,23 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
                   value={clearanceEmail}
                   onChange={(e) => setClearanceEmail(e.target.value)}
                   placeholder="name@corporation.com"
-                  className="w-full bg-neutral-50/50 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 px-3.5 py-2.5 text-xs rounded-none focus:outline-none focus:border-[#733DD9] dark:focus:border-[#733DD9] transition-colors dark:text-slate-100"
+                  className="w-full bg-neutral-50/50 dark:bg-black border border-neutral-200 dark:border-slate-800 px-3.5 py-2.5 text-xs rounded-none focus:outline-none focus:border-[#733DD9] dark:focus:border-[#733DD9] transition-colors dark:text-slate-100"
                 />
-                {errors.clearanceEmail && <p className="text-[10px] font-mono text-red-600 dark:text-red-400 mt-1" role="alert">{errors.clearanceEmail}</p>}
+                {errors.clearanceEmail && (
+                  <p
+                    className="text-[10px] font-mono text-red-600 dark:text-red-400 mt-1"
+                    role="alert"
+                  >
+                    {errors.clearanceEmail}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 mb-1.5" htmlFor="modal-password">
+                <label
+                  className="block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 mb-1.5"
+                  htmlFor="modal-password"
+                >
                   Clearance Password
                 </label>
                 <input
@@ -219,9 +247,16 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-neutral-50/50 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 px-3.5 py-2.5 text-xs rounded-none focus:outline-none focus:border-[#733DD9] dark:focus:border-[#733DD9] transition-colors dark:text-slate-100"
+                  className="w-full bg-neutral-50/50 dark:bg-black border border-neutral-200 dark:border-slate-800 px-3.5 py-2.5 text-xs rounded-none focus:outline-none focus:border-[#733DD9] dark:focus:border-[#733DD9] transition-colors dark:text-slate-100"
                 />
-                {errors.password && <p className="text-[10px] font-mono text-red-600 dark:text-red-400 mt-1" role="alert">{errors.password}</p>}
+                {errors.password && (
+                  <p
+                    className="text-[10px] font-mono text-red-600 dark:text-red-400 mt-1"
+                    role="alert"
+                  >
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <button
@@ -241,7 +276,7 @@ export function SecurityGatingProvider({ children }: { children: React.ReactNode
 export function useSecurityGating() {
   const context = useContext(SecurityGatingContext);
   if (context === undefined) {
-    throw new Error("useSecurityGating must be used within a SecurityGatingProvider");
+    throw new Error('useSecurityGating must be used within a SecurityGatingProvider');
   }
   return context;
 }

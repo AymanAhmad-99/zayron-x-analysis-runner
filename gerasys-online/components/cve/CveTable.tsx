@@ -1,6 +1,6 @@
-import { type CVE } from "@/lib/types";
-import { SeverityBadge } from "@/components/cve/SeverityBadge";
-import { formatDateShort } from "@/lib/utils/formatDate";
+import { SeverityBadge } from '@/components/cve/SeverityBadge';
+import type { CVE } from '@/lib/types';
+import { formatDateShort } from '@/lib/utils/formatDate';
 
 interface CveTableProps {
   cves: CVE[];
@@ -8,11 +8,7 @@ interface CveTableProps {
 
 export function CveTable({ cves }: CveTableProps) {
   if (!cves.length) {
-    return (
-      <div className="text-center py-12 text-[#475569] font-ui">
-        No CVEs found.
-      </div>
-    );
+    return <div className="text-center py-12 text-[#475569] font-ui">No CVEs found.</div>;
   }
 
   return (
@@ -61,28 +57,28 @@ export function CveTable({ cves }: CveTableProps) {
                 <SeverityBadge severity={cve.severity} />
               </td>
               <td className="py-5 px-6 font-mono text-[#0F172A] font-semibold">
-                {cve.cvssScore ?? "—"}
+                {cve.cvssScore ?? '—'}
               </td>
               <td className="py-5 px-6 text-xs text-[#0F172A] hidden md:table-cell font-ui">
-                {cve.affectedProduct ?? "—"}
+                {cve.affectedProduct ?? '—'}
               </td>
               <td className="py-5 px-6 text-xs text-[#0F172A] hidden md:table-cell font-ui">
-                {cve.vendor ?? "—"}
+                {cve.vendor ?? '—'}
               </td>
               <td className="py-5 px-6 text-xs text-[#475569] hidden lg:table-cell font-ui">
-                {cve.publishedDate ? formatDateShort(cve.publishedDate) : "—"}
+                {cve.publishedDate ? formatDateShort(cve.publishedDate) : '—'}
               </td>
               <td className="py-5 px-6">
                 <span
                   className={`text-[9px] font-mono uppercase font-bold px-2 py-0.5 rounded border bg-transparent ${
-                    cve.status?.toLowerCase() === "active"
-                      ? "text-red-700 border-red-200"
-                      : cve.status?.toLowerCase() === "patched"
-                      ? "text-green-700 border-green-200"
-                      : "text-neutral-500 border-neutral-200"
+                    cve.status?.toLowerCase() === 'active'
+                      ? 'text-red-700 border-red-200'
+                      : cve.status?.toLowerCase() === 'patched'
+                        ? 'text-green-700 border-green-200'
+                        : 'text-neutral-500 border-neutral-200'
                   }`}
                 >
-                  {cve.status ?? "Unknown"}
+                  {cve.status ?? 'Unknown'}
                 </span>
               </td>
             </tr>

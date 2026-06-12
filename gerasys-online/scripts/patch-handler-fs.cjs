@@ -17,59 +17,59 @@
  *      file‑system helpers, etc. — never actually called at runtime)
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const ROOT = path.resolve(__dirname, "..");
-const HANDLER_DIR = path.join(ROOT, ".open-next", "server-functions", "default");
-const HANDLER_FILE = path.join(HANDLER_DIR, "handler.mjs");
+const ROOT = path.resolve(__dirname, '..');
+const HANDLER_DIR = path.join(ROOT, '.open-next', 'server-functions', 'default');
+const HANDLER_FILE = path.join(HANDLER_DIR, 'handler.mjs');
 
 // ── Registers ───────────────────────────────────────────────
 
 // Dedicated polyfills with real implementations
 const DEDICATED_POLYFILLS = [
   {
-    name: "fs",
-    src: path.join(ROOT, "lib", "polyfills", "fs.cjs"),
-    dst: path.join(HANDLER_DIR, "fs.cjs"),
+    name: 'fs',
+    src: path.join(ROOT, 'lib', 'polyfills', 'fs.cjs'),
+    dst: path.join(HANDLER_DIR, 'fs.cjs'),
   },
   {
-    name: "os",
-    src: path.join(ROOT, "lib", "polyfills", "os.cjs"),
-    dst: path.join(HANDLER_DIR, "os.cjs"),
+    name: 'os',
+    src: path.join(ROOT, 'lib', 'polyfills', 'os.cjs'),
+    dst: path.join(HANDLER_DIR, 'os.cjs'),
   },
 ];
 
 // Modules nuked with the universal NOOP stub.
 // Each entry produces two regexes: require("node:NAME") and require("NAME")
 const NOOP_MODULES = [
-  "http",
-  "https",
-  "zlib",
-  "child_process",
-  "v8",
-  "worker_threads",
-  "perf_hooks",
-  "readline",
-  "dns",
+  'http',
+  'https',
+  'zlib',
+  'child_process',
+  'v8',
+  'worker_threads',
+  'perf_hooks',
+  'readline',
+  'dns',
 ];
 
-const NOOP_SRC = path.join(ROOT, "lib", "polyfills", "noop.cjs");
-const NOOP_DST = path.join(HANDLER_DIR, "noop.cjs");
+const NOOP_SRC = path.join(ROOT, 'lib', 'polyfills', 'noop.cjs');
+const NOOP_DST = path.join(HANDLER_DIR, 'noop.cjs');
 
 // ── Helpers ─────────────────────────────────────────────────
 
 function buildRequirePatterns(name) {
   return [
     // require("node:NAME") and require('node:NAME')
-    new RegExp(`require\\(["']node:${escapeRegex(name)}["']\\)`, "g"),
+    new RegExp(`require\\(["']node:${escapeRegex(name)}["']\\)`, 'g'),
     // require("NAME") and require('NAME')
-    new RegExp(`require\\(["']${escapeRegex(name)}["']\\)`, "g"),
+    new RegExp(`require\\(["']${escapeRegex(name)}["']\\)`, 'g'),
   ];
 }
 
 function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function countMatches(code, patterns) {
@@ -81,11 +81,11 @@ function countMatches(code, patterns) {
 // ── Main ───────────────────────────────────────────────────
 
 if (!fs.existsSync(HANDLER_FILE)) {
-  console.log("handler.mjs not found — skipping patch.");
+  console.log('handler.mjs not found — skipping patch.');
   process.exit(0);
 }
 
-let code = fs.readFileSync(HANDLER_FILE, "utf-8");
+let code = fs.readFileSync(HANDLER_FILE, 'utf-8');
 let totalChanges = 0;
 
 // Phase 1 — Dedicated polyfills (fs, os)
@@ -105,7 +105,7 @@ for (const poly of DEDICATED_POLYFILLS) {
 
 // Phase 2 — Universal NOOP stub for everything else
 fs.copyFileSync(NOOP_SRC, NOOP_DST);
-console.log("Copied noop.cjs to handler directory.");
+console.log('Copied noop.cjs to handler directory.');
 
 for (const mod of NOOP_MODULES) {
   const patterns = buildRequirePatterns(mod);
@@ -127,10 +127,7 @@ for (const mod of NOOP_MODULES) {
 
 // Phase 3 — Hard validation
 let failed = false;
-const allModules = [
-  ...DEDICATED_POLYFILLS.map((p) => p.name),
-  ...NOOP_MODULES,
-];
+const allModules = [...DEDICATED_POLYFILLS.map((p) => p.name), ...NOOP_MODULES];
 
 for (const mod of allModules) {
   const patterns = buildRequirePatterns(mod);
@@ -142,10 +139,10 @@ for (const mod of allModules) {
 }
 
 if (failed) {
-  console.error("\nFAILED: Some require() calls could not be replaced!");
+  console.error('\nFAILED: Some require() calls could not be replaced!');
   process.exit(1);
 }
 
 // Phase 4 — Write back
-fs.writeFileSync(HANDLER_FILE, code, "utf-8");
+fs.writeFileSync(HANDLER_FILE, code, 'utf-8');
 console.log(`\nHandler patched successfully (${totalChanges} replacements).`);

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { getCVEs, getCVECount, getCVEsBySeverity } from "@/lib/supabase/queries/cves";
-import { getCachedOrFetch } from "@/lib/cache/redis";
-import { cvesLimiter, checkRateLimit, getClientIp } from "@/lib/cache/ratelimit";
+import { checkRateLimit, cvesLimiter, getClientIp } from '@/lib/cache/ratelimit';
+import { getCachedOrFetch } from '@/lib/cache/redis';
+import { getCVECount, getCVEs, getCVEsBySeverity } from '@/lib/supabase/queries/cves';
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
@@ -11,23 +11,23 @@ export async function GET(request: Request) {
 
     if (!allowed) {
       return NextResponse.json(
-        { error: "Too many requests. Please wait a moment." },
+        { error: 'Too many requests. Please wait a moment.' },
         {
           status: 429,
           headers: {
-            "Retry-After": "60",
-            "X-RateLimit-Remaining": String(remaining),
+            'Retry-After': '60',
+            'X-RateLimit-Remaining': String(remaining),
           },
         },
       );
     }
 
     const { searchParams } = new URL(request.url);
-    const page = Number(searchParams.get("page")) || 1;
-    const limit = Number(searchParams.get("limit")) || 25;
-    const severity = searchParams.get("severity");
+    const page = Number(searchParams.get('page')) || 1;
+    const limit = Number(searchParams.get('limit')) || 25;
+    const severity = searchParams.get('severity');
 
-    const cacheKey = `cves:feed:p_${page}:l_${limit}:s_${severity || "all"}`;
+    const cacheKey = `cves:feed:p_${page}:l_${limit}:s_${severity || 'all'}`;
     const CACHE_TTL_SECONDS = 60;
 
     const result = await getCachedOrFetch<{ cves: any[]; total: number }>(
@@ -59,19 +59,19 @@ export async function GET(request: Request) {
       {
         status: 200,
         headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
-          "CDN-Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+          'CDN-Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
           'X-RateLimit-Remaining': String(remaining),
         },
       },
     );
   } catch (error: any) {
-    console.error("[CVE FEED API FAILURE] Fatal routing incident:", error);
+    console.error('[CVE FEED API FAILURE] Fatal routing incident:', error);
 
     return NextResponse.json(
       {
-        error: "System Integrity Alert: Failed to process external CTI threat feed request.",
-        code: "INTERNAL_SERVER_ERROR",
+        error: 'System Integrity Alert: Failed to process external CTI threat feed request.',
+        code: 'INTERNAL_SERVER_ERROR',
         timestamp: new Date().toISOString(),
       },
       { status: 500 },

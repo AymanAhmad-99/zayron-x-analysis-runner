@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 interface StatsCounterProps {
   articles: number;
@@ -34,7 +34,7 @@ function Counter({ target, label }: { target: number; label: string }) {
           }, duration / steps);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (ref.current) observer.observe(ref.current);

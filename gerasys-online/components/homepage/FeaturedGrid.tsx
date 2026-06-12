@@ -1,5 +1,5 @@
-import { type Article } from "@/lib/types";
-import { ArticleCard } from "@/components/ui/ArticleCard";
+import { ArticleCard } from '@/components/ui/ArticleCard';
+import type { Article } from '@/lib/types';
 
 interface FeaturedGridProps {
   articles: Article[];

@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { formatDate } from "@/lib/utils/formatDate";
+import { formatDate } from '@/lib/utils/formatDate';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Articles",
+  title: 'Articles',
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 interface Props {
   searchParams: Promise<{ page?: string }>;
@@ -18,7 +18,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
   let articles: any[] = [];
 
   try {
-    const { getAllArticlesAdmin } = await import("@/lib/supabase/queries/articles");
+    const { getAllArticlesAdmin } = await import('@/lib/supabase/queries/articles');
     articles = await getAllArticlesAdmin(page, 50);
   } catch {
     // DB not available
@@ -77,7 +77,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
                   <td className="py-6 px-8">
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] font-mono text-neutral-400 w-5 shrink-0">
-                        {String(idx + 1).padStart(2, "0")}
+                        {String(idx + 1).padStart(2, '0')}
                       </span>
                       <div>
                         <span className="text-sm text-[#050505] font-semibold block max-w-xs truncate group-hover:text-[#733DD9] transition-colors">
@@ -108,16 +108,16 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
                     <span
                       className={`inline-flex items-center gap-1.5 text-[9px] font-ui font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border bg-transparent ${
                         article.isPublished
-                          ? "text-emerald-600 border-emerald-500/20"
-                          : "text-amber-600 border-amber-500/20"
+                          ? 'text-emerald-600 border-emerald-500/20'
+                          : 'text-amber-600 border-amber-500/20'
                       }`}
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full ${
-                          article.isPublished ? "bg-emerald-500" : "bg-amber-500"
+                          article.isPublished ? 'bg-emerald-500' : 'bg-amber-500'
                         }`}
                       />
-                      {article.isPublished ? "Published" : "Draft"}
+                      {article.isPublished ? 'Published' : 'Draft'}
                     </span>
                   </td>
                   <td className="py-6 px-8 text-right hidden lg:table-cell">
@@ -127,7 +127,7 @@ export default async function AdminArticlesPage({ searchParams }: Props) {
                   </td>
                   <td className="py-6 px-8 hidden lg:table-cell">
                     <span className="text-xs font-mono text-neutral-500">
-                      {article.createdAt ? formatDate(article.createdAt) : "—"}
+                      {article.createdAt ? formatDate(article.createdAt) : '—'}
                     </span>
                   </td>
                 </tr>

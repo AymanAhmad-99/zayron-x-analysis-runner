@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { type CVE } from "@/lib/types";
-import { SeverityBadge } from "@/components/cve/SeverityBadge";
-import { formatDate } from "@/lib/utils/formatDate";
-import { useSecurityGating } from "@/components/platform/SecurityGatingContext";
-import { Lock, Eye, Download, Activity } from "@/lib/icons";
+import { SeverityBadge } from '@/components/cve/SeverityBadge';
+import { useSecurityGating } from '@/components/platform/SecurityGatingContext';
+import { Activity, Download, Eye, Lock } from '@/lib/icons';
+import type { CVE } from '@/lib/types';
+import { formatDate } from '@/lib/utils/formatDate';
+import { useEffect, useState } from 'react';
 
 interface CveDetailCardProps {
   cve: CVE;
@@ -14,34 +14,50 @@ interface CveDetailCardProps {
 
 // Sector weights from shared/models/fbr_calculator.py
 const SECTOR_WEIGHTS: Record<string, number> = {
-  "Healthcare": 1.8,
-  "Financial Services": 1.6,
-  "Energy": 1.5,
-  "Government": 1.5,
-  "Defense": 1.5,
-  "Critical Infrastructure": 1.5,
-  "Technology": 1.2,
-  "Telecommunications": 1.3,
-  "Manufacturing": 1.2,
-  "Retail": 1.1,
-  "Education": 1.0,
-  "Other": 1.0,
+  Healthcare: 1.8,
+  'Financial Services': 1.6,
+  Energy: 1.5,
+  Government: 1.5,
+  Defense: 1.5,
+  'Critical Infrastructure': 1.5,
+  Technology: 1.2,
+  Telecommunications: 1.3,
+  Manufacturing: 1.2,
+  Retail: 1.1,
+  Education: 1.0,
+  Other: 1.0,
 };
 
 function inferSector(product: string | null | undefined): string {
-  if (!product) return "Technology";
+  if (!product) return 'Technology';
   const p = product.toLowerCase();
-  
+
   const keywords: Record<string, string[]> = {
-    "Healthcare": ["medical", "health", "hospital", "pharma", "dicom", "hl7", "epic", "cerner"],
-    "Financial Services": ["banking", "payment", "swift", "financial", "atm", "pos", "trading"],
-    "Energy": ["scada", "ics", "plc", "energy", "power", "grid", "oil", "gas", "siemens"],
-    "Government": ["government", "federal", "dod", "military", "nsa", "cisa"],
-    "Technology": ["cisco", "microsoft", "google", "apple", "oracle", "sap", "vmware",
-                   "fortinet", "palo alto", "juniper", "adobe", "linux", "apache",
-                   "nginx", "wordpress", "drupal", "jenkins"],
-    "Telecommunications": ["telecom", "5g", "lte", "voip", "sip", "ericsson", "nokia"],
-    "Manufacturing": ["manufacturing", "industrial", "automation", "rockwell"],
+    Healthcare: ['medical', 'health', 'hospital', 'pharma', 'dicom', 'hl7', 'epic', 'cerner'],
+    'Financial Services': ['banking', 'payment', 'swift', 'financial', 'atm', 'pos', 'trading'],
+    Energy: ['scada', 'ics', 'plc', 'energy', 'power', 'grid', 'oil', 'gas', 'siemens'],
+    Government: ['government', 'federal', 'dod', 'military', 'nsa', 'cisa'],
+    Technology: [
+      'cisco',
+      'microsoft',
+      'google',
+      'apple',
+      'oracle',
+      'sap',
+      'vmware',
+      'fortinet',
+      'palo alto',
+      'juniper',
+      'adobe',
+      'linux',
+      'apache',
+      'nginx',
+      'wordpress',
+      'drupal',
+      'jenkins',
+    ],
+    Telecommunications: ['telecom', '5g', 'lte', 'voip', 'sip', 'ericsson', 'nokia'],
+    Manufacturing: ['manufacturing', 'industrial', 'automation', 'rockwell'],
   };
 
   for (const [sector, kws] of Object.entries(keywords)) {
@@ -49,7 +65,7 @@ function inferSector(product: string | null | undefined): string {
       if (p.includes(kw)) return sector;
     }
   }
-  return "Technology";
+  return 'Technology';
 }
 
 function calculateFBR(cvssScore: number | null | undefined, product: string | null | undefined) {
@@ -58,36 +74,42 @@ function calculateFBR(cvssScore: number | null | undefined, product: string | nu
   const sectorWeight = SECTOR_WEIGHTS[sector] || 1.0;
   const geoFactor = 1.2; // US geo-multiplier used in cve_worker daemon
   const baseBreachCost = 165.0;
-  
+
   const cvssFactor = Math.pow(score / 10.0, 2);
   const fbrUsd = baseBreachCost * 10000 * cvssFactor * sectorWeight * geoFactor;
   const fbrJod = fbrUsd * 0.709; // Pegged rate: 1 USD = 0.709 JOD
-  
+
   return {
     usd: fbrUsd,
     jod: fbrJod,
-    sector
+    sector,
   };
 }
 
-function formatCurrency(val: number, currency = "USD") {
-  if (currency === "JOD") {
-    return `JOD ${val.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+function formatCurrency(val: number, currency = 'USD') {
+  if (currency === 'JOD') {
+    return `JOD ${val.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
   }
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
     currency: currency,
     maximumFractionDigits: 0,
   }).format(val);
 }
 
-function isSectionGated(sectionHtml: string): "brief" | "defensive" | null {
+function isSectionGated(sectionHtml: string): 'brief' | 'defensive' | null {
   const lower = sectionHtml.toLowerCase();
-  if (lower.includes("<h2>executive brief</h2>") || lower.includes("<h2>executive threat brief</h2>")) {
-    return "brief";
+  if (
+    lower.includes('<h2>executive brief</h2>') ||
+    lower.includes('<h2>executive threat brief</h2>')
+  ) {
+    return 'brief';
   }
-  if (lower.includes("<h2>defensive engineering</h2>") || lower.includes("<h2>detection engineering</h2>")) {
-    return "defensive";
+  if (
+    lower.includes('<h2>defensive engineering</h2>') ||
+    lower.includes('<h2>detection engineering</h2>')
+  ) {
+    return 'defensive';
   }
   return null;
 }
@@ -104,58 +126,58 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
     fetch(`https://api.first.org/data/v1/epss?cve=${cve.cveId}`)
       .then((res) => res.json())
       .then((json) => {
-        if (json.status === "OK" && json.data && json.data.length > 0) {
+        if (json.status === 'OK' && json.data && json.data.length > 0) {
           setEpssData({
-            epss: parseFloat(json.data[0].epss),
-            percentile: parseFloat(json.data[0].percentile),
+            epss: Number.parseFloat(json.data[0].epss),
+            percentile: Number.parseFloat(json.data[0].percentile),
           });
         }
       })
-      .catch((err) => console.error("Error fetching EPSS score:", err))
+      .catch((err) => console.error('Error fetching EPSS score:', err))
       .finally(() => setLoadingEpss(false));
   }, [cve.cveId]);
 
   // Copy rule button injector for defensive/detection rules
   useEffect(() => {
-    const preBlocks = document.querySelectorAll(".prose-zayron pre");
+    const preBlocks = document.querySelectorAll('.prose-zayron pre');
     preBlocks.forEach((pre) => {
-      if (pre.getAttribute("data-decorated")) return;
-      pre.setAttribute("data-decorated", "true");
-      
-      (pre as HTMLElement).style.position = "relative";
-      
-      const button = document.createElement("button");
-      button.textContent = "COPY";
-      button.className = "absolute top-2 right-2 px-2 py-1 text-[9px] font-bold text-white bg-[#733DD9] hover:bg-[#5f2ebd] transition-all rounded font-mono cursor-pointer active:scale-95 z-10";
-      
-      button.addEventListener("click", (e) => {
+      if (pre.getAttribute('data-decorated')) return;
+      pre.setAttribute('data-decorated', 'true');
+
+      (pre as HTMLElement).style.position = 'relative';
+
+      const button = document.createElement('button');
+      button.textContent = 'COPY';
+      button.className =
+        'absolute top-2 right-2 px-2 py-1 text-[9px] font-bold text-white bg-[#733DD9] hover:bg-[#5f2ebd] transition-all rounded font-mono cursor-pointer active:scale-95 z-10';
+
+      button.addEventListener('click', (e) => {
         e.stopPropagation();
-        const codeText = pre.querySelector("code")?.textContent || pre.textContent || "";
+        const codeText = pre.querySelector('code')?.textContent || pre.textContent || '';
         gateAction(() => {
           navigator.clipboard.writeText(codeText);
-          alert("[SUCCESS] Autogenerated detection rule copied to clipboard successfully.");
+          alert('[SUCCESS] Autogenerated detection rule copied to clipboard successfully.');
         });
       });
-      
+
       pre.appendChild(button);
     });
   }, [cve.description, gateAction]);
 
   // Calculate dynamic impact (FBR)
   const fbr = calculateFBR(
-    cve.cvssScore ? parseFloat(cve.cvssScore.toString()) : 0,
-    cve.affectedProduct
+    cve.cvssScore ? Number.parseFloat(cve.cvssScore.toString()) : 0,
+    cve.affectedProduct,
   );
 
   // Split description HTML by <h2> tag for selective paywall gating
-  const description = cve.description || "";
-  const hasHtml = description.startsWith("<") || description.includes("</");
+  const description = cve.description || '';
+  const hasHtml = description.startsWith('<') || description.includes('</');
   const sections = hasHtml ? description.split(/(?=<h2>)/g) : [description];
 
   return (
     <article className="bg-white border border-[#E2E8F0] rounded-none overflow-hidden shadow-sm hover:scale-102 hover:shadow-lg hover:border-[#733DD9] transition-all duration-300">
       <div className="p-6 lg:p-8">
-        
         {/* Header Area */}
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6 border-b border-neutral-100 pb-5">
           <div>
@@ -185,7 +207,7 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
               CVSS Base Score
             </span>
             <p className="font-mono text-2xl font-black text-neutral-900 mt-1">
-              {cve.cvssScore ?? "—"}
+              {cve.cvssScore ?? '—'}
             </p>
           </div>
 
@@ -207,18 +229,20 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
                   </span>
                 </div>
                 <div className="w-full bg-neutral-200 h-1.5 rounded-none overflow-hidden relative">
-                  <div 
+                  <div
                     className={`h-full transition-all duration-500 ${
-                      epssData.epss > 0.1 ? "bg-red-600" : epssData.epss > 0.02 ? "bg-orange-500" : "bg-emerald-500"
+                      epssData.epss > 0.1
+                        ? 'bg-red-600'
+                        : epssData.epss > 0.02
+                          ? 'bg-orange-500'
+                          : 'bg-emerald-500'
                     }`}
                     style={{ width: `${Math.min(100, epssData.percentile * 100)}%` }}
                   />
                 </div>
               </div>
             ) : (
-              <p className="font-mono text-sm font-semibold text-neutral-400 mt-2">
-                Unavailable
-              </p>
+              <p className="font-mono text-sm font-semibold text-neutral-400 mt-2">Unavailable</p>
             )}
           </div>
 
@@ -228,8 +252,8 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
               Financial Impact (FBR)
             </span>
             <div className="font-mono text-[11px] font-black text-neutral-900 mt-1.5 space-y-0.5">
-              <div className="text-neutral-900">{formatCurrency(fbr.usd, "USD")}</div>
-              <div className="text-[#733DD9]">{formatCurrency(fbr.jod, "JOD")}</div>
+              <div className="text-neutral-900">{formatCurrency(fbr.usd, 'USD')}</div>
+              <div className="text-[#733DD9]">{formatCurrency(fbr.jod, 'JOD')}</div>
             </div>
           </div>
 
@@ -239,7 +263,7 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
             </span>
             <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-mono font-bold text-emerald-600">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              {cve.status ?? "ACTIVE"}
+              {cve.status ?? 'ACTIVE'}
             </span>
           </div>
 
@@ -279,7 +303,7 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
               Published Date
             </span>
             <p className="font-mono text-xs font-bold text-neutral-800 mt-1">
-              {cve.publishedDate ? formatDate(cve.publishedDate) : "—"}
+              {cve.publishedDate ? formatDate(cve.publishedDate) : '—'}
             </p>
           </div>
         </div>
@@ -292,13 +316,16 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
 
               if (gatedType) {
                 return (
-                  <div key={index} className="relative group/gated my-8 border border-dashed border-neutral-300 p-6 bg-neutral-50/10">
+                  <div
+                    key={index}
+                    className="relative group/gated my-8 border border-dashed border-neutral-300 p-6 bg-neutral-50/10"
+                  >
                     {/* Blurred content wrapper */}
-                    <div 
+                    <div
                       className="blur-[5px] select-none pointer-events-none opacity-20 prose-zayron max-w-none text-sm text-[#334155] leading-relaxed font-sans space-y-4"
                       dangerouslySetInnerHTML={{ __html: section }}
                     />
-                    
+
                     {/* Premium Glassmorphic Paywall overlay */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-white/70 backdrop-blur-[3px] z-10">
                       <div className="bg-white border border-neutral-200 p-6 text-center max-w-md shadow-lg flex flex-col items-center gap-3">
@@ -306,12 +333,14 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
                           <Lock className="w-5 h-5 animate-pulse" />
                         </div>
                         <h4 className="font-mono text-xs font-black uppercase text-neutral-900 tracking-wider">
-                          {gatedType === "brief" ? "Restricted Executive Briefing" : "Restricted Defensive Signature"}
+                          {gatedType === 'brief'
+                            ? 'Restricted Executive Briefing'
+                            : 'Restricted Defensive Signature'}
                         </h4>
                         <p className="text-[10px] text-neutral-500 font-mono leading-normal">
-                          {gatedType === "brief" 
-                            ? "Complete cyber risk summaries, impact projections, and operational advisories require premium clearance."
-                            : "Autogenerated YARA rules, Sigma telemetry detection queries, and Cloudflare WAF block configurations require premium clearance."}
+                          {gatedType === 'brief'
+                            ? 'Complete cyber risk summaries, impact projections, and operational advisories require premium clearance.'
+                            : 'Autogenerated YARA rules, Sigma telemetry detection queries, and Cloudflare WAF block configurations require premium clearance.'}
                         </p>
                         <a
                           href="/pricing"
@@ -326,7 +355,10 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
               }
 
               return (
-                <div key={index} className="prose-zayron max-w-none text-sm text-[#334155] leading-relaxed font-sans space-y-4">
+                <div
+                  key={index}
+                  className="prose-zayron max-w-none text-sm text-[#334155] leading-relaxed font-sans space-y-4"
+                >
                   {hasHtml ? (
                     <div dangerouslySetInnerHTML={{ __html: section }} />
                   ) : (
@@ -343,12 +375,11 @@ export function CveDetailCard({ cve, isSubscriber }: CveDetailCardProps) {
             <h2 className="font-mono text-[10px] uppercase font-bold text-neutral-500 tracking-wider mb-3">
               CVSS Vector String
             </h2>
-            <code className="text-[10px] bg-neutral-900 text-neutral-300 px-3 py-2.5 block overflow-x-auto font-mono border border-neutral-800">
+            <code className="text-[10px] bg-black text-neutral-300 px-3 py-2.5 block overflow-x-auto font-mono border border-slate-800">
               {cve.cvssVector}
             </code>
           </div>
         )}
-
       </div>
     </article>
   );

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 // ─────────────────────────────────────────────
 // 5 E2E Tests — Page Rendering & Navigation
@@ -29,8 +29,16 @@ test.describe('Page Rendering', () => {
       await page.waitForTimeout(1500);
 
       // The page should render article content — check for key elements
-      const hasHeading = await page.locator('h1').first().isVisible().catch(() => false);
-      const hasContent = await page.locator('article, .prose-zayron, [class*="prose"]').first().isVisible().catch(() => false);
+      const hasHeading = await page
+        .locator('h1')
+        .first()
+        .isVisible()
+        .catch(() => false);
+      const hasContent = await page
+        .locator('article, .prose-zayron, [class*="prose"]')
+        .first()
+        .isVisible()
+        .catch(() => false);
 
       // At least one of heading or content should be visible
       expect(hasHeading || hasContent).toBeTruthy();
@@ -45,8 +53,16 @@ test.describe('Page Rendering', () => {
     await page.waitForTimeout(1000);
 
     // The CVE page should show a table or severity badges
-    const hasTable = await page.locator('table, [class*="table"], [class*="CveTable"]').first().isVisible().catch(() => false);
-    const hasBadge = await page.locator('text=CRITICAL, text=HIGH, text=MEDIUM, text=LOW').first().isVisible().catch(() => false);
+    const hasTable = await page
+      .locator('table, [class*="table"], [class*="CveTable"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
+    const hasBadge = await page
+      .locator('text=CRITICAL, text=HIGH, text=MEDIUM, text=LOW')
+      .first()
+      .isVisible()
+      .catch(() => false);
 
     // If neither is visible, at minimum the page heading should be there
     if (!hasTable && !hasBadge) {
@@ -60,8 +76,16 @@ test.describe('Page Rendering', () => {
 
     // The search page should show either results or an empty state
     // Either is valid behavior for the search endpoint
-    const hasResults = await page.locator('a[href*="/intelligence/"], [class*="ArticleCard"], [class*="card"]').first().isVisible().catch(() => false);
-    const hasEmptyState = await page.locator('text=No results, text=not found, text=No articles').first().isVisible().catch(() => false);
+    const hasResults = await page
+      .locator('a[href*="/intelligence/"], [class*="ArticleCard"], [class*="card"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
+    const hasEmptyState = await page
+      .locator('text=No results, text=not found, text=No articles')
+      .first()
+      .isVisible()
+      .catch(() => false);
 
     if (!hasResults && !hasEmptyState) {
       // At minimum, the search input or heading should be visible

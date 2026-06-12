@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
 declare global {
   var sessionRefreshQueue: Map<string, { cookies: any[]; expiry: number }> | undefined;
@@ -10,7 +10,7 @@ export async function updateSession(request: NextRequest) {
 
   // Apply queued session refresh if exists from failed RSC cookie writes
   const allReqCookies = request.cookies.getAll();
-  const reqRefreshToken = allReqCookies.find(c => c.name.endsWith('-refresh-token'))?.value;
+  const reqRefreshToken = allReqCookies.find((c) => c.name.endsWith('-refresh-token'))?.value;
   if (reqRefreshToken && (globalThis as any).sessionRefreshQueue) {
     const queued = (globalThis as any).sessionRefreshQueue.get(reqRefreshToken);
     if (queued) {
@@ -22,7 +22,9 @@ export async function updateSession(request: NextRequest) {
         for (const { name, value, options } of queued.cookies) {
           supabaseResponse.cookies.set(name, value, options);
         }
-        console.warn(JSON.stringify({ event: "QUEUED_SESSION_REFRESH_APPLIED", token: reqRefreshToken }));
+        console.warn(
+          JSON.stringify({ event: 'QUEUED_SESSION_REFRESH_APPLIED', token: reqRefreshToken }),
+        );
       }
       (globalThis as any).sessionRefreshQueue.delete(reqRefreshToken);
     }
@@ -46,7 +48,7 @@ export async function updateSession(request: NextRequest) {
           }
         },
       },
-    }
+    },
   );
 
   const {
@@ -56,19 +58,19 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Protect /admin/* routes
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith('/admin')) {
     if (!user) {
       const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      url.searchParams.set("redirect", pathname);
+      url.pathname = '/login';
+      url.searchParams.set('redirect', pathname);
       return NextResponse.redirect(url);
     }
   }
 
   // Redirect logged-in users away from auth pages
-  if (user && (pathname.startsWith("/login") || pathname.startsWith("/register"))) {
+  if (user && (pathname.startsWith('/login') || pathname.startsWith('/register'))) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin";
+    url.pathname = '/admin';
     return NextResponse.redirect(url);
   }
 

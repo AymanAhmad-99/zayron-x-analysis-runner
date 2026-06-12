@@ -39,31 +39,78 @@ const MAX_HTML_SIZE_BYTES = 1_048_576; // 1 MB
 
 /** Tags that are allowed to survive sanitization. */
 const ALLOWED_TAGS = new Set([
-  'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-  'ul', 'ol', 'li',
-  'strong', 'em', 'b', 'i', 'u', 's',
-  'a', 'code', 'pre',
-  'blockquote', 'hr', 'br',
-  'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
-  'img', 'span', 'div',
+  'p',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'li',
+  'strong',
+  'em',
+  'b',
+  'i',
+  'u',
+  's',
+  'a',
+  'code',
+  'pre',
+  'blockquote',
+  'hr',
+  'br',
+  'table',
+  'thead',
+  'tbody',
+  'tfoot',
+  'tr',
+  'th',
+  'td',
+  'img',
+  'span',
+  'div',
   'input',
-  'figure', 'figcaption',
-  'details', 'summary',
-  'dl', 'dt', 'dd',
-  'sup', 'sub',
-  'mark', 'del', 'ins',
-  'abbr', 'kbd', 'var', 'samp',
+  'figure',
+  'figcaption',
+  'details',
+  'summary',
+  'dl',
+  'dt',
+  'dd',
+  'sup',
+  'sub',
+  'mark',
+  'del',
+  'ins',
+  'abbr',
+  'kbd',
+  'var',
+  'samp',
 ]);
 
 /** Attributes that are safe to keep on any element. */
 const ALLOWED_ATTRS = new Set([
-  'href', 'src', 'alt', 'title', 'class', 'id',
-  'target', 'rel',
-  'width', 'height',
+  'href',
+  'src',
+  'alt',
+  'title',
+  'class',
+  'id',
+  'target',
+  'rel',
+  'width',
+  'height',
   'style',
-  'type', 'checked', 'disabled',
-  'colspan', 'rowspan', 'scope',
-  'loading', 'decoding',
+  'type',
+  'checked',
+  'disabled',
+  'colspan',
+  'rowspan',
+  'scope',
+  'loading',
+  'decoding',
   'name',
 ]);
 
@@ -93,7 +140,7 @@ export async function sanitizeHtml(dirty: string): Promise<string> {
   if (html.length > MAX_HTML_SIZE_BYTES) {
     console.warn(
       `[sanitizeHtml] Content too large (${html.length} bytes). ` +
-      `Truncating to ${MAX_HTML_SIZE_BYTES} bytes.`,
+        `Truncating to ${MAX_HTML_SIZE_BYTES} bytes.`,
     );
     html = html.slice(0, MAX_HTML_SIZE_BYTES);
   }
@@ -102,9 +149,26 @@ export async function sanitizeHtml(dirty: string): Promise<string> {
     const rewriter = new HTMLRewriter();
 
     // ── Remove dangerous tags entirely (tag + content) ────
-    for (const tag of ['script', 'style', 'iframe', 'object', 'embed', 'applet', 'form', 'textarea', 'select', 'button', 'link', 'meta', 'base', 'noscript']) {
+    for (const tag of [
+      'script',
+      'style',
+      'iframe',
+      'object',
+      'embed',
+      'applet',
+      'form',
+      'textarea',
+      'select',
+      'button',
+      'link',
+      'meta',
+      'base',
+      'noscript',
+    ]) {
       rewriter.on(tag, {
-        element(el: CFElement) { el.remove(); },
+        element(el: CFElement) {
+          el.remove();
+        },
       });
     }
 

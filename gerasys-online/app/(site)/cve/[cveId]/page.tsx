@@ -1,11 +1,11 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { CveDetailCard } from "@/components/cve/CveDetailCard";
-import { getCVEById, getAllCVEIds } from "@/lib/supabase/queries/cves";
-import { createClient } from "@/lib/supabase/server";
+import { CveDetailCard } from '@/components/cve/CveDetailCard';
+import { getAllCVEIds, getCVEById } from '@/lib/supabase/queries/cves';
+import { createClient } from '@/lib/supabase/server';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ cveId: string }>;
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   } catch (error) {
     console.error(`generateMetadata failed for CVE "${cveId}":`, error);
   }
-  if (!cve) return { title: "CVE Not Found" };
+  if (!cve) return { title: 'CVE Not Found' };
 
   return {
     title: `${cve.cveId} — ${cve.severity} severity, CVSS ${cve.cvssScore}`,
@@ -49,21 +49,25 @@ export default async function CVEDetailPage({ params }: Props) {
   let isSubscriber = false;
   if (user) {
     const { data: profile } = await supabase
-      .from("profiles")
-      .select("clearance_level")
-      .eq("id", user.id)
+      .from('profiles')
+      .select('clearance_level')
+      .eq('id', user.id)
       .single();
-    
-    isSubscriber = profile?.clearance_level === "SUBSCRIBER";
+
+    isSubscriber = profile?.clearance_level === 'SUBSCRIBER';
   }
 
   return (
     <div>
       <div className="max-w-4xl mx-auto px-6 py-12">
         <nav className="flex items-center gap-2 text-xs text-[#475569] mb-6 font-ui">
-          <a href="/" className="hover:text-[#D2B48C] transition-colors">Home</a>
+          <a href="/" className="hover:text-[#D2B48C] transition-colors">
+            Home
+          </a>
           <span>/</span>
-          <a href="/cve" className="hover:text-[#D2B48C] transition-colors">CVEs</a>
+          <a href="/cve" className="hover:text-[#D2B48C] transition-colors">
+            CVEs
+          </a>
           <span>/</span>
           <span className="text-[#0F172A] font-medium">{cve.cveId}</span>
         </nav>

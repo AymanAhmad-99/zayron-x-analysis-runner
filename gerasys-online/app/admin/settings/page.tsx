@@ -1,38 +1,38 @@
-import type { Metadata } from "next";
-import { Settings as SettingsIcon, Key, Database, Globe, Cpu, Bell } from "@/lib/icons";
+import { Bell, Cpu, Database, Globe, Key, Settings as SettingsIcon } from '@/lib/icons';
+import type { Metadata } from 'next';
 
-export const metadata: Metadata = { title: "Settings" };
+export const metadata: Metadata = { title: 'Settings' };
 
 const ENV_GROUPS = [
   {
-    label: "Database",
+    label: 'Database',
     icon: Database,
-    color: "#00CCCC",
-    vars: ["DATABASE_URL", "SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_KEY"],
+    color: '#00CCCC',
+    vars: ['DATABASE_URL', 'SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_KEY'],
   },
   {
-    label: "Redis / Cache",
+    label: 'Redis / Cache',
     icon: Cpu,
-    color: "#D97706",
-    vars: ["UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"],
+    color: '#D97706',
+    vars: ['UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN'],
   },
   {
-    label: "Site",
+    label: 'Site',
     icon: Globe,
-    color: "#16A34A",
-    vars: ["NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_SITE_NAME", "REVALIDATION_SECRET"],
+    color: '#16A34A',
+    vars: ['NEXT_PUBLIC_SITE_URL', 'NEXT_PUBLIC_SITE_NAME', 'REVALIDATION_SECRET'],
   },
   {
-    label: "AI Pipeline",
+    label: 'AI Pipeline',
     icon: Key,
-    color: "#7C3AED",
-    vars: ["DEEPSEEK_API_KEY", "DEEPSEEK_MODEL", "NVD_API_KEY"],
+    color: '#7C3AED',
+    vars: ['DEEPSEEK_API_KEY', 'DEEPSEEK_MODEL', 'NVD_API_KEY'],
   },
   {
-    label: "Email",
+    label: 'Email',
     icon: Bell,
-    color: "#D2B48C",
-    vars: ["RESEND_API_KEY"],
+    color: '#D2B48C',
+    vars: ['RESEND_API_KEY'],
   },
 ];
 
@@ -40,7 +40,7 @@ function StatusDot({ set }: { set: boolean }) {
   return (
     <span
       className="w-2 h-2 rounded-full shrink-0"
-      style={{ background: set ? "#16A34A" : "#DC2626" }}
+      style={{ background: set ? '#16A34A' : '#DC2626' }}
     />
   );
 }
@@ -50,13 +50,17 @@ export default function AdminSettingsPage() {
     ...group,
     items: group.vars.map((key) => ({
       key,
-      set: !!(process.env[key] && !process.env[key]?.includes("YOUR_") && !process.env[key]?.includes("_HERE")),
+      set: !!(
+        process.env[key] &&
+        !process.env[key]?.includes('YOUR_') &&
+        !process.env[key]?.includes('_HERE')
+      ),
     })),
   }));
 
-  const totalSet   = envSnapshot.flatMap((g) => g.items).filter((i) => i.set).length;
+  const totalSet = envSnapshot.flatMap((g) => g.items).filter((i) => i.set).length;
   const totalCount = envSnapshot.flatMap((g) => g.items).length;
-  const readyPct   = Math.round((totalSet / totalCount) * 100);
+  const readyPct = Math.round((totalSet / totalCount) * 100);
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -77,7 +81,7 @@ export default function AdminSettingsPage() {
         <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08]">
           <span
             className="text-xl font-extrabold font-display"
-            style={{ color: readyPct === 100 ? "#16A34A" : readyPct >= 60 ? "#D97706" : "#DC2626" }}
+            style={{ color: readyPct === 100 ? '#16A34A' : readyPct >= 60 ? '#D97706' : '#DC2626' }}
           >
             {readyPct}%
           </span>
@@ -91,7 +95,7 @@ export default function AdminSettingsPage() {
           className="h-full rounded-full transition-all duration-700"
           style={{
             width: `${readyPct}%`,
-            background: readyPct === 100 ? "#16A34A" : readyPct >= 60 ? "#D97706" : "#DC2626",
+            background: readyPct === 100 ? '#16A34A' : readyPct >= 60 ? '#D97706' : '#DC2626',
           }}
         />
       </div>
@@ -100,7 +104,7 @@ export default function AdminSettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {envSnapshot.map((group) => {
           const GroupIcon = group.icon;
-          const groupSet  = group.items.filter((i) => i.set).length;
+          const groupSet = group.items.filter((i) => i.set).length;
           return (
             <div
               key={group.label}
@@ -122,11 +126,14 @@ export default function AdminSettingsPage() {
                 <span
                   className="text-[10px] font-bold font-mono px-2 py-0.5 rounded"
                   style={{
-                    color:       groupSet === group.items.length ? "#16A34A" : "#DC2626",
-                    background:  groupSet === group.items.length ? "rgba(22,163,74,0.1)" : "rgba(220,38,38,0.1)",
+                    color: groupSet === group.items.length ? '#16A34A' : '#DC2626',
+                    background:
+                      groupSet === group.items.length
+                        ? 'rgba(22,163,74,0.1)'
+                        : 'rgba(220,38,38,0.1)',
                   }}
                 >
-                  {groupSet === group.items.length ? "READY" : "INCOMPLETE"}
+                  {groupSet === group.items.length ? 'READY' : 'INCOMPLETE'}
                 </span>
               </div>
               <ul className="space-y-2">
@@ -148,10 +155,19 @@ export default function AdminSettingsPage() {
           Configuration Instructions
         </p>
         <ol className="space-y-1.5 text-[13px] text-[#64748B] font-ui list-decimal list-inside">
-          <li>Copy <code className="text-[#00CCCC] font-mono text-[12px]">.env.example</code> → <code className="text-[#00CCCC] font-mono text-[12px]">.env.local</code></li>
-          <li>Fill in all <code className="text-[#D97706] font-mono text-[12px]">YOUR_*_HERE</code> placeholders with real credentials</li>
+          <li>
+            Copy <code className="text-[#00CCCC] font-mono text-[12px]">.env.example</code> →{' '}
+            <code className="text-[#00CCCC] font-mono text-[12px]">.env.local</code>
+          </li>
+          <li>
+            Fill in all <code className="text-[#D97706] font-mono text-[12px]">YOUR_*_HERE</code>{' '}
+            placeholders with real credentials
+          </li>
           <li>Restart the server — this page will reflect the updated status</li>
-          <li>Never commit <code className="text-[#DC2626] font-mono text-[12px]">.env.local</code> to version control</li>
+          <li>
+            Never commit <code className="text-[#DC2626] font-mono text-[12px]">.env.local</code> to
+            version control
+          </li>
         </ol>
       </div>
     </div>

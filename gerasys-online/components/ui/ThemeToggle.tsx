@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Monitor, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 const ICONS = {
   light: Sun,
@@ -11,28 +11,27 @@ const ICONS = {
 } as const;
 
 const LABELS: Record<string, string> = {
-  light: "Switch to dark mode",
-  dark: "Switch to system theme",
-  system: "Switch to light mode",
+  light: 'Switch to dark mode',
+  dark: 'Switch to system theme',
+  system: 'Switch to light mode',
 };
 
-export function ThemeToggle({ className = "" }: { className?: string }) {
+export function ThemeToggle({ className = '' }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     return (
-      <span
-        className={`p-2 rounded-md w-9 h-9 inline-block ${className}`}
-        aria-hidden="true"
-      />
+      <span className={`p-2 rounded-md w-9 h-9 inline-block ${className}`} aria-hidden="true" />
     );
   }
 
-  const current = theme === "dark" ? "dark" : theme === "light" ? "light" : "system";
-  const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
+  const current = theme === 'dark' ? 'dark' : theme === 'light' ? 'light' : 'system';
+  const next = current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
   const Icon = ICONS[current];
 
   return (

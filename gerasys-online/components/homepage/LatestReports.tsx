@@ -1,7 +1,7 @@
-import { type Article } from "@/lib/types";
-import Link from "next/link";
-import { timeAgo } from "@/lib/utils/formatDate";
-import { CategoryBadge } from "@/components/ui/CategoryBadge";
+import { CategoryBadge } from '@/components/ui/CategoryBadge';
+import type { Article } from '@/lib/types';
+import { timeAgo } from '@/lib/utils/formatDate';
+import Link from 'next/link';
 
 interface LatestReportsProps {
   articles: Article[];
@@ -24,11 +24,11 @@ export function LatestReports({ articles }: LatestReportsProps) {
           {articles.slice(0, 5).map((article, i) => (
             <li key={article.id}>
               <Link
-                href={`/intelligence/${(article.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${article.slug}`}
+                href={`/intelligence/${(article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${article.slug}`}
                 className="flex items-start gap-4 py-4 group border-b border-[#222222]"
               >
                 <span className="text-2xl font-black text-black font-display tabular-nums w-8 shrink-0">
-                  {String(i + 1).padStart(2, "0")}
+                  {String(i + 1).padStart(2, '0')}
                 </span>
                 <div>
                   <CategoryBadge category={article.category} className="mb-1.5" />
@@ -46,18 +46,16 @@ export function LatestReports({ articles }: LatestReportsProps) {
 
         {/* Trending column */}
         <div className="bg-white border border-[#222222] p-6 lg:border-l-0">
-          <h3 className="font-display font-black text-lg text-black mb-4">
-            Trending Now
-          </h3>
+          <h3 className="font-display font-black text-lg text-black mb-4">Trending Now</h3>
           <ul className="space-y-3">
             {articles.slice(0, 5).map((article, i) => (
               <li key={article.id}>
                 <Link
-                  href={`/intelligence/${(article.category ?? "intelligence").toLowerCase().replace(/\s+/g, "-")}/${article.slug}`}
+                  href={`/intelligence/${(article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${article.slug}`}
                   className="flex items-center gap-3 group"
                 >
                   <span className="text-[10px] font-bold text-[#999999] font-mono w-5">
-                    {String(i + 1).padStart(2, "0")}
+                    {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className="text-sm text-black group-hover:underline transition-all line-clamp-1 font-medium">
                     {article.title}
