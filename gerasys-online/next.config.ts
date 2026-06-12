@@ -128,9 +128,5 @@ export default withSentryConfig(
     unstable_sentryWebpackPluginOptions: {
       disable: true,
     },
-  },
-  {
-    disableServerWebpackPlugin: true,
-    disableClientWebpackPlugin: true,
-  },
+  }
 );
