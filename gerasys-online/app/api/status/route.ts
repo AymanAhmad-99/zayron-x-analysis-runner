@@ -1,3 +1,4 @@
+import { checkRateLimit, getClientIp, searchLimiter } from '@/lib/cache/ratelimit';
 import { NextResponse } from 'next/server';
 
 // ═══════════════════════════════════════════════════════════════
@@ -33,6 +34,17 @@ interface HealthResponse {
     kv: HealthCheck;
     gemini: HealthCheck;
   };
+}
+
+type PublicHealthStatus = 'ok' | 'degraded' | 'error';
+
+interface PublicHealthResponse {
+  status: PublicHealthStatus;
+  timestamp: string;
+}
+
+interface ErrorResponse {
+  error: string;
 }
 
 // ── Helpers ──────────────────────────────────────────────────
@@ -207,7 +219,26 @@ const startTime = Date.now();
 
 // ── Route Handler ────────────────────────────────────────────
 
-export async function GET(): Promise<NextResponse<HealthResponse>> {
+export async function GET(
+  request: Request,
+): Promise<NextResponse<HealthResponse | PublicHealthResponse | ErrorResponse>> {
+  const ip = getClientIp(request);
+  const { allowed, remaining } = await checkRateLimit(searchLimiter, `status:${ip}`);
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait a moment.' },
+      {
+        status: 429,
+        headers: {
+          'Cache-Control': 'no-store',
+          'Retry-After': '60',
+          'X-RateLimit-Remaining': String(remaining),
+        },
+      },
+    );
+  }
+
   const worker: HealthCheck = { status: 'healthy', latencyMs: 0, message: 'Responding' };
 
   // Fan-out all dependency checks concurrently
@@ -232,10 +263,29 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
     checks: { worker, supabase, redis, kv, gemini },
   };
 
+  const hasValidSecret =
+    !!process.env.STATUS_SECRET && request.headers.get('X-Status-Secret') === process.env.STATUS_SECRET;
+
+  if (!hasValidSecret) {
+    const publicResponse: PublicHealthResponse = {
+      status: overall === 'healthy' ? 'ok' : overall === 'degraded' ? 'degraded' : 'error',
+      timestamp: response.timestamp,
+    };
+
+    return NextResponse.json(publicResponse, {
+      status: overall === 'unhealthy' ? 503 : 200,
+      headers: {
+        'Cache-Control': 'no-store',
+        'X-RateLimit-Remaining': String(remaining),
+      },
+    });
+  }
+
   return NextResponse.json(response, {
     status: overall === 'healthy' ? 200 : overall === 'degraded' ? 200 : 503,
     headers: {
       'Cache-Control': 'no-store',
+      'X-RateLimit-Remaining': String(remaining),
       'X-Health-Overall': overall,
       'X-Health-Supabase': supabase.status,
       'X-Health-Redis': redis.status,
