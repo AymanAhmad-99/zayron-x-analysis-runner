@@ -20,8 +20,10 @@ export async function POST(req: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser(token);
 
-    if (!authError && user) {
-      // TODO: require explicit admin role for user-token path.
+    const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.role === 'admin';
+
+    if (!authError && user && isAdmin) {
+      // TODO: extract shared admin auth helper.
       hasValidUserToken = true;
     }
   }
