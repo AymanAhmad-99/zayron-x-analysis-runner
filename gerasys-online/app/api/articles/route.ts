@@ -9,6 +9,23 @@ import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
+function getSafePath(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const path = value.trim();
+  if (!path || path.length > 200) return null;
+  if (!path.startsWith('/') || path.startsWith('//') || path.includes('\\')) return null;
+  if (!/^\/[A-Za-z0-9/_-]*$/.test(path)) return null;
+  return path;
+}
+
+function getSafeCategory(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const category = value.trim();
+  if (!category || category.length > 80) return null;
+  if (!/^[A-Za-z0-9_-]+$/.test(category)) return null;
+  return category;
+}
+
 export async function GET(request: Request) {
   try {
     // Rate limit: 60 requests per 60s per IP
@@ -57,8 +74,10 @@ export async function GET(request: Request) {
 
       // Perform cache invalidation ONLY if a valid secret is provided
       if (secret && secret === process.env.REVALIDATION_SECRET) {
-        const formattedCategory = category.toLowerCase().replace(/\s+/g, '-');
-        revalidatePath(`/intelligence/${formattedCategory}`);
+        const safeCategory = getSafeCategory(category);
+        if (safeCategory) {
+          revalidatePath(`/intelligence/${safeCategory}`);
+        }
       }
     }
 
@@ -149,21 +168,26 @@ export async function POST(request: Request) {
     }
 
     const { category, path } = body;
+    const safeCategory = category == null ? null : getSafeCategory(category);
+    const safePath = path == null ? null : getSafePath(path);
 
-    if (category) {
-      const formattedCategory = category.toLowerCase().replace(/\s+/g, '-');
-      revalidatePath(`/intelligence/${formattedCategory}`);
+    if ((category != null && !safeCategory) || (path != null && !safePath)) {
+      return NextResponse.json({ error: 'Invalid revalidation target' }, { status: 400 });
     }
 
-    if (path) {
-      revalidatePath(path);
+    if (safeCategory) {
+      revalidatePath(`/intelligence/${safeCategory}`);
+    }
+
+    if (safePath) {
+      revalidatePath(safePath);
     }
 
     // Always invalidate home page to ensure consistency
     revalidatePath('/');
 
     return NextResponse.json({ success: true, message: 'Invalidation triggered' });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Invalidation failed' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Invalidation failed' }, { status: 500 });
   }
 }
