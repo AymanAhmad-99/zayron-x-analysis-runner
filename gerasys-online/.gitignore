@@ -41,7 +41,19 @@ drizzle/snapshots/
 
 # MCP / Secrets
 .mcp-secrets
+.mcp.json
+.cursor/mcp.json
+.claude/settings.local.json
 ../.mcp-secrets
 ../.cursor/mcp.json
 .env.production
 .env.production.local
+
+# Generated deployment/runtime artifacts
+.open-next/
+.wrangler/
+.vercel/
+
+# Copied env artifacts inside generated bundles
+.next/standalone/.env
+.open-next/**/.env

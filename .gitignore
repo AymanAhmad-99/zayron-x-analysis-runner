@@ -18,6 +18,9 @@ workers/.env.production
 
 # MCP secrets (NEVER commit)
 .mcp-secrets
+**/.mcp.json
+**/.cursor/mcp.json
+**/.claude/settings.local.json
 
 # SQL credential/schema files that may contain secrets
 supabase_schema_setup.sql
@@ -51,4 +54,14 @@ Thumbs.db
 
 # Local scratch directories
 scratch/
+
+# Nested app build/runtime artifacts
+**/.open-next/
+**/.wrangler/
+**/.vercel/
+**/tsconfig.tsbuildinfo
+
+# Copied env artifacts inside generated bundles
+**/.next/standalone/.env
+**/.open-next/**/.env
 
