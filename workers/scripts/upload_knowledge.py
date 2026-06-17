@@ -11,7 +11,6 @@ to the Cloudflare Vectorize Edge endpoint.
 import os
 import sys
 import glob
-import json
 import logging
 import requests
 
@@ -34,8 +33,8 @@ except ImportError:
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(PROJECT_ROOT, "workers"))
 
-from config import SUPABASE_SERVICE_KEY
 NEXT_PUBLIC_APP_URL = os.getenv("NEXT_PUBLIC_APP_URL", "http://localhost:3000")
+SYNC_KNOWLEDGE_SECRET = os.getenv("SYNC_KNOWLEDGE_SECRET", "")
 
 MODEL_NAME = "all-MiniLM-L6-v2"
 
@@ -49,6 +48,10 @@ def chunk_text(text: str, min_words: int = 500, max_words: int = 1000) -> list[s
     return chunks
 
 def process_knowledge_base():
+    if not SYNC_KNOWLEDGE_SECRET:
+        log.error("SYNC_KNOWLEDGE_SECRET is not set. Cannot upload knowledge.")
+        sys.exit(1)
+
     log.info("Loading local embedding model: %s", MODEL_NAME)
     model = SentenceTransformer(MODEL_NAME)
     
@@ -67,7 +70,7 @@ def process_knowledge_base():
         
     endpoint = f"{NEXT_PUBLIC_APP_URL}/api/admin/sync-knowledge"
     headers = {
-        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "X-Sync-Knowledge-Secret": SYNC_KNOWLEDGE_SECRET,
         "Content-Type": "application/json"
     }
 

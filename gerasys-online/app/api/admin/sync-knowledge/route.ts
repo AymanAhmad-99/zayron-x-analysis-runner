@@ -3,34 +3,31 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('Authorization');
-  if (!authHeader) {
-    console.error('[SECURITY ALERT] Missing Authorization header on /api/admin/sync-knowledge');
-    return NextResponse.json({ error: 'Forbidden', block: 'Fail-Closed' }, { status: 403 });
-  }
-
-  const token = authHeader.replace('Bearer ', '').trim();
+  const syncSecret = req.headers.get('X-Sync-Knowledge-Secret');
+  const expectedSyncSecret = process.env.SYNC_KNOWLEDGE_SECRET;
+  const hasValidSyncSecret =
+    !!expectedSyncSecret && !!syncSecret && syncSecret === expectedSyncSecret;
+  const token = authHeader?.replace('Bearer ', '').trim() ?? '';
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Invariant 3: Fail-Closed Access Control via native supabase.auth.getUser()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser(token);
+  let hasValidUserToken = false;
+  if (token) {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
 
-  // For backend workers, we allow the service role key as a fallback
-  if (authError || !user) {
-    if (
-      token !== process.env.SUPABASE_SERVICE_ROLE_KEY &&
-      token !== process.env.SUPABASE_SERVICE_KEY
-    ) {
-      console.error(
-        `[SECURITY ALERT] Unauthorized access attempt to /api/admin/sync-knowledge: ${authError?.message || 'Invalid User'}`,
-      );
-      return NextResponse.json({ error: 'Forbidden', block: 'Fail-Closed' }, { status: 403 });
+    if (!authError && user) {
+      // TODO: require explicit admin role for user-token path.
+      hasValidUserToken = true;
     }
+  }
+
+  if (!hasValidUserToken && !hasValidSyncSecret) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
