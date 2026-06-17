@@ -1,8 +1,9 @@
 'use client';
 
 import { useSecurityGating } from '@/components/platform/SecurityGatingContext';
+import { sanitizeHtml } from '@/lib/utils/sanitize-edge';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
@@ -13,6 +14,8 @@ interface ArticleBodyProps {
 
 export function ArticleBody({ content }: ArticleBodyProps) {
   const { gateAction } = useSecurityGating();
+  const isHtml = content.startsWith('<') || content.includes('</');
+  const [sanitizedHtml, setSanitizedHtml] = useState(isHtml ? '' : content);
 
   useEffect(() => {
     const handleCopy = (e: ClipboardEvent) => {
@@ -37,6 +40,29 @@ export function ArticleBody({ content }: ArticleBodyProps) {
     document.addEventListener('copy', handleCopy);
     return () => document.removeEventListener('copy', handleCopy);
   }, [gateAction]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    if (!isHtml) {
+      setSanitizedHtml(content);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    setSanitizedHtml('');
+
+    void sanitizeHtml(content).then((safeHtml) => {
+      if (isActive) {
+        setSanitizedHtml(safeHtml);
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [content, isHtml]);
 
   useEffect(() => {
     const preBlocks = document.querySelectorAll('.prose-zayron pre');
@@ -65,13 +91,11 @@ export function ArticleBody({ content }: ArticleBodyProps) {
     });
   }, [content, gateAction]);
 
-  const isHtml = content.startsWith('<') || content.includes('</');
-
   if (isHtml) {
     return (
       <div
         className="prose-zayron max-w-none text-neutral-800 space-y-4"
-        dangerouslySetInnerHTML={{ __html: content }}
+        dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
       />
     );
   }

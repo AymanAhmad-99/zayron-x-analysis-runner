@@ -1,19 +1,10 @@
-/* ─────────────────────────────────────────────────────────
-   Edge-native HTML sanitizer — Cloudflare Workers compatible
+/*
+  Edge-native HTML sanitizer with browser and test fallbacks.
 
-   Uses the Workers-built-in HTMLRewriter to strip dangerous
-   content from HTML strings.  ZERO npm dependencies.
-   ZERO Node.js built-ins.  Runs at the edge with zero cost.
+  Uses Cloudflare Workers HTMLRewriter when available, DOMParser in
+  browsers, and a conservative string fallback elsewhere.
+*/
 
-   Replaces the old DOMPurify + linkedom combo which pulled
-   in `node:fs` and crashed the V8 isolate.
-   ───────────────────────────────────────────────────────── */
-
-/* ── Cloudflare Workers HTMLRewriter type declarations ──
-   Declared inline so we don't need @cloudflare/workers-types
-   as an npm dependency.  These types are provided at runtime
-   by the Workers V8 isolate.
-   ─────────────────────────────────────────────────────── */
 interface CFElement {
   tagName: string;
   readonly attributes: IterableIterator<[string, string]>;
@@ -37,7 +28,25 @@ declare class HTMLRewriter {
 
 const MAX_HTML_SIZE_BYTES = 1_048_576; // 1 MB
 
-/** Tags that are allowed to survive sanitization. */
+const DANGEROUS_TAGS = [
+  'script',
+  'style',
+  'iframe',
+  'object',
+  'embed',
+  'applet',
+  'form',
+  'textarea',
+  'select',
+  'button',
+  'link',
+  'meta',
+  'base',
+  'noscript',
+  'svg',
+  'math',
+];
+
 const ALLOWED_TAGS = new Set([
   'p',
   'h1',
@@ -90,7 +99,6 @@ const ALLOWED_TAGS = new Set([
   'samp',
 ]);
 
-/** Attributes that are safe to keep on any element. */
 const ALLOWED_ATTRS = new Set([
   'href',
   'src',
@@ -102,7 +110,6 @@ const ALLOWED_ATTRS = new Set([
   'rel',
   'width',
   'height',
-  'style',
   'type',
   'checked',
   'disabled',
@@ -114,123 +121,181 @@ const ALLOWED_ATTRS = new Set([
   'name',
 ]);
 
-/** Event handler attribute prefixes — always dangerous. */
 const EVENT_HANDLER_RE = /^on/i;
-
-/** Protocols allowed in href / src / action attributes. */
+const DANGEROUS_STYLE_RE =
+  /expression\s*\(|url\s*\(\s*['"]?\s*(?:javascript:|data:text\/html)|behavior\s*:|@import/iu;
 const SAFE_URL_RE = /^(?:https?:|mailto:|tel:|#|\/)/i;
-
-/** Attributes that contain URLs and must be URL-validated. */
 const URL_ATTRS = new Set(['href', 'src', 'action', 'formaction', 'poster']);
 
-/**
- * Sanitize an HTML string for safe rendering.
- *
- * Uses Cloudflare's built-in HTMLRewriter — zero dependencies,
- * zero Node.js modules, runs natively on the Workers runtime.
- *
- * @param html  Raw HTML string (typically from Markdown rendering).
- * @returns     Sanitised HTML with dangerous elements removed.
- */
-export async function sanitizeHtml(dirty: string): Promise<string> {
+function trimHtml(dirty: string): string {
   if (!dirty) return '';
+  if (dirty.length <= MAX_HTML_SIZE_BYTES) return dirty;
 
-  // Size guard — prevent CPU-bound parsing of huge payloads
-  let html = dirty;
-  if (html.length > MAX_HTML_SIZE_BYTES) {
-    console.warn(
-      `[sanitizeHtml] Content too large (${html.length} bytes). ` +
-        `Truncating to ${MAX_HTML_SIZE_BYTES} bytes.`,
-    );
-    html = html.slice(0, MAX_HTML_SIZE_BYTES);
+  console.warn(
+    `[sanitizeHtml] Content too large (${dirty.length} bytes). ` +
+      `Truncating to ${MAX_HTML_SIZE_BYTES} bytes.`,
+  );
+  return dirty.slice(0, MAX_HTML_SIZE_BYTES);
+}
+
+function isSafeUrl(value: string): boolean {
+  return SAFE_URL_RE.test(value.trim());
+}
+
+function sanitizeAttribute(name: string, value: string): string | null {
+  const lower = name.toLowerCase();
+
+  if (EVENT_HANDLER_RE.test(lower)) return null;
+  if (!ALLOWED_ATTRS.has(lower)) return null;
+  if (lower === 'style' && DANGEROUS_STYLE_RE.test(value)) return null;
+  if (URL_ATTRS.has(lower) && value && !isSafeUrl(value)) return null;
+
+  return lower === 'target' ? value.toLowerCase() : value;
+}
+
+function applySafeLinkRel(attrs: Map<string, string>) {
+  if (attrs.get('target') === '_blank') {
+    attrs.set('rel', 'noopener noreferrer');
+  }
+}
+
+function sanitizeHtmlWithDomParser(html: string): string {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  for (const tag of DANGEROUS_TAGS) {
+    for (const node of Array.from(doc.querySelectorAll(tag))) {
+      node.remove();
+    }
   }
 
-  try {
-    const rewriter = new HTMLRewriter();
+  for (const el of Array.from(doc.body.querySelectorAll('*'))) {
+    const tagName = el.tagName.toLowerCase();
 
-    // ── Remove dangerous tags entirely (tag + content) ────
-    for (const tag of [
-      'script',
-      'style',
-      'iframe',
-      'object',
-      'embed',
-      'applet',
-      'form',
-      'textarea',
-      'select',
-      'button',
-      'link',
-      'meta',
-      'base',
-      'noscript',
-    ]) {
-      rewriter.on(tag, {
-        element(el: CFElement) {
-          el.remove();
-        },
-      });
+    if (!ALLOWED_TAGS.has(tagName)) {
+      el.replaceWith(...Array.from(el.childNodes));
+      continue;
     }
 
-    // ── Scrub attributes on every element ─────────────────
-    rewriter.on('*', {
+    const nextAttrs = new Map<string, string>();
+
+    for (const attr of Array.from(el.attributes)) {
+      const sanitizedValue = sanitizeAttribute(attr.name, attr.value);
+      if (sanitizedValue !== null) {
+        nextAttrs.set(attr.name.toLowerCase(), sanitizedValue);
+      }
+    }
+
+    for (const attr of Array.from(el.attributes)) {
+      el.removeAttribute(attr.name);
+    }
+
+    applySafeLinkRel(nextAttrs);
+
+    for (const [name, value] of nextAttrs) {
+      el.setAttribute(name, value);
+    }
+  }
+
+  return doc.body.innerHTML;
+}
+
+async function sanitizeHtmlWithHtmlRewriter(html: string): Promise<string> {
+  const rewriter = new HTMLRewriter();
+
+  for (const tag of DANGEROUS_TAGS) {
+    rewriter.on(tag, {
       element(el: CFElement) {
-        const tagName = el.tagName.toLowerCase();
-
-        // If the tag itself isn't allowed, remove it but keep
-        // its text children (unwrap, don't nuke content).
-        if (!ALLOWED_TAGS.has(tagName)) {
-          el.removeAndKeepContent();
-          return;
-        }
-
-        // Scrub each attribute on allowed elements.
-        const toRemove: string[] = [];
-        for (const [name] of el.attributes) {
-          const lower = name.toLowerCase();
-
-          // Remove event handlers (onclick, onerror, etc.)
-          if (EVENT_HANDLER_RE.test(lower)) {
-            toRemove.push(name);
-            continue;
-          }
-
-          // Remove non-allowlisted attributes
-          if (!ALLOWED_ATTRS.has(lower)) {
-            toRemove.push(name);
-            continue;
-          }
-
-          // URL-validate attributes that can contain hrefs
-          if (URL_ATTRS.has(lower)) {
-            const val = el.getAttribute(name) ?? '';
-            if (val && !SAFE_URL_RE.test(val.trim())) {
-              toRemove.push(name);
-            }
-          }
-        }
-
-        for (const attr of toRemove) {
-          el.removeAttribute(attr);
-        }
+        el.remove();
       },
     });
+  }
 
-    // HTMLRewriter operates on Response objects — wrap the HTML
-    // in a minimal Response, transform, and read back out.
-    const response = rewriter.transform(
-      new Response(html, {
-        headers: { 'content-type': 'text/html;charset=UTF-8' },
-      }),
+  rewriter.on('*', {
+    element(el: CFElement) {
+      const tagName = el.tagName.toLowerCase();
+
+      if (!ALLOWED_TAGS.has(tagName)) {
+        el.removeAndKeepContent();
+        return;
+      }
+
+      const nextAttrs = new Map<string, string>();
+      const seenAttrs = new Set<string>();
+
+      for (const [name, value] of el.attributes) {
+        const lower = name.toLowerCase();
+        seenAttrs.add(name);
+
+        const sanitizedValue = sanitizeAttribute(name, value);
+        if (sanitizedValue === null) {
+          el.removeAttribute(name);
+          continue;
+        }
+
+        nextAttrs.set(lower, sanitizedValue);
+      }
+
+      applySafeLinkRel(nextAttrs);
+
+      for (const [name, value] of nextAttrs) {
+        el.setAttribute(name, value);
+      }
+
+      if (seenAttrs.has('target') || seenAttrs.has('TARGET')) {
+        const target = nextAttrs.get('target');
+        if (!target) {
+          el.removeAttribute('target');
+        }
+      }
+    },
+  });
+
+  const response = rewriter.transform(
+    new Response(html, {
+      headers: { 'content-type': 'text/html;charset=UTF-8' },
+    }),
+  );
+
+  return await response.text();
+}
+
+function sanitizeHtmlWithStringFallback(html: string): string {
+  return html
+    .replace(
+      /<\s*(script|style|iframe|object|embed|applet|form|textarea|select|button|link|meta|base|noscript|svg|math)\b[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/giu,
+      '',
+    )
+    .replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/giu, '')
+    .replace(/\s+style\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/giu, '')
+    .replace(/\s+(href|src|action|formaction|poster)\s*=\s*(['"])\s*javascript:[\s\S]*?\2/giu, '')
+    .replace(/\s+(href|src|action|formaction|poster)\s*=\s*(['"])\s*data:text\/html[\s\S]*?\2/giu, '')
+    .replace(/<a\b([^>]*?)\s+target=(['_"])_blank\2([^>]*)>/giu, '<a$1 target="_blank" rel="noopener noreferrer"$3>')
+    .replace(
+      /<\s*\/?\s*(?!p\b|h1\b|h2\b|h3\b|h4\b|h5\b|h6\b|ul\b|ol\b|li\b|strong\b|em\b|b\b|i\b|u\b|s\b|a\b|code\b|pre\b|blockquote\b|hr\b|br\b|table\b|thead\b|tbody\b|tfoot\b|tr\b|th\b|td\b|img\b|span\b|div\b|input\b|figure\b|figcaption\b|details\b|summary\b|dl\b|dt\b|dd\b|sup\b|sub\b|mark\b|del\b|ins\b|abbr\b|kbd\b|var\b|samp\b)[a-z0-9:-]+\b[^>]*>/giu,
+      '',
     );
+}
 
-    return await response.text();
+export async function sanitizeHtml(dirty: string): Promise<string> {
+  const html = trimHtml(dirty);
+  if (!html) return '';
+
+  try {
+    if (typeof HTMLRewriter !== 'undefined') {
+      return await sanitizeHtmlWithHtmlRewriter(html);
+    }
+
+    if (typeof DOMParser !== 'undefined') {
+      return sanitizeHtmlWithDomParser(html);
+    }
+
+    return sanitizeHtmlWithStringFallback(html);
   } catch (err) {
     console.error(
       '[sanitizeHtml] Edge sanitization failed:',
       err instanceof Error ? err.message : String(err),
     );
-    // Safe fallback — strip ALL HTML tags
-    return html.replace(/<[^>]*>/g, '');
+    return sanitizeHtmlWithStringFallback(html);
   }
 }
