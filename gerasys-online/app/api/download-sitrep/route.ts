@@ -4,9 +4,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const threatId = searchParams.get('threatId');
+    const threatId = searchParams.get('threatId')?.trim();
 
-    if (!threatId) {
+    if (!threatId || threatId.length > 120 || !/^[A-Za-z0-9_-]+$/.test(threatId)) {
       return NextResponse.json({ error: 'Missing parameter: threatId' }, { status: 400 });
     }
 
@@ -118,11 +118,12 @@ export async function GET(request: NextRequest) {
     return new NextResponse(buffer, {
       status: 200,
       headers: {
+        'Cache-Control': 'private, no-store',
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="ZAYRON-X-SITREP-${threatId}.pdf"`,
       },
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
