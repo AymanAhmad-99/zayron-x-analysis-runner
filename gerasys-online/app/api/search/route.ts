@@ -3,6 +3,20 @@ import { searchArticles } from '@/lib/supabase/queries/articles';
 import { searchCVEs } from '@/lib/supabase/queries/cves';
 import { NextResponse } from 'next/server';
 
+function redactArticleSearchResult<T extends Record<string, unknown>>(article: T): T {
+  return {
+    ...article,
+    yaraRule: null,
+    iocsJson: null,
+    mitreTtps: null,
+    fbrScore: null,
+    cvssV4Score: null,
+    financialExposure: null,
+    regulatoryRisk: null,
+    mitigationImpact: null,
+  };
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -47,8 +61,10 @@ export async function GET(request: Request) {
       cves = await searchCVEs(query);
     }
 
+    const publicArticles = articles.map(redactArticleSearchResult);
+
     return NextResponse.json(
-      { articles, cves, query },
+      { articles: publicArticles, cves, query },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
