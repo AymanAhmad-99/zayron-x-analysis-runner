@@ -29,8 +29,11 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const page = Number(searchParams.get('page')) || 1;
-    const limit = Number(searchParams.get('limit')) || 12;
+    const rawPage = Number(searchParams.get('page'));
+    const rawLimit = Number(searchParams.get('limit'));
+    const page = Number.isFinite(rawPage) && rawPage >= 1 ? Math.floor(rawPage) : 1;
+    const limit =
+      Number.isFinite(rawLimit) && rawLimit >= 1 ? Math.min(Math.floor(rawLimit), 50) : 12;
     const category = searchParams.get('category');
     const secret = searchParams.get('secret') || request.headers.get('x-revalidate-secret');
 
@@ -111,11 +114,16 @@ export async function GET(request: Request) {
         totalPages: Math.ceil(total / limit),
       },
       {
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-          'CDN-Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-          'X-RateLimit-Remaining': String(remaining),
-        },
+        headers: isSubscriber
+          ? {
+              'Cache-Control': 'private, no-store',
+              'X-RateLimit-Remaining': String(remaining),
+            }
+          : {
+              'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+              'CDN-Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+              'X-RateLimit-Remaining': String(remaining),
+            },
       },
     );
   } catch (error) {
