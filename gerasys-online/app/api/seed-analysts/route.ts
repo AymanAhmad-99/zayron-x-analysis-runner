@@ -1,4 +1,6 @@
+import { checkRateLimit, getClientIp, loginLimiter } from '@/lib/cache/ratelimit';
 import { getSupabaseAdmin } from '@/lib/supabase/client';
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
 const ANALYST_CORE = [
@@ -277,21 +279,73 @@ const ANALYST_CORE = [
   },
 ];
 
-export async function POST() {
+export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const { allowed, remaining } = await checkRateLimit(loginLimiter, `seed-analysts:${ip}`);
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait and try again.' },
+      {
+        status: 429,
+        headers: {
+          'Cache-Control': 'no-store',
+          'Retry-After': '60',
+          'X-RateLimit-Remaining': String(remaining),
+        },
+      },
+    );
+  }
+
+  const authHeader = request.headers.get('Authorization');
+  const token = authHeader?.replace('Bearer ', '').trim() ?? '';
+
+  if (!token) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const authSupabase = createClient(supabaseUrl, supabaseKey);
+  const {
+    data: { user },
+    error: authError,
+  } = await authSupabase.auth.getUser(token);
+
+  const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.role === 'admin';
+
+  if (authError || !user) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: 'Forbidden' },
+      { status: 403, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
   const supabase = getSupabaseAdmin(process.env);
 
   // Delete existing analysts
   const { error: deleteError } = await supabase.from('analysts').delete().neq('name', ''); // deletes all rows since all names are non-empty
 
   if (deleteError) {
-    return NextResponse.json({ error: deleteError.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Seed failed' },
+      { status: 500, headers: { 'Cache-Control': 'no-store' } },
+    );
   }
-
-  const results: Array<{ name: string; status: string; id?: string; error?: string }> = [];
 
   for (const analyst of ANALYST_CORE) {
     try {
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('analysts')
         .insert({
           name: analyst.name,
@@ -300,24 +354,31 @@ export async function POST() {
           nationality: analyst.nationality,
           specializations: analyst.specializations,
         })
-        .select('id, name')
+        .select('id')
         .single();
 
       if (insertError) {
-        results.push({ name: analyst.name, status: 'failed', error: insertError.message });
-      } else {
-        results.push({ name: data.name, status: 'inserted', id: data.id });
+        return NextResponse.json(
+          { error: 'Seed failed' },
+          { status: 500, headers: { 'Cache-Control': 'no-store' } },
+        );
       }
-    } catch (err: any) {
-      results.push({ name: analyst.name, status: 'failed', error: err.message });
+    } catch {
+      return NextResponse.json(
+        { error: 'Seed failed' },
+        { status: 500, headers: { 'Cache-Control': 'no-store' } },
+      );
     }
   }
 
-  const inserted = results.filter((r) => r.status === 'inserted').length;
-  const failed = results.filter((r) => r.status === 'failed').length;
-
   return NextResponse.json({
-    summary: { inserted, failed, total: ANALYST_CORE.length },
-    results,
+    success: true,
+    inserted: ANALYST_CORE.length,
+    message: 'Analysts seeded successfully.',
+  }, {
+    headers: {
+      'Cache-Control': 'no-store',
+      'X-RateLimit-Remaining': String(remaining),
+    },
   });
 }
