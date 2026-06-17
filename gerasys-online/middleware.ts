@@ -7,10 +7,10 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 /* ──────────────────────────────────────────────────────────
-   CSP Nonce Generator — per-request unique nonce
-   Injects the nonce into both the CSP header (via request
-   headers passthrough) and the response headers so that
-   inline <script nonce="..."> tags are allowed.
+   CSP helper utilities.
+   A nonce is still generated for future tightening work, but
+   Phase 1 keeps a compatibility-focused CSP without full nonce
+   enforcement or strict-dynamic rollout.
    ────────────────────────────────────────────────────────── */
 function generateNonce(): string {
   const arr = new Uint8Array(16);
@@ -33,20 +33,19 @@ function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: st
   // Store nonce on request so Server Components can read it via headers()
   request.headers.set('x-csp-nonce', nonce);
 
-  // Replace the static CSP placeholder with the actual nonce value
+  // Keep style-src compatibility and preserve the CSP emitted by next.config.ts.
   let enforcingCsp = response.headers.get('Content-Security-Policy');
   if (enforcingCsp) {
     if (!enforcingCsp.includes("'unsafe-inline'") && enforcingCsp.includes('style-src')) {
       enforcingCsp = enforcingCsp.replace('style-src', "style-src 'unsafe-inline'");
     }
-    const patched = enforcingCsp.replace(/'strict-dynamic'/, `'nonce-${nonce}' 'strict-dynamic'`);
-    response.headers.set('Content-Security-Policy', patched);
+    response.headers.set('Content-Security-Policy', enforcingCsp);
   } else {
-    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'unsafe-inline' 'unsafe-eval'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com; connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'`;
+    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'unsafe-eval'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com; connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests`;
     response.headers.set('Content-Security-Policy', enforcingCsp);
   }
 
-  // Setup CSP Report-Only alongside enforcing to monitor blocked/unsafe inline style and script attempts
+  // Keep report-only active to observe future tightening safely.
   const currentCsp = response.headers.get('Content-Security-Policy') ?? '';
   const reportOnlyCsp = `${currentCsp.replace(/\b'unsafe-inline'\b/g, '').trim()}; report-uri /api/csp-report`;
   response.headers.set('Content-Security-Policy-Report-Only', reportOnlyCsp);
@@ -159,7 +158,7 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Generate per-request nonce for strict CSP
+  // Generate/store a per-request nonce for future CSP tightening work.
   const nonce = generateNonce();
   let response = NextResponse.next({ request });
 

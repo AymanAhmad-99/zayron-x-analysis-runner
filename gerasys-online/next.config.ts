@@ -1,14 +1,15 @@
 import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 
-/* ── Strict Nonce‑Based CSP ──
-   The nonce is generated per‑request in middleware.ts and passed via
-   the request headers (x-csp-nonce).  Scripts that need inline execution
-   must carry this nonce.  All 'unsafe-inline' occurrences have been removed.
+/* ── Phase 1 CSP Hardening ──
+   Keep runtime compatibility for style injection and eval-heavy tooling,
+   while removing inline script execution and adding low-risk guardrails.
+   Full nonce/hash CSP can be layered in later once runtime behavior is
+   verified end-to-end.
    ──────────────────────────────────────────────────────────────── */
 const CSP = [
   `default-src 'self'`,
-  `script-src 'self' *.supabase.co 'unsafe-inline' 'unsafe-eval'`,
+  `script-src 'self' *.supabase.co 'unsafe-eval'`,
   `style-src 'self' fonts.googleapis.com 'unsafe-inline'`,
   `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com`,
   `connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com`,
@@ -16,6 +17,9 @@ const CSP = [
   `frame-src 'self'`,
   `object-src 'none'`,
   `base-uri 'self'`,
+  `form-action 'self'`,
+  `frame-ancestors 'none'`,
+  `upgrade-insecure-requests`,
 ].join('; ');
 
 const nextConfig: NextConfig = {
