@@ -23,8 +23,11 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const page = Number(searchParams.get('page')) || 1;
-    const limit = Number(searchParams.get('limit')) || 25;
+    const rawPage = Number(searchParams.get('page'));
+    const rawLimit = Number(searchParams.get('limit'));
+    const page = Number.isFinite(rawPage) && rawPage >= 1 ? Math.floor(rawPage) : 1;
+    const limit =
+      Number.isFinite(rawLimit) && rawLimit >= 1 ? Math.min(Math.floor(rawLimit), 50) : 20;
     const severity = searchParams.get('severity');
 
     const cacheKey = `cves:feed:p_${page}:l_${limit}:s_${severity || 'all'}`;
@@ -65,14 +68,12 @@ export async function GET(request: Request) {
         },
       },
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('[CVE FEED API FAILURE] Fatal routing incident:', error);
 
     return NextResponse.json(
       {
-        error: 'System Integrity Alert: Failed to process external CTI threat feed request.',
-        code: 'INTERNAL_SERVER_ERROR',
-        timestamp: new Date().toISOString(),
+        error: 'Failed to fetch CVEs',
       },
       { status: 500 },
     );
