@@ -348,7 +348,13 @@ export default async function HomePage() {
       </section>
 
       <section id="automation-risks" className="border-b border-white/5">
-        <AutomatedRoiCalculator />
+        <AutomatedRoiCalculator
+          articles={articles}
+          cves={cves}
+          analysts={analysts}
+          categories={categories}
+          cveCount={cveCount}
+        />
       </section>
 
       <section id="pricing-tiers" className="border-b border-white/5">
