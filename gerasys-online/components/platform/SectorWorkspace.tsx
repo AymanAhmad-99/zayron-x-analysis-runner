@@ -20,9 +20,9 @@ const SECTORS: {
   icon: typeof FileText;
   countKey: 'articleCount' | 'cveCount' | 'analystCount';
 }[] = [
-  { id: 'briefings', label: 'Active Threat Briefings', icon: FileText, countKey: 'articleCount' },
-  { id: 'cve', label: 'Vulnerabilities Radar', icon: ShieldAlert, countKey: 'cveCount' },
-  { id: 'analysts', label: 'CISO Advisory Center', icon: Users, countKey: 'analystCount' },
+  { id: 'briefings', label: 'Briefing Coverage', icon: FileText, countKey: 'articleCount' },
+  { id: 'cve', label: 'CVE Coverage', icon: ShieldAlert, countKey: 'cveCount' },
+  { id: 'analysts', label: 'Analyst Coverage', icon: Users, countKey: 'analystCount' },
 ];
 
 export function SectorWorkspace({
@@ -61,7 +61,7 @@ export function SectorWorkspace({
                   <span
                     className={`
                     text-[0.65rem] font-mono tabular-nums ml-1
-                    ${isActive ? 'text-[#733DD9]' : 'text-[#CBD5E1]'}
+                    ${isActive ? 'text-[var(--color-accent-intelligence)]' : 'text-[#CBD5E1]'}
                   `}
                   >
                     {counts[sector.countKey].toLocaleString()}
@@ -69,7 +69,7 @@ export function SectorWorkspace({
 
                   {/* Active indicator */}
                   {isActive && (
-                    <span className="absolute bottom-0 left-5 right-5 h-[2px] bg-[#733DD9] rounded-full" />
+                    <span className="absolute bottom-0 left-5 right-5 h-[2px] bg-[var(--color-accent-intelligence)] rounded-full" />
                   )}
                 </button>
               );
