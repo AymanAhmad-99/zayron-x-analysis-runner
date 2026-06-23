@@ -205,10 +205,19 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
       return card;
     };
 
+    const latestExportArticle = articles[0];
+
     metaGrid.appendChild(createMetaCard('Briefings Included', articles.length.toLocaleString()));
-    metaGrid.appendChild(createMetaCard('Primary Category', articles[0]?.category || 'Intelligence'));
     metaGrid.appendChild(
-      createMetaCard('Latest Published', formatArticleDate(articles[0]) || 'Not available'),
+      createMetaCard('Primary Category', latestExportArticle?.category || 'Intelligence'),
+    );
+    metaGrid.appendChild(
+      createMetaCard(
+        'Latest Published',
+        latestExportArticle
+          ? formatArticleDate(latestExportArticle) || 'Not available'
+          : 'Not available',
+      ),
     );
     body.appendChild(metaGrid);
 
@@ -275,9 +284,10 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
         tr.appendChild(td3);
 
         const td4 = doc.createElement('td');
-        const contextParts = [article.sourceChannel?.trim(), article.financialExposure?.trim()].filter(
-          Boolean,
-        );
+        const contextParts = [
+          article.sourceChannel?.trim(),
+          article.financialExposure?.trim(),
+        ].filter(Boolean);
         td4.textContent = contextParts.join(' | ') || 'No additional context';
         tr.appendChild(td4);
 
@@ -333,7 +343,9 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
           <div className="space-y-2.5">
             <div className="flex justify-between items-center text-neutral-400">
               <span>BRIEFINGS:</span>
-              <span className="text-[#050505] font-semibold">{articles.length.toLocaleString()}</span>
+              <span className="text-[#050505] font-semibold">
+                {articles.length.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between items-center text-neutral-400">
               <span>PRIMARY CATEGORY:</span>
@@ -344,7 +356,9 @@ export function SitrepExporter({ articles }: SitrepExporterProps) {
             <div className="flex justify-between items-center text-neutral-400">
               <span>LATEST PUBLISHED:</span>
               <span className="text-[#050505] font-semibold">
-                {latestArticle ? formatArticleDate(latestArticle) || 'Not available' : 'Not available'}
+                {latestArticle
+                  ? formatArticleDate(latestArticle) || 'Not available'
+                  : 'Not available'}
               </span>
             </div>
           </div>

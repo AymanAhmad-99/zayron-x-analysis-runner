@@ -68,8 +68,8 @@ export function AutomatedRoiCalculator({
             Platform Coverage Value
           </h2>
           <p className="mt-4 max-w-3xl text-[1rem] leading-7 text-[var(--color-text-muted)]">
-            A real-time overview of the intelligence currently indexed by ZAYRON-X, based on
-            published briefings, tracked CVEs, analyst coverage, and category distribution.
+            A current overview of the intelligence indexed by ZAYRON-X, based on published
+            briefings, tracked CVEs, analyst coverage, and category distribution.
           </p>
         </div>
 
@@ -114,9 +114,7 @@ export function AutomatedRoiCalculator({
                       key={category.category}
                       className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
                     >
-                      <span className="text-sm font-medium text-white">
-                        {category.category}
-                      </span>
+                      <span className="text-sm font-medium text-white">{category.category}</span>
                       <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--color-accent-intelligence)]">
                         {category.count.toLocaleString()}
                       </span>

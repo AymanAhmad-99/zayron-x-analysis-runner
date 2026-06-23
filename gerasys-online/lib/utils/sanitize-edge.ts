@@ -269,8 +269,14 @@ function sanitizeHtmlWithStringFallback(html: string): string {
     .replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/giu, '')
     .replace(/\s+style\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/giu, '')
     .replace(/\s+(href|src|action|formaction|poster)\s*=\s*(['"])\s*javascript:[\s\S]*?\2/giu, '')
-    .replace(/\s+(href|src|action|formaction|poster)\s*=\s*(['"])\s*data:text\/html[\s\S]*?\2/giu, '')
-    .replace(/<a\b([^>]*?)\s+target=(['_"])_blank\2([^>]*)>/giu, '<a$1 target="_blank" rel="noopener noreferrer"$3>')
+    .replace(
+      /\s+(href|src|action|formaction|poster)\s*=\s*(['"])\s*data:text\/html[\s\S]*?\2/giu,
+      '',
+    )
+    .replace(
+      /<a\b([^>]*?)\s+target=(['_"])_blank\2([^>]*)>/giu,
+      '<a$1 target="_blank" rel="noopener noreferrer"$3>',
+    )
     .replace(
       /<\s*\/?\s*(?!p\b|h1\b|h2\b|h3\b|h4\b|h5\b|h6\b|ul\b|ol\b|li\b|strong\b|em\b|b\b|i\b|u\b|s\b|a\b|code\b|pre\b|blockquote\b|hr\b|br\b|table\b|thead\b|tbody\b|tfoot\b|tr\b|th\b|td\b|img\b|span\b|div\b|input\b|figure\b|figcaption\b|details\b|summary\b|dl\b|dt\b|dd\b|sup\b|sub\b|mark\b|del\b|ins\b|abbr\b|kbd\b|var\b|samp\b)[a-z0-9:-]+\b[^>]*>/giu,
       '',

@@ -60,10 +60,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      revalidated: [
-        safePath,
-        safeSlug ? `/intelligence/${safeCategory}/${safeSlug}` : null,
-      ].filter(Boolean),
+      revalidated: [safePath, safeSlug ? `/intelligence/${safeCategory}/${safeSlug}` : null].filter(
+        Boolean,
+      ),
     });
   } catch (error) {
     console.error('API /revalidate error:', error);

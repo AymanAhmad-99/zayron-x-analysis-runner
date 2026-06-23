@@ -68,6 +68,7 @@
       "dist/**",
       "node_modules/**",
       "workers/legacy/**",
+      "next-env.d.ts",
       "*.json",
       "*.lock",
       "*.lockb",

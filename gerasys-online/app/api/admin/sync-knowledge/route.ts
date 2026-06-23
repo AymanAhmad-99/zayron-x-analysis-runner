@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser(token);
 
-    const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.role === 'admin';
+    const isAdmin = user?.app_metadata?.role === 'admin';
 
     if (!authError && user && isAdmin) {
       // TODO: extract shared admin auth helper.
@@ -29,12 +29,19 @@ export async function POST(req: NextRequest) {
   }
 
   if (!hasValidUserToken && !hasValidSyncSecret) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401, headers: { 'Cache-Control': 'no-store' } },
+    );
   }
 
   try {
     const body = await req.json();
     const { action, query, line_token, limit, id, text, values, metadata } = body;
+    const safeLimit =
+      typeof limit === 'number' && Number.isFinite(limit)
+        ? Math.min(Math.max(Math.floor(limit), 1), 10)
+        : 3;
 
     // Cloudflare Edge-RAG Correlation Lookup (Vectorize + KV)
     if (action === 'query') {
@@ -43,7 +50,7 @@ export async function POST(req: NextRequest) {
         .from('knowledge_embeddings')
         .select('content')
         .textSearch('content', query, { type: 'websearch', config: 'english' })
-        .limit(limit || 3);
+        .limit(safeLimit);
 
       if (data && data.length > 0) {
         segments = data.map((d: any) => d.content);
@@ -52,7 +59,7 @@ export async function POST(req: NextRequest) {
         const { data: fallbackData } = await supabase
           .from('knowledge_embeddings')
           .select('content')
-          .limit(limit || 3);
+          .limit(safeLimit);
         if (fallbackData) {
           segments = fallbackData.map((d: any) => d.content);
         }
@@ -69,7 +76,7 @@ export async function POST(req: NextRequest) {
 
       if (insertError) {
         console.error('[DATABASE ERROR] Failed to insert knowledge embedding:', insertError);
-        return NextResponse.json({ error: insertError.message }, { status: 500 });
+        return NextResponse.json({ error: 'Insert failed' }, { status: 500 });
       }
       return NextResponse.json({ success: true, id });
     }

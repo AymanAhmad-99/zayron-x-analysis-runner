@@ -315,7 +315,7 @@ export async function POST(request: Request) {
     error: authError,
   } = await authSupabase.auth.getUser(token);
 
-  const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.role === 'admin';
+  const isAdmin = user?.app_metadata?.role === 'admin';
 
   if (authError || !user) {
     return NextResponse.json(
@@ -371,14 +371,17 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({
-    success: true,
-    inserted: ANALYST_CORE.length,
-    message: 'Analysts seeded successfully.',
-  }, {
-    headers: {
-      'Cache-Control': 'no-store',
-      'X-RateLimit-Remaining': String(remaining),
+  return NextResponse.json(
+    {
+      success: true,
+      inserted: ANALYST_CORE.length,
+      message: 'Analysts seeded successfully.',
     },
-  });
+    {
+      headers: {
+        'Cache-Control': 'no-store',
+        'X-RateLimit-Remaining': String(remaining),
+      },
+    },
+  );
 }

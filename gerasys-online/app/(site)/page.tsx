@@ -188,8 +188,8 @@ export default async function HomePage() {
               </h1>
 
               <p className="max-w-2xl mt-6 text-[1rem] sm:text-[1.1rem] leading-7 text-[var(--color-text-muted)]">
-                Monitor vulnerabilities, threat signals, and executive risk in one calm
-                intelligence platform.
+                Monitor vulnerabilities, threat signals, and executive risk in one calm intelligence
+                platform.
               </p>
 
               <div className="flex flex-wrap gap-4 mt-10">
@@ -203,7 +203,7 @@ export default async function HomePage() {
                   href="/news"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-md border border-[var(--color-border-strong)] text-[var(--color-text)] text-xs font-bold uppercase tracking-[0.18em] transition-colors hover:border-[var(--color-accent-intelligence)] hover:text-[var(--color-accent-intelligence)]"
                 >
-                  View Live Threats
+                  View Threat Briefings
                 </a>
               </div>
 
@@ -231,7 +231,7 @@ export default async function HomePage() {
                     Coverage Snapshot
                   </p>
                   <h2 className="mt-2 text-xl font-semibold tracking-tight text-white">
-                    Live intelligence, grounded in current platform data.
+                    Indexed intelligence, grounded in current platform data.
                   </h2>
                 </div>
                 <div className="h-10 w-10 rounded-full border border-[var(--color-accent-intelligence)]/30 bg-[var(--color-accent-intelligence)]/10 flex items-center justify-center text-[var(--color-accent-intelligence)]">
@@ -277,7 +277,9 @@ export default async function HomePage() {
                           <div className="mt-2 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.14em] text-white/55">
                             <span>{article.category ?? 'Intelligence'}</span>
                             <span className="text-white/25">/</span>
-                            <span>{formatSignalDate(article.publishedAt || article.createdAt)}</span>
+                            <span>
+                              {formatSignalDate(article.publishedAt || article.createdAt)}
+                            </span>
                           </div>
                         </a>
                       ))

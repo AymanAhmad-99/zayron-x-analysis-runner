@@ -13,14 +13,13 @@ export function CvePanel({ cves, totalCount }: CvePanelProps) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-black border dark:border-slate-800 flex items-center justify-center mb-5">
-          <span className="text-lg font-bold text-[#733DD9]">CVE</span>
+          <span className="text-lg font-bold text-[var(--color-accent-intelligence)]">CVE</span>
         </div>
         <h3 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">
-          Vulnerability index loading
+          No CVE records available yet
         </h3>
         <p className="text-[0.85rem] text-[#94A3B8] max-w-md leading-relaxed">
-          CVE records will appear here once the vulnerability ingestion pipeline is connected to the
-          NVD data source.
+          CVE records will appear here when indexed vulnerability data is available.
         </p>
       </div>
     );
@@ -35,12 +34,12 @@ export function CvePanel({ cves, totalCount }: CvePanelProps) {
             Vulnerability Index
           </h2>
           <p className="text-[0.78rem] text-[#94A3B8] mt-0.5">
-            {totalCount.toLocaleString()} vulnerabilities tracked across global infrastructure
+            {totalCount.toLocaleString()} indexed vulnerability records
           </p>
         </div>
         <Link
           href="/cve"
-          className="text-[0.75rem] font-medium text-[#733DD9] hover:text-[#5B21B6] transition-colors duration-300 flex items-center gap-1"
+          className="text-[0.75rem] font-medium text-[var(--color-accent-intelligence)] hover:text-[var(--color-accent-intelligence-hover)] transition-colors duration-300 flex items-center gap-1"
         >
           View all <ArrowUpRight className="w-3.5 h-3.5" />
         </Link>
@@ -68,7 +67,7 @@ export function CvePanel({ cves, totalCount }: CvePanelProps) {
                   <td className="py-5 px-6">
                     <Link
                       href={`/cve/${cve.cveId}`}
-                      className="text-[0.82rem] font-mono font-semibold text-[#0F172A] dark:text-slate-200 group-hover:text-[#733DD9] dark:group-hover:text-[#733DD9] transition-colors duration-300"
+                      className="text-[0.82rem] font-mono font-semibold text-[#0F172A] dark:text-slate-200 group-hover:text-[var(--color-accent-intelligence)] dark:group-hover:text-[var(--color-accent-intelligence)] transition-colors duration-300"
                     >
                       {cve.cveId}
                     </Link>

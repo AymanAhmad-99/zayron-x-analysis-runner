@@ -264,7 +264,8 @@ export async function GET(
   };
 
   const hasValidSecret =
-    !!process.env.STATUS_SECRET && request.headers.get('X-Status-Secret') === process.env.STATUS_SECRET;
+    !!process.env.STATUS_SECRET &&
+    request.headers.get('X-Status-Secret') === process.env.STATUS_SECRET;
 
   if (!hasValidSecret) {
     const publicResponse: PublicHealthResponse = {

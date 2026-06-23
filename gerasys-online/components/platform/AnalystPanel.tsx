@@ -19,12 +19,13 @@ export function AnalystPanel({ analysts }: AnalystPanelProps) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center mb-5">
-          <Globe className="w-6 h-6 text-[#733DD9]" />
+          <Globe className="w-6 h-6 text-[var(--color-accent-intelligence)]" />
         </div>
-        <h3 className="text-lg font-semibold text-[#0F172A] mb-2">Analyst dossiers compiling</h3>
+        <h3 className="text-lg font-semibold text-[#0F172A] mb-2">
+          No analyst profiles available yet
+        </h3>
         <p className="text-[0.85rem] text-[#94A3B8] max-w-md leading-relaxed">
-          Global threat intelligence analyst profiles will appear here after verification by the
-          intelligence directorate.
+          Analyst profiles will appear here when published coverage is available.
         </p>
       </div>
     );
@@ -34,9 +35,9 @@ export function AnalystPanel({ analysts }: AnalystPanelProps) {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-[1.1rem] font-semibold text-[#0F172A]">Global Analyst Corps</h2>
+        <h2 className="text-[1.1rem] font-semibold text-[#0F172A]">Analyst Coverage</h2>
         <p className="text-[0.78rem] text-[#94A3B8] mt-0.5">
-          {analysts.length} verified intelligence professionals across{' '}
+          {analysts.length} analyst profiles across{' '}
           {new Set(analysts.map((a) => a.nationality).filter(Boolean)).size} nations
         </p>
       </div>
@@ -62,7 +63,7 @@ export function AnalystPanel({ analysts }: AnalystPanelProps) {
                   {analyst.name}
                 </h3>
                 {analyst.nationality && (
-                  <p className="text-[0.68rem] font-medium text-[#733DD9] tracking-wide mt-0.5">
+                  <p className="text-[0.68rem] font-medium text-[var(--color-accent-intelligence)] tracking-wide mt-0.5">
                     {analyst.nationality}
                   </p>
                 )}

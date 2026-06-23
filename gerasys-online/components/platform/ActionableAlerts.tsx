@@ -109,7 +109,9 @@ export function ActionableAlerts({ articles }: ActionableAlertsProps) {
                           {formattedDate && (
                             <>
                               <span>·</span>
-                              <span className="text-neutral-500 font-semibold">{formattedDate}</span>
+                              <span className="text-neutral-500 font-semibold">
+                                {formattedDate}
+                              </span>
                             </>
                           )}
                           {sourceChannel && (
