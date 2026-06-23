@@ -1,70 +1,100 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import type { Article, CVE } from '@/lib/types';
+import { useEffect, useMemo, useState } from 'react';
 
-const STREAM_ITEMS = [
-  '[HASH: 8b4c52f | IP: 185.220.101.44 | VECTOR: PORT_SCAN | STATUS: INTERCEPTED]',
-  '[HASH: f2c4b58 | IP: 91.240.118.15 | VECTOR: SSH_BRUTE | STATUS: REDACTED]',
-  '[HASH: c5e4b7a | IP: 185.112.144.9 | VECTOR: WAF_ATTACK | STATUS: QUARANTINED]',
-  '[HASH: 5d4b58c | IP: 45.227.254.12 | VECTOR: RDP_EXPLOIT | STATUS: BLOCKING]',
-  '[HASH: 9a8b7c6 | IP: 109.230.199.4 | VECTOR: TLS_INTERCEPT | STATUS: MASQUERADING]',
-  '[HASH: a8b7c6d | IP: 192.3.166.42 | VECTOR: CNC_HEARTBEAT | STATUS: CLASSIFIED]',
-];
+interface LiveIntelTickerProps {
+  articles: Article[];
+  cves: CVE[];
+  categories?: { category: string; count: number }[];
+}
 
-export function LiveIntelTicker() {
-  const [tickerOffset, setTickerOffset] = useState(0);
-  const [flickerVal, setFlickerVal] = useState(1382);
+function formatTickerDate(date: string | Date | null | undefined) {
+  if (!date) return 'Updating';
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+}
 
-  // Animate scrolling offset and trigger random numeric flickers
+export function LiveIntelTicker({ articles, cves }: LiveIntelTickerProps) {
+  const items = useMemo(() => {
+    const articleItems = articles.slice(0, 4).map((article) => ({
+      key: `article-${article.id}`,
+      type: article.category ?? 'Intelligence',
+      title: article.title,
+      meta: formatTickerDate(article.publishedAt || article.createdAt),
+      href: `/intelligence/${(article.category ?? 'intelligence').toLowerCase().replace(/\s+/g, '-')}/${article.slug}`,
+    }));
+
+    const cveItems = cves.slice(0, 4).map((cve) => ({
+      key: `cve-${cve.id}`,
+      type: cve.severity || 'CVE',
+      title: cve.cveId || 'CVE Record',
+      meta: formatTickerDate(cve.publishedDate),
+      href: `/cve/${cve.cveId}`,
+    }));
+
+    return [...articleItems, ...cveItems];
+  }, [articles, cves]);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
   useEffect(() => {
-    const scrollInterval = setInterval(() => {
-      setTickerOffset((prev) => (prev + 1) % STREAM_ITEMS.length);
+    if (items.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % items.length);
     }, 4000);
 
-    const flickerInterval = setInterval(() => {
-      setFlickerVal((prev) => {
-        const delta = Math.floor(Math.random() * 21) - 10;
-        return Math.max(1000, Math.min(2000, prev + delta));
-      });
-    }, 1500);
+    return () => clearInterval(interval);
+  }, [items.length]);
 
-    return () => {
-      clearInterval(scrollInterval);
-      clearInterval(flickerInterval);
-    };
-  }, []);
-
-  return (
-    <div className="bg-[#FAFAFA] border-y border-neutral-200 py-3.5 px-6 font-mono text-[10px] uppercase select-none flex items-center justify-between gap-6 overflow-hidden">
-      {/* Live Indicator */}
-      <div className="flex items-center gap-2 shrink-0 border-r border-neutral-200 pr-6">
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-600" />
-        </span>
-        <span className="font-black text-[#050505] tracking-wider">LIVE INTEL FEED</span>
-      </div>
-
-      {/* Stream Message Scrolling */}
-      <div className="w-full relative flex items-center overflow-hidden h-4 text-neutral-500 font-bold">
-        <div
-          className="absolute flex whitespace-nowrap transition-all duration-700 ease-in-out gap-8"
-          style={{ transform: `translateY(${-tickerOffset * 16}px)` }}
-        >
-          {STREAM_ITEMS.map((item, idx) => (
-            <div key={idx} className="h-4 flex items-center gap-1.5">
-              <span>{item}</span>
-            </div>
-          ))}
+  if (items.length === 0) {
+    return (
+      <div className="bg-[var(--color-bg-soft)] border-y border-[var(--color-border)] py-3.5 px-6 font-mono text-[10px] uppercase select-none flex items-center gap-6 overflow-hidden">
+        <div className="flex items-center gap-2 shrink-0 border-r border-[var(--color-border)] pr-6">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-accent-intelligence)]" />
+          <span className="font-black text-[var(--color-text)] tracking-wider">
+            Intelligence Updates
+          </span>
+        </div>
+        <div className="text-[var(--color-text-muted)] font-bold normal-case">
+          No intelligence updates available yet.
         </div>
       </div>
+    );
+  }
 
-      {/* Live Metric Flicker Counter */}
-      <div className="shrink-0 flex items-center gap-3 border-l border-neutral-200 pl-6 text-right font-black">
-        <span className="text-neutral-400">PACKETS/SEC:</span>
-        <span className="text-[#050505] min-w-[32px] inline-block tabular-nums animate-pulse">
-          {flickerVal}
+  return (
+    <div className="bg-[var(--color-bg-soft)] border-y border-[var(--color-border)] py-3.5 px-6 font-mono text-[10px] uppercase select-none flex items-center gap-6 overflow-hidden">
+      <div className="flex items-center gap-2 shrink-0 border-r border-[var(--color-border)] pr-6">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-accent-intelligence)]" />
+        <span className="font-black text-[var(--color-text)] tracking-wider">
+          Intelligence Updates
         </span>
+      </div>
+
+      <div className="relative flex-1 overflow-hidden h-5">
+        <div
+          className="absolute inset-0 transition-transform duration-700 ease-in-out"
+          style={{ transform: `translateY(${-activeIndex * 20}px)` }}
+        >
+          {items.map((item) => (
+            <a
+              key={item.key}
+              href={item.href}
+              className="h-5 flex items-center gap-2 text-[var(--color-text-muted)] font-bold normal-case whitespace-nowrap"
+            >
+              <span className="text-[var(--color-accent-intelligence)] uppercase tracking-[0.16em]">
+                {item.type}
+              </span>
+              <span className="text-neutral-300">/</span>
+              <span className="truncate">{item.title}</span>
+              <span className="text-neutral-300">/</span>
+              <span className="uppercase tracking-[0.12em] text-neutral-400">{item.meta}</span>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );

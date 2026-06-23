@@ -337,7 +337,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <LiveIntelTicker />
+      <LiveIntelTicker articles={articles} cves={cves} categories={categories} />
 
       <section className="bg-white border-b border-[var(--color-border)]">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-12">
