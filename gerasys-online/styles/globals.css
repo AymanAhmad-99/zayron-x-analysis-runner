@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 /* =====================================================
-   ZAYRON-X 2027 — FLUID-INTELLIGENCE DESIGN SYSTEM
-   Elite Silicon Valley Sovereign Tech Aesthetic
-   With full dark mode + WCAG 2.2 AA compliance
+   ZAYRON-X — EXECUTIVE CTI DESIGN SYSTEM
+   White-first luxury interface, Royal Black sections,
+   Intelligence orange accent — WCAG 2.2 AA compliant
    ===================================================== */
 
 @custom-variant dark (&:where(.dark, .dark *));

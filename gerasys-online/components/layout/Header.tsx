@@ -8,13 +8,11 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 const NAV_LINKS = [
-  { label: 'Home', href: '/' },
-  { label: 'Malware', href: '/intelligence/malware' },
-  { label: 'Threat Actors', href: '/intelligence/threat-actors' },
-  { label: 'Vulnerabilities', href: '/intelligence/vulnerabilities' },
-  { label: 'Exploits', href: '/intelligence/exploits' },
-  { label: 'Dark Web', href: '/intelligence/dark-web' },
-  { label: 'OSINT', href: '/intelligence/osint' },
+  { label: 'Intelligence', href: '/intelligence/threat-intelligence' },
+  { label: 'CVEs', href: '/cve' },
+  { label: 'Articles', href: '/news' },
+  { label: 'Analysts', href: '/analysts' },
+  { label: 'Pricing', href: '/#pricing-tiers' },
 ] as const;
 
 export function Header() {
@@ -25,7 +23,7 @@ export function Header() {
     <>
       <header className="sticky top-0 z-50 bg-white/95 dark:bg-[var(--color-section-royal)]/88 backdrop-blur border-b border-[var(--color-border)] dark:border-white/10 shadow-none font-mono">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
-          {/* Logo — Sovereign Wordmark */}
+          {/* ZAYRON-X Wordmark */}
           <div className="flex items-center shrink-0">
             <Link href="/" prefetch={true} className="flex items-center" aria-label="ZAYRON-X Home">
               <span

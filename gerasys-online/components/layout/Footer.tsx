@@ -2,171 +2,106 @@ import Link from 'next/link';
 
 const currentYear = new Date().getFullYear();
 
+const PRODUCT_LINKS = [
+  { label: 'Intelligence', href: '/intelligence/threat-intelligence' },
+  { label: 'CVEs', href: '/cve' },
+  { label: 'Articles', href: '/news' },
+  { label: 'Analysts', href: '/analysts' },
+  { label: 'Pricing', href: '/#pricing-tiers' },
+  { label: 'Search', href: '/search' },
+] as const;
+
+const LEGAL_LINKS = [
+  { label: 'Terms of Service', href: '/terms' },
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Vulnerability Disclosure', href: '/vdp' },
+] as const;
+
 export function Footer() {
   return (
     <footer
-      className="bg-white dark:bg-black border-t border-slate-200 dark:border-slate-800"
+      className="bg-[var(--color-bg)] border-t border-[var(--color-border)]"
       aria-label="Site footer"
     >
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
-        {/* 5-column grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-14">
-          {/* Column 1 — Corporate Identity */}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-10 lg:gap-14">
+          {/* Brand column */}
+          <div>
+            <Link href="/" aria-label="ZAYRON-X Home">
+              <span className="text-[1.15rem] font-black uppercase select-none inline-flex items-center tracking-[-0.08em]">
+                <span className="text-[var(--color-text)]">ZAYRON</span>
+                <span className="text-[var(--color-accent-intelligence)]">-X</span>
+              </span>
+            </Link>
+            <p className="mt-2 text-[0.72rem] text-[var(--color-text-muted)] leading-relaxed max-w-[220px]">
+              Cyber Threat Intelligence Platform
+            </p>
+
+            {/* Platform status */}
+            <Link
+              href="/status"
+              className="inline-flex items-center gap-1.5 mt-5 text-[0.72rem] font-mono text-[var(--color-text-muted)] hover:text-[var(--color-accent-intelligence)] transition-colors duration-200"
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"
+                aria-hidden="true"
+              />
+              Platform Status
+            </Link>
+          </div>
+
+          {/* Product links */}
           <div>
             <h4
-              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
-              id="footer-corporate"
+              className="text-[0.72rem] font-semibold text-[var(--color-text)] uppercase tracking-[0.12em] mb-4"
+              id="footer-product"
             >
-              Corporate
+              Product
             </h4>
-            <ul className="space-y-3" aria-labelledby="footer-corporate">
-              <li>
-                <span className="text-[0.78rem] font-semibold text-slate-700 dark:text-slate-300">
-                  ZAYRON-X Intelligence Corp.
-                </span>
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 leading-relaxed">
-                Global Headquarters
-                <br />
-                Silicon Valley, California, USA
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 leading-relaxed">
-                North American Threat Ops
-                <br />
-                Toronto, Canada
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 leading-relaxed">
-                EU Data Node
-                <br />
-                Frankfurt, Germany
-              </li>
+            <ul className="space-y-2.5" aria-labelledby="footer-product">
+              {PRODUCT_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-[0.78rem] text-[var(--color-text-muted)] hover:text-[var(--color-accent-intelligence)] transition-colors duration-200"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Column 2 — Compliance & Certifications */}
+          {/* Legal links */}
           <div>
             <h4
-              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
-              id="footer-compliance"
-            >
-              Compliance
-            </h4>
-            <ul className="space-y-2.5" aria-labelledby="footer-compliance">
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400">
-                ISO/IEC 27001:2022 Certified
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400">
-                SOC 2 Type II Audited
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400">
-                GDPR &amp; CCPA Compliant Framework
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400">
-                NIST CSF Aligned
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3 — Tactical Operations */}
-          <div>
-            <h4
-              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
-              id="footer-ops"
-            >
-              Operations
-            </h4>
-            <ul className="space-y-2.5" aria-labelledby="footer-ops">
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400">
-                24/7 Incident Response Team
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-[0.72rem] text-slate-500 dark:text-slate-400 hover:text-[#2563EB] dark:hover:text-[#733DD9] transition-colors duration-300"
-                >
-                  Request CISO Executive Briefing
-                </Link>
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 font-mono">
-                Secure Comms (PGP Public Key)
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4 — Legal & Policies */}
-          <div>
-            <h4
-              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
+              className="text-[0.72rem] font-semibold text-[var(--color-text)] uppercase tracking-[0.12em] mb-4"
               id="footer-legal"
             >
               Legal
             </h4>
             <ul className="space-y-2.5" aria-labelledby="footer-legal">
-              <li>
-                <Link
-                  href="/terms"
-                  className="text-[0.72rem] text-slate-500 dark:text-slate-400 hover:text-[#2563EB] dark:hover:text-[#733DD9] transition-colors duration-300"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy"
-                  className="text-[0.72rem] text-slate-500 dark:text-slate-400 hover:text-[#2563EB] dark:hover:text-[#733DD9] transition-colors duration-300"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/vdp"
-                  className="text-[0.72rem] text-slate-500 dark:text-slate-400 hover:text-[#2563EB] dark:hover:text-[#733DD9] transition-colors duration-300"
-                >
-                  Vulnerability Disclosure Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 5 — Infrastructure */}
-          <div>
-            <h4
-              className="text-[0.72rem] font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-[0.12em] mb-5"
-              id="footer-infra"
-            >
-              Infrastructure
-            </h4>
-            <ul className="space-y-2.5" aria-labelledby="footer-infra">
-              <li>
-                <Link
-                  href="/status"
-                  className="text-[0.72rem] text-slate-500 dark:text-slate-400 hover:text-[#2563EB] dark:hover:text-[#733DD9] transition-colors duration-300 inline-flex items-center gap-1.5"
-                >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"
-                    aria-hidden="true"
-                  />
-                  Platform Status
-                </Link>
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 font-mono">
-                API v2.0
-              </li>
-              <li className="text-[0.72rem] text-slate-500 dark:text-slate-400 font-mono">
-                Edge: Cloudflare Workers
-              </li>
+              {LEGAL_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-[0.78rem] text-[var(--color-text-muted)] hover:text-[var(--color-accent-intelligence)] transition-colors duration-200"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-14 pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <span className="text-[0.68rem] text-slate-400 dark:text-slate-500 font-medium tracking-wide">
-            &copy; 2026–{currentYear} ZAYRON-X Intelligence Corp. All rights reserved.
+        <div className="mt-12 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <span className="text-[0.68rem] text-[var(--color-text-muted)] font-medium tracking-wide">
+            &copy; 2026–{currentYear} ZAYRON-X. All rights reserved.
           </span>
-          <span className="text-[0.65rem] text-slate-400 dark:text-slate-500 font-mono uppercase tracking-[0.1em]">
-            TLP:AMBER — CLASSIFIED INTELLIGENCE PLATFORM
+          <span className="text-[0.65rem] text-[var(--color-text-muted)] font-mono uppercase tracking-[0.1em]">
+            Cyber Threat Intelligence
           </span>
         </div>
       </div>

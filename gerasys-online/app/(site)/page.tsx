@@ -18,7 +18,6 @@ import { SitrepExporter } from '@/components/platform/SitrepExporter';
 import { AutomatedRoiCalculator } from '@/components/platform/AutomatedRoiCalculator';
 import { LiveIntelTicker } from '@/components/platform/LiveIntelTicker';
 import { PricingTiers } from '@/components/platform/PricingTiers';
-import { SkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { ArrowUpRight, Globe, Layers, Shield } from '@/lib/icons';
 
 const getHomeData = cache(async () => {
@@ -83,17 +82,12 @@ function StatsFallback() {
 
 function SectorWorkspaceFallback() {
   return (
-    <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16 space-y-8 animate-pulse">
-      <div className="h-10 bg-slate-800 rounded w-1/4" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
-          <SkeletonLoader variant="list" className="h-24 w-full" />
-          <SkeletonLoader variant="list" className="h-24 w-full" />
-          <SkeletonLoader variant="list" className="h-24 w-full" />
-        </div>
-        <div className="lg:col-span-1">
-          <SkeletonLoader variant="card" className="h-72 w-full" />
-        </div>
+    <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-16">
+      <div className="h-px w-full bg-[var(--color-border)] rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[var(--color-accent-intelligence)] rounded-full"
+          style={{ width: '40%', animation: 'shimmer 1.5s infinite' }}
+        />
       </div>
     </div>
   );

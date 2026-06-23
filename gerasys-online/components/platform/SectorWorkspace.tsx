@@ -40,7 +40,7 @@ export function SectorWorkspace({
   return (
     <div>
       {/* Sector Tabs */}
-      <div className="border-b border-slate-200 bg-white">
+      <div className="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
           <div className="flex items-center gap-1">
             {SECTORS.map((sector) => {
@@ -53,7 +53,7 @@ export function SectorWorkspace({
                   className={`
                     relative flex items-center gap-2 px-5 py-4 text-[0.8rem] font-medium tracking-wide
                     transition-colors duration-300 cursor-pointer
-                    ${isActive ? 'text-[#0F172A]' : 'text-[#94A3B8] hover:text-[#64748B]'}
+                    ${isActive ? 'text-[var(--color-text)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'}
                   `}
                 >
                   <Icon className="w-4 h-4" />
@@ -61,7 +61,7 @@ export function SectorWorkspace({
                   <span
                     className={`
                     text-[0.65rem] font-mono tabular-nums ml-1
-                    ${isActive ? 'text-[var(--color-accent-intelligence)]' : 'text-[#CBD5E1]'}
+                    ${isActive ? 'text-[var(--color-accent-intelligence)]' : 'text-[var(--color-border-strong)]'}
                   `}
                   >
                     {counts[sector.countKey].toLocaleString()}
@@ -79,7 +79,7 @@ export function SectorWorkspace({
       </div>
 
       {/* Sector Content */}
-      <div className="bg-[#F8FAFC] min-h-[60vh]">
+      <div className="bg-[var(--color-bg-soft)] min-h-[60vh]">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 py-10">
           {active === 'briefings' && briefings}
           {active === 'cve' && cveIndex}

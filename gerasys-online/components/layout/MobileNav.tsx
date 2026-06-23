@@ -11,13 +11,11 @@ interface MobileNavProps {
 }
 
 const links = [
-  { label: 'Home', href: '/' },
-  { label: 'Malware', href: '/intelligence/malware' },
-  { label: 'Threat Actors', href: '/intelligence/threat-actors' },
-  { label: 'Vulnerabilities', href: '/intelligence/vulnerabilities' },
-  { label: 'Exploits', href: '/intelligence/exploits' },
-  { label: 'Dark Web', href: '/intelligence/dark-web' },
-  { label: 'OSINT', href: '/intelligence/osint' },
+  { label: 'Intelligence', href: '/intelligence/threat-intelligence' },
+  { label: 'CVEs', href: '/cve' },
+  { label: 'Articles', href: '/news' },
+  { label: 'Analysts', href: '/analysts' },
+  { label: 'Pricing', href: '/#pricing-tiers' },
 ];
 
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
