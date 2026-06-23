@@ -37,7 +37,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-    { media: '(prefers-color-scheme: dark)', color: '#050505' },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0A0A' },
   ],
 };
 
@@ -71,10 +71,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta charSet="utf-8" />
         <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-        <meta name="theme-color" content="#050505" />
+        <meta name="theme-color" content="#0A0A0A" />
       </head>
       <body
-        className={`min-h-screen bg-white dark:bg-black text-[#0F172A] dark:text-white antialiased flex flex-col ${playfair.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+        className={`min-h-screen bg-white dark:bg-[var(--color-section-royal)] text-[var(--color-text)] dark:text-white antialiased flex flex-col ${playfair.variable} ${inter.variable} ${jetbrainsMono.variable}`}
         style={{ fontFamily: 'var(--font-inter), sans-serif' }}
       >
         <Providers>
@@ -83,8 +83,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[200]
-                         focus:px-4 focus:py-2 focus:bg-[#733DD9] focus:text-white focus:rounded-md
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#733DD9]
+                         focus:px-4 focus:py-2 focus:bg-[var(--color-accent-intelligence)] focus:text-white focus:rounded-md
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-accent-intelligence)]
                          dark:focus:ring-offset-slate-950 focus:text-sm focus:font-semibold"
             >
               Skip to content

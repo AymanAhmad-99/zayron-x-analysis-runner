@@ -75,20 +75,20 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       id="mobile-menu"
     >
       <div
-        className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[rgba(17,17,17,0.28)] dark:bg-[rgba(0,0,0,0.6)] backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="absolute top-0 right-0 w-72 h-full bg-white dark:bg-black shadow-2xl flex flex-col">
+      <div className="absolute top-0 right-0 w-72 h-full bg-white dark:bg-[var(--color-section-royal)] shadow-2xl flex flex-col border-l border-[var(--color-border)] dark:border-white/10">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] dark:border-slate-800">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#0F172A] dark:text-white">
+        <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] dark:border-white/10">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-text)] dark:text-white">
             Menu
           </span>
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="p-1.5 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-neutral-900 transition-colors text-[#475569] dark:text-slate-400"
+            className="p-1.5 rounded-lg hover:bg-[var(--color-bg-soft)] dark:hover:bg-white/5 transition-colors text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)]"
           >
             <X size={20} />
           </button>
@@ -101,7 +101,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               key={link.href}
               href={link.href}
               prefetch={true}
-              className="block px-3 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[#475569] dark:text-slate-400 hover:text-[#733DD9] dark:hover:text-[#733DD9] hover:bg-[#F1F5F9] dark:hover:bg-neutral-900/50 rounded-lg transition-colors"
+              className="block px-3 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)] hover:bg-[var(--color-bg-soft)] dark:hover:bg-white/5 rounded-lg transition-colors"
               onClick={onClose}
             >
               {link.label}
@@ -110,11 +110,11 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         </nav>
 
         {/* Bottom controls */}
-        <div className="p-4 border-t border-[#E2E8F0] dark:border-slate-800 flex items-center gap-2">
+        <div className="p-4 border-t border-[var(--color-border)] dark:border-white/10 flex items-center gap-2">
           <button
             type="button"
             onClick={cycleTheme}
-            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#475569] dark:text-slate-400 hover:text-[#733DD9] dark:hover:text-[#733DD9] rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-neutral-900 transition-colors flex-1"
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)] rounded-lg hover:bg-[var(--color-bg-soft)] dark:hover:bg-white/5 transition-colors flex-1"
             aria-label="Toggle theme"
           >
             <ThemeIcon className="w-4 h-4" />

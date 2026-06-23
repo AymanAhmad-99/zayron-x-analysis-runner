@@ -23,7 +23,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white dark:bg-black/80 dark:backdrop-blur border-b border-neutral-200 dark:border-slate-800 shadow-none font-mono">
+      <header className="sticky top-0 z-50 bg-white/95 dark:bg-[var(--color-section-royal)]/88 backdrop-blur border-b border-[var(--color-border)] dark:border-white/10 shadow-none font-mono">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between gap-6">
           {/* Logo — Sovereign Wordmark */}
           <div className="flex items-center shrink-0">
@@ -32,8 +32,8 @@ export function Header() {
                 className="text-[1.3rem] font-black uppercase select-none inline-flex items-center tracking-tighter"
                 style={{ letterSpacing: '-0.08em' }}
               >
-                <span className="text-[#050505] dark:text-white">ZAYRON</span>
-                <span className="text-[#733DD9]">-X</span>
+                <span className="text-[var(--color-text)] dark:text-white">ZAYRON</span>
+                <span className="text-[var(--color-accent-intelligence)]">-X</span>
               </span>
             </Link>
           </div>
@@ -50,8 +50,8 @@ export function Header() {
                   aria-current={isActive ? 'page' : undefined}
                   className={`font-mono text-[10px] uppercase tracking-widest transition-colors duration-200 py-2 border-b-2 ${
                     isActive
-                      ? 'text-[#733DD9] border-[#733DD9]'
-                      : 'text-neutral-500 dark:text-slate-400 border-transparent hover:text-neutral-900 dark:hover:text-white hover:border-neutral-900 dark:hover:border-slate-400'
+                      ? 'text-[var(--color-accent-intelligence)] border-[var(--color-accent-intelligence)]'
+                      : 'text-[var(--color-text-muted)] dark:text-[#b8b3ac] border-transparent hover:text-[var(--color-text)] dark:hover:text-white hover:border-[var(--color-border-strong)] dark:hover:border-white/30'
                   }`}
                 >
                   {link.label}
@@ -66,7 +66,7 @@ export function Header() {
             <Link
               href="/search"
               prefetch={true}
-              className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-slate-800 text-neutral-500 dark:text-slate-400 hover:text-[#733DD9] dark:hover:text-[#733DD9] transition-colors hidden sm:inline-flex"
+              className="hidden sm:inline-flex p-2 rounded-md border border-transparent hover:border-[var(--color-border)] dark:hover:border-white/10 hover:bg-[var(--color-bg-soft)] dark:hover:bg-white/5 text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)] transition-colors"
               aria-label="Search"
             >
               <Search className="w-4 h-4" />
@@ -79,7 +79,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-slate-800 text-neutral-600 dark:text-slate-400 lg:hidden transition-colors"
+              className="p-2 rounded-md border border-transparent hover:border-[var(--color-border)] dark:hover:border-white/10 hover:bg-[var(--color-bg-soft)] dark:hover:bg-white/5 text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)] lg:hidden transition-colors"
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
