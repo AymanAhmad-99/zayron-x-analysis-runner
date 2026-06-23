@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, ShieldCheck, Zap } from '@/lib/icons';
+import { ShieldCheck, Zap } from '@/lib/icons';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 
@@ -79,67 +79,69 @@ export function PricingTiers() {
   };
 
   return (
-    <section className="bg-slate-950/60 backdrop-blur-xl border-t border-white/5 text-slate-100 py-24 px-6 lg:px-10 relative overflow-hidden font-sans">
-      <div className="max-w-[1200px] mx-auto relative z-10">
-        {/* Header Block */}
+    <section className="bg-[var(--color-section-royal)] text-white py-24 px-6 lg:px-10 font-sans">
+      <div className="max-w-[1200px] mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#733DD9]/10 text-[#733DD9] font-mono text-[10px] font-bold tracking-widest uppercase mb-4 border border-[#733DD9]/20">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-accent-intelligence)]/10 text-[var(--color-accent-intelligence)] font-mono text-[10px] font-bold tracking-widest uppercase mb-4 border border-[var(--color-accent-intelligence)]/20">
             <Zap className="w-3.5 h-3.5" />
-            COMMERCIAL COMMAND INTELLIGENCE
+            Executive CTI Plans
           </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4 uppercase font-mono">
-            SaaS Commercial Tier Deployment
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-[-0.03em] mb-4 text-white">
+            Pricing for teams using ZAYRON-X
           </h2>
-          <p className="text-sm text-slate-400 leading-relaxed font-sans max-w-lg mx-auto">
-            Upgrade your security node clearance levels. Unlock advanced AI remediation payloads,
-            SIEM telemetry integration, and official Executive SITREPs.
+          <p className="text-sm text-white/65 leading-relaxed max-w-lg mx-auto">
+            Choose a plan for intelligence briefings, CVE tracking, analyst visibility, and calm
+            executive workflows built around the product features available today.
           </p>
         </div>
 
         {error && (
-          <div className="max-w-md mx-auto mb-8 p-4 bg-red-950/40 border border-red-500/20 rounded text-center text-xs font-mono text-red-400">
-            🚨 ERROR: {error}
+          <div className="max-w-md mx-auto mb-8 p-4 bg-[#B42318]/10 border border-[#B42318]/20 rounded text-center text-xs font-mono text-[#FCA5A5]">
+            ERROR: {error}
           </div>
         )}
 
-        {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-          {/* Tactical Observer Tier */}
-          <div className="bg-slate-950/60 backdrop-blur-xl border border-white/5 rounded-lg p-8 flex flex-col justify-between hover:border-[#733DD9]/40 transition-all duration-300 relative">
+          <div className="bg-[var(--color-section-royal-2)] border border-white/10 rounded-[1.25rem] p-8 flex flex-col justify-between transition-colors duration-300 hover:border-[var(--color-accent-intelligence)]/35 relative">
             {isCurrentTier('TACTICAL_OBSERVER') && (
-              <span className="absolute top-4 right-4 bg-[#733DD9]/20 text-[#733DD9] border border-[#733DD9]/30 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-                Active Tier
+              <span className="absolute top-4 right-4 bg-[var(--color-accent-intelligence)]/10 text-[var(--color-accent-intelligence)] border border-[var(--color-accent-intelligence)]/25 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+                Current Plan
               </span>
             )}
             <div>
-              <span className="text-xs uppercase font-mono tracking-widest text-[#733DD9] font-extrabold block mb-2">
-                Clearance Level I
+              <span className="text-xs uppercase font-mono tracking-widest text-[var(--color-accent-intelligence)] font-extrabold block mb-2">
+                Essential
               </span>
-              <h3 className="text-xl font-bold text-slate-100 uppercase font-mono mb-4">
-                Tactical Observer
-              </h3>
+              <h3 className="text-xl font-semibold text-white mb-4">Essential</h3>
               <div className="mb-6 flex items-baseline font-mono">
-                <span className="text-4xl font-extrabold text-slate-100">$15</span>
-                <span className="text-slate-400 text-xs ml-2 uppercase">/ month</span>
+                <span className="text-4xl font-extrabold text-white">$15</span>
+                <span className="text-white/50 text-xs ml-2 uppercase">/ month</span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed mb-8">
-                Basic threat perimeter monitoring, low-latency intelligence alerts, and essential
-                scanning.
+              <p className="text-xs text-white/65 leading-relaxed mb-8">
+                A focused starting plan for teams following published intelligence and
+                vulnerabilities inside the current ZAYRON-X platform.
               </p>
 
-              {/* Features List */}
               <ul className="space-y-3.5 mb-8 text-xs">
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Real-time Threat Alerts & Notifications</span>
+                <li className="flex items-center gap-2.5 text-white/80">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Access to latest intelligence briefings</span>
                 </li>
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Limited API Queries (100 per day)</span>
+                <li className="flex items-center gap-2.5 text-white/80">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>CVE tracker access</span>
                 </li>
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Basic Executive SITREP Overview</span>
+                <li className="flex items-center gap-2.5 text-white/80">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Category-based threat browsing</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-white/80">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Basic search access</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-white/80">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Briefing export preview</span>
                 </li>
               </ul>
             </div>
@@ -149,60 +151,62 @@ export function PricingTiers() {
               disabled={loading || processingTier !== null}
               className={`w-full py-3.5 font-mono font-bold text-xs uppercase tracking-wider transition-all rounded ${
                 isCurrentTier('TACTICAL_OBSERVER')
-                  ? 'bg-slate-900 border border-white/10 text-slate-400 cursor-not-allowed'
-                  : 'bg-transparent text-[#733DD9] border border-[#733DD9] hover:bg-[#733DD9] hover:text-white cursor-pointer'
+                  ? 'bg-white/5 border border-white/10 text-white/45 cursor-not-allowed'
+                  : 'bg-transparent text-[var(--color-accent-intelligence)] border border-[var(--color-accent-intelligence)] hover:bg-[var(--color-accent-intelligence)] hover:text-white cursor-pointer'
               }`}
             >
               {processingTier === 'TACTICAL_OBSERVER'
-                ? 'Deploying...'
+                ? 'Processing...'
                 : isCurrentTier('TACTICAL_OBSERVER')
-                  ? 'Active Node'
-                  : 'Initialize Observer'}
+                  ? 'Current Plan'
+                  : 'Choose Essential'}
             </button>
           </div>
 
-          {/* Sovereign Command Tier */}
-          <div className="bg-slate-950/60 backdrop-blur-xl border border-[#733DD9]/30 rounded-lg p-8 flex flex-col justify-between hover:border-[#733DD9]/60 transition-all duration-300 relative shadow-[0_0_30px_rgba(115,61,217,0.1)]">
-            <span className="absolute top-4 right-4 bg-[#733DD9] text-white text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-              {isCurrentTier('SOVEREIGN_COMMAND') ? 'Active Tier' : 'Recommended'}
+          <div className="bg-white text-[var(--color-text)] border border-[var(--color-border)] rounded-[1.25rem] p-8 flex flex-col justify-between transition-colors duration-300 hover:border-[var(--color-accent-intelligence)]/50 relative shadow-[0_20px_60px_rgba(10,10,10,0.08)]">
+            <span className="absolute top-4 right-4 bg-[var(--color-accent-intelligence)] text-white text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+              {isCurrentTier('SOVEREIGN_COMMAND') ? 'Current Plan' : 'Recommended'}
             </span>
             <div>
-              <span className="text-xs uppercase font-mono tracking-widest text-[#733DD9] font-extrabold block mb-2">
-                Clearance Level II
+              <span className="text-xs uppercase font-mono tracking-widest text-[var(--color-accent-intelligence)] font-extrabold block mb-2">
+                Professional
               </span>
-              <h3 className="text-xl font-bold text-slate-100 uppercase font-mono mb-4">
-                Sovereign Command
-              </h3>
+              <h3 className="text-xl font-semibold text-[var(--color-text)] mb-4">Professional</h3>
               <div className="mb-6 flex items-baseline font-mono">
-                <span className="text-4xl font-extrabold text-slate-100">$25</span>
-                <span className="text-slate-400 text-xs ml-2 uppercase">/ month</span>
+                <span className="text-4xl font-extrabold text-[var(--color-text)]">$25</span>
+                <span className="text-[var(--color-text-muted)] text-xs ml-2 uppercase">
+                  / month
+                </span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed mb-8">
-                Comprehensive security orchestration. Full-scale automation, dark web sweeps, and
-                SIEM pipeline integrations.
+              <p className="text-xs text-[var(--color-text-muted)] leading-relaxed mb-8">
+                A broader workflow for teams that want deeper visibility across briefings,
+                vulnerabilities, analysts, and platform endpoints.
               </p>
 
-              {/* Features List */}
               <ul className="space-y-3.5 mb-8 text-xs">
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Everything in Tactical Observer</span>
+                <li className="flex items-center gap-2.5 text-[var(--color-text)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Everything in Essential</span>
                 </li>
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Full SITREP Generation (PDF/HTML)</span>
+                <li className="flex items-center gap-2.5 text-[var(--color-text)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Expanded briefing access</span>
                 </li>
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Sovereign Dark Web Monitoring</span>
+                <li className="flex items-center gap-2.5 text-[var(--color-text)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>CVE-focused intelligence workflow</span>
                 </li>
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>SIEM / Splunk / Sentinel Integration</span>
+                <li className="flex items-center gap-2.5 text-[var(--color-text)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Analyst coverage views</span>
                 </li>
-                <li className="flex items-center gap-2.5 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-[#733DD9] shrink-0" />
-                  <span>Interactive Threat Timeline mapping</span>
+                <li className="flex items-center gap-2.5 text-[var(--color-text)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>API-ready article and CVE endpoints</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-[var(--color-text)]">
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-accent-intelligence)] shrink-0" />
+                  <span>Briefing export workflow</span>
                 </li>
               </ul>
             </div>
@@ -212,15 +216,15 @@ export function PricingTiers() {
               disabled={loading || processingTier !== null}
               className={`w-full py-3.5 font-mono font-bold text-xs uppercase tracking-wider transition-all rounded ${
                 isCurrentTier('SOVEREIGN_COMMAND')
-                  ? 'bg-slate-900 border border-white/10 text-slate-400 cursor-not-allowed'
-                  : 'bg-[#733DD9] text-white border border-[#733DD9] hover:bg-[#5b21b6] hover:border-[#5b21b6] cursor-pointer'
+                  ? 'bg-[var(--color-bg-soft)] border border-[var(--color-border)] text-[var(--color-text-muted)] cursor-not-allowed'
+                  : 'bg-[var(--color-accent-intelligence)] text-white border border-[var(--color-accent-intelligence)] hover:bg-[var(--color-accent-intelligence-hover)] hover:border-[var(--color-accent-intelligence-hover)] cursor-pointer'
               }`}
             >
               {processingTier === 'SOVEREIGN_COMMAND'
-                ? 'Deploying...'
+                ? 'Processing...'
                 : isCurrentTier('SOVEREIGN_COMMAND')
-                  ? 'Active Node'
-                  : 'Initialize Command'}
+                  ? 'Current Plan'
+                  : 'Choose Professional'}
             </button>
           </div>
         </div>
