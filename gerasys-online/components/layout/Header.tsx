@@ -14,8 +14,30 @@ const NAV_LINKS = [
   { label: 'CVE Tracker', href: '/cve' },
   { label: 'Reports', href: '/news' },
   { label: 'Attack Map', href: '/dark-web-recon' },
-  { label: 'Pricing', href: '/#pricing-tiers' },
+  { label: 'Dashboard', href: '/login' },
+  { label: 'Pricing', href: '/register' },
 ] as const;
+
+function BrandMark() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="relative h-11 w-11 shrink-0">
+        <div className="absolute inset-y-0 left-[28%] w-[11px] -skew-x-12 rounded-full bg-black" />
+        <div className="absolute inset-y-0 right-[28%] w-[11px] skew-x-12 rounded-full bg-black" />
+        <div className="absolute left-[2%] top-[18%] h-[10px] w-[36px] -skew-x-[42deg] rounded-full bg-[var(--color-accent-intelligence)]" />
+        <div className="absolute bottom-[18%] left-[2%] h-[10px] w-[36px] skew-x-[42deg] rounded-full bg-[var(--color-accent-intelligence)]" />
+      </div>
+      <div className="leading-none">
+        <div className="text-[1.8rem] font-black tracking-[-0.07em] text-[var(--color-text)]">
+          ZAYRON-X
+        </div>
+        <div className="mt-1 text-[9px] font-mono uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+          Cyber Threat Intelligence
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function Header() {
   const pathname = usePathname() ?? '/';
@@ -41,112 +63,92 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-white/92 font-sans shadow-[0_10px_30px_rgba(17,17,17,0.04)] backdrop-blur-xl transition-colors duration-350 dark:border-white/10 dark:bg-[#0A0A0A]/90">
-        <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between gap-6 px-6 lg:px-10">
-          {/* ZAYRON-X Wordmark */}
-          <div className="flex items-center shrink-0">
-            <Link href="/" prefetch={true} className="flex items-center" aria-label="ZAYRON-X Home">
-              <span className="text-[1.25rem] font-black uppercase select-none inline-flex items-center tracking-[-0.08em]">
-                <span className="text-[var(--color-text)] dark:text-white">ZAYRON</span>
-                <span className="text-[var(--color-accent-intelligence)]">-X</span>
-              </span>
-            </Link>
-          </div>
+      <header className="sticky top-0 z-50 border-b border-[rgba(17,17,17,0.08)] bg-white/94 font-sans backdrop-blur-xl">
+        <div className="mx-auto flex h-[78px] max-w-[1480px] items-center justify-between gap-6 px-6 lg:px-10">
+          <Link href="/" prefetch={true} className="shrink-0" aria-label="ZAYRON-X Home">
+            <BrandMark />
+          </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden h-full items-center gap-x-9 lg:flex" aria-label="Main navigation">
+          <nav className="hidden h-full items-center gap-x-8 lg:flex" aria-label="Main navigation">
             {NAV_LINKS.map((link) => {
-              const baseHref = link.href.split('#')[0] || link.href;
               const isActive =
-                pathname === link.href || (baseHref !== '/' && pathname.startsWith(baseHref));
+                link.href === '/'
+                  ? pathname === '/'
+                  : pathname === link.href || pathname.startsWith(link.href);
+
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   prefetch={true}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`relative flex h-full items-center text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-300 ${
+                  className={`relative flex h-full items-center text-[12px] font-semibold transition-colors ${
                     isActive
-                      ? 'text-[var(--color-accent-intelligence)]'
-                      : 'text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-text)] dark:hover:text-white'
+                      ? 'text-[var(--color-text)]'
+                      : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
                   }`}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--color-accent-intelligence)] rounded-full animate-[fade-up_0.2s_ease-out]" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--color-accent-intelligence)]" />
                   )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right-side actions */}
-          <div className="flex items-center gap-3.5 sm:gap-5">
-            <span className="hidden rounded-full border border-[rgba(243,107,33,0.18)] bg-[var(--color-accent-intelligence-soft)] px-3 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-accent-intelligence)] xl:inline-flex">
-              Current indexed intelligence
-            </span>
-            {/* About link */}
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/about"
               prefetch={true}
-              className="p-1.5 rounded-full text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)] transition-colors"
+              className="hidden rounded-full p-2 text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-accent-intelligence)] sm:inline-flex"
               aria-label="About ZAYRON-X"
             >
-              <Globe className="w-4 h-4" />
+              <Globe className="h-4 w-4" />
             </Link>
 
-            {/* Theme toggle */}
-            <ThemeToggle />
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
 
-            {/* Auth / Action CTA */}
             {user ? (
               <div className="hidden sm:flex items-center gap-3">
                 <Link
                   href="/dark-web-recon"
-                  className="px-4 py-2 text-[10px] uppercase font-bold tracking-wider bg-[var(--color-text)] dark:bg-white text-white dark:text-black rounded-full hover:bg-[var(--color-accent-intelligence)] dark:hover:bg-[var(--color-accent-intelligence)] hover:text-white dark:hover:text-white transition-all duration-300"
+                  className="inline-flex min-h-11 items-center rounded-[0.95rem] bg-[#050505] px-4 text-[11px] font-bold text-white transition-colors hover:bg-[var(--color-accent-intelligence)]"
                 >
                   Platform
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors cursor-pointer"
+                  className="text-[11px] font-semibold text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-accent-intelligence)]"
                 >
                   Log Out
                 </button>
               </div>
             ) : (
-              <div className="hidden sm:flex items-center gap-4">
-                <Link
-                  href="/login"
-                  className="text-[10px] uppercase font-bold tracking-widest text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-text)] dark:hover:text-white transition-colors"
-                >
-                  Log In
-                </Link>
-                <Link
-                  href="/register"
-                  className="px-4.5 py-2 text-[10px] uppercase font-bold tracking-widest bg-[#050505] dark:bg-white text-white dark:text-black rounded-full hover:bg-[var(--color-accent-intelligence)] dark:hover:bg-[var(--color-accent-intelligence)] hover:text-white dark:hover:text-white transition-all duration-300 border border-[#050505] dark:border-white hover:border-[var(--color-accent-intelligence)] dark:hover:border-[var(--color-accent-intelligence)]"
-                >
-                  Get Started
-                </Link>
-              </div>
+              <Link
+                href="/login"
+                className="hidden min-h-11 items-center rounded-[0.95rem] bg-[#050505] px-5 text-[11px] font-bold text-white shadow-[0_12px_25px_rgba(17,17,17,0.08)] transition-colors hover:bg-[var(--color-accent-intelligence)] sm:inline-flex"
+              >
+                Login
+              </Link>
             )}
 
-            {/* Mobile menu toggle */}
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-1.5 rounded-md text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] lg:hidden transition-colors cursor-pointer"
+              className="rounded-lg p-1.5 text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-accent-intelligence)] lg:hidden"
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Navigation */}
       <MobileNav isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>
   );

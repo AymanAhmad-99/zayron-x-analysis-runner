@@ -16,7 +16,8 @@ const links = [
   { label: 'CVE Tracker', href: '/cve' },
   { label: 'Reports', href: '/news' },
   { label: 'Attack Map', href: '/dark-web-recon' },
-  { label: 'Pricing', href: '/#pricing-tiers' },
+  { label: 'Dashboard', href: '/login' },
+  { label: 'Pricing', href: '/register' },
 ];
 
 export function MobileNav({ isOpen, onClose }: MobileNavProps) {
@@ -78,11 +79,11 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="absolute top-0 right-0 flex h-full w-72 flex-col border-l border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#fbf8f2_100%)] shadow-2xl dark:border-white/10 dark:bg-[var(--color-section-royal)]">
+      <div className="absolute top-0 right-0 flex h-full w-72 flex-col border-l border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#faf7f1_100%)] shadow-2xl dark:border-white/10 dark:bg-[var(--color-section-royal)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4 dark:border-white/10">
           <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-text)] dark:text-white">
-            Navigation
+            ZAYRON-X Menu
           </span>
           <button
             onClick={onClose}
@@ -100,7 +101,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
               key={link.href}
               href={link.href}
               prefetch={true}
-              className="block px-3 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-accent-intelligence)] dark:hover:text-[var(--color-accent-intelligence)] hover:bg-[var(--color-bg-soft)] dark:hover:bg-white/5 rounded-lg transition-colors"
+              className="block rounded-lg px-3 py-2.5 font-mono text-[10px] uppercase tracking-widest text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-accent-intelligence)] dark:text-[#b8b3ac] dark:hover:bg-white/5 dark:hover:text-[var(--color-accent-intelligence)]"
               onClick={onClose}
             >
               {link.label}

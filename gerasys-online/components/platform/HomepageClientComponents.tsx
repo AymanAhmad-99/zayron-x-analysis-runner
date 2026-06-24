@@ -46,18 +46,18 @@ export function LiveFeedTicker({ articles, cves }: LiveFeedTickerProps) {
   if (!currentItem) return null;
 
   return (
-    <div className="flex min-h-16 items-center gap-4 rounded-[1.55rem] border border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#fcfbf8_100%)] px-5 py-2 shadow-[0_18px_42px_rgba(17,17,17,0.05)]">
+    <div className="flex min-h-16 items-center gap-3 rounded-[1.5rem] border border-[var(--color-border)] bg-white px-5 py-2 shadow-[0_14px_28px_rgba(17,17,17,0.045)]">
       <span className="shrink-0 rounded-full bg-[var(--color-accent-intelligence-soft)] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-accent-intelligence)]">
-        Latest indexed intelligence
+        Live Feed
       </span>
-      <span className="hidden text-[var(--color-border-strong)] sm:inline">+</span>
+      <span className="hidden text-[var(--color-accent-intelligence)] sm:inline">+</span>
       <Link
         href={currentItem.href}
         className="min-w-0 flex-1 truncate text-[13px] font-medium text-[var(--color-text)] transition-colors hover:text-[var(--color-accent-intelligence)]"
       >
         {currentItem.text}
       </Link>
-      <span className="shrink-0 text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--color-text-muted)]">
+      <span className="shrink-0 text-[11px] text-[var(--color-text-muted)]">
         {currentItem.meta}
       </span>
     </div>
@@ -83,7 +83,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
 
   const donutData = useMemo(() => {
     const total = topCategories.reduce((sum, item) => sum + item.count, 0) || 1;
-    const colors = ['#F36B21', '#D6CEC1', '#BEB5A6', '#90877B', '#6B645C'];
+    const colors = ['#F36B21', '#F79B4B', '#C8B59A', '#8F7B63', '#5B5147'];
     let currentOffset = 0;
 
     return topCategories.map((item, index) => {
@@ -109,119 +109,147 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
   };
 
   return (
-    <section className="relative overflow-hidden rounded-[2.2rem] border border-[#171717] bg-[#050505] px-6 py-7 text-white shadow-[0_30px_80px_rgba(0,0,0,0.24)] lg:px-8 lg:py-8">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(243,107,33,0.16),transparent_20%),radial-gradient(circle_at_85%_18%,rgba(255,255,255,0.05),transparent_16%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
-      <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 lg:flex-row lg:items-start lg:justify-between">
+    <section className="relative overflow-hidden rounded-[2rem] border border-[#161616] bg-[#060606] p-5 text-white shadow-[0_28px_80px_rgba(0,0,0,0.24)] lg:p-6">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(243,107,33,0.12),transparent_18%),radial-gradient(circle_at_88%_16%,rgba(255,255,255,0.06),transparent_16%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
+
+      <div className="relative mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--color-accent-intelligence)]">
-            Intelligence panel
-          </span>
-          <h2 className="mt-2 text-[2.1rem] font-serif font-normal tracking-[-0.05em] text-white lg:text-[2.6rem]">
-            INDEXED INTELLIGENCE
-            <br />
-            <span className="text-[var(--color-accent-intelligence)]">WITH PREMIUM DEPTH</span>
+          <h2 className="text-[2rem] font-semibold uppercase tracking-[0.02em] text-white">
+            Global Intelligence View
           </h2>
-          <p className="mt-2 max-w-[420px] text-[13px] leading-7 text-white/60">
-            Structured black-panel overview grounded in current homepage briefings, CVEs, and
-            category data.
+          <p className="mt-1 text-[14px] text-[var(--color-accent-intelligence)]">
+            Observed signals across the current dataset
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-white/70">
+        <div className="inline-flex items-center gap-2 rounded-[1rem] border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] text-white/70">
           <span>Briefings {articles.length}</span>
-          <span className="text-white/20">/</span>
+          <span className="text-white/25">/</span>
           <span>CVEs {cves.length}</span>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-        <div className="overflow-hidden rounded-[1.75rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-4">
-          <div className="relative aspect-[16/8.9] overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_25%_50%,rgba(243,107,33,0.1),transparent_20%),radial-gradient(circle_at_65%_40%,rgba(243,107,33,0.08),transparent_18%),#0b0b0b]">
-            <svg className="h-full w-full" viewBox="0 0 900 500" fill="none">
-              <pattern
-                id="blackMapDots"
-                x="0"
-                y="0"
-                width="9"
-                height="9"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="1.5" cy="1.5" r="1.1" fill="rgba(255,255,255,0.18)" />
+      <div className="relative grid gap-5 lg:grid-cols-[1.42fr_0.58fr]">
+        <div className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))] p-3">
+          <div className="relative aspect-[16/8.8] overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_30%_52%,rgba(243,107,33,0.12),transparent_18%),radial-gradient(circle_at_65%_46%,rgba(243,107,33,0.08),transparent_18%),#0b0b0b]">
+            <svg className="h-full w-full" viewBox="0 0 900 500" fill="none" aria-hidden="true">
+              <pattern id="mapGrid" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse">
+                <circle cx="1.2" cy="1.2" r="0.8" fill="rgba(255,255,255,0.16)" />
               </pattern>
-              <rect width="900" height="500" fill="url(#blackMapDots)" />
-
-              <circle cx="160" cy="215" r="7" fill="#F36B21" />
-              <circle cx="325" cy="185" r="7" fill="#F36B21" />
-              <circle cx="495" cy="210" r="7" fill="#F36B21" />
-              <circle cx="690" cy="240" r="7" fill="#F36B21" />
-              <circle cx="785" cy="315" r="7" fill="#F36B21" />
+              <rect width="900" height="500" fill="url(#mapGrid)" />
 
               <path
-                d="M160 215C212 164 275 158 325 185"
-                stroke="#F36B21"
-                strokeOpacity="0.6"
-                strokeWidth="2.2"
+                d="M89 215C130 197 170 190 206 198C242 206 274 214 309 211C347 208 392 188 437 190C490 193 527 230 580 236C642 243 703 213 775 205"
+                stroke="rgba(255,255,255,0.08)"
+                strokeWidth="42"
+                strokeLinecap="round"
               />
               <path
-                d="M325 185C380 210 438 220 495 210"
-                stroke="#F36B21"
-                strokeOpacity="0.6"
-                strokeWidth="2.2"
+                d="M183 274C228 250 278 252 320 268C371 287 430 309 487 304C548 299 606 263 667 265C716 267 758 292 804 318"
+                stroke="rgba(255,255,255,0.08)"
+                strokeWidth="36"
+                strokeLinecap="round"
               />
               <path
-                d="M495 210C565 204 626 220 690 240"
-                stroke="#F36B21"
-                strokeOpacity="0.6"
-                strokeWidth="2.2"
+                d="M124 163C136 152 165 146 192 154"
+                stroke="rgba(255,255,255,0.08)"
+                strokeWidth="30"
+                strokeLinecap="round"
               />
               <path
-                d="M690 240C725 255 752 286 785 315"
-                stroke="#F36B21"
-                strokeOpacity="0.6"
-                strokeWidth="2.2"
+                d="M645 154C679 143 721 146 756 162"
+                stroke="rgba(255,255,255,0.08)"
+                strokeWidth="30"
+                strokeLinecap="round"
               />
 
-              <circle cx="160" cy="215" r="22" fill="rgba(243,107,33,0.12)" />
-              <circle cx="495" cy="210" r="24" fill="rgba(243,107,33,0.12)" />
-              <circle cx="690" cy="240" r="22" fill="rgba(243,107,33,0.12)" />
+              {[160, 290, 486, 664, 780].map((x, index) => (
+                <g key={x}>
+                  <circle cx={x} cy={[214, 196, 231, 244, 326][index]} r="7" fill="#F36B21" />
+                  <circle
+                    cx={x}
+                    cy={[214, 196, 231, 244, 326][index]}
+                    r="24"
+                    fill="rgba(243,107,33,0.12)"
+                  />
+                </g>
+              ))}
+
+              <path
+                d="M160 214C230 172 260 166 290 196"
+                stroke="#F36B21"
+                strokeOpacity="0.7"
+                strokeWidth="2.1"
+              />
+              <path
+                d="M290 196C353 224 415 235 486 231"
+                stroke="#F36B21"
+                strokeOpacity="0.7"
+                strokeWidth="2.1"
+              />
+              <path
+                d="M486 231C553 226 603 228 664 244"
+                stroke="#F36B21"
+                strokeOpacity="0.7"
+                strokeWidth="2.1"
+              />
+              <path
+                d="M664 244C714 254 748 290 780 326"
+                stroke="#F36B21"
+                strokeOpacity="0.7"
+                strokeWidth="2.1"
+              />
+              <path
+                d="M486 231C443 306 348 336 266 352"
+                stroke="#F36B21"
+                strokeOpacity="0.45"
+                strokeWidth="1.6"
+              />
+              <path
+                d="M486 231C588 175 680 173 804 186"
+                stroke="#F36B21"
+                strokeOpacity="0.45"
+                strokeWidth="1.6"
+              />
             </svg>
 
-            <div className="absolute left-[20%] top-[20%] h-[48%] w-[48%] rotate-45 rounded-[2rem] border border-[rgba(255,255,255,0.08)]" />
-            <div className="absolute right-[12%] bottom-[16%] h-[30%] w-[30%] rotate-45 rounded-[1.4rem] border border-[rgba(243,107,33,0.22)]" />
-            <div className="absolute left-[24%] top-[32%] h-[2px] w-[42%] rotate-[34deg] bg-[rgba(243,107,33,0.4)]" />
-            <div className="absolute left-[24%] top-[32%] h-[2px] w-[42%] -rotate-[34deg] bg-[rgba(255,255,255,0.14)]" />
-
-            <div className="absolute left-4 top-4 rounded-xl bg-black/45 px-3 py-2 backdrop-blur">
-              <div className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent-intelligence)]">
-                Indexed platform data
-              </div>
-              <div className="mt-1 text-[12px] text-white/72">
-                Current category and CVE coverage
-              </div>
+            <div className="absolute right-4 top-4 flex flex-col gap-2">
+              {['+', 'o', '-'].map((symbol) => (
+                <div
+                  key={symbol}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/45 text-white/72 backdrop-blur"
+                >
+                  {symbol}
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="grid gap-6">
-          <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
+        <div className="grid gap-5">
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/60">
+              <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/66">
                 Category coverage
               </h3>
-              <span className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent-intelligence)]">
-                Current
-              </span>
+              <Link
+                href="/news"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-accent-intelligence)]"
+              >
+                View Full Map
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
             <div className="space-y-3">
               {topCategories.length > 0 ? (
                 topCategories.map((item, index) => (
                   <div
                     key={item.name}
-                    className="flex items-center justify-between border-b border-white/7 pb-3 last:border-b-0 last:pb-0"
+                    className="flex items-center justify-between border-b border-white/8 pb-3 last:border-b-0 last:pb-0"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-white/35">0{index + 1}</span>
-                      <span className="text-[13px] text-white/85">{item.name}</span>
+                      <span className="text-[10px] font-mono text-white/36">0{index + 1}</span>
+                      <span className="text-[13px] text-white/84">{item.name}</span>
                     </div>
                     <span className="text-[13px] font-semibold text-[var(--color-accent-intelligence)]">
                       {item.count.toLocaleString()}
@@ -234,22 +262,13 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
             </div>
           </div>
 
-          <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/60">
-                Coverage composition
-              </h3>
-              <Link
-                href="/news"
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-accent-intelligence)]"
-              >
-                View Briefings
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
+            <div className="mb-4 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/66">
+              Coverage composition
             </div>
             <div className="flex items-center gap-5">
               <div className="relative flex h-28 w-28 shrink-0 items-center justify-center">
-                <svg className="h-full w-full -rotate-90" viewBox="0 0 80 80">
+                <svg className="h-full w-full -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
                   <circle
                     cx="40"
                     cy="40"
@@ -276,7 +295,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
                     {categories.length}
                   </div>
                   <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-white/45">
-                    Categories
+                    Total
                   </div>
                 </div>
               </div>
@@ -289,7 +308,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
                       style={{ backgroundColor: slice.color }}
                     />
                     <span className="flex-1 truncate text-white/72">{slice.name}</span>
-                    <span className="text-white/42">{slice.percent}%</span>
+                    <span className="text-white/45">{slice.percent}%</span>
                   </div>
                 ))}
               </div>
@@ -315,16 +334,16 @@ export function SecurityScoreGauge({ value, title, subtitle, footer }: SecurityS
   const dashOffset = circumference - (gaugeValue / 100) * circumference;
 
   return (
-    <div className="rounded-[1.8rem] border border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#fcfbf8_100%)] p-7 shadow-[0_20px_45px_rgba(17,17,17,0.05)]">
+    <div className="rounded-[1.7rem] border border-[var(--color-border)] bg-white p-6 shadow-[0_16px_36px_rgba(17,17,17,0.045)]">
       <div className="border-b border-[var(--color-border)] pb-4">
-        <div className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+        <div className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-text)]">
           {title}
         </div>
-        <div className="mt-2 text-[14px] text-[var(--color-text)]">{subtitle}</div>
+        <div className="mt-2 text-[13px] leading-6 text-[var(--color-text-muted)]">{subtitle}</div>
       </div>
 
       <div className="relative mt-8 flex h-32 items-end justify-center overflow-hidden">
-        <svg className="absolute bottom-0 h-36 w-36" viewBox="0 0 120 120">
+        <svg className="absolute bottom-0 h-36 w-36" viewBox="0 0 120 120" aria-hidden="true">
           <path
             d="M 10 60 A 50 50 0 0 1 110 60"
             stroke="#ECE7DE"
