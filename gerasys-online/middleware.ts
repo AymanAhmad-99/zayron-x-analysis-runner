@@ -36,12 +36,15 @@ function applyNonceToCsp(request: NextRequest, response: NextResponse, nonce: st
   // Keep style-src compatibility and preserve the CSP emitted by next.config.ts.
   let enforcingCsp = response.headers.get('Content-Security-Policy');
   if (enforcingCsp) {
+    if (!enforcingCsp.includes("'unsafe-inline'") && enforcingCsp.includes('script-src')) {
+      enforcingCsp = enforcingCsp.replace('script-src', "script-src 'unsafe-inline'");
+    }
     if (!enforcingCsp.includes("'unsafe-inline'") && enforcingCsp.includes('style-src')) {
       enforcingCsp = enforcingCsp.replace('style-src', "style-src 'unsafe-inline'");
     }
     response.headers.set('Content-Security-Policy', enforcingCsp);
   } else {
-    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'unsafe-eval'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com; connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests`;
+    enforcingCsp = `default-src 'self'; script-src 'self' *.supabase.co 'unsafe-eval' 'unsafe-inline'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com; connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com; font-src 'self' fonts.gstatic.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests`;
     response.headers.set('Content-Security-Policy', enforcingCsp);
   }
 

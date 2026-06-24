@@ -153,8 +153,7 @@ binding = "NEXT_INC_CACHE_KV"
 id = "834e78268ee0457196ecf48026b06ece"
 
 [env.preview.vars]
-# Keep preview metadata on the known root domain until Wrangler prints
-# a verified preview hostname. Do not replace this with a guessed
-# workers.dev hostname.
-NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
+# Preview metadata should match the real deployed Worker URL so
+# canonical tags, sitemap output, and metadata stay self-consistent.
+NEXT_PUBLIC_SITE_URL = "https://zayron-x-preview.aabusabih.workers.dev"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X [PREVIEW]"

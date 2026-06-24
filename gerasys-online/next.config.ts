@@ -9,7 +9,7 @@ import type { NextConfig } from 'next';
    ──────────────────────────────────────────────────────────────── */
 const CSP = [
   `default-src 'self'`,
-  `script-src 'self' *.supabase.co 'unsafe-eval'`,
+  `script-src 'self' *.supabase.co 'unsafe-eval' 'unsafe-inline'`,
   `style-src 'self' fonts.googleapis.com 'unsafe-inline'`,
   `img-src 'self' data: blob: images.unsplash.com *.supabase.co *.unsplash.com https://image.pollinations.ai https://images.unsplash.com https://loremflickr.com`,
   `connect-src 'self' *.supabase.co https://*.workers.dev https://unsplash.com https://*.unsplash.com`,
