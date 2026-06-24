@@ -15,10 +15,10 @@ const FOOTER_LINKS = [
 export function Footer() {
   return (
     <footer
-      className="bg-white dark:bg-[#0A0A0A] border-t border-[var(--color-border)] dark:border-white/10 py-10 font-sans transition-colors duration-350"
+      className="border-t border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#faf7f1_100%)] py-10 font-sans transition-colors duration-350 dark:border-white/10 dark:bg-[#0A0A0A]"
       aria-label="Site footer"
     >
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-6 px-6 lg:px-10 md:flex-row">
         {/* Brand and Copyright */}
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
           <Link href="/" aria-label="ZAYRON-X Home">

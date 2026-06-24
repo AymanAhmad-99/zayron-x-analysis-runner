@@ -46,9 +46,9 @@ export function LiveFeedTicker({ articles, cves }: LiveFeedTickerProps) {
   if (!currentItem) return null;
 
   return (
-    <div className="flex min-h-14 items-center gap-4 rounded-[1.35rem] border border-[var(--color-border)] bg-white px-5 shadow-[0_16px_40px_rgba(17,17,17,0.04)]">
-      <span className="shrink-0 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-accent-intelligence)]">
-        Latest loaded briefings
+    <div className="flex min-h-16 items-center gap-4 rounded-[1.55rem] border border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#fcfbf8_100%)] px-5 py-2 shadow-[0_18px_42px_rgba(17,17,17,0.05)]">
+      <span className="shrink-0 rounded-full bg-[var(--color-accent-intelligence-soft)] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-accent-intelligence)]">
+        Latest indexed intelligence
       </span>
       <span className="hidden text-[var(--color-border-strong)] sm:inline">+</span>
       <Link
@@ -109,30 +109,33 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
   };
 
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-[#171717] bg-[#050505] px-6 py-7 text-white shadow-[0_28px_70px_rgba(0,0,0,0.22)] lg:px-8 lg:py-8">
+    <section className="relative overflow-hidden rounded-[2.2rem] border border-[#171717] bg-[#050505] px-6 py-7 text-white shadow-[0_30px_80px_rgba(0,0,0,0.24)] lg:px-8 lg:py-8">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(243,107,33,0.16),transparent_20%),radial-gradient(circle_at_85%_18%,rgba(255,255,255,0.05),transparent_16%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
       <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[var(--color-accent-intelligence)]">
-            Coverage Map
+            Intelligence panel
           </span>
-          <h2 className="mt-2 text-[2rem] font-semibold tracking-[-0.04em] text-white lg:text-[2.2rem]">
-            GLOBAL THREAT MAP
+          <h2 className="mt-2 text-[2.1rem] font-serif font-normal tracking-[-0.05em] text-white lg:text-[2.6rem]">
+            INDEXED INTELLIGENCE
+            <br />
+            <span className="text-[var(--color-accent-intelligence)]">WITH PREMIUM DEPTH</span>
           </h2>
           <p className="mt-2 max-w-[420px] text-[13px] leading-7 text-white/60">
-            Structured coverage overview grounded in the homepage&apos;s current indexed briefings,
-            CVEs, and category data.
+            Structured black-panel overview grounded in current homepage briefings, CVEs, and
+            category data.
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-white/70">
-          <span>Articles {articles.length}</span>
+        <div className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-[11px] font-mono uppercase tracking-[0.16em] text-white/70">
+          <span>Briefings {articles.length}</span>
           <span className="text-white/20">/</span>
           <span>CVEs {cves.length}</span>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-        <div className="overflow-hidden rounded-[1.6rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-4">
+        <div className="overflow-hidden rounded-[1.75rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))] p-4">
           <div className="relative aspect-[16/8.9] overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_25%_50%,rgba(243,107,33,0.1),transparent_20%),radial-gradient(circle_at_65%_40%,rgba(243,107,33,0.08),transparent_18%),#0b0b0b]">
             <svg className="h-full w-full" viewBox="0 0 900 500" fill="none">
               <pattern
@@ -183,6 +186,11 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
               <circle cx="690" cy="240" r="22" fill="rgba(243,107,33,0.12)" />
             </svg>
 
+            <div className="absolute left-[20%] top-[20%] h-[48%] w-[48%] rotate-45 rounded-[2rem] border border-[rgba(255,255,255,0.08)]" />
+            <div className="absolute right-[12%] bottom-[16%] h-[30%] w-[30%] rotate-45 rounded-[1.4rem] border border-[rgba(243,107,33,0.22)]" />
+            <div className="absolute left-[24%] top-[32%] h-[2px] w-[42%] rotate-[34deg] bg-[rgba(243,107,33,0.4)]" />
+            <div className="absolute left-[24%] top-[32%] h-[2px] w-[42%] -rotate-[34deg] bg-[rgba(255,255,255,0.14)]" />
+
             <div className="absolute left-4 top-4 rounded-xl bg-black/45 px-3 py-2 backdrop-blur">
               <div className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent-intelligence)]">
                 Indexed platform data
@@ -195,7 +203,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
         </div>
 
         <div className="grid gap-6">
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+          <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/60">
                 Category coverage
@@ -226,7 +234,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+          <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/60">
                 Coverage composition
@@ -307,7 +315,7 @@ export function SecurityScoreGauge({ value, title, subtitle, footer }: SecurityS
   const dashOffset = circumference - (gaugeValue / 100) * circumference;
 
   return (
-    <div className="rounded-[1.7rem] border border-[var(--color-border)] bg-white p-7 shadow-[0_20px_45px_rgba(17,17,17,0.04)]">
+    <div className="rounded-[1.8rem] border border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#fcfbf8_100%)] p-7 shadow-[0_20px_45px_rgba(17,17,17,0.05)]">
       <div className="border-b border-[var(--color-border)] pb-4">
         <div className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
           {title}

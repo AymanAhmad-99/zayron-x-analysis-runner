@@ -78,11 +78,11 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="absolute top-0 right-0 w-72 h-full bg-white dark:bg-[var(--color-section-royal)] shadow-2xl flex flex-col border-l border-[var(--color-border)] dark:border-white/10">
+      <div className="absolute top-0 right-0 flex h-full w-72 flex-col border-l border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#fbf8f2_100%)] shadow-2xl dark:border-white/10 dark:bg-[var(--color-section-royal)]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)] dark:border-white/10">
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] p-4 dark:border-white/10">
           <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-text)] dark:text-white">
-            Menu
+            Navigation
           </span>
           <button
             onClick={onClose}

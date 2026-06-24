@@ -41,8 +41,8 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/95 dark:bg-[#0A0A0A]/90 backdrop-blur border-b border-[var(--color-border)] dark:border-white/10 shadow-none font-sans transition-colors duration-350">
-        <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between gap-6 px-6 lg:px-10">
+      <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-white/92 font-sans shadow-[0_10px_30px_rgba(17,17,17,0.04)] backdrop-blur-xl transition-colors duration-350 dark:border-white/10 dark:bg-[#0A0A0A]/90">
+        <div className="mx-auto flex h-[76px] max-w-[1400px] items-center justify-between gap-6 px-6 lg:px-10">
           {/* ZAYRON-X Wordmark */}
           <div className="flex items-center shrink-0">
             <Link href="/" prefetch={true} className="flex items-center" aria-label="ZAYRON-X Home">
@@ -54,7 +54,7 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-x-8 h-full" aria-label="Main navigation">
+          <nav className="hidden h-full items-center gap-x-9 lg:flex" aria-label="Main navigation">
             {NAV_LINKS.map((link) => {
               const baseHref = link.href.split('#')[0] || link.href;
               const isActive =
@@ -65,7 +65,7 @@ export function Header() {
                   href={link.href}
                   prefetch={true}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`relative flex items-center h-full text-[11px] uppercase tracking-[0.16em] font-semibold transition-colors duration-300 ${
+                  className={`relative flex h-full items-center text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors duration-300 ${
                     isActive
                       ? 'text-[var(--color-accent-intelligence)]'
                       : 'text-[var(--color-text-muted)] dark:text-[#b8b3ac] hover:text-[var(--color-text)] dark:hover:text-white'
@@ -82,6 +82,9 @@ export function Header() {
 
           {/* Right-side actions */}
           <div className="flex items-center gap-3.5 sm:gap-5">
+            <span className="hidden rounded-full border border-[rgba(243,107,33,0.18)] bg-[var(--color-accent-intelligence-soft)] px-3 py-1 text-[9px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-accent-intelligence)] xl:inline-flex">
+              Current indexed intelligence
+            </span>
             {/* About link */}
             <Link
               href="/about"

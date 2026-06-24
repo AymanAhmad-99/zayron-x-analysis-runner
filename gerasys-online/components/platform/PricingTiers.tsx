@@ -90,7 +90,7 @@ export function PricingTiers() {
   return (
     <section
       id="pricing-tiers"
-      className="bg-white text-[var(--color-text)] py-24 px-6 lg:px-10 font-sans border-b border-[var(--color-border)]"
+      className="border-b border-[var(--color-border)] bg-[linear-gradient(180deg,#fff_0%,#faf7f1_100%)] px-6 py-24 font-sans text-[var(--color-text)] lg:px-10"
     >
       <div className="max-w-[1200px] mx-auto">
         {/* Section Header */}
@@ -99,7 +99,7 @@ export function PricingTiers() {
             <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[var(--color-accent-intelligence)] block mb-3">
               Simple. Transparent. Powerful.
             </span>
-            <h2 className="text-3xl md:text-5xl font-serif tracking-tight text-[var(--color-text)] font-normal">
+            <h2 className="text-3xl font-serif font-normal tracking-[-0.05em] text-[var(--color-text)] md:text-5xl">
               PRICING
             </h2>
           </div>
@@ -143,7 +143,7 @@ export function PricingTiers() {
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
           {/* Free Tier */}
-          <div className="bg-white border border-[var(--color-border)] rounded-[1.25rem] p-8 flex flex-col justify-between hover:border-[var(--color-border-strong)] transition-all duration-300">
+          <div className="flex flex-col justify-between rounded-[1.45rem] border border-[var(--color-border)] bg-white p-8 shadow-[0_18px_44px_rgba(17,17,17,0.04)] transition-all duration-300 hover:border-[var(--color-border-strong)]">
             <div>
               <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--color-text-muted)] font-bold block mb-2">
                 FREE
@@ -187,11 +187,15 @@ export function PricingTiers() {
           </div>
 
           {/* Pro Tier - Highlighted center card */}
-          <div className="bg-[#050505] text-white border border-[#141414] rounded-[1.25rem] p-8 flex flex-col justify-between relative shadow-xl transform md:-translate-y-2 hover:border-[var(--color-accent-intelligence)]/40 transition-all duration-300">
+          <div className="relative flex flex-col justify-between overflow-hidden rounded-[1.55rem] border border-[#141414] bg-[#050505] p-8 text-white shadow-[0_30px_80px_rgba(0,0,0,0.22)] transition-all duration-300 hover:border-[var(--color-accent-intelligence)]/40 md:-translate-y-2">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(243,107,33,0.18),transparent_20%),radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.06),transparent_18%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
+            <div className="pointer-events-none absolute right-[-6%] top-[14%] h-40 w-40 rotate-45 rounded-[1.8rem] border border-[rgba(243,107,33,0.24)]" />
+            <div className="pointer-events-none absolute left-[14%] top-[26%] h-[2px] w-[44%] rotate-[34deg] bg-[rgba(243,107,33,0.34)]" />
+            <div className="pointer-events-none absolute left-[14%] top-[26%] h-[2px] w-[44%] -rotate-[34deg] bg-[rgba(255,255,255,0.12)]" />
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--color-accent-intelligence)] text-white text-[8px] font-mono font-black uppercase tracking-[0.2em] px-4.5 py-1 rounded-full shadow-md">
               MOST POPULAR
             </span>
-            <div>
+            <div className="relative">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--color-accent-intelligence)] font-bold">
                   PRO
@@ -256,7 +260,7 @@ export function PricingTiers() {
           </div>
 
           {/* Tactical Tier (Tactical Observer) */}
-          <div className="bg-white border border-[var(--color-border)] rounded-[1.25rem] p-8 flex flex-col justify-between hover:border-[var(--color-border-strong)] transition-all duration-300">
+          <div className="flex flex-col justify-between rounded-[1.45rem] border border-[var(--color-border)] bg-white p-8 shadow-[0_18px_44px_rgba(17,17,17,0.04)] transition-all duration-300 hover:border-[var(--color-border-strong)]">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--color-accent-intelligence)] font-bold">
