@@ -2,6 +2,7 @@
 
 import { Activity, ChevronRight } from '@/lib/icons';
 import type { Article, CVE } from '@/lib/types';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -46,9 +47,9 @@ export function LiveFeedTicker({ articles, cves }: LiveFeedTickerProps) {
   if (!currentItem) return null;
 
   return (
-    <div className="flex min-h-16 items-center gap-3 rounded-[1.5rem] border border-[var(--color-border)] bg-white px-5 py-2 shadow-[0_14px_28px_rgba(17,17,17,0.045)]">
+    <div className="flex min-h-16 items-center gap-3 rounded-[1.25rem] border border-[var(--color-border)] bg-white px-5 py-2 shadow-[0_14px_28px_rgba(17,17,17,0.045)]">
       <span className="shrink-0 rounded-full bg-[var(--color-accent-intelligence-soft)] px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-accent-intelligence)]">
-        Live Feed
+        Latest indexed
       </span>
       <span className="hidden text-[var(--color-accent-intelligence)] sm:inline">+</span>
       <Link
@@ -109,12 +110,10 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
   };
 
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-[#161616] bg-[#060606] p-5 text-white shadow-[0_28px_80px_rgba(0,0,0,0.24)] lg:p-6">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(243,107,33,0.12),transparent_18%),radial-gradient(circle_at_88%_16%,rgba(255,255,255,0.06),transparent_16%),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
-
+    <section className="relative overflow-hidden rounded-[1.35rem] border border-[#161616] bg-[#060606] p-5 text-white shadow-[0_28px_80px_rgba(0,0,0,0.24)] lg:p-6">
       <div className="relative mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h2 className="text-[2rem] font-semibold uppercase tracking-[0.02em] text-white">
+          <h2 className="text-[2rem] font-semibold uppercase text-white">
             Global Intelligence View
           </h2>
           <p className="mt-1 text-[14px] text-[var(--color-accent-intelligence)]">
@@ -122,112 +121,34 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-[1rem] border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] text-white/70">
+        <div className="inline-flex items-center gap-2 rounded-[0.9rem] border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] text-white/70">
           <span>Briefings {articles.length}</span>
           <span className="text-white/25">/</span>
           <span>CVEs {cves.length}</span>
         </div>
       </div>
 
-      <div className="relative grid gap-5 lg:grid-cols-[1.42fr_0.58fr]">
-        <div className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))] p-3">
-          <div className="relative aspect-[16/8.8] overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_30%_52%,rgba(243,107,33,0.12),transparent_18%),radial-gradient(circle_at_65%_46%,rgba(243,107,33,0.08),transparent_18%),#0b0b0b]">
-            <svg className="h-full w-full" viewBox="0 0 900 500" fill="none" aria-hidden="true">
-              <pattern id="mapGrid" x="0" y="0" width="7" height="7" patternUnits="userSpaceOnUse">
-                <circle cx="1.2" cy="1.2" r="0.8" fill="rgba(255,255,255,0.16)" />
-              </pattern>
-              <rect width="900" height="500" fill="url(#mapGrid)" />
-
-              <path
-                d="M89 215C130 197 170 190 206 198C242 206 274 214 309 211C347 208 392 188 437 190C490 193 527 230 580 236C642 243 703 213 775 205"
-                stroke="rgba(255,255,255,0.08)"
-                strokeWidth="42"
-                strokeLinecap="round"
-              />
-              <path
-                d="M183 274C228 250 278 252 320 268C371 287 430 309 487 304C548 299 606 263 667 265C716 267 758 292 804 318"
-                stroke="rgba(255,255,255,0.08)"
-                strokeWidth="36"
-                strokeLinecap="round"
-              />
-              <path
-                d="M124 163C136 152 165 146 192 154"
-                stroke="rgba(255,255,255,0.08)"
-                strokeWidth="30"
-                strokeLinecap="round"
-              />
-              <path
-                d="M645 154C679 143 721 146 756 162"
-                stroke="rgba(255,255,255,0.08)"
-                strokeWidth="30"
-                strokeLinecap="round"
-              />
-
-              {[160, 290, 486, 664, 780].map((x, index) => (
-                <g key={x}>
-                  <circle cx={x} cy={[214, 196, 231, 244, 326][index]} r="7" fill="#F36B21" />
-                  <circle
-                    cx={x}
-                    cy={[214, 196, 231, 244, 326][index]}
-                    r="24"
-                    fill="rgba(243,107,33,0.12)"
-                  />
-                </g>
-              ))}
-
-              <path
-                d="M160 214C230 172 260 166 290 196"
-                stroke="#F36B21"
-                strokeOpacity="0.7"
-                strokeWidth="2.1"
-              />
-              <path
-                d="M290 196C353 224 415 235 486 231"
-                stroke="#F36B21"
-                strokeOpacity="0.7"
-                strokeWidth="2.1"
-              />
-              <path
-                d="M486 231C553 226 603 228 664 244"
-                stroke="#F36B21"
-                strokeOpacity="0.7"
-                strokeWidth="2.1"
-              />
-              <path
-                d="M664 244C714 254 748 290 780 326"
-                stroke="#F36B21"
-                strokeOpacity="0.7"
-                strokeWidth="2.1"
-              />
-              <path
-                d="M486 231C443 306 348 336 266 352"
-                stroke="#F36B21"
-                strokeOpacity="0.45"
-                strokeWidth="1.6"
-              />
-              <path
-                d="M486 231C588 175 680 173 804 186"
-                stroke="#F36B21"
-                strokeOpacity="0.45"
-                strokeWidth="1.6"
-              />
-            </svg>
-
-            <div className="absolute right-4 top-4 flex flex-col gap-2">
-              {['+', 'o', '-'].map((symbol) => (
-                <div
-                  key={symbol}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-black/45 text-white/72 backdrop-blur"
-                >
-                  {symbol}
-                </div>
-              ))}
+      <div className="relative grid gap-5 lg:grid-cols-[1.48fr_0.52fr]">
+        <div className="relative min-h-[450px] overflow-hidden rounded-[1.15rem] border border-white/10 bg-black lg:min-h-[520px]">
+          <Image
+            src="/brand/homepage-map-panel.png"
+            alt="Dark dotted world intelligence map with orange connection arcs"
+            fill
+            sizes="(min-width: 1024px) 68vw, 100vw"
+            className="object-cover"
+          />
+          <div className="absolute left-5 top-5 rounded-[0.9rem] border border-white/10 bg-black/55 px-4 py-3 backdrop-blur">
+            <div className="text-[11px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent-intelligence)]">
+              Indexed platform data
+            </div>
+            <div className="mt-1 text-[12px] text-white/72">
+              Briefings, CVEs, and category coverage
             </div>
           </div>
         </div>
 
         <div className="grid gap-5">
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
+          <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-5">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/66">
                 Category coverage
@@ -236,7 +157,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
                 href="/news"
                 className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-accent-intelligence)]"
               >
-                View Full Map
+                View Briefings
                 <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -262,7 +183,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5">
+          <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-5">
             <div className="mb-4 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-white/66">
               Coverage composition
             </div>
@@ -291,9 +212,7 @@ export function GlobalThreatMap({ articles, cves, categories }: GlobalThreatMapP
                   ))}
                 </svg>
                 <div className="absolute text-center">
-                  <div className="text-[24px] font-semibold tracking-[-0.04em] text-white">
-                    {categories.length}
-                  </div>
+                  <div className="text-[24px] font-semibold text-white">{categories.length}</div>
                   <div className="text-[9px] font-mono uppercase tracking-[0.16em] text-white/45">
                     Total
                   </div>
@@ -334,7 +253,7 @@ export function SecurityScoreGauge({ value, title, subtitle, footer }: SecurityS
   const dashOffset = circumference - (gaugeValue / 100) * circumference;
 
   return (
-    <div className="rounded-[1.7rem] border border-[var(--color-border)] bg-white p-6 shadow-[0_16px_36px_rgba(17,17,17,0.045)]">
+    <div className="rounded-[1.35rem] border border-[var(--color-border)] bg-white p-6 shadow-[0_16px_36px_rgba(17,17,17,0.045)]">
       <div className="border-b border-[var(--color-border)] pb-4">
         <div className="text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-[var(--color-text)]">
           {title}
@@ -362,9 +281,7 @@ export function SecurityScoreGauge({ value, title, subtitle, footer }: SecurityS
           />
         </svg>
         <div className="relative text-center">
-          <div className="text-[3rem] font-semibold tracking-[-0.05em] text-[var(--color-text)]">
-            {value}
-          </div>
+          <div className="text-[3rem] font-semibold text-[var(--color-text)]">{value}</div>
           <div className="text-[10px] font-mono uppercase tracking-[0.16em] text-[var(--color-accent-intelligence)]">
             Indexed
           </div>
