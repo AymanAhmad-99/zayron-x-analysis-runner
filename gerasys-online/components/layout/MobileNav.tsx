@@ -11,10 +11,11 @@ interface MobileNavProps {
 }
 
 const links = [
-  { label: 'Intelligence', href: '/intelligence/threat-intelligence' },
-  { label: 'CVEs', href: '/cve' },
-  { label: 'Articles', href: '/news' },
-  { label: 'Analysts', href: '/analysts' },
+  { label: 'Home', href: '/' },
+  { label: 'Threat Intelligence', href: '/intelligence/threat-intelligence' },
+  { label: 'CVE Tracker', href: '/cve' },
+  { label: 'Reports', href: '/news' },
+  { label: 'Attack Map', href: '/dark-web-recon' },
   { label: 'Pricing', href: '/#pricing-tiers' },
 ];
 
