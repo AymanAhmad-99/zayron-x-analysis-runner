@@ -63,7 +63,7 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[rgba(17,17,17,0.08)] bg-white/94 font-sans backdrop-blur-xl">
+      <header className="relative z-50 border-b border-[rgba(17,17,17,0.08)] bg-white/94 font-sans backdrop-blur-xl">
         <div className="mx-auto flex h-[78px] max-w-[1480px] items-center justify-between gap-6 px-6 lg:px-10">
           <Link href="/" prefetch={true} className="shrink-0" aria-label="ZAYRON-X Home">
             <BrandMark />
