@@ -11,14 +11,9 @@ import {
   AlertTriangle,
   ArrowUpRight,
   Bug,
-  Building2,
   ChevronRight,
-  Globe,
   Radar,
-  Server,
   Shield,
-  ShieldCheck,
-  Users,
 } from '@/lib/icons';
 import { getAnalysts } from '@/lib/supabase/queries/analysts';
 import { getArticles, getCategoriesWithCounts } from '@/lib/supabase/queries/articles';
@@ -111,16 +106,20 @@ function SectionEyebrow({ children, dark = false }: { children: ReactNode; dark?
 function HeroSection() {
   return (
     <section className="px-6 pb-7 pt-8 lg:px-10 lg:pb-8 lg:pt-10">
-      <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[0.84fr_1.16fr] lg:items-center">
-        <div className="space-y-7 lg:pl-9">
+      <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="space-y-7 lg:pl-8">
           <SectionEyebrow>Latest indexed intelligence</SectionEyebrow>
           <div className="space-y-5">
-            <h1 className="max-w-[680px] text-[3.65rem] font-serif font-normal leading-[0.92] text-[#111] sm:text-[4.65rem] xl:text-[5.35rem]">
+            <h1 className="max-w-[720px] text-[3.45rem] font-serif font-normal leading-[0.94] text-[#111] sm:text-[4.35rem] xl:text-[4.9rem]">
               INTELLIGENCE
               <br />
               THAT SEES
               <br />
-              <span className="text-[var(--color-accent-intelligence)]">WHAT OTHERS DON'T.</span>
+              <span className="text-[var(--color-accent-intelligence)]">
+                WHAT OTHERS
+                <br />
+                DON'T.
+              </span>
             </h1>
             <p className="max-w-[520px] text-[16px] leading-8 text-[var(--color-text-muted)]">
               ZAYRON-X delivers current threat intelligence, indexed vulnerability coverage,
@@ -146,7 +145,7 @@ function HeroSection() {
           </div>
         </div>
 
-        <div className="relative min-h-[610px] overflow-hidden bg-white shadow-[0_35px_90px_rgba(17,17,17,0.08)]">
+        <div className="relative aspect-[16/9] min-h-[420px] overflow-hidden bg-white shadow-[0_35px_90px_rgba(17,17,17,0.08)] lg:min-h-0">
           <Image
             src="/brand/homepage-hero-marble-x.png"
             alt="ZAYRON-X marble institutional columns with a black and orange X mark"
@@ -376,59 +375,15 @@ function CVEAndFeedGrid({
   );
 }
 
-function SectorStrip({
-  sectors,
-}: {
-  sectors: {
-    label: string;
-    detail: string;
-    icon: ComponentType<{ className?: string }>;
-  }[];
-}) {
-  return (
-    <section className="px-6 py-7 lg:px-10 lg:py-9">
-      <div className="mx-auto max-w-[1480px]">
-        <div className="mb-5 flex items-center justify-center gap-4">
-          <div className="h-px w-14 bg-[var(--color-border)]" />
-          <span className="text-center text-[11px] font-mono font-bold uppercase tracking-[0.22em] text-[var(--color-text)]">
-            Designed for Security Workflows
-          </span>
-          <div className="h-px w-14 bg-[var(--color-border)]" />
-        </div>
-        <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
-          {sectors.map((sector) => {
-            const Icon = sector.icon;
-            return (
-              <div key={sector.label} className="flex items-center gap-4 bg-white px-5 py-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] text-[var(--color-accent-intelligence)]">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text)]">
-                    {sector.label}
-                  </div>
-                  <div className="mt-1 text-[11px] text-[var(--color-text-muted)]">
-                    {sector.detail}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function FinalCTA({ articlesCount, cveCount }: { articlesCount: number; cveCount: number }) {
   return (
-    <section className="px-6 pb-12 pt-3 lg:px-10 lg:pb-16">
+    <section className="px-6 pb-12 pt-7 lg:px-10 lg:pb-16 lg:pt-8">
       <div className="mx-auto max-w-[1480px] overflow-hidden rounded-[1.35rem] border border-[#161616] bg-[#050505] shadow-[0_30px_80px_rgba(0,0,0,0.24)]">
-        <div className="relative grid gap-8 px-7 py-8 md:px-10 md:py-10 lg:grid-cols-[0.72fr_0.95fr_0.55fr] lg:items-center">
+        <div className="relative grid gap-8 px-7 py-8 md:px-10 md:py-10 lg:grid-cols-[0.68fr_1fr_0.5fr] lg:items-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_24%,rgba(243,107,33,0.1),transparent_20%),linear-gradient(140deg,rgba(255,255,255,0.04),rgba(255,255,255,0))]" />
 
           <div className="relative flex justify-center lg:justify-start">
-            <div className="relative aspect-square w-full max-w-[320px] overflow-hidden rounded-[1.1rem]">
+            <div className="relative aspect-square w-full max-w-[300px] overflow-hidden rounded-[1.1rem]">
               <Image
                 src="/brand/homepage-cta-crest.png"
                 alt="ZAYRON-X black and gold crest"
@@ -441,7 +396,7 @@ function FinalCTA({ articlesCount, cveCount }: { articlesCount: number; cveCount
 
           <div className="relative space-y-4 text-white">
             <SectionEyebrow dark>Stay ahead. Stay protected.</SectionEyebrow>
-            <h2 className="max-w-[640px] text-[3rem] font-serif font-normal leading-[0.96] sm:text-[4rem]">
+            <h2 className="max-w-[680px] text-[3rem] font-serif font-normal leading-[0.96] sm:text-[3.9rem]">
               TURN INTELLIGENCE
               <br />
               INTO <span className="text-[var(--color-accent-intelligence)]">ADVANTAGE.</span>
@@ -518,14 +473,6 @@ export default async function HomePage() {
     },
   ];
 
-  const sectors = [
-    { label: 'Financial', detail: 'Institutions', icon: Building2 },
-    { label: 'Government', detail: 'Agencies', icon: ShieldCheck },
-    { label: 'Healthcare', detail: 'Organizations', icon: Shield },
-    { label: 'Technology', detail: 'Companies', icon: Server },
-    { label: 'Enterprise', detail: 'Businesses', icon: Users },
-  ];
-
   return (
     <main className="min-h-screen bg-white text-[var(--color-text)] font-sans">
       <HeroSection />
@@ -546,7 +493,6 @@ export default async function HomePage() {
         latestExecutiveInsight={latestExecutiveInsight}
         scoreValue={scoreValue}
       />
-      <SectorStrip sectors={sectors} />
       <FinalCTA articlesCount={articles.length} cveCount={cveCount} />
     </main>
   );
