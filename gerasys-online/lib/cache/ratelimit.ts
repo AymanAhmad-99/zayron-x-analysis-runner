@@ -5,6 +5,10 @@ function createLimiter(maxRequests: number, windowSeconds: number, label: string
   try {
     const env = process.env;
     const redis = getRedis(env);
+    if (!redis) {
+      return null;
+    }
+
     return new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(maxRequests, `${windowSeconds} s`),

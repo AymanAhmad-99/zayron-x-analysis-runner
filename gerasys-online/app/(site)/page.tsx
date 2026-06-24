@@ -35,31 +35,52 @@ import {
   Users,
 } from '@/lib/icons';
 
-const getHomeData = cache(async () => {
-  let articles: Article[] = [];
-  let cves: CVE[] = [];
-  let analysts: Analyst[] = [];
-  let cveCount = 0;
-  let categories: { category: string; count: number }[] = [];
+const HOME_DATA_TIMEOUT_MS = 4000;
 
+function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${HOME_DATA_TIMEOUT_MS}ms`));
+    }, HOME_DATA_TIMEOUT_MS);
+
+    promise.then(
+      (value) => {
+        clearTimeout(timeout);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      },
+    );
+  });
+}
+
+async function loadHomeResource<T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  fallback: T,
+): Promise<T> {
   try {
-    const results = await Promise.allSettled([
-      getCached(process.env, 'home:articles', () => getArticles(1, 20), 300),
-      getCached(process.env, 'home:cves', () => getRecentCVEs(20), 300),
-      getCached(process.env, 'home:analysts', () => getAnalysts(), 300),
-      getCached(process.env, 'home:cve_count', () => getCVECount(), 300),
-      getCached(process.env, 'home:categories', () => getCategoriesWithCounts(), 300),
-    ]);
+    return await withTimeout(getCached(process.env, key, fetcher, 300), key);
+  } catch (error) {
+    console.error(`[HOME PAGE] Failed to load ${key}; rendering fallback content instead.`, error);
+    return fallback;
+  }
+}
 
-    articles = results[0].status === 'fulfilled' ? (results[0].value as Article[]) : [];
-    cves = results[1].status === 'fulfilled' ? (results[1].value as CVE[]) : [];
-    analysts = results[2].status === 'fulfilled' ? (results[2].value as Analyst[]) : [];
-    cveCount = results[3].status === 'fulfilled' ? (results[3].value as number) : 0;
-    categories =
-      results[4].status === 'fulfilled'
-        ? (results[4].value as { category: string; count: number }[])
-        : [];
-  } catch {}
+const getHomeData = cache(async () => {
+  const [articles, cves, analysts, cveCount, categories] = await Promise.all([
+    loadHomeResource('home:articles', () => getArticles(1, 20), [] as Article[]),
+    loadHomeResource('home:cves', () => getRecentCVEs(20), [] as CVE[]),
+    loadHomeResource('home:analysts', () => getAnalysts(), [] as Analyst[]),
+    loadHomeResource('home:cve_count', () => getCVECount(), 0),
+    loadHomeResource(
+      'home:categories',
+      () => getCategoriesWithCounts(),
+      [] as { category: string; count: number }[],
+    ),
+  ]);
 
   return { articles, cves, analysts, cveCount, categories };
 });
