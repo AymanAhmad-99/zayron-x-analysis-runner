@@ -16,15 +16,11 @@ const FOOTER_LINKS = [
 function BrandMark() {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="relative h-8 w-8 shrink-0">
-        <div className="absolute inset-y-0 left-[28%] w-[8px] -skew-x-12 rounded-full bg-black" />
-        <div className="absolute inset-y-0 right-[28%] w-[8px] skew-x-12 rounded-full bg-black" />
-        <div className="absolute left-[2%] top-[18%] h-[8px] w-[26px] -skew-x-[42deg] rounded-full bg-[var(--color-accent-intelligence)]" />
-        <div className="absolute bottom-[18%] left-[2%] h-[8px] w-[26px] skew-x-[42deg] rounded-full bg-[var(--color-accent-intelligence)]" />
+      <div className="relative h-8 w-7 shrink-0">
+        <div className="absolute inset-y-[4px] left-[3px] w-[9px] -skew-x-[22deg] bg-[var(--color-accent-intelligence)] shadow-[5px_0_0_#050505]" />
+        <div className="absolute inset-y-[4px] right-[3px] w-[9px] skew-x-[22deg] bg-[#050505] shadow-[-5px_0_0_rgba(243,107,33,0.92)]" />
       </div>
-      <span className="text-[1.05rem] font-black tracking-[-0.07em] text-[var(--color-text)]">
-        ZAYRON-X
-      </span>
+      <span className="text-[1.05rem] font-black text-[var(--color-text)]">ZAYRON-X</span>
     </div>
   );
 }

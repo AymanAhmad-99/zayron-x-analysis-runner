@@ -20,18 +20,14 @@ const NAV_LINKS = [
 
 function BrandMark() {
   return (
-    <div className="flex items-center gap-3">
-      <div className="relative h-11 w-11 shrink-0">
-        <div className="absolute inset-y-0 left-[28%] w-[11px] -skew-x-12 rounded-full bg-black" />
-        <div className="absolute inset-y-0 right-[28%] w-[11px] skew-x-12 rounded-full bg-black" />
-        <div className="absolute left-[2%] top-[18%] h-[10px] w-[36px] -skew-x-[42deg] rounded-full bg-[var(--color-accent-intelligence)]" />
-        <div className="absolute bottom-[18%] left-[2%] h-[10px] w-[36px] skew-x-[42deg] rounded-full bg-[var(--color-accent-intelligence)]" />
+    <div className="flex items-center gap-3.5">
+      <div className="relative h-11 w-10 shrink-0">
+        <div className="absolute inset-y-[5px] left-[5px] w-[13px] -skew-x-[22deg] bg-[var(--color-accent-intelligence)] shadow-[7px_0_0_#050505]" />
+        <div className="absolute inset-y-[5px] right-[5px] w-[13px] skew-x-[22deg] bg-[#050505] shadow-[-7px_0_0_rgba(243,107,33,0.92)]" />
       </div>
       <div className="leading-none">
-        <div className="text-[1.8rem] font-black tracking-[-0.07em] text-[var(--color-text)]">
-          ZAYRON-X
-        </div>
-        <div className="mt-1 text-[9px] font-mono uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+        <div className="text-[1.65rem] font-black text-[var(--color-text)]">ZAYRON-X</div>
+        <div className="mt-1 text-[8px] font-mono uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
           Cyber Threat Intelligence
         </div>
       </div>

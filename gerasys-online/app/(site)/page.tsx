@@ -105,12 +105,12 @@ function SectionEyebrow({ children, dark = false }: { children: ReactNode; dark?
 
 function HeroSection() {
   return (
-    <section className="px-6 pb-7 pt-8 lg:px-10 lg:pb-8 lg:pt-10">
-      <div className="mx-auto grid max-w-[1480px] gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <div className="space-y-7 lg:pl-8">
+    <section className="px-6 pb-5 pt-6 lg:px-10 lg:pb-6 lg:pt-8">
+      <div className="mx-auto grid max-w-[1480px] gap-7 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="space-y-6 lg:pl-8">
           <SectionEyebrow>Latest indexed intelligence</SectionEyebrow>
-          <div className="space-y-5">
-            <h1 className="max-w-[720px] text-[3.45rem] font-serif font-normal leading-[0.94] text-[#111] sm:text-[4.35rem] xl:text-[4.9rem]">
+          <div className="space-y-4">
+            <h1 className="max-w-[760px] text-[3.35rem] font-serif font-normal leading-[0.92] text-[#111] sm:text-[4.2rem] xl:text-[4.75rem]">
               INTELLIGENCE
               <br />
               THAT SEES
@@ -145,7 +145,7 @@ function HeroSection() {
           </div>
         </div>
 
-        <div className="relative aspect-[16/9] min-h-[420px] overflow-hidden bg-white shadow-[0_35px_90px_rgba(17,17,17,0.08)] lg:min-h-0">
+        <div className="relative aspect-[16/9] min-h-[400px] overflow-hidden bg-white lg:min-h-0">
           <Image
             src="/brand/homepage-hero-marble-x.png"
             alt="ZAYRON-X marble institutional columns with a black and orange X mark"
@@ -154,6 +154,8 @@ function HeroSection() {
             sizes="(min-width: 1024px) 58vw, 100vw"
             className="object-cover object-center"
           />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-[28%] bg-[linear-gradient(90deg,#fff_0%,rgba(255,255,255,0.72)_38%,rgba(255,255,255,0)_100%)]" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[20%] bg-[linear-gradient(0deg,#fff_0%,rgba(255,255,255,0)_100%)]" />
         </div>
       </div>
     </section>
@@ -173,7 +175,7 @@ function MetricCards({
   }[];
 }) {
   return (
-    <section className="px-6 py-6 lg:px-10 lg:py-8">
+    <section className="px-6 pb-6 pt-4 lg:px-10 lg:pb-8 lg:pt-5">
       <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-4">
         {cards.map((card) => {
           const Icon = card.icon;
@@ -379,11 +381,11 @@ function FinalCTA({ articlesCount, cveCount }: { articlesCount: number; cveCount
   return (
     <section className="px-6 pb-12 pt-7 lg:px-10 lg:pb-16 lg:pt-8">
       <div className="mx-auto max-w-[1480px] overflow-hidden rounded-[1.35rem] border border-[#161616] bg-[#050505] shadow-[0_30px_80px_rgba(0,0,0,0.24)]">
-        <div className="relative grid gap-8 px-7 py-8 md:px-10 md:py-10 lg:grid-cols-[0.68fr_1fr_0.5fr] lg:items-center">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_24%,rgba(243,107,33,0.1),transparent_20%),linear-gradient(140deg,rgba(255,255,255,0.04),rgba(255,255,255,0))]" />
+        <div className="relative grid gap-8 px-7 py-9 md:px-10 md:py-10 lg:grid-cols-[0.64fr_1.04fr_0.52fr] lg:items-center">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_21%_50%,rgba(243,107,33,0.12),transparent_22%),linear-gradient(140deg,rgba(255,255,255,0.04),rgba(255,255,255,0))]" />
 
           <div className="relative flex justify-center lg:justify-start">
-            <div className="relative aspect-square w-full max-w-[300px] overflow-hidden rounded-[1.1rem]">
+            <div className="relative aspect-square w-full max-w-[310px] overflow-hidden rounded-[1rem]">
               <Image
                 src="/brand/homepage-cta-crest.png"
                 alt="ZAYRON-X black and gold crest"
@@ -394,9 +396,9 @@ function FinalCTA({ articlesCount, cveCount }: { articlesCount: number; cveCount
             </div>
           </div>
 
-          <div className="relative space-y-4 text-white">
+          <div className="relative space-y-4 text-white lg:pl-2">
             <SectionEyebrow dark>Stay ahead. Stay protected.</SectionEyebrow>
-            <h2 className="max-w-[680px] text-[3rem] font-serif font-normal leading-[0.96] sm:text-[3.9rem]">
+            <h2 className="max-w-[700px] text-[3rem] font-serif font-normal leading-[0.95] sm:text-[3.85rem]">
               TURN INTELLIGENCE
               <br />
               INTO <span className="text-[var(--color-accent-intelligence)]">ADVANTAGE.</span>
@@ -411,7 +413,7 @@ function FinalCTA({ articlesCount, cveCount }: { articlesCount: number; cveCount
             </div>
           </div>
 
-          <div className="relative flex flex-col items-start gap-4 lg:items-end">
+          <div className="relative flex flex-col items-start gap-4 lg:items-end lg:justify-center">
             <Link
               href="/register"
               className="inline-flex min-h-16 items-center justify-center gap-2 rounded-[1rem] bg-[var(--color-accent-intelligence)] px-8 text-[12px] font-bold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[var(--color-accent-intelligence-hover)]"
