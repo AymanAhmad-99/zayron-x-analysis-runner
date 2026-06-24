@@ -2,6 +2,7 @@ name = "zayron-x"
 account_id = "56534d53775d8280011a325dcf36ed09"
 main = "worker-wrapper.js"
 compatibility_date = "2025-09-23"
+preview_urls = true
 # ── CLOUDFLARE WORKERS COMPAT ────────────────────────────────
 # nodejs_compat provides Workers‑safe polyfills for buffer,
 # crypto, events, path, process, stream, string_decoder, util.
@@ -41,7 +42,7 @@ binding = "ASSETS"
 # DEFAULT ENVIRONMENT VARS (shared across envs; overridable)
 # ═══════════════════════════════════════════════════════════════
 [vars]
-NEXT_PUBLIC_SITE_URL = "https://www.zayron-x.com"
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
 
 # ═══════════════════════════════════════════════════════════════
@@ -93,9 +94,10 @@ head_sampling_rate = 0.1
 # PRODUCTION ENVIRONMENT
 # ═══════════════════════════════════════════════════════════════
 [env.production]
-name = "zayron-x-preview"
+name = "zayron-x"
 
-# Route traffic from the custom domain to this Worker.
+# Route traffic from the custom domain to this Worker only after
+# the DNS cutover away from Wix is complete inside Cloudflare.
 workers_dev = true
 # routes = [
 #   { pattern = "zayron-x.com/*", custom_domain = false },
@@ -118,14 +120,8 @@ workers_dev = true
 # These values are used by `wrangler deploy` when gradual
 # deployments are enabled on the account.
 # ═══════════════════════════════════════════════════════════════
-[env.production.gradual_deployment]
-enabled = true
-stages = [
-  { percentage = 10,  duration_minutes = 5  },
-  { percentage = 25,  duration_minutes = 10 },
-  { percentage = 50,  duration_minutes = 15 },
-  { percentage = 100, duration_minutes = 0  },
-]
+# Gradual production rollouts are triggered explicitly with
+# Wrangler versions/deploy commands, not via wrangler.toml.
 
 # Production KV — OpenNext ISR cache (real namespace ID)
 [[env.production.kv_namespaces]]
@@ -137,7 +133,7 @@ binding = "NEXT_INC_CACHE_KV"
 id = "c5704144e6984dd597e2f000a1e84aa2"
 
 [env.production.vars]
-NEXT_PUBLIC_SITE_URL = "https://www.zayron-x.com"
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
 
 # ═══════════════════════════════════════════════════════════════
@@ -157,5 +153,8 @@ binding = "NEXT_INC_CACHE_KV"
 id = "834e78268ee0457196ecf48026b06ece"
 
 [env.preview.vars]
-NEXT_PUBLIC_SITE_URL = "https://preview.zayron-x.workers.dev"
+# Keep preview metadata on the known root domain until Wrangler prints
+# a verified preview hostname. Do not replace this with a guessed
+# workers.dev hostname.
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.com"
 NEXT_PUBLIC_SITE_NAME = "ZAYRON-X [PREVIEW]"

@@ -1,4 +1,4 @@
-name: "🛡️ ZAYRON‑X — Production Deployment"
+name: "ZAYRON-X - Production Deployment"
 
 on:
   workflow_dispatch:
@@ -6,10 +6,11 @@ on:
 env:
   BUN_VERSION: "1.3.13"
   WORKER_ENV: "production"
+  WORKER_NAME: "zayron-x"
 
 jobs:
   validate-and-deploy:
-    name: 🏗️ Validate, Deploy & Monitor Production
+    name: Validate, deploy, and monitor production
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
@@ -17,27 +18,27 @@ jobs:
         working-directory: gerasys-online
 
     steps:
-      - name: 📥 Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚡ Install Bun
+      - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-      - name: 📦 Install Dependencies
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: 🔍 Run Biome Linter
+      - name: Run Biome linter
         run: bun run lint
 
-      - name: ⚙️ Run Type Check
+      - name: Run type check
         run: bun run type-check
 
-      - name: 🧪 Run Unit Tests
+      - name: Run unit tests
         run: bun run test:unit
 
-      - name: 🔨 Build Platform (OpenNext)
+      - name: Build platform
         run: bunx --bun opennextjs-cloudflare build
         env:
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
@@ -45,13 +46,22 @@ jobs:
           SENTRY_ORG: "zayron-x"
           SENTRY_PROJECT: "zayron-x-web"
 
-      - name: 🔧 Patch node:fs Internals
+      - name: Patch node:fs internals
         run: node scripts/patch-handler-fs.cjs
 
-      - name: 🔍 Verify Bundle Cleanliness
+      - name: Verify bundle cleanliness
         run: bash scripts/verify-worker-build.sh
 
-      - name: 🚀 Deploy Production Worker (Cloudflare)
+      - name: Print deployment mapping
+        run: |
+          echo "Deployment mapping"
+          echo "  Environment: ${{ env.WORKER_ENV }}"
+          echo "  Worker:      ${{ env.WORKER_NAME }}"
+          echo "  Commit SHA:  ${{ github.sha }}"
+          echo ""
+          echo "Custom domain cutover is separate from this deploy."
+
+      - name: Deploy production worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -59,7 +69,7 @@ jobs:
           command: deploy --env ${{ env.WORKER_ENV }}
           workingDirectory: gerasys-online
 
-      - name: 🔬 Execute Canary Health Monitoring (Sentry)
+      - name: Execute canary health monitoring
         id: canary-check
         run: |
           bash scripts/canary-health-check.sh
@@ -73,25 +83,27 @@ jobs:
           CANARY_DURATION_MIN: "5"
           STRICT_CANARY: "true"
 
-      - name: 🚨 Automated Rollback on Canary Failure
+      - name: Automated rollback on canary failure
         if: failure() && steps.canary-check.outcome == 'failure'
         run: |
-          echo "⚠️ Canary check failed! Reverting production deployment..."
+          echo "Canary check failed. Reverting production deployment..."
           bash scripts/rollback.sh --env ${{ env.WORKER_ENV }} --yes
-          echo "❌ Deployment rolled back successfully due to errors."
+          echo "Deployment rolled back successfully due to errors."
           exit 1
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
-      - name: ✅ Confirm Successful Production Deployment
+      - name: Confirm successful production deployment
         if: success()
         run: |
           echo "=========================================="
-          echo "🛡️ ZAYRON-X Production Deployment SUCCESSFUL"
+          echo "ZAYRON-X production deployment successful"
           echo "=========================================="
           echo "Environment:  ${{ env.WORKER_ENV }}"
+          echo "Worker:       ${{ env.WORKER_NAME }}"
           echo "Branch:       ${{ github.ref_name }}"
           echo "Commit SHA:   ${{ github.sha }}"
+          echo "zayron-x.com stays on Wix until DNS/routes are moved."
           echo "=========================================="

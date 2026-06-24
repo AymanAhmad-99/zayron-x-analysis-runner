@@ -1,60 +1,55 @@
-﻿# ═══════════════════════════════════════════════════════════════
-# 🛡️ ZAYRON‑X — Edge Deployment Pipeline
-# ─────────────────────────────────────────────────────────────
-# نظام النشر التلقائي لمنصة ZAYRON‑X على حافة Cloudflare
-# يعمل عند كل push على فرع production أو عند التشغيل اليدوي
-# ═══════════════════════════════════════════════════════════════
-
-name: "🛡️ ZAYRON‑X — Edge Deployment"
+name: "ZAYRON-X - Edge Deployment"
 
 on:
-  # ── يعمل تلقائياً عند push على فرع الإنتاج ──
   push:
     branches:
       - production
-
-  # ── يمكن تشغيله يدوياً من واجهة GitHub Actions ──
   workflow_dispatch:
 
-# ── متغيرات البيئة العامة ──
 env:
-  BUN_VERSION: "1.3.13"           # إصدار Bun المستخدم في المشروع
-  WORKER_ENV: "preview"      # بيئة النشر: preview أو production
+  BUN_VERSION: "1.3.13"
+  WORKER_ENV: "preview"
+  WORKER_NAME: "zayron-x-preview"
 
 jobs:
   build-and-deploy:
-    name: 🏗️ بناء ونشر المنصة
+    name: Build and deploy preview
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: gerasys-online   # المشروع داخل مجلد فرعي
+        working-directory: gerasys-online
 
     steps:
-      # ── الخطوة 1: سحب الكود المصدري ──
-      - name: 📥 سحب الكود المصدري
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # ── الخطوة 2: تثبيت Bun مباشرة ──
-      - name: ⚡ Install Bun (direct)
+      - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-      # ── الخطوة 3: تثبيت الحزم والاعتماديات ──
-      - name: 📦 تثبيت الاعتماديات
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # ── الخطوة 4: بناء المشروع عبر OpenNext ──
-      - name: 🔨 بناء المنصة (OpenNext → Cloudflare)
+      - name: Build platform
         run: bunx --bun opennextjs-cloudflare build
 
-      # ── الخطوة 4.5: إزالة استدعاءات node:fs من Next.js internals ──
-      - name: 🔧 إصلاح node:fs (Post‑Build Polyfill Injection)
+      - name: Patch node:fs internals
         run: node scripts/patch-handler-fs.cjs
 
-      # ── الخطوة 5: نشر على Cloudflare Workers ──
-      - name: 🚀 نشر على حافة Cloudflare
+      - name: Print deployment mapping
+        run: |
+          echo "Deployment mapping"
+          echo "  Branch:      ${{ github.ref_name }}"
+          echo "  Environment: ${{ env.WORKER_ENV }}"
+          echo "  Worker:      ${{ env.WORKER_NAME }}"
+          echo "  Commit SHA:  ${{ github.sha }}"
+          echo ""
+          echo "Use the exact workers.dev or preview URL printed by Wrangler below."
+          echo "Do not rely on guessed hostnames or the production domain."
+
+      - name: Deploy preview worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -62,21 +57,17 @@ jobs:
           command: deploy --env ${{ env.WORKER_ENV }}
           workingDirectory: gerasys-online
 
-      # ── رسالة النجاح ──
-      - name: ✅ تأكيد نجاح النشر
+      - name: Confirm successful preview deployment
         if: success()
         run: |
-          echo "═══════════════════════════════════════════════════════"
-          echo "🛡️  ZAYRON‑X — تم النشر بنجاح!"
-          echo "═══════════════════════════════════════════════════════"
+          echo "=========================================="
+          echo "ZAYRON-X preview deployment successful"
+          echo "=========================================="
+          echo "Environment:  ${{ env.WORKER_ENV }}"
+          echo "Worker:       ${{ env.WORKER_NAME }}"
+          echo "Branch:       ${{ github.ref_name }}"
+          echo "Commit SHA:   ${{ github.sha }}"
           echo ""
-          echo "📌 البيئة:  ${{ env.WORKER_ENV }}"
-          echo "📦 الفرع:   ${{ github.ref_name }}"
-          echo "🔖 الكوميت: ${{ github.sha }}"
-          echo ""
-          echo "🌐 رابط المعاينة:"
-          echo "   https://zayron-x-preview.workers.dev"
-          echo ""
-          echo "═══════════════════════════════════════════════════════"
-          echo "✅ المنصة تعمل الآن على حافة Cloudflare العالمية"
-          echo "═══════════════════════════════════════════════════════"
+          echo "Open the exact Wrangler URL from the deploy logs above."
+          echo "zayron-x.com stays on Wix until DNS/routes are moved."
+          echo "=========================================="
