@@ -16,12 +16,7 @@
   --color-zx-orange:    #FF6A00;
   --color-zx-blue:      #2F6BFF;
 
-  /* Legacy aliases kept for compat */
-  --color-zayron-white:    #FFFFFF;
-  --color-zayron-offwhite: #F7F7F5;
-  --color-zayron-orange:   #FF6A00;
-  --color-zayron-black:    #111111;
-  --color-zayron-gray:     #56606B;
+
 
   /* Typography */
   --font-sans:  var(--font-inter), 'Inter', system-ui, sans-serif;

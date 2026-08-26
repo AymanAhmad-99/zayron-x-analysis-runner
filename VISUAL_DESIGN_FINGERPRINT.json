@@ -1,0 +1,64 @@
+{
+  "project_name": "ZAYRON-X",
+  "design_philosophy": "QUIET AUTHORITY",
+  "core_principles": [
+    "Information density over decoration",
+    "Absolute precision and alignment",
+    "Typography as the primary hierarchy mechanism",
+    "Stark contrast with semantic accents",
+    "Zero unnecessary visual noise"
+  ],
+  "forbidden_elements": [
+    "Gradients",
+    "Box shadows (except ultra-subtle 0 1px 2px rgba(0,0,0,0.05) for absolute elevation)",
+    "Rounded corners > 4px (prefer 0px/square)",
+    "Translucency / Glassmorphism",
+    "Glow effects",
+    "Continuous animations",
+    "Gaming/Cyberpunk tropes (neon, grids, skulls, shields, radars)"
+  ],
+  "tokens": {
+    "colors": {
+      "background_primary": "#F7F7F5",
+      "surface_primary": "#FFFFFF",
+      "surface_elevated": "#FFFFFF",
+      "text_primary": "#111111",
+      "text_secondary": "#56606B",
+      "text_tertiary": "#7A838D",
+      "border_subtle": "#D9DDE2",
+      "border_strong": "#111111",
+      "accent_primary": "#FF6A00",
+      "accent_secondary": "#2F6BFF",
+      "semantic_critical": "#DC2626",
+      "semantic_high": "#FF6A00",
+      "semantic_medium": "#D97706",
+      "semantic_success": "#16A34A"
+    },
+    "typography": {
+      "sans": "Inter, Geist Sans, sans-serif",
+      "mono": "JetBrains Mono, Geist Mono, monospace",
+      "serif": "Fraunces, serif (Restricted to specific editorial headers only)",
+      "tracking": {
+        "normal": "0",
+        "tight": "-0.02em",
+        "wide": "0.05em (Only for uppercase labels)"
+      }
+    },
+    "spacing": {
+      "base_unit": "8px",
+      "scale": [4, 8, 12, 16, 24, 32, 48, 64, 96, 128]
+    },
+    "borders": {
+      "width": "1px",
+      "style": "solid",
+      "radius": "0px"
+    }
+  },
+  "component_rules": {
+    "badges": "Square corners, uppercase, tight padding (px-2 py-0.5), monospaced or bold sans, 10px-11px text, 1px border. Backgrounds max 10% opacity.",
+    "cards": "Square corners, white surface, 1px subtle border. High contrast on hover (border turns black). No shadows.",
+    "buttons": "Square corners. Primary: Black bg, White text. Secondary: White bg, Black border. Hover state: Primary turns Accent Orange, Secondary border turns thicker or bg turns light gray.",
+    "links": "Bold sans or mono. No underlines by default. Underline or color change to Accent on hover.",
+    "lists": "Unstyled or subtle border-l. Data lists use mono font for labels."
+  }
+}
