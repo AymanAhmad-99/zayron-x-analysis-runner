@@ -20,7 +20,7 @@
     "text": "# Mathematical derivation based on TODOs, dead code files, and unresolved imports"
   },
   {
-    "file": "gerasys-online/lib/pipeline/telegram-prompt.ts",
+    "file": "zayron-x/lib/pipeline/telegram-prompt.ts",
     "line": 49,
     "text": "- Include input validation, error handling, and secure configuration. No placeholder comments like \"// TODO: validate input.\""
   }

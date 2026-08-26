@@ -125,9 +125,9 @@ class CodebaseScanner:
             return None  # Third-party library
 
         if import_name.startswith('@/'):
-            # In tsconfig.json, @/* resolves to ./* under gerasys-online/
+            # In tsconfig.json, @/* resolves to ./* under zayron-x/
             rel_to_root = import_name[2:]
-            target_path = WORKSPACE_ROOT / "gerasys-online" / rel_to_root
+            target_path = WORKSPACE_ROOT / "zayron-x" / rel_to_root
         else:
             base_dir = (WORKSPACE_ROOT / current_file_path).parent
             target_path = (base_dir / import_name).resolve()
@@ -244,7 +244,7 @@ class CodebaseScanner:
 
     def _discover_apis(self):
         """Scans Next.js App Router for active API files."""
-        api_dir = WORKSPACE_ROOT / "gerasys-online" / "app" / "api"
+        api_dir = WORKSPACE_ROOT / "zayron-x" / "app" / "api"
         if not api_dir.exists():
             return
             
@@ -339,24 +339,24 @@ class CodebaseScanner:
             "workers/ingestors/darkweb_ingestor.py",
             "workers/ingestors/radar_engine.py",
             "workers/ingestors/rss_ingestor.py",
-            "gerasys-online/app/layout.tsx",
-            "gerasys-online/app/page.tsx",
-            "gerasys-online/middleware.ts",
-            "gerasys-online/next.config.ts",
-            "gerasys-online/postcss.config.mjs",
-            "gerasys-online/tailwind.config.ts",
-            "gerasys-online/sentry.client.config.ts",
-            "gerasys-online/sentry.server.config.ts",
-            "gerasys-online/sentry.edge.config.ts",
-            "gerasys-online/sentry.config.shared.ts",
-            "gerasys-online/open-next.config.ts",
-            "gerasys-online/tsconfig.json",
-            "gerasys-online/biome.json",
-            "gerasys-online/wrangler.toml",
+            "zayron-x/app/layout.tsx",
+            "zayron-x/app/page.tsx",
+            "zayron-x/middleware.ts",
+            "zayron-x/next.config.ts",
+            "zayron-x/postcss.config.mjs",
+            "zayron-x/tailwind.config.ts",
+            "zayron-x/sentry.client.config.ts",
+            "zayron-x/sentry.server.config.ts",
+            "zayron-x/sentry.edge.config.ts",
+            "zayron-x/sentry.config.shared.ts",
+            "zayron-x/open-next.config.ts",
+            "zayron-x/tsconfig.json",
+            "zayron-x/biome.json",
+            "zayron-x/wrangler.toml",
             "package.json",
             "bun.lock",
             "workers/Dockerfile.workers",
-            "gerasys-online/Dockerfile",
+            "zayron-x/Dockerfile",
             "audits/arch_analyzer.py"
         ]
         
@@ -364,7 +364,7 @@ class CodebaseScanner:
         for file in self.files:
             base = os.path.basename(file)
             ext = os.path.splitext(file)[1]
-            if file.startswith("gerasys-online/app/") and (base in ["page.tsx", "layout.tsx", "route.ts", "not-found.tsx", "robots.ts", "sitemap.ts"]):
+            if file.startswith("zayron-x/app/") and (base in ["page.tsx", "layout.tsx", "route.ts", "not-found.tsx", "robots.ts", "sitemap.ts"]):
                 entry_points.append(file)
             if file.startswith("docs/") or file.startswith("memory/") or file.startswith("governance/") or file.startswith("decisions/") or file.startswith("specifications/"):
                 continue
@@ -438,7 +438,7 @@ class CodebaseScanner:
                 if not resolved:
                     continue
                 # Rule 1: Python worker files must not import frontend files
-                if file.startswith("workers/") and resolved.startswith("gerasys-online/"):
+                if file.startswith("workers/") and resolved.startswith("zayron-x/"):
                     self.drift_violations.append({
                         "file": file,
                         "imported": resolved,
@@ -446,7 +446,7 @@ class CodebaseScanner:
                         "severity": "CRITICAL"
                     })
                 # Rule 2: Frontend files must not import python scripts directly
-                if file.startswith("gerasys-online/") and resolved.startswith("workers/"):
+                if file.startswith("zayron-x/") and resolved.startswith("workers/"):
                     self.drift_violations.append({
                         "file": file,
                         "imported": resolved,

@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1787317887146,
+      "tag": "0000_wandering_energizer",
+      "breakpoints": true
+    }
+  ]
+}

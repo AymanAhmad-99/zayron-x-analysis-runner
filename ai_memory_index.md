@@ -32,8 +32,8 @@
 
 - **Dependency Configurations**:
   - Python Libraries: `workers/requirements.txt`
-  - JavaScript Libraries: `gerasys-online/package.json`
-  - Cloudflare Worker Assets: `gerasys-online/wrangler.toml`
+  - JavaScript Libraries: `zayron-x/package.json`
+  - Cloudflare Worker Assets: `zayron-x/wrangler.toml`
 - **RAG Knowledge References (literature-based templates)**:
   - Structured Analytic Techniques: Richards Heuer & Randolph H. Pherson
   - Psychology of Intelligence Analysis: Richards Heuer

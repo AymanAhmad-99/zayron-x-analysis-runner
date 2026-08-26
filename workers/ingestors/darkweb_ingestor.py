@@ -138,10 +138,10 @@ def generate_stealth_headers() -> dict[str, str]:
 
 async def rotate_tor_circuit() -> None:
     """Request a new Tor exit node via the Tor ControlPort (SIGNAL NEWNYM)."""
-    log.info("Requesting Tor circuit rotation (SIGNAL NEWNYM)...")
+    tor_password = os.getenv("TOR_CONTROL_PASSWORD", "")
     try:
         reader, writer = await asyncio.open_connection("tor_proxy", 9051)
-        writer.write(b'AUTHENTICATE "ZayronTorControlPass"\r\n')
+        writer.write(f'AUTHENTICATE "{tor_password}"\r\n'.encode("utf-8"))
         await writer.drain()
         auth_resp = await reader.readline()
 

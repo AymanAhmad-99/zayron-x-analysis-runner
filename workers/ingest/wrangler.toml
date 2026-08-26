@@ -1,0 +1,24 @@
+name = "zayron-x-ingest"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+
+[[queues.consumers]]
+queue = "zayron-ingest-queue"
+max_batch_size = 10
+max_batch_timeout = 5
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "zayron-knowledge-index"
+
+[vars]
+ENVIRONMENT = "production"

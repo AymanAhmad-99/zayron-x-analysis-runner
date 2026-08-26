@@ -7,511 +7,511 @@
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/instrumentation.ts",
+    "component": "zayron-x/instrumentation.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/next-env.d.ts",
+    "component": "zayron-x/next-env.d.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/next-intl.config.ts",
+    "component": "zayron-x/next-intl.config.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/playwright.config.ts",
+    "component": "zayron-x/playwright.config.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/vitest.config.ts",
+    "component": "zayron-x/vitest.config.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/error.tsx",
+    "component": "zayron-x/app/(site)/error.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/loading.tsx",
+    "component": "zayron-x/app/(site)/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/analysts/loading.tsx",
+    "component": "zayron-x/app/(site)/analysts/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/cve/loading.tsx",
+    "component": "zayron-x/app/(site)/cve/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/programming/loading.tsx",
+    "component": "zayron-x/app/(site)/programming/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/search/loading.tsx",
+    "component": "zayron-x/app/(site)/search/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/(site)/tools/loading.tsx",
+    "component": "zayron-x/app/(site)/tools/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/admin/error.tsx",
+    "component": "zayron-x/app/admin/error.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/api/og/route.tsx",
+    "component": "zayron-x/app/api/og/route.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/intelligence/[category]/loading.tsx",
+    "component": "zayron-x/app/intelligence/[category]/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/intelligence/[category]/[slug]/error.tsx",
+    "component": "zayron-x/app/intelligence/[category]/[slug]/error.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/app/intelligence/[category]/[slug]/loading.tsx",
+    "component": "zayron-x/app/intelligence/[category]/[slug]/loading.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/article/Article3DImage.tsx",
+    "component": "zayron-x/components/article/Article3DImage.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/cve/CveFilters.tsx",
+    "component": "zayron-x/components/cve/CveFilters.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/CategoryShowcase.tsx",
+    "component": "zayron-x/components/homepage/CategoryShowcase.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/CveTracker.tsx",
+    "component": "zayron-x/components/homepage/CveTracker.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/FeaturedGrid.tsx",
+    "component": "zayron-x/components/homepage/FeaturedGrid.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/HeroSection.tsx",
+    "component": "zayron-x/components/homepage/HeroSection.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/LatestReports.tsx",
+    "component": "zayron-x/components/homepage/LatestReports.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/Newsletter.tsx",
+    "component": "zayron-x/components/homepage/Newsletter.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/StatsCounter.tsx",
+    "component": "zayron-x/components/homepage/StatsCounter.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/TabbedContent.tsx",
+    "component": "zayron-x/components/homepage/TabbedContent.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/ThreatTicker.tsx",
+    "component": "zayron-x/components/homepage/ThreatTicker.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/homepage/ToolSpotlight.tsx",
+    "component": "zayron-x/components/homepage/ToolSpotlight.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/layout/BreakingTicker.tsx",
+    "component": "zayron-x/components/layout/BreakingTicker.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/layout/NewsTicker.tsx",
+    "component": "zayron-x/components/layout/NewsTicker.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/platform/AutomatedRoiCalculator.tsx",
+    "component": "zayron-x/components/platform/AutomatedRoiCalculator.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/ui/CopperDivider.tsx",
+    "component": "zayron-x/components/ui/CopperDivider.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/ui/PageSkeleton.tsx",
+    "component": "zayron-x/components/ui/PageSkeleton.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/components/ui/SearchBar.tsx",
+    "component": "zayron-x/components/ui/SearchBar.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/email/resend.ts",
+    "component": "zayron-x/lib/email/resend.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/ingestion/index.ts",
+    "component": "zayron-x/lib/ingestion/index.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/ingestion/orchestrator.ts",
+    "component": "zayron-x/lib/ingestion/orchestrator.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/pipeline/telegram-prompt.ts",
+    "component": "zayron-x/lib/pipeline/telegram-prompt.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/polyfills/fs.ts",
+    "component": "zayron-x/lib/polyfills/fs.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/polyfills/os.ts",
+    "component": "zayron-x/lib/polyfills/os.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/seo/metadata.ts",
+    "component": "zayron-x/lib/seo/metadata.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/supabase/queries/analytics.ts",
+    "component": "zayron-x/lib/supabase/queries/analytics.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/utils/markdown.ts",
+    "component": "zayron-x/lib/utils/markdown.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/utils/readingTime.ts",
+    "component": "zayron-x/lib/utils/readingTime.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/lib/utils/sanitize-edge.ts",
+    "component": "zayron-x/lib/utils/sanitize-edge.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/pages/dummy.tsx",
+    "component": "zayron-x/pages/dummy.tsx",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/scripts/run-migration.ts",
+    "component": "zayron-x/scripts/run-migration.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/scripts/seed-analysts.ts",
+    "component": "zayron-x/scripts/seed-analysts.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/scripts/telegram-ingestion.ts",
+    "component": "zayron-x/scripts/telegram-ingestion.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/scripts/verify-security.ts",
+    "component": "zayron-x/scripts/verify-security.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/shared/__init__.py",
+    "component": "zayron-x/shared/__init__.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/shared/models/__init__.py",
+    "component": "zayron-x/shared/models/__init__.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/types/lucide-react.d.ts",
+    "component": "zayron-x/types/lucide-react.d.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/config.py",
+    "component": "zayron-x/workers/config.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/omni_crew.py",
+    "component": "zayron-x/workers/omni_crew.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/persistence.py",
+    "component": "zayron-x/workers/persistence.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/verify_imports.py",
+    "component": "zayron-x/workers/verify_imports.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/__init__.py",
+    "component": "zayron-x/workers/__init__.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/agents/compliance.py",
+    "component": "zayron-x/workers/agents/compliance.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/agents/harvester.py",
+    "component": "zayron-x/workers/agents/harvester.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/agents/quant.py",
+    "component": "zayron-x/workers/agents/quant.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/agents/validator.py",
+    "component": "zayron-x/workers/agents/validator.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/agents/weaver.py",
+    "component": "zayron-x/workers/agents/weaver.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/agents/__init__.py",
+    "component": "zayron-x/workers/agents/__init__.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/contracts/inter_agent.py",
+    "component": "zayron-x/workers/contracts/inter_agent.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/workers/contracts/__init__.py",
+    "component": "zayron-x/workers/contracts/__init__.py",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/__tests__/e2e/auth.spec.ts",
+    "component": "zayron-x/__tests__/e2e/auth.spec.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/__tests__/e2e/homepage.spec.ts",
+    "component": "zayron-x/__tests__/e2e/homepage.spec.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/__tests__/e2e/pages.spec.ts",
+    "component": "zayron-x/__tests__/e2e/pages.spec.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/__tests__/integration/api.test.ts",
+    "component": "zayron-x/__tests__/integration/api.test.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/__tests__/unit/db.test.ts",
+    "component": "zayron-x/__tests__/unit/db.test.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",
     "verification_status": "Pending manual approval"
   },
   {
-    "component": "gerasys-online/__tests__/unit/lib/db/queries/articles.test.ts",
+    "component": "zayron-x/__tests__/unit/lib/db/queries/articles.test.ts",
     "finding": "Unreferenced code module",
     "confidence": "95%",
     "evidence": "Zero imports resolved across 330 project files. File is not imported as a component or utility module.",

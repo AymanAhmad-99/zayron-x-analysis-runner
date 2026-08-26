@@ -1,0 +1,104 @@
+﻿[
+  {
+    "results": [
+      {
+        "id": "art_00d8ffe5-e67",
+        "title": "CRITICAL ADVISORY: Threat actor APT29 observed weaponizing CVE-2026-1453 for remote execution delivering Cobalt Strike a",
+        "slug": "critical-advisory-threat-actor-apt29-observed-weaponizing-cve-2026-1453-for-remo-679edd",
+        "severity": "high",
+        "confidence": 0.96,
+        "published_at": "2025-08-21T17:17:10.000Z"
+      },
+      {
+        "id": "art_59270894-1f6",
+        "title": "≡ƒÜ¿ [CVE-2026-74583](https://git.kernel.org/stable/c/0e7a8cf8895b06d07c7311f028eba16ad742b9bc)",
+        "slug": "cve-2026-74583-https-git-kernel-org-stable-c-0e7a8cf8895b06d07c7311f028eba16ad74-af000d",
+        "severity": "medium",
+        "confidence": 0.78,
+        "published_at": "2026-08-21T17:24:12.000Z"
+      },
+      {
+        "id": "art_a71d2823-6c9",
+        "title": "Microsoft Confirms CVSS 10.0 Remote Code Execution Vulnerability in Entra ID (CVE-2026-69836)",
+        "slug": "cve-2026-69836-https-thecyberexpress-com-microsoft-entra-id-cve-2026-69836-explo-8ab062",
+        "severity": "critical",
+        "confidence": 0.78,
+        "published_at": "2026-08-21T15:42:12.000Z"
+      },
+      {
+        "id": "art_20633dd6-b08",
+        "title": "Reverse-engineering Find My People to stalk ΓÇè╠╢m╠╢y╠╢ ╠╢e╠╢x╠╢ΓÇè a friend, cause I can",
+        "slug": "reverse-engineering-find-my-people-to-stalk-m-y-e-x-a-friend-cause-i-can-7c4ba4",
+        "severity": "low",
+        "confidence": 0.42,
+        "published_at": "2026-08-21T17:17:28.000Z"
+      },
+      {
+        "id": "art_3eee6226-bbb",
+        "title": "ParsedReport ChatGPT Translated",
+        "slug": "parsedreport-chatgpt-translated-cee42b",
+        "severity": "low",
+        "confidence": 0.42,
+        "published_at": "2026-08-21T17:27:16.000Z"
+      },
+      {
+        "id": "art_b9675c80-1c8",
+        "title": "╨ú╤é╨╡╤ç╨║╨░ ╨║╨░╨┤╤Ç╨╛╨▓ GTA VI ╨╕╤ü╨┐╨╛╨╗╤î╨╖╤â╨╡╤é╤ü╤Å ╨┤╨╗╤Å ╤Ç╨░╤ü╨║╤Ç╤â╤é╨║╨╕ ╨║╤Ç╨╕╨┐╤é╨╛╤é╨╛╨║╨╡╨╜╨░",
+        "slug": "gta-vi-eb14bf",
+        "severity": "low",
+        "confidence": 0.42,
+        "published_at": "2026-08-21T16:33:58.000Z"
+      },
+      {
+        "id": "art_c20b2b16-4f7",
+        "title": "> How can you tell it was vibe coded?",
+        "slug": "how-can-you-tell-it-was-vibe-coded-7b6127",
+        "severity": "low",
+        "confidence": 0.46,
+        "published_at": "2026-08-21T06:24:14.000Z"
+      },
+      {
+        "id": "art_3bc448a7-8a8",
+        "title": "I have lots of stuff cooking, but when I will have the opportunity to do more is difficult to determine",
+        "slug": "i-have-lots-of-stuff-cooking-but-when-i-will-have-the-opportunity-to-do-more-is--e02b21",
+        "severity": "low",
+        "confidence": 0.46,
+        "published_at": "2026-08-21T00:25:41.000Z"
+      },
+      {
+        "id": "art_79296cd1-04a",
+        "title": "ΓÇ╝∩╕Å Attackers can weaponize DefenderΓÇÖs own signed driver to delete security software at boot.",
+        "slug": "attackers-can-weaponize-defender-s-own-signed-driver-to-delete-security-software-27280e",
+        "severity": "low",
+        "confidence": 0.42,
+        "published_at": "2026-08-21T16:04:14.000Z"
+      },
+      {
+        "id": "art_3bfd020f-f62",
+        "title": "ΓÜá∩╕Å Android car head units are getting malware through built-in updaters.",
+        "slug": "android-car-head-units-are-getting-malware-through-built-in-updaters-d5f992",
+        "severity": "low",
+        "confidence": 0.42,
+        "published_at": "2026-08-21T15:43:23.000Z"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "CDG",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2451
+      },
+      "duration": 0.2451,
+      "changes": 0,
+      "last_row_id": 39,
+      "changed_db": false,
+      "size_after": 749568,
+      "rows_read": 10,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

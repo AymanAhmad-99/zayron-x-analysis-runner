@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 45
     defaults:
       run:
-        working-directory: gerasys-online
+        working-directory: zayron-x
 
     steps:
       - name: Checkout code
@@ -67,7 +67,7 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: deploy --env ${{ env.WORKER_ENV }}
-          workingDirectory: gerasys-online
+          workingDirectory: zayron-x
 
       - name: Execute canary health monitoring
         id: canary-check

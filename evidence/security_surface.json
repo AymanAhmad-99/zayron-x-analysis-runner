@@ -1,61 +1,61 @@
 [
   {
-    "component": "gerasys-online/app/api/admin/sync-knowledge/route.ts",
+    "component": "zayron-x/app/api/admin/sync-knowledge/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/admin/sync-knowledge/route.ts",
+    "component": "zayron-x/app/api/admin/sync-knowledge/route.ts",
     "issue": "Administrative route exposed as Public (unauthorized gate)",
     "severity": "CRITICAL"
   },
   {
-    "component": "gerasys-online/app/api/articles/[slug]/route.ts",
+    "component": "zayron-x/app/api/articles/[slug]/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/csp-report/route.ts",
+    "component": "zayron-x/app/api/csp-report/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/db-status/route.ts",
+    "component": "zayron-x/app/api/db-status/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/download-sitrep/route.ts",
+    "component": "zayron-x/app/api/download-sitrep/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/remediate/route.ts",
+    "component": "zayron-x/app/api/remediate/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/revalidate/route.ts",
+    "component": "zayron-x/app/api/revalidate/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/rss/route.ts",
+    "component": "zayron-x/app/api/rss/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/seed-analysts/route.ts",
+    "component": "zayron-x/app/api/seed-analysts/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/status/route.ts",
+    "component": "zayron-x/app/api/status/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },
   {
-    "component": "gerasys-online/app/api/unsplash-search/route.ts",
+    "component": "zayron-x/app/api/unsplash-search/route.ts",
     "issue": "API endpoint has no Rate Limiting check enabled",
     "severity": "HIGH"
   },

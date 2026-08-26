@@ -1,7 +1,7 @@
 """
 ZAYRON-X — Article Pydantic Models
 
-Mirrors: gerasys-online/lib/db/schema.ts → articles table
+Mirrors: zayron-x/lib/db/schema.ts → articles table
 SQL DDL: supabase_schema_setup.sql → CREATE TABLE articles
 
 These models enforce that every article row constructed by any Python worker

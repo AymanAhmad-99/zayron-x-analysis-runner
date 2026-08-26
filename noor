@@ -812,4 +812,4 @@ System verdict:  FUNCTIONALLY DEAD PIPELINE, COSMETIC FRONTEND ONLY
 
 ---
 
-*Simulation generated: 2026-06-11 | Evidence base: direct codebase audit of `workers/omni_crew.py`, `workers/config.py`, `workers/docker-compose.yml`, `gerasys-online/middleware.ts`, `gerasys-online/app/api/billing/checkout/route.ts`. All findings classified per evidence tier.*
+*Simulation generated: 2026-06-11 | Evidence base: direct codebase audit of `workers/omni_crew.py`, `workers/config.py`, `workers/docker-compose.yml`, `zayron-x/middleware.ts`, `zayron-x/app/api/billing/checkout/route.ts`. All findings classified per evidence tier.*

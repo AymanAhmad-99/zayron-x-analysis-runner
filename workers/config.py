@@ -44,8 +44,7 @@ GEMINI_FLASH_MODEL: str = os.getenv("GEMINI_FLASH_MODEL", "gemini-1.5-flash-late
 # Supabase Configuration
 # ---------------------------------------------------------------------------
 
-SUPABASE_URL: str = os.getenv("SUPABASE_URL", os.getenv("NEXT_PUBLIC_SUPABASE_URL", ""))
-SUPABASE_SERVICE_KEY: str = os.getenv("SUPABASE_SERVICE_KEY", os.getenv("SUPABASE_SERVICE_ROLE_KEY", ""))
+ZAYRON_AUTOMATION_SECRET: str = os.getenv("ZAYRON_AUTOMATION_SECRET", "")
 
 # ---------------------------------------------------------------------------
 # Crew Operational Parameters
@@ -179,8 +178,6 @@ def validate_config() -> list[str]:
     errors: list[str] = []
     if not GEMINI_API_KEY:
         errors.append("GEMINI_API_KEY is not set")
-    if not SUPABASE_URL:
-        errors.append("SUPABASE_URL is not set")
-    if not SUPABASE_SERVICE_KEY:
-        errors.append("SUPABASE_SERVICE_KEY is not set")
+    if not ZAYRON_AUTOMATION_SECRET:
+        errors.append("ZAYRON_AUTOMATION_SECRET is not set")
     return errors

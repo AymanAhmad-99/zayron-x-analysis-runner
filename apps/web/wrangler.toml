@@ -1,0 +1,47 @@
+name = "zayron-x-web"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+main = "worker-proxy.js"
+workers_dev = true
+
+[[services]]
+binding = "API_WORKER"
+service = "zayron-x-api"
+
+routes = [
+  { pattern = "zayron-x.co", custom_domain = true },
+  { pattern = "www.zayron-x.co", custom_domain = true }
+]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+
+[vars]
+ENVIRONMENT = "production"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.co"
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+[env.preview]
+name = "zayron-x-web-preview"
+workers_dev = true
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X [PREVIEW]"
+NEXT_PUBLIC_SITE_URL = "https://zayron-x-web-preview.aabusabih.workers.dev"
+

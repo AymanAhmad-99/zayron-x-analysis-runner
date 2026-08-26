@@ -1,0 +1,310 @@
+﻿[
+  {
+    "results": [
+      {
+        "id": "tg_vxunderground",
+        "display_name": "vx-underground",
+        "url": "https://t.me/vxunderground",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.92,
+        "priority": "A",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_redteams_ru",
+        "display_name": "Russian Threat Intel Channel",
+        "url": "https://t.me/threat_intel_ru",
+        "source_type": "telegram",
+        "language": "ru",
+        "trust_score": 0.85,
+        "priority": "A",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_iran_cyber",
+        "display_name": "Persian Threat Advisory Feed",
+        "url": "https://t.me/iran_cyber_watch",
+        "source_type": "telegram",
+        "language": "fa",
+        "trust_score": 0.78,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_cve_alert",
+        "display_name": "CVE & Exploits Global Feed",
+        "url": "https://t.me/cve_announcements",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.95,
+        "priority": "A",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_cvenotify",
+        "display_name": "@cvenotify",
+        "url": "https://t.me/cvenotify/264937",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_pentestingnews",
+        "display_name": "@pentestingnews",
+        "url": "https://t.me/pentestingnews/76001",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_blueteamalerts",
+        "display_name": "@blueteamalerts",
+        "url": "https://t.me/blueteamalerts/21471",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_aptreports",
+        "display_name": "@aptreports",
+        "url": "https://t.me/aptreports/31751",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_xakep_ru",
+        "display_name": "@xakep_ru",
+        "url": "https://t.me/xakep_ru/19928",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_thehackernews",
+        "display_name": "@thehackernews",
+        "url": "https://t.me/thehackernews/9869",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_malwr",
+        "display_name": "@malwr",
+        "url": "https://t.me/malwr/10131",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_ctinow",
+        "display_name": "@ctinow",
+        "url": "https://t.me/ctinow/255528",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_whackdoor",
+        "display_name": "@whackdoor",
+        "url": "https://t.me/whackdoor/30725",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_searchack",
+        "display_name": "@searchack",
+        "url": "https://t.me/searchack/2941",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_seclabnews",
+        "display_name": "@seclabnews",
+        "url": "https://t.me/seclabnews/18077",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_anti_malware",
+        "display_name": "@anti_malware",
+        "url": "https://t.me/anti_malware/23212",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_lab_hack",
+        "display_name": "@lab_hack",
+        "url": "https://t.me/lab_hack/1937",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_cyber_cabb",
+        "display_name": "@cyber_cabb",
+        "url": "https://t.me/cyber_cabb/7289",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_3359090932",
+        "display_name": "@3359090932",
+        "url": "https://t.me/3359090932/3",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_darknet_live",
+        "display_name": "@darknet_live",
+        "url": "https://t.me/darknet_live/55",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_cybersecurityhub",
+        "display_name": "@cybersecurityhub",
+        "url": "https://t.me/cybersecurityhub/25132",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_reverseengineering",
+        "display_name": "@reverseengineering",
+        "url": "https://t.me/reverseengineering/236",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_hackers_zone",
+        "display_name": "@hackers_zone",
+        "url": "https://t.me/hackers_zone/2726",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_hackernewslive",
+        "display_name": "@hackernewslive",
+        "url": "https://t.me/hackernewslive/230788",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_cibsecurity",
+        "display_name": "@cibsecurity",
+        "url": "https://t.me/cibsecurity/90533",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      },
+      {
+        "id": "tg_test_channel",
+        "display_name": "@test_channel",
+        "url": "https://t.me/test_channel/9999",
+        "source_type": "telegram",
+        "language": "en",
+        "trust_score": 0.85,
+        "priority": "B",
+        "status": "ENABLED",
+        "enabled": 1
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "WEUR",
+      "served_by_colo": "CDG",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.2365
+      },
+      "duration": 0.2365,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 749568,
+      "rows_read": 26,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

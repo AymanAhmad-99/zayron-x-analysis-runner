@@ -15,10 +15,6 @@ multidict>=6.1.0
 pydantic>=2.9.2
 
 
-# Database Connectivity (Supabase & direct PostgreSQL)
-supabase>=2.4.0
-asyncpg>=0.29.0
-
 # System & Environment Utilities
 python-dotenv==1.0.1
 psutil==5.9.8

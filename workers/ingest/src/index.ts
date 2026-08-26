@@ -449,9 +449,99 @@ CRITICAL RULES:
           }
         }
 
-        // ── 16. PUBLICATION GATE: Selective Article Creation ──────────────────
-        // Only high-value / critical signals meeting publication criteria become public articles.
+        // ── 16. PUBLICATION GATE & DEEP AI GENERATION ──────────────────────────
+        // Only high-value signals meeting publication criteria become public articles.
         if (result.isEligibleForArticle && result.publicationStatus === 'PUBLISHED') {
+          let articleContent = finalSummary;
+          let articleDek = finalSummary.slice(0, 140);
+          let articleExcerpt = finalSummary.slice(0, 180);
+          let articleAiSummary = finalSummary;
+          let isDeepAiSuccessful = false;
+
+          if (env.AI) {
+            try {
+              // 1. Budget Guard: Limit deep AI runs per day
+              const todayRuns = await env.DB.prepare(
+                "SELECT count(*) as count FROM ai_runs WHERE date(created_at) = date('now')"
+              ).first<{ count: number }>();
+              
+              if ((todayRuns?.count || 0) < 150) {
+                const aiPrompt = `You are the ZAYRON-X Principal Intelligence Analyst.
+Analyze this cyber threat event and output a structured JSON report.
+CRITICAL RULES:
+1. Output ONLY valid JSON, no markdown formatting outside of the JSON values.
+2. Be highly technical, objective, and evidence-based. No fluff.
+3. Ensure the JSON conforms exactly to this structure:
+{
+  "executive_assessment": "1-2 sentences of high-level strategic impact",
+  "what_happened": "Detailed paragraph of the event/vulnerability/attack",
+  "why_it_matters": "Paragraph explaining the systemic risk or operational impact",
+  "defensive_implications": "1-2 actionable defensive recommendations"
+}`;
+                const userContent = `Event: ${finalTitle}\nSummary: ${finalSummary}\nEntities: ${JSON.stringify(result.entities)}`;
+                
+                const startTime = Date.now();
+                const aiResp = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+                  messages: [
+                    { role: 'system', content: aiPrompt },
+                    { role: 'user', content: userContent },
+                  ],
+                  temperature: 0.2,
+                  max_tokens: 800,
+                });
+                const duration = Date.now() - startTime;
+                
+                // Track AI run for budget guard
+                await env.DB.prepare(
+                  `INSERT INTO ai_runs (id, workflow, model_id, duration_ms, status, created_at)
+                   VALUES (?, 'deep_article_generation', '@cf/meta/llama-3.1-8b-instruct', ?, 'SUCCEEDED', datetime('now'))`
+                )
+                  .bind(`airun_${crypto.randomUUID().slice(0, 12)}`, duration)
+                  .run();
+
+                const textResp = aiResp?.response || '';
+                const match = textResp.match(/\{[\s\S]*\}/);
+                
+                if (match) {
+                  const parsed = JSON.parse(match[0]);
+                  
+                  if (parsed.executive_assessment && parsed.what_happened && parsed.why_it_matters && parsed.defensive_implications) {
+                    articleDek = parsed.executive_assessment;
+                    articleExcerpt = parsed.executive_assessment;
+                    articleAiSummary = parsed.what_happened;
+                    
+                    // Build Canonical Markdown
+                    articleContent = `## Executive Assessment\n${parsed.executive_assessment}\n\n## What Happened\n${parsed.what_happened}\n\n## Why It Matters\n${parsed.why_it_matters}\n\n## Defensive Implications\n${parsed.defensive_implications}`;
+                    
+                    // Append structured entity evidence
+                    articleContent += `\n\n## Intelligence Evidence & Entities\n`;
+                    if (result.entities.cves.length > 0) articleContent += `- **Vulnerabilities:** ${result.entities.cves.join(', ')}\n`;
+                    if (result.entities.actors.length > 0) articleContent += `- **Threat Actors:** ${result.entities.actors.join(', ')}\n`;
+                    if (result.entities.malware.length > 0) articleContent += `- **Malware:** ${result.entities.malware.join(', ')}\n`;
+                    if (result.entities.ttps.length > 0) articleContent += `- **MITRE ATT&CK:** ${result.entities.ttps.join(', ')}\n`;
+                    
+                    articleContent += `\n*Analysis grounded in verified telemetry from ${sourceName}.*`;
+                    
+                    isDeepAiSuccessful = true;
+                  }
+                }
+              } else {
+                console.warn(`[INGEST] AI Budget Guard triggered (Runs: ${todayRuns?.count}). Falling back to deterministic generation.`);
+              }
+            } catch (err) {
+              console.error('[INGEST] Deep AI generation failed:', err);
+            }
+          }
+
+          // Quality Gate: If AI failed, use deterministic markdown layout
+          if (!isDeepAiSuccessful) {
+             articleContent = `## Executive Assessment\n${finalSummary}\n\n## Intelligence Evidence & Entities\n`;
+             if (result.entities.cves.length > 0) articleContent += `- **Vulnerabilities:** ${result.entities.cves.join(', ')}\n`;
+             if (result.entities.actors.length > 0) articleContent += `- **Threat Actors:** ${result.entities.actors.join(', ')}\n`;
+             if (result.entities.malware.length > 0) articleContent += `- **Malware:** ${result.entities.malware.join(', ')}\n`;
+             if (result.entities.ttps.length > 0) articleContent += `- **MITRE ATT&CK:** ${result.entities.ttps.join(', ')}\n`;
+          }
+
           const articleSlug = finalTitle
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
@@ -470,14 +560,14 @@ CRITICAL RULES:
               articleId,
               finalTitle,
               articleSlug,
-              finalSummary.slice(0, 140),
-              finalSummary,
-              finalSummary.slice(0, 180),
+              articleDek,
+              articleContent,
+              articleExcerpt,
               eventType,
               JSON.stringify([...result.entities.actors, ...result.entities.malware, ...result.entities.cves]),
               result.severity,
               result.confidenceScore,
-              finalSummary,
+              articleAiSummary,
               result.severity === 'critical' ? 1 : 0,
               eventId,
               payload.publishedAt || new Date().toISOString()

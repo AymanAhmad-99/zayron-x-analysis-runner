@@ -23,14 +23,14 @@
 
 An analysis of imports in the Python and TypeScript codebases was executed.
 - **Python Swarm (`workers/`)**: The module import flow is strictly linear (`config -> contracts -> persistence -> omni_crew`). Import relationships are hierarchical and free of circular imports.
-- **Frontend App Router (`gerasys-online/`)**: Next.js App Router configurations separate API routes (`/api/*`) from frontend pages (`(site)/*`). Types are centralized in `lib/types.ts` and database connectors in `lib/supabase/client.ts`, avoiding circular component references.
+- **Frontend App Router (`zayron-x/`)**: Next.js App Router configurations separate API routes (`/api/*`) from frontend pages (`(site)/*`). Types are centralized in `lib/types.ts` and database connectors in `lib/supabase/client.ts`, avoiding circular component references.
 
 ---
 
 ## 3. Duplicate Logic & Redundancy
 
 ### 3.1 Duplicate Type Definitions
-- **Drift Location**: Python models (`shared/models/article.py`) and Next.js types (`gerasys-online/lib/types.ts`) define duplicate schema representations of `Article` and `CVE` interfaces.
+- **Drift Location**: Python models (`shared/models/article.py`) and Next.js types (`zayron-x/lib/types.ts`) define duplicate schema representations of `Article` and `CVE` interfaces.
 - **Drift Impact**: If a column is added or renamed in the database table, it must be updated in three separate places: the DDL schema file, the TypeScript `types.ts` file, and the Python Pydantic models.
 - **Justification**: Required because the system uses a hybrid runtime (TypeScript Edge frontend + Python swarm backend). Without a unified schema sync tool (like Prisma or Drizzle-Kit running cross-language templates), definitions must be maintained in both codebases.
 

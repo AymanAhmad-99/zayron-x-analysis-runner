@@ -1,0 +1,27 @@
+name = "zayron-telegram-collector-do"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[durable_objects]
+bindings = [
+  { name = "TELEGRAM_COLLECTOR_DO", class_name = "TelegramCollectorDO" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["TelegramCollectorDO"]
+
+[[queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+
+[vars]
+ENVIRONMENT = "production"
+API_ID = 37585861
+API_HASH = "e38c7289b2050a99557bcc0d1813cfac"

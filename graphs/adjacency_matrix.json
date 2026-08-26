@@ -28,11 +28,11 @@
       "resolved": null
     }
   ],
-  "gerasys-online/middleware.ts": [
+  "zayron-x/middleware.ts": [
     {
       "line": 3,
       "import": "@/lib/supabase/middleware",
-      "resolved": "gerasys-online/lib/supabase/middleware.ts"
+      "resolved": "zayron-x/lib/supabase/middleware.ts"
     },
     {
       "line": 4,
@@ -52,24 +52,24 @@
     {
       "line": 7,
       "import": "@/lib/cache/ratelimit",
-      "resolved": "gerasys-online/lib/cache/ratelimit.ts"
+      "resolved": "zayron-x/lib/cache/ratelimit.ts"
     }
   ],
-  "gerasys-online/next-env.d.ts": [
+  "zayron-x/next-env.d.ts": [
     {
       "line": 4,
       "import": "./.next/types/routes.d.ts",
-      "resolved": "gerasys-online/.next/types/routes.d.ts"
+      "resolved": "zayron-x/.next/types/routes.d.ts"
     }
   ],
-  "gerasys-online/next-intl.config.ts": [
+  "zayron-x/next-intl.config.ts": [
     {
       "line": 1,
       "import": "next-intl/routing",
       "resolved": null
     }
   ],
-  "gerasys-online/next.config.ts": [
+  "zayron-x/next.config.ts": [
     {
       "line": 1,
       "import": "next",
@@ -81,21 +81,21 @@
       "resolved": null
     }
   ],
-  "gerasys-online/open-next.config.ts": [
+  "zayron-x/open-next.config.ts": [
     {
       "line": 1,
       "import": "@opennextjs/cloudflare",
       "resolved": null
     }
   ],
-  "gerasys-online/playwright.config.ts": [
+  "zayron-x/playwright.config.ts": [
     {
       "line": 1,
       "import": "@playwright/test",
       "resolved": null
     }
   ],
-  "gerasys-online/sentry.client.config.ts": [
+  "zayron-x/sentry.client.config.ts": [
     {
       "line": 4,
       "import": "@sentry/nextjs",
@@ -104,10 +104,10 @@
     {
       "line": 5,
       "import": "./sentry.config.shared",
-      "resolved": "gerasys-online/sentry.config.shared.ts"
+      "resolved": "zayron-x/sentry.config.shared.ts"
     }
   ],
-  "gerasys-online/sentry.edge.config.ts": [
+  "zayron-x/sentry.edge.config.ts": [
     {
       "line": 4,
       "import": "@sentry/nextjs",
@@ -116,10 +116,10 @@
     {
       "line": 5,
       "import": "./sentry.config.shared",
-      "resolved": "gerasys-online/sentry.config.shared.ts"
+      "resolved": "zayron-x/sentry.config.shared.ts"
     }
   ],
-  "gerasys-online/sentry.server.config.ts": [
+  "zayron-x/sentry.server.config.ts": [
     {
       "line": 4,
       "import": "@sentry/nextjs",
@@ -128,10 +128,10 @@
     {
       "line": 5,
       "import": "./sentry.config.shared",
-      "resolved": "gerasys-online/sentry.config.shared.ts"
+      "resolved": "zayron-x/sentry.config.shared.ts"
     }
   ],
-  "gerasys-online/vitest.config.ts": [
+  "zayron-x/vitest.config.ts": [
     {
       "line": 1,
       "import": "vitest/config",
@@ -148,7 +148,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/layout.tsx": [
+  "zayron-x/app/layout.tsx": [
     {
       "line": 3,
       "import": "next",
@@ -162,40 +162,40 @@
     {
       "line": 5,
       "import": "@/styles/globals.css",
-      "resolved": "gerasys-online/styles/globals.css"
+      "resolved": "zayron-x/styles/globals.css"
     },
     {
       "line": 6,
       "import": "@/components/layout/Header",
-      "resolved": "gerasys-online/components/layout/Header.tsx"
+      "resolved": "zayron-x/components/layout/Header.tsx"
     },
     {
       "line": 7,
       "import": "@/components/layout/Footer",
-      "resolved": "gerasys-online/components/layout/Footer.tsx"
+      "resolved": "zayron-x/components/layout/Footer.tsx"
     },
     {
       "line": 8,
       "import": "@/app/providers",
-      "resolved": "gerasys-online/app/providers.tsx"
+      "resolved": "zayron-x/app/providers.tsx"
     },
     {
       "line": 9,
       "import": "@/components/ui/ScrollToTop",
-      "resolved": "gerasys-online/components/ui/ScrollToTop.tsx"
+      "resolved": "zayron-x/components/ui/ScrollToTop.tsx"
     },
     {
       "line": 10,
       "import": "@/components/ui/PwaInstallPrompt",
-      "resolved": "gerasys-online/components/ui/PwaInstallPrompt.tsx"
+      "resolved": "zayron-x/components/ui/PwaInstallPrompt.tsx"
     },
     {
       "line": 66,
       "import": "@/components/platform/SecurityGatingContext",
-      "resolved": "gerasys-online/components/platform/SecurityGatingContext.tsx"
+      "resolved": "zayron-x/components/platform/SecurityGatingContext.tsx"
     }
   ],
-  "gerasys-online/app/not-found.tsx": [
+  "zayron-x/app/not-found.tsx": [
     {
       "line": 1,
       "import": "next/link",
@@ -204,10 +204,10 @@
     {
       "line": 2,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/providers.tsx": [
+  "zayron-x/app/providers.tsx": [
     {
       "line": 3,
       "import": "next-themes",
@@ -224,28 +224,28 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/robots.ts": [
+  "zayron-x/app/robots.ts": [
     {
       "line": 1,
       "import": "next",
       "resolved": null
     }
   ],
-  "gerasys-online/app/sitemap.ts": [
+  "zayron-x/app/sitemap.ts": [
     {
       "line": 1,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     }
   ],
-  "gerasys-online/app/(auth)/layout.tsx": [
+  "zayron-x/app/(auth)/layout.tsx": [
     {
       "line": 1,
       "import": "next",
       "resolved": null
     }
   ],
-  "gerasys-online/app/(auth)/login/page.tsx": [
+  "zayron-x/app/(auth)/login/page.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -269,15 +269,15 @@
     {
       "line": 7,
       "import": "@/lib/supabase/client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 8,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/(auth)/register/page.tsx": [
+  "zayron-x/app/(auth)/register/page.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -296,15 +296,15 @@
     {
       "line": 6,
       "import": "@/lib/supabase/client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 7,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/(site)/error.tsx": [
+  "zayron-x/app/(site)/error.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -313,7 +313,7 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 5,
@@ -321,14 +321,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/loading.tsx": [
+  "zayron-x/app/(site)/loading.tsx": [
     {
       "line": 1,
       "import": "@/components/ui/SkeletonLoader",
-      "resolved": "gerasys-online/components/ui/SkeletonLoader.tsx"
+      "resolved": "zayron-x/components/ui/SkeletonLoader.tsx"
     }
   ],
-  "gerasys-online/app/(site)/page.tsx": [
+  "zayron-x/app/(site)/page.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -337,82 +337,82 @@
     {
       "line": 8,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     },
     {
       "line": 9,
       "import": "@/lib/supabase/queries/analysts",
-      "resolved": "gerasys-online/lib/supabase/queries/analysts.ts"
+      "resolved": "zayron-x/lib/supabase/queries/analysts.ts"
     },
     {
       "line": 10,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 11,
       "import": "@/lib/cache/redis",
-      "resolved": "gerasys-online/lib/cache/redis.ts"
+      "resolved": "zayron-x/lib/cache/redis.ts"
     },
     {
       "line": 13,
       "import": "@/components/platform/SectorWorkspace",
-      "resolved": "gerasys-online/components/platform/SectorWorkspace.tsx"
+      "resolved": "zayron-x/components/platform/SectorWorkspace.tsx"
     },
     {
       "line": 14,
       "import": "@/components/platform/IntelCard",
-      "resolved": "gerasys-online/components/platform/IntelCard.tsx"
+      "resolved": "zayron-x/components/platform/IntelCard.tsx"
     },
     {
       "line": 15,
       "import": "@/components/platform/CvePanel",
-      "resolved": "gerasys-online/components/platform/CvePanel.tsx"
+      "resolved": "zayron-x/components/platform/CvePanel.tsx"
     },
     {
       "line": 16,
       "import": "@/components/platform/AnalystPanel",
-      "resolved": "gerasys-online/components/platform/AnalystPanel.tsx"
+      "resolved": "zayron-x/components/platform/AnalystPanel.tsx"
     },
     {
       "line": 19,
       "import": "@/components/platform/InfrastructureRadar",
-      "resolved": "gerasys-online/components/platform/InfrastructureRadar.tsx"
+      "resolved": "zayron-x/components/platform/InfrastructureRadar.tsx"
     },
     {
       "line": 20,
       "import": "@/components/platform/ActionableAlerts",
-      "resolved": "gerasys-online/components/platform/ActionableAlerts.tsx"
+      "resolved": "zayron-x/components/platform/ActionableAlerts.tsx"
     },
     {
       "line": 21,
       "import": "@/components/platform/SitrepExporter",
-      "resolved": "gerasys-online/components/platform/SitrepExporter.tsx"
+      "resolved": "zayron-x/components/platform/SitrepExporter.tsx"
     },
     {
       "line": 23,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 24,
       "import": "@/components/platform/LiveIntelTicker",
-      "resolved": "gerasys-online/components/platform/LiveIntelTicker.tsx"
+      "resolved": "zayron-x/components/platform/LiveIntelTicker.tsx"
     },
     {
       "line": 25,
       "import": "@/components/ui/SkeletonLoader",
-      "resolved": "gerasys-online/components/ui/SkeletonLoader.tsx"
+      "resolved": "zayron-x/components/ui/SkeletonLoader.tsx"
     }
   ],
-  "gerasys-online/app/(site)/about/page.tsx": [
+  "zayron-x/app/(site)/about/page.tsx": [
     {
       "line": 1,
       "import": "next",
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/analysts/page.tsx": [
+  "zayron-x/app/(site)/analysts/page.tsx": [
     {
       "line": 3,
       "import": "next",
@@ -421,15 +421,15 @@
     {
       "line": 4,
       "import": "@/components/homepage/AnalystTeam",
-      "resolved": "gerasys-online/components/homepage/AnalystTeam.tsx"
+      "resolved": "zayron-x/components/homepage/AnalystTeam.tsx"
     },
     {
       "line": 5,
       "import": "@/lib/supabase/queries/analysts",
-      "resolved": "gerasys-online/lib/supabase/queries/analysts.ts"
+      "resolved": "zayron-x/lib/supabase/queries/analysts.ts"
     }
   ],
-  "gerasys-online/app/(site)/article/[slug]/page.tsx": [
+  "zayron-x/app/(site)/article/[slug]/page.tsx": [
     {
       "line": 4,
       "import": "next/navigation",
@@ -443,17 +443,17 @@
     {
       "line": 6,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     }
   ],
-  "gerasys-online/app/(site)/contact/page.tsx": [
+  "zayron-x/app/(site)/contact/page.tsx": [
     {
       "line": 1,
       "import": "next",
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/cve/page.tsx": [
+  "zayron-x/app/(site)/cve/page.tsx": [
     {
       "line": 4,
       "import": "next",
@@ -462,15 +462,15 @@
     {
       "line": 5,
       "import": "@/components/cve/CveTable",
-      "resolved": "gerasys-online/components/cve/CveTable.tsx"
+      "resolved": "zayron-x/components/cve/CveTable.tsx"
     },
     {
       "line": 6,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     }
   ],
-  "gerasys-online/app/(site)/cve/[cveId]/page.tsx": [
+  "zayron-x/app/(site)/cve/[cveId]/page.tsx": [
     {
       "line": 4,
       "import": "next/navigation",
@@ -484,37 +484,37 @@
     {
       "line": 6,
       "import": "@/components/cve/CveDetailCard",
-      "resolved": "gerasys-online/components/cve/CveDetailCard.tsx"
+      "resolved": "zayron-x/components/cve/CveDetailCard.tsx"
     },
     {
       "line": 7,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     },
     {
       "line": 8,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     }
   ],
-  "gerasys-online/app/(site)/dark-web-recon/page.tsx": [
+  "zayron-x/app/(site)/dark-web-recon/page.tsx": [
     {
       "line": 1,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     },
     {
       "line": 2,
       "import": "@/components/platform/DarkWebDashboard",
-      "resolved": "gerasys-online/components/platform/DarkWebDashboard.tsx"
+      "resolved": "zayron-x/components/platform/DarkWebDashboard.tsx"
     },
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/(site)/developers/page.tsx": [
+  "zayron-x/app/(site)/developers/page.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -523,17 +523,17 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/(site)/privacy/page.tsx": [
+  "zayron-x/app/(site)/privacy/page.tsx": [
     {
       "line": 1,
       "import": "next",
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/programming/page.tsx": [
+  "zayron-x/app/(site)/programming/page.tsx": [
     {
       "line": 4,
       "import": "next",
@@ -542,12 +542,12 @@
     {
       "line": 5,
       "import": "@/lib/supabase/queries/programming",
-      "resolved": "gerasys-online/lib/supabase/queries/programming.ts"
+      "resolved": "zayron-x/lib/supabase/queries/programming.ts"
     },
     {
       "line": 6,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 7,
@@ -555,7 +555,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/search/page.tsx": [
+  "zayron-x/app/(site)/search/page.tsx": [
     {
       "line": 3,
       "import": "next",
@@ -564,15 +564,15 @@
     {
       "line": 4,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 5,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     }
   ],
-  "gerasys-online/app/(site)/status/page.tsx": [
+  "zayron-x/app/(site)/status/page.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -584,7 +584,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/terms/page.tsx": [
+  "zayron-x/app/(site)/terms/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -596,7 +596,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/tools/page.tsx": [
+  "zayron-x/app/(site)/tools/page.tsx": [
     {
       "line": 4,
       "import": "next",
@@ -605,12 +605,12 @@
     {
       "line": 5,
       "import": "@/lib/supabase/queries/tools",
-      "resolved": "gerasys-online/lib/supabase/queries/tools.ts"
+      "resolved": "zayron-x/lib/supabase/queries/tools.ts"
     },
     {
       "line": 6,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 7,
@@ -618,7 +618,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/tools/[slug]/page.tsx": [
+  "zayron-x/app/(site)/tools/[slug]/page.tsx": [
     {
       "line": 1,
       "import": "next/navigation",
@@ -632,15 +632,15 @@
     {
       "line": 3,
       "import": "@/lib/supabase/queries/tools",
-      "resolved": "gerasys-online/lib/supabase/queries/tools.ts"
+      "resolved": "zayron-x/lib/supabase/queries/tools.ts"
     },
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/(site)/vdp/page.tsx": [
+  "zayron-x/app/(site)/vdp/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -652,7 +652,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/(site)/[category]/page.tsx": [
+  "zayron-x/app/(site)/[category]/page.tsx": [
     {
       "line": 4,
       "import": "next/navigation",
@@ -664,7 +664,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/admin/error.tsx": [
+  "zayron-x/app/admin/error.tsx": [
     {
       "line": 2,
       "import": "react",
@@ -673,7 +673,7 @@
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
@@ -681,7 +681,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/admin/layout.tsx": [
+  "zayron-x/app/admin/layout.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -700,10 +700,10 @@
     {
       "line": 4,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     }
   ],
-  "gerasys-online/app/admin/page.tsx": [
+  "zayron-x/app/admin/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -712,25 +712,25 @@
     {
       "line": 85,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 86,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     },
     {
       "line": 87,
       "import": "@/lib/supabase/queries/rawFeeds",
-      "resolved": "gerasys-online/lib/supabase/queries/rawFeeds.ts"
+      "resolved": "zayron-x/lib/supabase/queries/rawFeeds.ts"
     },
     {
       "line": 88,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     }
   ],
-  "gerasys-online/app/admin/articles/page.tsx": [
+  "zayron-x/app/admin/articles/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -744,15 +744,15 @@
     {
       "line": 3,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 21,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     }
   ],
-  "gerasys-online/app/admin/cves/page.tsx": [
+  "zayron-x/app/admin/cves/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -766,27 +766,27 @@
     {
       "line": 3,
       "import": "@/components/cve/SeverityBadge",
-      "resolved": "gerasys-online/components/cve/SeverityBadge.tsx"
+      "resolved": "zayron-x/components/cve/SeverityBadge.tsx"
     },
     {
       "line": 4,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 23,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     }
   ],
-  "gerasys-online/app/admin/dashboard/page.tsx": [
+  "zayron-x/app/admin/dashboard/page.tsx": [
     {
       "line": 1,
       "import": "next/navigation",
       "resolved": null
     }
   ],
-  "gerasys-online/app/admin/feeds/page.tsx": [
+  "zayron-x/app/admin/feeds/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -800,15 +800,15 @@
     {
       "line": 31,
       "import": "@/lib/supabase/queries/rawFeeds",
-      "resolved": "gerasys-online/lib/supabase/queries/rawFeeds.ts"
+      "resolved": "zayron-x/lib/supabase/queries/rawFeeds.ts"
     },
     {
       "line": 165,
       "import": "@/lib/supabase/queries/rawFeeds",
-      "resolved": "gerasys-online/lib/supabase/queries/rawFeeds.ts"
+      "resolved": "zayron-x/lib/supabase/queries/rawFeeds.ts"
     }
   ],
-  "gerasys-online/app/admin/feeds/[id]/page.tsx": [
+  "zayron-x/app/admin/feeds/[id]/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -822,35 +822,35 @@
     {
       "line": 3,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 4,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 28,
       "import": "@/lib/supabase/queries/rawFeeds",
-      "resolved": "gerasys-online/lib/supabase/queries/rawFeeds.ts"
+      "resolved": "zayron-x/lib/supabase/queries/rawFeeds.ts"
     },
     {
       "line": 29,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 30,
       "import": "@/lib/supabase/queries/rawFeeds",
-      "resolved": "gerasys-online/lib/supabase/queries/rawFeeds.ts"
+      "resolved": "zayron-x/lib/supabase/queries/rawFeeds.ts"
     },
     {
       "line": 65,
       "import": "@/lib/supabase/queries/rawFeeds",
-      "resolved": "gerasys-online/lib/supabase/queries/rawFeeds.ts"
+      "resolved": "zayron-x/lib/supabase/queries/rawFeeds.ts"
     }
   ],
-  "gerasys-online/app/admin/settings/page.tsx": [
+  "zayron-x/app/admin/settings/page.tsx": [
     {
       "line": 1,
       "import": "next",
@@ -859,10 +859,10 @@
     {
       "line": 2,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/api/admin/sync-knowledge/route.ts": [
+  "zayron-x/app/api/admin/sync-knowledge/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -874,7 +874,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/articles/route.ts": [
+  "zayron-x/app/api/articles/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -883,15 +883,15 @@
     {
       "line": 2,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 3,
       "import": "@/lib/cache/ratelimit",
-      "resolved": "gerasys-online/lib/cache/ratelimit.ts"
+      "resolved": "zayron-x/lib/cache/ratelimit.ts"
     }
   ],
-  "gerasys-online/app/api/articles/[slug]/route.ts": [
+  "zayron-x/app/api/articles/[slug]/route.ts": [
     {
       "line": 3,
       "import": "next/server",
@@ -900,17 +900,17 @@
     {
       "line": 4,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     }
   ],
-  "gerasys-online/app/api/csp-report/route.ts": [
+  "zayron-x/app/api/csp-report/route.ts": [
     {
       "line": 1,
       "import": "next/server",
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/cves/route.ts": [
+  "zayron-x/app/api/cves/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -919,20 +919,20 @@
     {
       "line": 2,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     },
     {
       "line": 3,
       "import": "@/lib/cache/redis",
-      "resolved": "gerasys-online/lib/cache/redis.ts"
+      "resolved": "zayron-x/lib/cache/redis.ts"
     },
     {
       "line": 4,
       "import": "@/lib/cache/ratelimit",
-      "resolved": "gerasys-online/lib/cache/ratelimit.ts"
+      "resolved": "zayron-x/lib/cache/ratelimit.ts"
     }
   ],
-  "gerasys-online/app/api/db-status/route.ts": [
+  "zayron-x/app/api/db-status/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -941,15 +941,15 @@
     {
       "line": 2,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 3,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     }
   ],
-  "gerasys-online/app/api/download-sitrep/route.ts": [
+  "zayron-x/app/api/download-sitrep/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -958,10 +958,10 @@
     {
       "line": 2,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     }
   ],
-  "gerasys-online/app/api/og/route.tsx": [
+  "zayron-x/app/api/og/route.tsx": [
     {
       "line": 1,
       "import": "next/og",
@@ -973,7 +973,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/remediate/route.ts": [
+  "zayron-x/app/api/remediate/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -982,10 +982,10 @@
     {
       "line": 2,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     }
   ],
-  "gerasys-online/app/api/revalidate/route.ts": [
+  "zayron-x/app/api/revalidate/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -997,11 +997,11 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/rss/route.ts": [
+  "zayron-x/app/api/rss/route.ts": [
     {
       "line": 1,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 2,
@@ -1009,7 +1009,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/search/route.ts": [
+  "zayron-x/app/api/search/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -1018,20 +1018,20 @@
     {
       "line": 2,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 3,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     },
     {
       "line": 4,
       "import": "@/lib/cache/ratelimit",
-      "resolved": "gerasys-online/lib/cache/ratelimit.ts"
+      "resolved": "zayron-x/lib/cache/ratelimit.ts"
     }
   ],
-  "gerasys-online/app/api/seed-analysts/route.ts": [
+  "zayron-x/app/api/seed-analysts/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -1040,17 +1040,17 @@
     {
       "line": 2,
       "import": "@/lib/supabase/client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     }
   ],
-  "gerasys-online/app/api/status/route.ts": [
+  "zayron-x/app/api/status/route.ts": [
     {
       "line": 1,
       "import": "next/server",
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/subscribe/route.ts": [
+  "zayron-x/app/api/subscribe/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -1059,22 +1059,22 @@
     {
       "line": 2,
       "import": "@/lib/supabase/client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 3,
       "import": "@/lib/cache/ratelimit",
-      "resolved": "gerasys-online/lib/cache/ratelimit.ts"
+      "resolved": "zayron-x/lib/cache/ratelimit.ts"
     }
   ],
-  "gerasys-online/app/api/unsplash-search/route.ts": [
+  "zayron-x/app/api/unsplash-search/route.ts": [
     {
       "line": 1,
       "import": "next/server",
       "resolved": null
     }
   ],
-  "gerasys-online/app/api/views/[id]/route.ts": [
+  "zayron-x/app/api/views/[id]/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -1083,15 +1083,15 @@
     {
       "line": 2,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 3,
       "import": "@/lib/cache/ratelimit",
-      "resolved": "gerasys-online/lib/cache/ratelimit.ts"
+      "resolved": "zayron-x/lib/cache/ratelimit.ts"
     }
   ],
-  "gerasys-online/app/auth/callback/route.ts": [
+  "zayron-x/app/auth/callback/route.ts": [
     {
       "line": 1,
       "import": "next/server",
@@ -1100,10 +1100,10 @@
     {
       "line": 2,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     }
   ],
-  "gerasys-online/app/intelligence/operations/page.tsx": [
+  "zayron-x/app/intelligence/operations/page.tsx": [
     {
       "line": 4,
       "import": "next",
@@ -1112,32 +1112,32 @@
     {
       "line": 5,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 6,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     },
     {
       "line": 7,
       "import": "@/components/cve/CveTable",
-      "resolved": "gerasys-online/components/cve/CveTable.tsx"
+      "resolved": "zayron-x/components/cve/CveTable.tsx"
     },
     {
       "line": 14,
       "import": "@/lib/cache/redis",
-      "resolved": "gerasys-online/lib/cache/redis.ts"
+      "resolved": "zayron-x/lib/cache/redis.ts"
     },
     {
       "line": 15,
       "import": "@/lib/supabase/queries/cves",
-      "resolved": "gerasys-online/lib/supabase/queries/cves.ts"
+      "resolved": "zayron-x/lib/supabase/queries/cves.ts"
     },
     {
       "line": 16,
       "import": "@/lib/supabase/queries/analysts",
-      "resolved": "gerasys-online/lib/supabase/queries/analysts.ts"
+      "resolved": "zayron-x/lib/supabase/queries/analysts.ts"
     },
     {
       "line": 35,
@@ -1145,7 +1145,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/intelligence/threat-intelligence/page.tsx": [
+  "zayron-x/app/intelligence/threat-intelligence/page.tsx": [
     {
       "line": 4,
       "import": "next",
@@ -1154,17 +1154,17 @@
     {
       "line": 5,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 6,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     },
     {
       "line": 12,
       "import": "@/lib/cache/redis",
-      "resolved": "gerasys-online/lib/cache/redis.ts"
+      "resolved": "zayron-x/lib/cache/redis.ts"
     },
     {
       "line": 26,
@@ -1172,14 +1172,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/intelligence/[category]/loading.tsx": [
+  "zayron-x/app/intelligence/[category]/loading.tsx": [
     {
       "line": 1,
       "import": "@/components/ui/SkeletonLoader",
-      "resolved": "gerasys-online/components/ui/SkeletonLoader.tsx"
+      "resolved": "zayron-x/components/ui/SkeletonLoader.tsx"
     }
   ],
-  "gerasys-online/app/intelligence/[category]/page.tsx": [
+  "zayron-x/app/intelligence/[category]/page.tsx": [
     {
       "line": 4,
       "import": "next/navigation",
@@ -1193,17 +1193,17 @@
     {
       "line": 7,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     },
     {
       "line": 13,
       "import": "@/lib/cache/redis",
-      "resolved": "gerasys-online/lib/cache/redis.ts"
+      "resolved": "zayron-x/lib/cache/redis.ts"
     },
     {
       "line": 19,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 20,
@@ -1211,7 +1211,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/intelligence/[category]/[slug]/error.tsx": [
+  "zayron-x/app/intelligence/[category]/[slug]/error.tsx": [
     {
       "line": 2,
       "import": "react",
@@ -1220,7 +1220,7 @@
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
@@ -1228,14 +1228,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/app/intelligence/[category]/[slug]/loading.tsx": [
+  "zayron-x/app/intelligence/[category]/[slug]/loading.tsx": [
     {
       "line": 1,
       "import": "@/components/ui/SkeletonLoader",
-      "resolved": "gerasys-online/components/ui/SkeletonLoader.tsx"
+      "resolved": "zayron-x/components/ui/SkeletonLoader.tsx"
     }
   ],
-  "gerasys-online/app/intelligence/[category]/[slug]/page.tsx": [
+  "zayron-x/app/intelligence/[category]/[slug]/page.tsx": [
     {
       "line": 1,
       "import": "next/navigation",
@@ -1249,57 +1249,57 @@
     {
       "line": 3,
       "import": "@/components/article/ArticleHeader",
-      "resolved": "gerasys-online/components/article/ArticleHeader.tsx"
+      "resolved": "zayron-x/components/article/ArticleHeader.tsx"
     },
     {
       "line": 4,
       "import": "@/components/article/ArticleBody",
-      "resolved": "gerasys-online/components/article/ArticleBody.tsx"
+      "resolved": "zayron-x/components/article/ArticleBody.tsx"
     },
     {
       "line": 5,
       "import": "@/components/article/ArticleSidebar",
-      "resolved": "gerasys-online/components/article/ArticleSidebar.tsx"
+      "resolved": "zayron-x/components/article/ArticleSidebar.tsx"
     },
     {
       "line": 6,
       "import": "@/components/article/ReadingProgress",
-      "resolved": "gerasys-online/components/article/ReadingProgress.tsx"
+      "resolved": "zayron-x/components/article/ReadingProgress.tsx"
     },
     {
       "line": 7,
       "import": "@/components/article/ShareButtons",
-      "resolved": "gerasys-online/components/article/ShareButtons.tsx"
+      "resolved": "zayron-x/components/article/ShareButtons.tsx"
     },
     {
       "line": 8,
       "import": "@/components/article/RelatedArticles",
-      "resolved": "gerasys-online/components/article/RelatedArticles.tsx"
+      "resolved": "zayron-x/components/article/RelatedArticles.tsx"
     },
     {
       "line": 9,
       "import": "@/components/article/AuthorCard",
-      "resolved": "gerasys-online/components/article/AuthorCard.tsx"
+      "resolved": "zayron-x/components/article/AuthorCard.tsx"
     },
     {
       "line": 10,
       "import": "@/components/platform/FinancialBlastRadius",
-      "resolved": "gerasys-online/components/platform/FinancialBlastRadius.tsx"
+      "resolved": "zayron-x/components/platform/FinancialBlastRadius.tsx"
     },
     {
       "line": 11,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 12,
       "import": "@/lib/silos",
-      "resolved": "gerasys-online/lib/silos.ts"
+      "resolved": "zayron-x/lib/silos.ts"
     },
     {
       "line": 13,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 14,
@@ -1314,10 +1314,10 @@
     {
       "line": 16,
       "import": "@/components/ui/CyberArticleImage",
-      "resolved": "gerasys-online/components/ui/CyberArticleImage.tsx"
+      "resolved": "zayron-x/components/ui/CyberArticleImage.tsx"
     }
   ],
-  "gerasys-online/app/news/page.tsx": [
+  "zayron-x/app/news/page.tsx": [
     {
       "line": 1,
       "import": "next/cache",
@@ -1331,22 +1331,22 @@
     {
       "line": 3,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     },
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/app/offline/page.tsx": [
+  "zayron-x/app/offline/page.tsx": [
     {
       "line": 3,
       "import": "next/link",
       "resolved": null
     }
   ],
-  "gerasys-online/app/threats/[id]/page.tsx": [
+  "zayron-x/app/threats/[id]/page.tsx": [
     {
       "line": 1,
       "import": "next/navigation",
@@ -1360,17 +1360,17 @@
     {
       "line": 3,
       "import": "@/lib/supabase/server",
-      "resolved": "gerasys-online/lib/supabase/server.ts"
+      "resolved": "zayron-x/lib/supabase/server.ts"
     },
     {
       "line": 4,
       "import": "@/components/platform/ThreatDetailClient",
-      "resolved": "gerasys-online/components/platform/ThreatDetailClient.tsx"
+      "resolved": "zayron-x/components/platform/ThreatDetailClient.tsx"
     },
     {
       "line": 5,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 6,
@@ -1378,19 +1378,19 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/article/Article3DImage.tsx": [
+  "zayron-x/components/article/Article3DImage.tsx": [
     {
       "line": 3,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 4,
       "import": "@/components/ui/CyberArticleImage",
-      "resolved": "gerasys-online/components/ui/CyberArticleImage.tsx"
+      "resolved": "zayron-x/components/ui/CyberArticleImage.tsx"
     }
   ],
-  "gerasys-online/components/article/ArticleBody.tsx": [
+  "zayron-x/components/article/ArticleBody.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1419,29 +1419,29 @@
     {
       "line": 8,
       "import": "@/components/platform/SecurityGatingContext",
-      "resolved": "gerasys-online/components/platform/SecurityGatingContext.tsx"
+      "resolved": "zayron-x/components/platform/SecurityGatingContext.tsx"
     }
   ],
-  "gerasys-online/components/article/ArticleHeader.tsx": [
+  "zayron-x/components/article/ArticleHeader.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
       "import": "@/lib/silos",
-      "resolved": "gerasys-online/lib/silos.ts"
+      "resolved": "zayron-x/lib/silos.ts"
     },
     {
       "line": 3,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 4,
       "import": "@/components/ui/CategoryBadge",
-      "resolved": "gerasys-online/components/ui/CategoryBadge.tsx"
+      "resolved": "zayron-x/components/ui/CategoryBadge.tsx"
     },
     {
       "line": 5,
@@ -1449,11 +1449,11 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/article/ArticleSidebar.tsx": [
+  "zayron-x/components/article/ArticleSidebar.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -1463,33 +1463,33 @@
     {
       "line": 3,
       "import": "@/components/homepage/TrendingWidget",
-      "resolved": "gerasys-online/components/homepage/TrendingWidget.tsx"
+      "resolved": "zayron-x/components/homepage/TrendingWidget.tsx"
     }
   ],
-  "gerasys-online/components/article/ReadingProgress.tsx": [
+  "zayron-x/components/article/ReadingProgress.tsx": [
     {
       "line": 3,
       "import": "react",
       "resolved": null
     }
   ],
-  "gerasys-online/components/article/RelatedArticles.tsx": [
+  "zayron-x/components/article/RelatedArticles.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     }
   ],
-  "gerasys-online/components/article/ShareButtons.tsx": [
+  "zayron-x/components/article/ShareButtons.tsx": [
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
@@ -1497,7 +1497,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/cve/CveDetailCard.tsx": [
+  "zayron-x/components/cve/CveDetailCard.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1506,34 +1506,34 @@
     {
       "line": 4,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 5,
       "import": "@/components/cve/SeverityBadge",
-      "resolved": "gerasys-online/components/cve/SeverityBadge.tsx"
+      "resolved": "zayron-x/components/cve/SeverityBadge.tsx"
     },
     {
       "line": 6,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 7,
       "import": "@/components/platform/SecurityGatingContext",
-      "resolved": "gerasys-online/components/platform/SecurityGatingContext.tsx"
+      "resolved": "zayron-x/components/platform/SecurityGatingContext.tsx"
     },
     {
       "line": 8,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/cve/CveFilters.tsx": [
+  "zayron-x/components/cve/CveFilters.tsx": [
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
@@ -1541,31 +1541,31 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/cve/CveTable.tsx": [
+  "zayron-x/components/cve/CveTable.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
       "import": "@/components/cve/SeverityBadge",
-      "resolved": "gerasys-online/components/cve/SeverityBadge.tsx"
+      "resolved": "zayron-x/components/cve/SeverityBadge.tsx"
     },
     {
       "line": 3,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     }
   ],
-  "gerasys-online/components/homepage/AnalystTeam.tsx": [
+  "zayron-x/components/homepage/AnalystTeam.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/components/homepage/CategoryShowcase.tsx": [
+  "zayron-x/components/homepage/CategoryShowcase.tsx": [
     {
       "line": 1,
       "import": "next/link",
@@ -1574,43 +1574,43 @@
     {
       "line": 2,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/homepage/CveTracker.tsx": [
+  "zayron-x/components/homepage/CveTracker.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 3,
       "import": "@/components/cve/SeverityBadge",
-      "resolved": "gerasys-online/components/cve/SeverityBadge.tsx"
+      "resolved": "zayron-x/components/cve/SeverityBadge.tsx"
     }
   ],
-  "gerasys-online/components/homepage/FeaturedGrid.tsx": [
+  "zayron-x/components/homepage/FeaturedGrid.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     }
   ],
-  "gerasys-online/components/homepage/HeroSection.tsx": [
+  "zayron-x/components/homepage/HeroSection.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -1625,29 +1625,29 @@
     {
       "line": 4,
       "import": "@/components/ui/CategoryBadge",
-      "resolved": "gerasys-online/components/ui/CategoryBadge.tsx"
+      "resolved": "zayron-x/components/ui/CategoryBadge.tsx"
     },
     {
       "line": 5,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 6,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 7,
       "import": "@/components/ui/CyberArticleImage",
-      "resolved": "gerasys-online/components/ui/CyberArticleImage.tsx"
+      "resolved": "zayron-x/components/ui/CyberArticleImage.tsx"
     }
   ],
-  "gerasys-online/components/homepage/LatestReports.tsx": [
+  "zayron-x/components/homepage/LatestReports.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -1657,19 +1657,19 @@
     {
       "line": 3,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 4,
       "import": "@/components/ui/CategoryBadge",
-      "resolved": "gerasys-online/components/ui/CategoryBadge.tsx"
+      "resolved": "zayron-x/components/ui/CategoryBadge.tsx"
     }
   ],
-  "gerasys-online/components/homepage/Newsletter.tsx": [
+  "zayron-x/components/homepage/Newsletter.tsx": [
     {
       "line": 3,
       "import": "@/components/ui/Button",
-      "resolved": "gerasys-online/components/ui/Button.tsx"
+      "resolved": "zayron-x/components/ui/Button.tsx"
     },
     {
       "line": 4,
@@ -1677,14 +1677,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/homepage/StatsCounter.tsx": [
+  "zayron-x/components/homepage/StatsCounter.tsx": [
     {
       "line": 3,
       "import": "react",
       "resolved": null
     }
   ],
-  "gerasys-online/components/homepage/TabbedContent.tsx": [
+  "zayron-x/components/homepage/TabbedContent.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1693,26 +1693,26 @@
     {
       "line": 4,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 5,
       "import": "@/components/ui/ArticleCard",
-      "resolved": "gerasys-online/components/ui/ArticleCard.tsx"
+      "resolved": "zayron-x/components/ui/ArticleCard.tsx"
     }
   ],
-  "gerasys-online/components/homepage/ThreatTicker.tsx": [
+  "zayron-x/components/homepage/ThreatTicker.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/components/homepage/ToolSpotlight.tsx": [
+  "zayron-x/components/homepage/ToolSpotlight.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -1722,14 +1722,14 @@
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/homepage/TrendingWidget.tsx": [
+  "zayron-x/components/homepage/TrendingWidget.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -1737,14 +1737,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/layout/Footer.tsx": [
+  "zayron-x/components/layout/Footer.tsx": [
     {
       "line": 1,
       "import": "next/link",
       "resolved": null
     }
   ],
-  "gerasys-online/components/layout/Header.tsx": [
+  "zayron-x/components/layout/Header.tsx": [
     {
       "line": 3,
       "import": "next/link",
@@ -1758,7 +1758,7 @@
     {
       "line": 5,
       "import": "@/components/ui/ThemeToggle",
-      "resolved": "gerasys-online/components/ui/ThemeToggle.tsx"
+      "resolved": "zayron-x/components/ui/ThemeToggle.tsx"
     },
     {
       "line": 6,
@@ -1768,19 +1768,19 @@
     {
       "line": 7,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 8,
       "import": "@/components/layout/MobileNav",
-      "resolved": "gerasys-online/components/layout/MobileNav.tsx"
+      "resolved": "zayron-x/components/layout/MobileNav.tsx"
     }
   ],
-  "gerasys-online/components/layout/MobileNav.tsx": [
+  "zayron-x/components/layout/MobileNav.tsx": [
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
@@ -1798,14 +1798,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/layout/NewsTicker.tsx": [
+  "zayron-x/components/layout/NewsTicker.tsx": [
     {
       "line": 1,
       "import": "@/lib/supabase/queries/articles",
-      "resolved": "gerasys-online/lib/supabase/queries/articles.ts"
+      "resolved": "zayron-x/lib/supabase/queries/articles.ts"
     }
   ],
-  "gerasys-online/components/platform/ActionableAlerts.tsx": [
+  "zayron-x/components/platform/ActionableAlerts.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1819,32 +1819,32 @@
     {
       "line": 5,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 6,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 7,
       "import": "@/components/platform/SecurityGatingContext",
-      "resolved": "gerasys-online/components/platform/SecurityGatingContext.tsx"
+      "resolved": "zayron-x/components/platform/SecurityGatingContext.tsx"
     }
   ],
-  "gerasys-online/components/platform/AnalystPanel.tsx": [
+  "zayron-x/components/platform/AnalystPanel.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/platform/AutomatedRoiCalculator.tsx": [
+  "zayron-x/components/platform/AutomatedRoiCalculator.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1853,14 +1853,14 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/platform/CvePanel.tsx": [
+  "zayron-x/components/platform/CvePanel.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -1870,15 +1870,15 @@
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
       "import": "@/components/cve/SeverityBadge",
-      "resolved": "gerasys-online/components/cve/SeverityBadge.tsx"
+      "resolved": "zayron-x/components/cve/SeverityBadge.tsx"
     }
   ],
-  "gerasys-online/components/platform/DarkWebDashboard.tsx": [
+  "zayron-x/components/platform/DarkWebDashboard.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1887,10 +1887,10 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/platform/FinancialBlastRadius.tsx": [
+  "zayron-x/components/platform/FinancialBlastRadius.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1899,15 +1899,15 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 5,
       "import": "./SovereignFinancialImpact",
-      "resolved": "gerasys-online/components/platform/SovereignFinancialImpact.tsx"
+      "resolved": "zayron-x/components/platform/SovereignFinancialImpact.tsx"
     }
   ],
-  "gerasys-online/components/platform/InfrastructureRadar.tsx": [
+  "zayron-x/components/platform/InfrastructureRadar.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1916,10 +1916,10 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/platform/IntelCard.tsx": [
+  "zayron-x/components/platform/IntelCard.tsx": [
     {
       "line": 1,
       "import": "next/link",
@@ -1928,32 +1928,32 @@
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
       "import": "@/lib/utils/fallbackImages",
-      "resolved": "gerasys-online/lib/utils/fallbackImages.ts"
+      "resolved": "zayron-x/lib/utils/fallbackImages.ts"
     },
     {
       "line": 5,
       "import": "@/lib/utils/slugify",
-      "resolved": "gerasys-online/lib/utils/slugify.ts"
+      "resolved": "zayron-x/lib/utils/slugify.ts"
     }
   ],
-  "gerasys-online/components/platform/LiveIntelTicker.tsx": [
+  "zayron-x/components/platform/LiveIntelTicker.tsx": [
     {
       "line": 3,
       "import": "react",
       "resolved": null
     }
   ],
-  "gerasys-online/components/platform/SectorWorkspace.tsx": [
+  "zayron-x/components/platform/SectorWorkspace.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1962,10 +1962,10 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/platform/SecurityGatingContext.tsx": [
+  "zayron-x/components/platform/SecurityGatingContext.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -1977,24 +1977,24 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/platform/SitrepExporter.tsx": [
+  "zayron-x/components/platform/SitrepExporter.tsx": [
     {
       "line": 3,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 5,
       "import": "@/components/platform/SecurityGatingContext",
-      "resolved": "gerasys-online/components/platform/SecurityGatingContext.tsx"
+      "resolved": "zayron-x/components/platform/SecurityGatingContext.tsx"
     }
   ],
-  "gerasys-online/components/platform/SovereignFinancialImpact.tsx": [
+  "zayron-x/components/platform/SovereignFinancialImpact.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -2003,10 +2003,10 @@
     {
       "line": 4,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/platform/SovereignGateModal.tsx": [
+  "zayron-x/components/platform/SovereignGateModal.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -2015,12 +2015,12 @@
     {
       "line": 4,
       "import": "@/components/platform/SecurityGatingContext",
-      "resolved": "gerasys-online/components/platform/SecurityGatingContext.tsx"
+      "resolved": "zayron-x/components/platform/SecurityGatingContext.tsx"
     },
     {
       "line": 5,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 6,
@@ -2028,7 +2028,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/platform/ThreatDetailClient.tsx": [
+  "zayron-x/components/platform/ThreatDetailClient.tsx": [
     {
       "line": 3,
       "import": "react",
@@ -2037,19 +2037,19 @@
     {
       "line": 4,
       "import": "@/components/platform/SovereignGateModal",
-      "resolved": "gerasys-online/components/platform/SovereignGateModal.tsx"
+      "resolved": "zayron-x/components/platform/SovereignGateModal.tsx"
     },
     {
       "line": 5,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     }
   ],
-  "gerasys-online/components/ui/ArticleCard.tsx": [
+  "zayron-x/components/ui/ArticleCard.tsx": [
     {
       "line": 1,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     },
     {
       "line": 2,
@@ -2064,41 +2064,41 @@
     {
       "line": 4,
       "import": "@/lib/utils/formatDate",
-      "resolved": "gerasys-online/lib/utils/formatDate.ts"
+      "resolved": "zayron-x/lib/utils/formatDate.ts"
     },
     {
       "line": 5,
       "import": "@/lib/utils/slugify",
-      "resolved": "gerasys-online/lib/utils/slugify.ts"
+      "resolved": "zayron-x/lib/utils/slugify.ts"
     },
     {
       "line": 6,
       "import": "@/components/ui/CyberArticleImage",
-      "resolved": "gerasys-online/components/ui/CyberArticleImage.tsx"
+      "resolved": "zayron-x/components/ui/CyberArticleImage.tsx"
     }
   ],
-  "gerasys-online/components/ui/Button.tsx": [
+  "zayron-x/components/ui/Button.tsx": [
     {
       "line": 1,
       "import": "react",
       "resolved": null
     }
   ],
-  "gerasys-online/components/ui/CyberArticleImage.tsx": [
+  "zayron-x/components/ui/CyberArticleImage.tsx": [
     {
       "line": 3,
       "import": "react",
       "resolved": null
     }
   ],
-  "gerasys-online/components/ui/PwaInstallPrompt.tsx": [
+  "zayron-x/components/ui/PwaInstallPrompt.tsx": [
     {
       "line": 3,
       "import": "react",
       "resolved": null
     }
   ],
-  "gerasys-online/components/ui/ScrollToTop.tsx": [
+  "zayron-x/components/ui/ScrollToTop.tsx": [
     {
       "line": 3,
       "import": "lucide-react",
@@ -2110,11 +2110,11 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/ui/SearchBar.tsx": [
+  "zayron-x/components/ui/SearchBar.tsx": [
     {
       "line": 3,
       "import": "@/lib/icons",
-      "resolved": "gerasys-online/lib/icons.ts"
+      "resolved": "zayron-x/lib/icons.ts"
     },
     {
       "line": 4,
@@ -2127,7 +2127,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/components/ui/ThemeToggle.tsx": [
+  "zayron-x/components/ui/ThemeToggle.tsx": [
     {
       "line": 3,
       "import": "next-themes",
@@ -2144,7 +2144,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/lib/cache/ratelimit.ts": [
+  "zayron-x/lib/cache/ratelimit.ts": [
     {
       "line": 1,
       "import": "@upstash/ratelimit",
@@ -2153,50 +2153,50 @@
     {
       "line": 2,
       "import": "./redis",
-      "resolved": "gerasys-online/lib/cache/redis.ts"
+      "resolved": "zayron-x/lib/cache/redis.ts"
     }
   ],
-  "gerasys-online/lib/cache/redis.ts": [
+  "zayron-x/lib/cache/redis.ts": [
     {
       "line": 1,
       "import": "@upstash/redis/cloudflare",
       "resolved": null
     }
   ],
-  "gerasys-online/lib/email/resend.ts": [
+  "zayron-x/lib/email/resend.ts": [
     {
       "line": 1,
       "import": "resend",
       "resolved": null
     }
   ],
-  "gerasys-online/lib/ingestion/orchestrator.ts": [
+  "zayron-x/lib/ingestion/orchestrator.ts": [
     {
       "line": 12,
       "import": "./channels",
-      "resolved": "gerasys-online/lib/ingestion/channels.ts"
+      "resolved": "zayron-x/lib/ingestion/channels.ts"
     },
     {
       "line": 45,
       "import": "../supabase/queries/analysts",
-      "resolved": "gerasys-online/lib/supabase/queries/analysts.ts"
+      "resolved": "zayron-x/lib/supabase/queries/analysts.ts"
     }
   ],
-  "gerasys-online/lib/seo/metadata.ts": [
+  "zayron-x/lib/seo/metadata.ts": [
     {
       "line": 1,
       "import": "next",
       "resolved": null
     }
   ],
-  "gerasys-online/lib/supabase/client.ts": [
+  "zayron-x/lib/supabase/client.ts": [
     {
       "line": 1,
       "import": "@supabase/supabase-js",
       "resolved": null
     }
   ],
-  "gerasys-online/lib/supabase/middleware.ts": [
+  "zayron-x/lib/supabase/middleware.ts": [
     {
       "line": 1,
       "import": "@supabase/ssr",
@@ -2208,7 +2208,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/lib/supabase/server.ts": [
+  "zayron-x/lib/supabase/server.ts": [
     {
       "line": 1,
       "import": "@supabase/ssr",
@@ -2220,100 +2220,100 @@
       "resolved": null
     }
   ],
-  "gerasys-online/lib/supabase/queries/analysts.ts": [
+  "zayron-x/lib/supabase/queries/analysts.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/lib/supabase/queries/analytics.ts": [
+  "zayron-x/lib/supabase/queries/analytics.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     }
   ],
-  "gerasys-online/lib/supabase/queries/articles.ts": [
+  "zayron-x/lib/supabase/queries/articles.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/lib/supabase/queries/cves.ts": [
+  "zayron-x/lib/supabase/queries/cves.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/lib/supabase/queries/programming.ts": [
+  "zayron-x/lib/supabase/queries/programming.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/lib/supabase/queries/rawFeeds.ts": [
+  "zayron-x/lib/supabase/queries/rawFeeds.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/lib/supabase/queries/tools.ts": [
+  "zayron-x/lib/supabase/queries/tools.ts": [
     {
       "line": 1,
       "import": "../client",
-      "resolved": "gerasys-online/lib/supabase/client.ts"
+      "resolved": "zayron-x/lib/supabase/client.ts"
     },
     {
       "line": 2,
       "import": "@/lib/types",
-      "resolved": "gerasys-online/lib/types.ts"
+      "resolved": "zayron-x/lib/types.ts"
     }
   ],
-  "gerasys-online/lib/utils/formatDate.ts": [
+  "zayron-x/lib/utils/formatDate.ts": [
     {
       "line": 1,
       "import": "date-fns",
       "resolved": null
     }
   ],
-  "gerasys-online/lib/utils/readingTime.ts": [
+  "zayron-x/lib/utils/readingTime.ts": [
     {
       "line": 1,
       "import": "reading-time",
       "resolved": null
     }
   ],
-  "gerasys-online/scripts/run-migration.ts": [
+  "zayron-x/scripts/run-migration.ts": [
     {
       "line": 1,
       "import": "postgres",
@@ -2330,7 +2330,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/scripts/seed-analysts.ts": [
+  "zayron-x/scripts/seed-analysts.ts": [
     {
       "line": 15,
       "import": "../lib/db",
@@ -2347,7 +2347,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/scripts/telegram-ingestion.ts": [
+  "zayron-x/scripts/telegram-ingestion.ts": [
     {
       "line": 21,
       "import": "postgres",
@@ -2371,7 +2371,7 @@
     {
       "line": 25,
       "import": "../lib/ingestion/channels",
-      "resolved": "gerasys-online/lib/ingestion/channels.ts"
+      "resolved": "zayron-x/lib/ingestion/channels.ts"
     },
     {
       "line": 59,
@@ -2384,14 +2384,14 @@
       "resolved": null
     }
   ],
-  "gerasys-online/scripts/verify-security.ts": [
+  "zayron-x/scripts/verify-security.ts": [
     {
       "line": 1,
       "import": "next/server",
       "resolved": null
     }
   ],
-  "gerasys-online/shared/models/article.py": [
+  "zayron-x/shared/models/article.py": [
     {
       "line": 13,
       "import": "__future__",
@@ -2423,7 +2423,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/shared/models/cve.py": [
+  "zayron-x/shared/models/cve.py": [
     {
       "line": 12,
       "import": "__future__",
@@ -2445,7 +2445,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/shared/models/ioc.py": [
+  "zayron-x/shared/models/ioc.py": [
     {
       "line": 16,
       "import": "__future__",
@@ -2477,24 +2477,24 @@
       "resolved": null
     }
   ],
-  "gerasys-online/shared/models/__init__.py": [
+  "zayron-x/shared/models/__init__.py": [
     {
       "line": 17,
       "import": ".article",
-      "resolved": "gerasys-online/shared/models/article.py"
+      "resolved": "zayron-x/shared/models/article.py"
     },
     {
       "line": 18,
       "import": ".cve",
-      "resolved": "gerasys-online/shared/models/cve.py"
+      "resolved": "zayron-x/shared/models/cve.py"
     },
     {
       "line": 19,
       "import": ".ioc",
-      "resolved": "gerasys-online/shared/models/ioc.py"
+      "resolved": "zayron-x/shared/models/ioc.py"
     }
   ],
-  "gerasys-online/workers/config.py": [
+  "zayron-x/workers/config.py": [
     {
       "line": 8,
       "import": "__future__",
@@ -2516,7 +2516,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/workers/omni_crew.py": [
+  "zayron-x/workers/omni_crew.py": [
     {
       "line": 43,
       "import": "__future__",
@@ -2623,7 +2623,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/workers/persistence.py": [
+  "zayron-x/workers/persistence.py": [
     {
       "line": 12,
       "import": "__future__",
@@ -2700,7 +2700,7 @@
       "resolved": "workers/contracts/inter_agent.py"
     }
   ],
-  "gerasys-online/workers/verify_imports.py": [
+  "zayron-x/workers/verify_imports.py": [
     {
       "line": 2,
       "import": "sys",
@@ -2762,7 +2762,7 @@
       "resolved": "workers/agents/quant.py"
     }
   ],
-  "gerasys-online/workers/agents/compliance.py": [
+  "zayron-x/workers/agents/compliance.py": [
     {
       "line": 16,
       "import": "__future__",
@@ -2794,7 +2794,7 @@
       "resolved": "workers/contracts/inter_agent.py"
     }
   ],
-  "gerasys-online/workers/agents/harvester.py": [
+  "zayron-x/workers/agents/harvester.py": [
     {
       "line": 11,
       "import": "__future__",
@@ -2836,7 +2836,7 @@
       "resolved": "workers/contracts/inter_agent.py"
     }
   ],
-  "gerasys-online/workers/agents/quant.py": [
+  "zayron-x/workers/agents/quant.py": [
     {
       "line": 20,
       "import": "__future__",
@@ -2873,7 +2873,7 @@
       "resolved": "workers/contracts/inter_agent.py"
     }
   ],
-  "gerasys-online/workers/agents/validator.py": [
+  "zayron-x/workers/agents/validator.py": [
     {
       "line": 12,
       "import": "__future__",
@@ -2920,7 +2920,7 @@
       "resolved": "workers/contracts/inter_agent.py"
     }
   ],
-  "gerasys-online/workers/agents/weaver.py": [
+  "zayron-x/workers/agents/weaver.py": [
     {
       "line": 16,
       "import": "__future__",
@@ -2957,7 +2957,7 @@
       "resolved": "workers/contracts/inter_agent.py"
     }
   ],
-  "gerasys-online/workers/contracts/inter_agent.py": [
+  "zayron-x/workers/contracts/inter_agent.py": [
     {
       "line": 16,
       "import": "__future__",
@@ -2984,35 +2984,35 @@
       "resolved": null
     }
   ],
-  "gerasys-online/__tests__/e2e/auth.spec.ts": [
+  "zayron-x/__tests__/e2e/auth.spec.ts": [
     {
       "line": 1,
       "import": "@playwright/test",
       "resolved": null
     }
   ],
-  "gerasys-online/__tests__/e2e/homepage.spec.ts": [
+  "zayron-x/__tests__/e2e/homepage.spec.ts": [
     {
       "line": 1,
       "import": "@playwright/test",
       "resolved": null
     }
   ],
-  "gerasys-online/__tests__/e2e/pages.spec.ts": [
+  "zayron-x/__tests__/e2e/pages.spec.ts": [
     {
       "line": 1,
       "import": "@playwright/test",
       "resolved": null
     }
   ],
-  "gerasys-online/__tests__/integration/api.test.ts": [
+  "zayron-x/__tests__/integration/api.test.ts": [
     {
       "line": 1,
       "import": "vitest",
       "resolved": null
     }
   ],
-  "gerasys-online/__tests__/unit/db.test.ts": [
+  "zayron-x/__tests__/unit/db.test.ts": [
     {
       "line": 1,
       "import": "vitest",
@@ -3094,7 +3094,7 @@
       "resolved": null
     }
   ],
-  "gerasys-online/__tests__/unit/lib/db/queries/articles.test.ts": [
+  "zayron-x/__tests__/unit/lib/db/queries/articles.test.ts": [
     {
       "line": 1,
       "import": "vitest",

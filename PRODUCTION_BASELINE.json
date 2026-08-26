@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-08-25T16:59:30Z",
+  "environment": "production",
+  "cloudflare": {
+    "account_id": "848da05f3ad3b1e7c5eb85b1a6fa084f",
+    "zone": "zayron-x.co",
+    "primary_domain": "https://zayron-x.co",
+    "api_gateway": "https://zayron-x-api.aabusabih.workers.dev",
+    "workers": [
+      {
+        "name": "zayron-x-api",
+        "version_id": "c6c91955-1470-4e94-9ac3-85203b208c59",
+        "routes": ["zayron-x.co/api/*"],
+        "bindings": ["DB", "VECTORIZE", "AI", "INGEST_QUEUE", "ENVIRONMENT"]
+      },
+      {
+        "name": "zayron-x-ingest",
+        "queue_consumer": "zayron-ingest-queue",
+        "batch_size": 10,
+        "max_retries": 3
+      }
+    ],
+    "d1_database": {
+      "name": "zayron-x-db",
+      "id": "c19c8f45-801b-4034-bd76-402e5e5389b5",
+      "region": "WEUR",
+      "tables_count": 33,
+      "sources_count": 25,
+      "active_knowledge_docs": 30
+    },
+    "vectorize": {
+      "index_name": "zayron-knowledge-index",
+      "dimensions": 768,
+      "metric": "cosine",
+      "model": "@cf/baai/bge-base-en-v1.5"
+    },
+    "workers_ai": {
+      "primary_model": "@cf/meta/llama-3.1-8b-instruct-fp8",
+      "free_tier_neurons_daily": 10000,
+      "circuit_breaker_active": true
+    },
+    "queues": [
+      {
+        "name": "zayron-ingest-queue",
+        "producer": "zayron-x-api",
+        "consumer": "zayron-x-ingest"
+      }
+    ]
+  },
+  "content_policies": {
+    "public_language": "en",
+    "raw_languages_preserved": ["ru", "ar", "fa", "fr", "zh", "de"],
+    "evidence_grounding_required": true,
+    "confidence_scoring_required": true
+  }
+}

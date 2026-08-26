@@ -1,6 +1,6 @@
 [
   {
-    "file": "gerasys-online/app/api/admin/sync-knowledge/route.ts",
+    "file": "zayron-x/app/api/admin/sync-knowledge/route.ts",
     "endpoint": "/api/admin/sync-knowledge",
     "methods": [
       "POST"
@@ -9,7 +9,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/articles/route.ts",
+    "file": "zayron-x/app/api/articles/route.ts",
     "endpoint": "/api/articles",
     "methods": [
       "GET"
@@ -18,7 +18,7 @@
     "rate_limited": true
   },
   {
-    "file": "gerasys-online/app/api/articles/[slug]/route.ts",
+    "file": "zayron-x/app/api/articles/[slug]/route.ts",
     "endpoint": "/api/articles/[slug]",
     "methods": [
       "GET"
@@ -27,7 +27,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/csp-report/route.ts",
+    "file": "zayron-x/app/api/csp-report/route.ts",
     "endpoint": "/api/csp-report",
     "methods": [
       "POST"
@@ -36,7 +36,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/cves/route.ts",
+    "file": "zayron-x/app/api/cves/route.ts",
     "endpoint": "/api/cves",
     "methods": [
       "GET"
@@ -45,7 +45,7 @@
     "rate_limited": true
   },
   {
-    "file": "gerasys-online/app/api/db-status/route.ts",
+    "file": "zayron-x/app/api/db-status/route.ts",
     "endpoint": "/api/db-status",
     "methods": [
       "GET"
@@ -54,7 +54,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/download-sitrep/route.ts",
+    "file": "zayron-x/app/api/download-sitrep/route.ts",
     "endpoint": "/api/download-sitrep",
     "methods": [
       "GET"
@@ -63,7 +63,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/remediate/route.ts",
+    "file": "zayron-x/app/api/remediate/route.ts",
     "endpoint": "/api/remediate",
     "methods": [
       "POST"
@@ -72,7 +72,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/revalidate/route.ts",
+    "file": "zayron-x/app/api/revalidate/route.ts",
     "endpoint": "/api/revalidate",
     "methods": [
       "POST"
@@ -81,7 +81,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/rss/route.ts",
+    "file": "zayron-x/app/api/rss/route.ts",
     "endpoint": "/api/rss",
     "methods": [
       "GET"
@@ -90,7 +90,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/search/route.ts",
+    "file": "zayron-x/app/api/search/route.ts",
     "endpoint": "/api/search",
     "methods": [
       "GET"
@@ -99,7 +99,7 @@
     "rate_limited": true
   },
   {
-    "file": "gerasys-online/app/api/seed-analysts/route.ts",
+    "file": "zayron-x/app/api/seed-analysts/route.ts",
     "endpoint": "/api/seed-analysts",
     "methods": [
       "POST"
@@ -108,7 +108,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/status/route.ts",
+    "file": "zayron-x/app/api/status/route.ts",
     "endpoint": "/api/status",
     "methods": [
       "GET"
@@ -117,7 +117,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/subscribe/route.ts",
+    "file": "zayron-x/app/api/subscribe/route.ts",
     "endpoint": "/api/subscribe",
     "methods": [
       "POST"
@@ -126,7 +126,7 @@
     "rate_limited": true
   },
   {
-    "file": "gerasys-online/app/api/unsplash-search/route.ts",
+    "file": "zayron-x/app/api/unsplash-search/route.ts",
     "endpoint": "/api/unsplash-search",
     "methods": [
       "GET"
@@ -135,7 +135,7 @@
     "rate_limited": false
   },
   {
-    "file": "gerasys-online/app/api/views/[id]/route.ts",
+    "file": "zayron-x/app/api/views/[id]/route.ts",
     "endpoint": "/api/views/[id]",
     "methods": [
       "POST"

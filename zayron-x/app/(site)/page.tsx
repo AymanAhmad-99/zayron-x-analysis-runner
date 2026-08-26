@@ -112,7 +112,7 @@ function SectionEyebrow({ children, dark = false }: { children: ReactNode; dark?
   );
 }
 
-function HeroSection() {
+function HeroSection({ latestArticle }: { latestArticle: Article | null }) {
   return (
     <section className="w-full pt-32 pb-20 px-6 border-b border-[#252B33]/10 bg-[#F7F7F5]">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
@@ -128,7 +128,7 @@ function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
             <Link
-              href="/threats"
+              href="/intelligence"
               className="inline-flex justify-center items-center gap-2 bg-[#111111] text-white px-7 py-3.5 text-sm font-semibold tracking-wide rounded hover:bg-[#FF6A00] transition-colors"
             >
               Explore Intelligence
@@ -159,27 +159,47 @@ function HeroSection() {
         </div>
 
         <div className="lg:col-span-5">
-          <div className="bg-[#FFFFFF] border border-[#252B33]/15 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center justify-between border-b border-[#252B33]/10 pb-4 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-red-500/10 text-red-600 border border-red-500/20 rounded">CRITICAL</span>
-                <span className="text-xs text-[#7A838D] font-mono">CONFIDENCE: 98%</span>
+          {latestArticle ? (
+            <div className="bg-[#FFFFFF] border border-[#252B33]/15 rounded-lg p-6 shadow-sm hover:border-[#FF6A00] transition-colors">
+              <div className="flex items-center justify-between border-b border-[#252B33]/10 pb-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded ${
+                    latestArticle.severity === 'critical' ? 'bg-red-500/10 text-red-600 border border-red-500/20' :
+                    latestArticle.severity === 'high' ? 'bg-orange-500/10 text-orange-600 border border-orange-500/20' :
+                    'bg-gray-100 text-gray-600 border border-gray-200'
+                  }`}>
+                    {latestArticle.severity || 'MEDIUM'}
+                  </span>
+                  <span className="text-xs text-[#7A838D] font-mono">CONFIDENCE: {Math.round((latestArticle.confidence || 0.85) * 100)}%</span>
+                </div>
+                <span className="text-xs text-[#7A838D]">{formatSignalDate(latestArticle.publishedAt || latestArticle.createdAt)}</span>
               </div>
-              <span className="text-xs text-[#7A838D]">Today</span>
+              <h3 className="text-lg font-bold text-[#111111] mb-2 leading-snug line-clamp-2">{latestArticle.title}</h3>
+              <p className="text-xs text-[#56606B] leading-relaxed mb-4 line-clamp-3">
+                {latestArticle.dek || latestArticle.excerpt || 'No executive summary provided.'}
+              </p>
+              <div className="bg-[#F7F7F5] p-3 rounded border border-[#252B33]/10 mb-4 text-[10px] font-mono text-[#56606B] leading-tight">
+                {(() => {
+                  try {
+                    const tags = JSON.parse(latestArticle.tags || '[]');
+                    if (!tags || tags.length === 0) return '[GRAPH] -> LINK_EVENT: Verified Event';
+                    return tags.slice(0,3).map((t: string) => `[GRAPH] -> LINK_ENTITY: ${t}`).join('\n');
+                  } catch(e) {
+                    return '[GRAPH] -> LINK_EVENT: Verified Event';
+                  }
+                })()}
+              </div>
+              <Link href={articleHref(latestArticle)} className="text-xs text-[#FF6A00] font-bold uppercase tracking-wider hover:underline flex items-center gap-1 w-max">
+                Read Full Intelligence Report <ArrowUpRight className="h-3 w-3" />
+              </Link>
             </div>
-            <h3 className="text-lg font-bold text-[#111111] mb-2 leading-snug">APT29 Active Exploitation of CVE-2026-1453 with Cobalt Strike</h3>
-            <p className="text-xs text-[#56606B] leading-relaxed mb-4">
-              Verified multi-source telemetry corroborates active exploitation targeting critical infrastructure and cloud identity providers.
-            </p>
-            <div className="bg-[#F7F7F5] p-3 rounded border border-[#252B33]/10 mb-4 text-xs font-mono text-[#56606B]">
-              [NER] -&#62; EXTRACT_CVE: CVE-2026-1453<br />
-              [GRAPH] -&#62; LINK_ACTOR: APT29<br />
-              [CONFIDENCE] -&#62; 98.4%
+          ) : (
+            <div className="bg-[#FFFFFF] border border-[#252B33]/15 rounded-lg p-6 shadow-sm text-center">
+              <Shield className="h-10 w-10 text-[#FF6A00] mx-auto mb-4 opacity-50" />
+              <h3 className="text-sm font-bold text-[#111111] mb-1">Awaiting Intelligence Signals</h3>
+              <p className="text-xs text-[#56606B]">ZAYRON-X MTProto Collector is active and monitoring real-time feeds. The next verified event will appear here automatically.</p>
             </div>
-            <Link href="/intelligence" className="text-xs text-[#FF6A00] font-bold uppercase tracking-wider hover:underline flex items-center gap-1">
-              Read Full Intelligence Report <ArrowUpRight className="h-3 w-3" />
-            </Link>
-          </div>
+          )}
         </div>
       </div>
     </section>
@@ -945,7 +965,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-white text-[var(--color-text)] font-sans">
-      <HeroSection />
+      <HeroSection latestArticle={latestExecutiveInsight} />
       <section className="px-6 pb-2 lg:px-10">
         <div className="mx-auto max-w-[1480px]">
           <LiveFeedTicker articles={articles} cves={cves} />

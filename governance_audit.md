@@ -28,7 +28,7 @@
 ## 3. Testing Standards
 
 - **Frameworks**: The frontend includes Vitest for unit and integration testing, and Playwright for End-to-End (E2E) testing.
-- **Verification Scripts**: Scripts under `gerasys-online/scripts` include canary checks, build validation, and security gating simulation tests.
+- **Verification Scripts**: Scripts under `zayron-x/scripts` include canary checks, build validation, and security gating simulation tests.
 
 ---
 

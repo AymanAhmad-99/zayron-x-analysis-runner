@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "types": ["@cloudflare/workers-types"],
+    "baseUrl": ".",
+    "paths": {
+      "@zayron/types": ["packages/types/src/index.ts"],
+      "@zayron/ui": ["packages/ui/src/index.ts"],
+      "@zayron/intelligence": ["packages/intelligence/src/index.ts"]
+    }
+  },
+  "include": [
+    "packages/*/src/**/*",
+    "packages/*/db/**/*",
+    "workers/*/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "zayron-x"
+  ]
+}

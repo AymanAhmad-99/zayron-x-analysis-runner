@@ -2,7 +2,7 @@
 """
 ZAYRON-X — Pydantic Schema Models (Single Source of Truth)
 
-These models mirror the Drizzle ORM schema in gerasys-online/lib/db/schema.ts.
+These models mirror the Drizzle ORM schema in zayron-x/lib/db/schema.ts.
 Every Python worker MUST validate data through these models before writing to
 Supabase. This eliminates the "triple-maintained schema" problem.
 

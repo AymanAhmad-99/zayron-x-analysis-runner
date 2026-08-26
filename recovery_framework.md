@@ -24,7 +24,7 @@
 
 ### 2.1 Backend Swarm (Docker Container Rollback)
 - **Mechanism**: The container build scripts and `deploy.sh` use Docker tags.
-- **Rollback Process**: If a deployment fails, run the rollback script `gerasys-online/scripts/rollback.sh` or execute:
+- **Rollback Process**: If a deployment fails, run the rollback script `zayron-x/scripts/rollback.sh` or execute:
   ```bash
   # Revert to the prior stable Docker Swarm context
   docker compose -f workers/docker-compose.yml down

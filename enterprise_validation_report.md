@@ -28,7 +28,7 @@ The ten required outputs of this intelligence layer are mapped below:
 | :--- | :--- | :--- |
 | **1. Live Dependency Scanner** | [arch_analyzer.py](file:///d:/Desktop/zayron-app/audits/arch_analyzer.py#L70-L172) | Dynamic walker parsing TS, TSX, and PY imports. |
 | **2. Import Graph Generator** | [adjacency_matrix.json](file:///d:/Desktop/zayron-app/graphs/adjacency_matrix.json) | Resolves relative/alias paths into a flat dependency dictionary. |
-| **3. API Discovery Engine** | [api_endpoints.json](file:///d:/Desktop/zayron-app/telemetry/api_endpoints.json) | Locates routes in `gerasys-online/app/api/` and checks rate limits. |
+| **3. API Discovery Engine** | [api_endpoints.json](file:///d:/Desktop/zayron-app/telemetry/api_endpoints.json) | Locates routes in `zayron-x/app/api/` and checks rate limits. |
 | **4. Database Schema Extractor** | [database_schema.json](file:///d:/Desktop/zayron-app/telemetry/database_schema.json) | Statically extracts tables, views, functions, and RLS commands from `.sql` files. |
 | **5. Dead Code Verification Engine**| [dead_code_evidence.json](file:///d:/Desktop/zayron-app/evidence/dead_code_evidence.json) | Identifies all non-entry point modules with zero incoming references. |
 | **6. Blast Radius Calculator** | [blast_radius.json](file:///d:/Desktop/zayron-app/graphs/blast_radius.json) | Calculates the percentage of files transitively impacted by any change. |
@@ -132,7 +132,7 @@ We verify the claims in previously generated architecture reports:
 - **File Reference:** [architectural_drift.json](file:///d:/Desktop/zayron-app/evidence/architectural_drift.json)
 
 ### 4.6 Dead Code Report ([dead_code_report.md](file:///d:/Desktop/zayron-app/dead_code_report.md))
-- **Claim:** Unreferenced legacy ingestion orchestrator script (`gerasys-online/lib/ingestion/orchestrator.ts`) is dead code.
+- **Claim:** Unreferenced legacy ingestion orchestrator script (`zayron-x/lib/ingestion/orchestrator.ts`) is dead code.
 - **Discovery Method:** Unreferenced file identification.
 - **Evidence Source:** [dead_code_evidence.json](file:///d:/Desktop/zayron-app/evidence/dead_code_evidence.json)
 - **Confidence:** **95%**
@@ -191,7 +191,7 @@ graph TD
 All findings from the validation run are detailed below:
 
 ### 6.1 Unreferenced Code Module (Dead Code)
-- **Component:** `gerasys-online/lib/ingestion/orchestrator.ts`
+- **Component:** `zayron-x/lib/ingestion/orchestrator.ts`
 - **Finding:** Legacy TypeScript ingestion orchestrator.
 - **Confidence:** **95%**
 - **Evidence:** Zero imports resolved across 330 project files. Ingestion has been fully migrated to Python crew.
@@ -207,15 +207,15 @@ All findings from the validation run are detailed below:
 - **Verification Status:** Machine-verified. RLS migration patch required.
 
 ### 6.3 Layer Violation (Architectural Drift)
-- **Component:** `gerasys-online/workers/omni_crew.py`
+- **Component:** `zayron-x/workers/omni_crew.py`
 - **Finding:** Frontend subfolder script importing root backend modules (`workers/config.py`).
 - **Confidence:** **98%**
-- **Evidence:** `gerasys-online/workers/omni_crew.py` attempts absolute imports outside of its folder boundary.
+- **Evidence:** `zayron-x/workers/omni_crew.py` attempts absolute imports outside of its folder boundary.
 - **Discovery Source:** [architectural_drift.json:L2-L7](file:///d:/Desktop/zayron-app/evidence/architectural_drift.json#L2-L7)
 - **Verification Status:** Machine-verified. Code relocation or import correction required.
 
 ### 6.4 API Rate Limiting Bypass (Security Surface)
-- **Component:** `gerasys-online/app/api/remediate/route.ts`
+- **Component:** `zayron-x/app/api/remediate/route.ts`
 - **Finding:** API route lacks rate-limiting hooks.
 - **Confidence:** **100%**
 - **Evidence:** File does not invoke `checkRateLimit` helper.
@@ -223,7 +223,7 @@ All findings from the validation run are detailed below:
 - **Verification Status:** Machine-verified. Needs `checkRateLimit` wrapper.
 
 ### 6.5 Administrative Route Exposure (Security Surface)
-- **Component:** `gerasys-online/app/api/admin/sync-knowledge/route.ts`
+- **Component:** `zayron-x/app/api/admin/sync-knowledge/route.ts`
 - **Finding:** Admin API endpoint is exposed to public visits.
 - **Confidence:** **100%**
 - **Evidence:** Clearance level identified as Public (no basicAuth or session check present).

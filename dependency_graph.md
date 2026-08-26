@@ -41,10 +41,10 @@ The Python backend processes follow a strict import pattern to avoid circular de
      └── exports GeminiClient, master_crew_scheduler(), main()
 ```
 
-### 1.2 Frontend Code Base (`gerasys-online/`)
-- **`gerasys-online/lib/supabase/client.ts`**: Imports `@supabase/supabase-js`. Exports `getSupabaseClient()` (public anonymous access) and `getSupabaseAdmin()` (admin access using service role key).
-- **`gerasys-online/lib/supabase/queries/articles.ts`**: Imports `getSupabaseClient` and `getSupabaseAdmin` from client setup. Exports CRUD queries (`getArticleBySlug`, `createArticle`, `updateArticle`, `deleteArticle`).
-- **`gerasys-online/middleware.ts`**: Imports `@supabase/ssr` (`createServerClient`) and rate-limiting modules. Restricts `/admin/*` routes, `/api/remediate`, `/api/download-sitrep` routes, and rate-limits `/login` and `/register`.
+### 1.2 Frontend Code Base (`zayron-x/`)
+- **`zayron-x/lib/supabase/client.ts`**: Imports `@supabase/supabase-js`. Exports `getSupabaseClient()` (public anonymous access) and `getSupabaseAdmin()` (admin access using service role key).
+- **`zayron-x/lib/supabase/queries/articles.ts`**: Imports `getSupabaseClient` and `getSupabaseAdmin` from client setup. Exports CRUD queries (`getArticleBySlug`, `createArticle`, `updateArticle`, `deleteArticle`).
+- **`zayron-x/middleware.ts`**: Imports `@supabase/ssr` (`createServerClient`) and rate-limiting modules. Restricts `/admin/*` routes, `/api/remediate`, `/api/download-sitrep` routes, and rate-limits `/login` and `/register`.
 
 ---
 

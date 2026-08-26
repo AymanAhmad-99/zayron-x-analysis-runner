@@ -1,0 +1,19 @@
+{
+  "name": "zayron-telegram-collector-do",
+  "version": "1.0.0",
+  "description": "Cloudflare-Native 24/7 Telegram MTProto Collector via Durable Objects",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "telegram": "^2.26.16"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.101.0"
+  }
+}

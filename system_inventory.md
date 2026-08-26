@@ -46,7 +46,7 @@ zayron-app/ (Workspace Root)
 │       ├── darkweb_ingestor.py           # Ransomwatch and onion collector
 │       ├── radar_engine.py               # Parallel Telegram channel scraper
 │       └── rss_ingestor.py               # RSS feeds scraper (BleepingComputer, etc.)
-└── gerasys-online/                       # Next.js web application frontend
+└── zayron-x/                       # Next.js web application frontend
     ├── app/                              # Next.js App Router root
     │   ├── api/                          # Next.js Serverless API endpoints
     │   └── (site)/                       # Main UI views
@@ -92,7 +92,7 @@ The ZAYRON-X production platform runs the following containerized daemon process
 
 ## 4. Package Inventory
 
-### 4.1 Frontend (`gerasys-online/package.json`)
+### 4.1 Frontend (`zayron-x/package.json`)
 - **Key Frameworks**: Next.js (`^16.2.6`), React (`19.1.0`), React DOM (`19.1.0`)
 - **State & Routing Tools**: `next-intl` (Internationalization), `next-themes` (Dark/Light mode)
 - **Database / API Client**: `@supabase/ssr` (`^0.10.3`), `@supabase/supabase-js` (`^2.106.2`)

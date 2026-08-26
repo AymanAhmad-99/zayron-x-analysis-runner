@@ -1,7 +1,7 @@
 """
 ZAYRON-X — CVE Pydantic Models
 
-Mirrors: gerasys-online/lib/db/schema.ts → cves table
+Mirrors: zayron-x/lib/db/schema.ts → cves table
 SQL DDL: supabase_schema_setup.sql → CREATE TABLE cves
 
 Enforces strict typing on CVE records before they are written to Supabase.

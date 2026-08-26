@@ -1,0 +1,16 @@
+{
+  "name": "@zayron/worker-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250815.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.96.0"
+  }
+}

@@ -221,1751 +221,1751 @@
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/.mcp.json": {
+  "zayron-x/.mcp.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/biome.json": {
+  "zayron-x/biome.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/instrumentation.ts": {
+  "zayron-x/instrumentation.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/middleware.ts": {
+  "zayron-x/middleware.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/next-env.d.ts": {
+  "zayron-x/next-env.d.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/next-intl.config.ts": {
+  "zayron-x/next-intl.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/next.config.ts": {
+  "zayron-x/next.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/open-next.config.ts": {
+  "zayron-x/open-next.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/package.json": {
+  "zayron-x/package.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/playwright.config.ts": {
+  "zayron-x/playwright.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/sentry.client.config.ts": {
+  "zayron-x/sentry.client.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/sentry.config.shared.ts": {
+  "zayron-x/sentry.config.shared.ts": {
     "score": 0.9,
     "direct_dependents_count": 3,
     "transitive_dependents_count": 3,
     "dependents": [
-      "gerasys-online/sentry.server.config.ts",
-      "gerasys-online/sentry.client.config.ts",
-      "gerasys-online/sentry.edge.config.ts"
+      "zayron-x/sentry.server.config.ts",
+      "zayron-x/sentry.client.config.ts",
+      "zayron-x/sentry.edge.config.ts"
     ]
   },
-  "gerasys-online/sentry.edge.config.ts": {
+  "zayron-x/sentry.edge.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/sentry.server.config.ts": {
+  "zayron-x/sentry.server.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/supabase_gating_migration.sql": {
+  "zayron-x/supabase_gating_migration.sql": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/supabase_rls_patch_checklist.md": {
+  "zayron-x/supabase_rls_patch_checklist.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/supabase_rls_policies.sql": {
+  "zayron-x/supabase_rls_policies.sql": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/tsconfig.json": {
+  "zayron-x/tsconfig.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/vitest.config.ts": {
+  "zayron-x/vitest.config.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/wrangler.toml": {
+  "zayron-x/wrangler.toml": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/.claude/settings.local.json": {
+  "zayron-x/.claude/settings.local.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/.cursor/mcp.json": {
+  "zayron-x/.cursor/mcp.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/layout.tsx": {
+  "zayron-x/app/layout.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/not-found.tsx": {
+  "zayron-x/app/not-found.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/providers.tsx": {
+  "zayron-x/app/providers.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/layout.tsx"
+      "zayron-x/app/layout.tsx"
     ]
   },
-  "gerasys-online/app/robots.ts": {
+  "zayron-x/app/robots.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/sitemap.ts": {
+  "zayron-x/app/sitemap.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(auth)/layout.tsx": {
+  "zayron-x/app/(auth)/layout.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(auth)/login/page.tsx": {
+  "zayron-x/app/(auth)/login/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(auth)/register/page.tsx": {
+  "zayron-x/app/(auth)/register/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/error.tsx": {
+  "zayron-x/app/(site)/error.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/layout.tsx": {
+  "zayron-x/app/(site)/layout.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/loading.tsx": {
+  "zayron-x/app/(site)/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/page.tsx": {
+  "zayron-x/app/(site)/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/about/page.tsx": {
+  "zayron-x/app/(site)/about/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/analysts/loading.tsx": {
+  "zayron-x/app/(site)/analysts/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/analysts/page.tsx": {
+  "zayron-x/app/(site)/analysts/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/article/[slug]/page.tsx": {
+  "zayron-x/app/(site)/article/[slug]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/contact/page.tsx": {
+  "zayron-x/app/(site)/contact/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/cve/loading.tsx": {
+  "zayron-x/app/(site)/cve/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/cve/page.tsx": {
+  "zayron-x/app/(site)/cve/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/cve/[cveId]/page.tsx": {
+  "zayron-x/app/(site)/cve/[cveId]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/dark-web-recon/page.tsx": {
+  "zayron-x/app/(site)/dark-web-recon/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/developers/page.tsx": {
+  "zayron-x/app/(site)/developers/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/privacy/page.tsx": {
+  "zayron-x/app/(site)/privacy/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/programming/loading.tsx": {
+  "zayron-x/app/(site)/programming/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/programming/page.tsx": {
+  "zayron-x/app/(site)/programming/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/search/loading.tsx": {
+  "zayron-x/app/(site)/search/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/search/page.tsx": {
+  "zayron-x/app/(site)/search/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/status/page.tsx": {
+  "zayron-x/app/(site)/status/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/terms/page.tsx": {
+  "zayron-x/app/(site)/terms/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/tools/loading.tsx": {
+  "zayron-x/app/(site)/tools/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/tools/page.tsx": {
+  "zayron-x/app/(site)/tools/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/tools/[slug]/page.tsx": {
+  "zayron-x/app/(site)/tools/[slug]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/vdp/page.tsx": {
+  "zayron-x/app/(site)/vdp/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/(site)/[category]/page.tsx": {
+  "zayron-x/app/(site)/[category]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/error.tsx": {
+  "zayron-x/app/admin/error.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/layout.tsx": {
+  "zayron-x/app/admin/layout.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/page.tsx": {
+  "zayron-x/app/admin/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/articles/page.tsx": {
+  "zayron-x/app/admin/articles/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/cves/page.tsx": {
+  "zayron-x/app/admin/cves/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/dashboard/page.tsx": {
+  "zayron-x/app/admin/dashboard/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/feeds/page.tsx": {
+  "zayron-x/app/admin/feeds/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/feeds/[id]/page.tsx": {
+  "zayron-x/app/admin/feeds/[id]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/admin/settings/page.tsx": {
+  "zayron-x/app/admin/settings/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/admin/sync-knowledge/route.ts": {
+  "zayron-x/app/api/admin/sync-knowledge/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/articles/route.ts": {
+  "zayron-x/app/api/articles/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/articles/[slug]/route.ts": {
+  "zayron-x/app/api/articles/[slug]/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/csp-report/route.ts": {
+  "zayron-x/app/api/csp-report/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/cves/route.ts": {
+  "zayron-x/app/api/cves/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/db-status/route.ts": {
+  "zayron-x/app/api/db-status/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/download-sitrep/route.ts": {
+  "zayron-x/app/api/download-sitrep/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/og/route.tsx": {
+  "zayron-x/app/api/og/route.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/remediate/route.ts": {
+  "zayron-x/app/api/remediate/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/revalidate/route.ts": {
+  "zayron-x/app/api/revalidate/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/rss/route.ts": {
+  "zayron-x/app/api/rss/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/search/route.ts": {
+  "zayron-x/app/api/search/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/seed-analysts/route.ts": {
+  "zayron-x/app/api/seed-analysts/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/status/route.ts": {
+  "zayron-x/app/api/status/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/subscribe/route.ts": {
+  "zayron-x/app/api/subscribe/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/unsplash-search/route.ts": {
+  "zayron-x/app/api/unsplash-search/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/api/views/[id]/route.ts": {
+  "zayron-x/app/api/views/[id]/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/auth/callback/route.ts": {
+  "zayron-x/app/auth/callback/route.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/operations/page.tsx": {
+  "zayron-x/app/intelligence/operations/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/threat-intelligence/page.tsx": {
+  "zayron-x/app/intelligence/threat-intelligence/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/[category]/loading.tsx": {
+  "zayron-x/app/intelligence/[category]/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/[category]/page.tsx": {
+  "zayron-x/app/intelligence/[category]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/[category]/[slug]/error.tsx": {
+  "zayron-x/app/intelligence/[category]/[slug]/error.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/[category]/[slug]/loading.tsx": {
+  "zayron-x/app/intelligence/[category]/[slug]/loading.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/intelligence/[category]/[slug]/page.tsx": {
+  "zayron-x/app/intelligence/[category]/[slug]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/news/page.tsx": {
+  "zayron-x/app/news/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/offline/page.tsx": {
+  "zayron-x/app/offline/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/app/threats/[id]/page.tsx": {
+  "zayron-x/app/threats/[id]/page.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/article/Article3DImage.tsx": {
+  "zayron-x/components/article/Article3DImage.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/article/ArticleBody.tsx": {
+  "zayron-x/components/article/ArticleBody.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/article/ArticleHeader.tsx": {
+  "zayron-x/components/article/ArticleHeader.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/article/ArticleSidebar.tsx": {
+  "zayron-x/components/article/ArticleSidebar.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/article/AuthorCard.tsx": {
+  "zayron-x/components/article/AuthorCard.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/article/ReadingProgress.tsx": {
+  "zayron-x/components/article/ReadingProgress.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/article/RelatedArticles.tsx": {
+  "zayron-x/components/article/RelatedArticles.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/article/ShareButtons.tsx": {
+  "zayron-x/components/article/ShareButtons.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/cve/CveDetailCard.tsx": {
+  "zayron-x/components/cve/CveDetailCard.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/components/cve/CveFilters.tsx": {
+  "zayron-x/components/cve/CveFilters.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/cve/CveTable.tsx": {
+  "zayron-x/components/cve/CveTable.tsx": {
     "score": 0.6,
     "direct_dependents_count": 2,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/app/(site)/cve/page.tsx"
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/app/(site)/cve/page.tsx"
     ]
   },
-  "gerasys-online/components/cve/SeverityBadge.tsx": {
+  "zayron-x/components/cve/SeverityBadge.tsx": {
     "score": 2.7,
     "direct_dependents_count": 5,
     "transitive_dependents_count": 9,
     "dependents": [
-      "gerasys-online/components/homepage/CveTracker.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/components/cve/CveDetailCard.tsx",
-      "gerasys-online/components/cve/CveTable.tsx",
-      "gerasys-online/app/admin/cves/page.tsx",
-      "gerasys-online/app/(site)/cve/page.tsx",
-      "gerasys-online/components/platform/CvePanel.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/components/homepage/CveTracker.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/components/cve/CveDetailCard.tsx",
+      "zayron-x/components/cve/CveTable.tsx",
+      "zayron-x/app/admin/cves/page.tsx",
+      "zayron-x/app/(site)/cve/page.tsx",
+      "zayron-x/components/platform/CvePanel.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/components/homepage/AnalystTeam.tsx": {
+  "zayron-x/components/homepage/AnalystTeam.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/analysts/page.tsx"
+      "zayron-x/app/(site)/analysts/page.tsx"
     ]
   },
-  "gerasys-online/components/homepage/CategoryShowcase.tsx": {
+  "zayron-x/components/homepage/CategoryShowcase.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/CveTracker.tsx": {
+  "zayron-x/components/homepage/CveTracker.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/FeaturedGrid.tsx": {
+  "zayron-x/components/homepage/FeaturedGrid.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/HeroSection.tsx": {
+  "zayron-x/components/homepage/HeroSection.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/LatestReports.tsx": {
+  "zayron-x/components/homepage/LatestReports.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/Newsletter.tsx": {
+  "zayron-x/components/homepage/Newsletter.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/StatsCounter.tsx": {
+  "zayron-x/components/homepage/StatsCounter.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/TabbedContent.tsx": {
+  "zayron-x/components/homepage/TabbedContent.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/ThreatTicker.tsx": {
+  "zayron-x/components/homepage/ThreatTicker.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/ToolSpotlight.tsx": {
+  "zayron-x/components/homepage/ToolSpotlight.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/homepage/TrendingWidget.tsx": {
+  "zayron-x/components/homepage/TrendingWidget.tsx": {
     "score": 0.6,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/components/article/ArticleSidebar.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/components/article/ArticleSidebar.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/layout/BreakingTicker.tsx": {
+  "zayron-x/components/layout/BreakingTicker.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/layout/Footer.tsx": {
+  "zayron-x/components/layout/Footer.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/layout.tsx"
+      "zayron-x/app/layout.tsx"
     ]
   },
-  "gerasys-online/components/layout/Header.tsx": {
+  "zayron-x/components/layout/Header.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/layout.tsx"
+      "zayron-x/app/layout.tsx"
     ]
   },
-  "gerasys-online/components/layout/MobileNav.tsx": {
+  "zayron-x/components/layout/MobileNav.tsx": {
     "score": 0.6,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/app/layout.tsx",
-      "gerasys-online/components/layout/Header.tsx"
+      "zayron-x/app/layout.tsx",
+      "zayron-x/components/layout/Header.tsx"
     ]
   },
-  "gerasys-online/components/layout/NewsTicker.tsx": {
+  "zayron-x/components/layout/NewsTicker.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/platform/ActionableAlerts.tsx": {
+  "zayron-x/components/platform/ActionableAlerts.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/AnalystPanel.tsx": {
+  "zayron-x/components/platform/AnalystPanel.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/AutomatedRoiCalculator.tsx": {
+  "zayron-x/components/platform/AutomatedRoiCalculator.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/platform/CvePanel.tsx": {
+  "zayron-x/components/platform/CvePanel.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/DarkWebDashboard.tsx": {
+  "zayron-x/components/platform/DarkWebDashboard.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/dark-web-recon/page.tsx"
+      "zayron-x/app/(site)/dark-web-recon/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/FinancialBlastRadius.tsx": {
+  "zayron-x/components/platform/FinancialBlastRadius.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/InfrastructureRadar.tsx": {
+  "zayron-x/components/platform/InfrastructureRadar.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/IntelCard.tsx": {
+  "zayron-x/components/platform/IntelCard.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/LiveIntelTicker.tsx": {
+  "zayron-x/components/platform/LiveIntelTicker.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/SectorWorkspace.tsx": {
+  "zayron-x/components/platform/SectorWorkspace.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/SecurityGatingContext.tsx": {
+  "zayron-x/components/platform/SecurityGatingContext.tsx": {
     "score": 3.3,
     "direct_dependents_count": 6,
     "transitive_dependents_count": 11,
     "dependents": [
-      "gerasys-online/components/platform/ActionableAlerts.tsx",
-      "gerasys-online/components/platform/SitrepExporter.tsx",
-      "gerasys-online/components/platform/SovereignGateModal.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/components/article/ArticleBody.tsx",
-      "gerasys-online/components/cve/CveDetailCard.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/app/threats/[id]/page.tsx",
-      "gerasys-online/app/layout.tsx",
-      "gerasys-online/components/platform/ThreatDetailClient.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/components/platform/ActionableAlerts.tsx",
+      "zayron-x/components/platform/SitrepExporter.tsx",
+      "zayron-x/components/platform/SovereignGateModal.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/components/article/ArticleBody.tsx",
+      "zayron-x/components/cve/CveDetailCard.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/app/threats/[id]/page.tsx",
+      "zayron-x/app/layout.tsx",
+      "zayron-x/components/platform/ThreatDetailClient.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/SitrepExporter.tsx": {
+  "zayron-x/components/platform/SitrepExporter.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/SovereignFinancialImpact.tsx": {
+  "zayron-x/components/platform/SovereignFinancialImpact.tsx": {
     "score": 0.6,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/components/platform/FinancialBlastRadius.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/components/platform/FinancialBlastRadius.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/SovereignGateModal.tsx": {
+  "zayron-x/components/platform/SovereignGateModal.tsx": {
     "score": 0.6,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/components/platform/ThreatDetailClient.tsx",
-      "gerasys-online/app/threats/[id]/page.tsx"
+      "zayron-x/components/platform/ThreatDetailClient.tsx",
+      "zayron-x/app/threats/[id]/page.tsx"
     ]
   },
-  "gerasys-online/components/platform/ThreatDetailClient.tsx": {
+  "zayron-x/components/platform/ThreatDetailClient.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/threats/[id]/page.tsx"
+      "zayron-x/app/threats/[id]/page.tsx"
     ]
   },
-  "gerasys-online/components/ui/ArticleCard.tsx": {
+  "zayron-x/components/ui/ArticleCard.tsx": {
     "score": 2.4,
     "direct_dependents_count": 7,
     "transitive_dependents_count": 8,
     "dependents": [
-      "gerasys-online/components/article/RelatedArticles.tsx",
-      "gerasys-online/app/intelligence/threat-intelligence/page.tsx",
-      "gerasys-online/components/homepage/TabbedContent.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/components/homepage/FeaturedGrid.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx"
+      "zayron-x/components/article/RelatedArticles.tsx",
+      "zayron-x/app/intelligence/threat-intelligence/page.tsx",
+      "zayron-x/components/homepage/TabbedContent.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/components/homepage/FeaturedGrid.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx"
     ]
   },
-  "gerasys-online/components/ui/Button.tsx": {
+  "zayron-x/components/ui/Button.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/components/homepage/Newsletter.tsx"
+      "zayron-x/components/homepage/Newsletter.tsx"
     ]
   },
-  "gerasys-online/components/ui/CategoryBadge.tsx": {
+  "zayron-x/components/ui/CategoryBadge.tsx": {
     "score": 1.2,
     "direct_dependents_count": 3,
     "transitive_dependents_count": 4,
     "dependents": [
-      "gerasys-online/components/article/ArticleHeader.tsx",
-      "gerasys-online/components/homepage/LatestReports.tsx",
-      "gerasys-online/components/homepage/HeroSection.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/components/article/ArticleHeader.tsx",
+      "zayron-x/components/homepage/LatestReports.tsx",
+      "zayron-x/components/homepage/HeroSection.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/components/ui/CopperDivider.tsx": {
+  "zayron-x/components/ui/CopperDivider.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/ui/CyberArticleImage.tsx": {
+  "zayron-x/components/ui/CyberArticleImage.tsx": {
     "score": 3.3,
     "direct_dependents_count": 4,
     "transitive_dependents_count": 11,
     "dependents": [
-      "gerasys-online/components/article/RelatedArticles.tsx",
-      "gerasys-online/app/intelligence/threat-intelligence/page.tsx",
-      "gerasys-online/components/homepage/TabbedContent.tsx",
-      "gerasys-online/components/ui/ArticleCard.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/components/homepage/HeroSection.tsx",
-      "gerasys-online/components/homepage/FeaturedGrid.tsx",
-      "gerasys-online/components/article/Article3DImage.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx"
+      "zayron-x/components/article/RelatedArticles.tsx",
+      "zayron-x/app/intelligence/threat-intelligence/page.tsx",
+      "zayron-x/components/homepage/TabbedContent.tsx",
+      "zayron-x/components/ui/ArticleCard.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/components/homepage/HeroSection.tsx",
+      "zayron-x/components/homepage/FeaturedGrid.tsx",
+      "zayron-x/components/article/Article3DImage.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx"
     ]
   },
-  "gerasys-online/components/ui/PageSkeleton.tsx": {
+  "zayron-x/components/ui/PageSkeleton.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/ui/PwaInstallPrompt.tsx": {
+  "zayron-x/components/ui/PwaInstallPrompt.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/layout.tsx"
+      "zayron-x/app/layout.tsx"
     ]
   },
-  "gerasys-online/components/ui/ScrollToTop.tsx": {
+  "zayron-x/components/ui/ScrollToTop.tsx": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/layout.tsx"
+      "zayron-x/app/layout.tsx"
     ]
   },
-  "gerasys-online/components/ui/SearchBar.tsx": {
+  "zayron-x/components/ui/SearchBar.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/components/ui/SkeletonLoader.tsx": {
+  "zayron-x/components/ui/SkeletonLoader.tsx": {
     "score": 1.2,
     "direct_dependents_count": 4,
     "transitive_dependents_count": 4,
     "dependents": [
-      "gerasys-online/app/(site)/loading.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/intelligence/[category]/loading.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/loading.tsx"
+      "zayron-x/app/(site)/loading.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/intelligence/[category]/loading.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/loading.tsx"
     ]
   },
-  "gerasys-online/components/ui/ThemeToggle.tsx": {
+  "zayron-x/components/ui/ThemeToggle.tsx": {
     "score": 0.6,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/app/layout.tsx",
-      "gerasys-online/components/layout/Header.tsx"
+      "zayron-x/app/layout.tsx",
+      "zayron-x/components/layout/Header.tsx"
     ]
   },
-  "gerasys-online/docs/ACCESSIBILITY_AUDIT.md": {
+  "zayron-x/docs/ACCESSIBILITY_AUDIT.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/ALERTING_RULES.md": {
+  "zayron-x/docs/ALERTING_RULES.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/CACHING_STRATEGY.md": {
+  "zayron-x/docs/CACHING_STRATEGY.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/CI_CD_PIPELINE.md": {
+  "zayron-x/docs/CI_CD_PIPELINE.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/DATABASE_ARCHITECTURE.md": {
+  "zayron-x/docs/DATABASE_ARCHITECTURE.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/DISASTER_RECOVERY.md": {
+  "zayron-x/docs/DISASTER_RECOVERY.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/HANG_FIX_ANALYSIS.md": {
+  "zayron-x/docs/HANG_FIX_ANALYSIS.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/INFRASTRUCTURE_AS_CODE.md": {
+  "zayron-x/docs/INFRASTRUCTURE_AS_CODE.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/LOGPUSH_SETUP.md": {
+  "zayron-x/docs/LOGPUSH_SETUP.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/NODE_FS_FINAL_FIX.md": {
+  "zayron-x/docs/NODE_FS_FINAL_FIX.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/OPERATIONAL_RUNBOOKS.md": {
+  "zayron-x/docs/OPERATIONAL_RUNBOOKS.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/PERFORMANCE_2027.md": {
+  "zayron-x/docs/PERFORMANCE_2027.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/SECURITY_POSTURE_2027.md": {
+  "zayron-x/docs/SECURITY_POSTURE_2027.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/SLO_DEFINITION.md": {
+  "zayron-x/docs/SLO_DEFINITION.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/TESTING_GUIDE.md": {
+  "zayron-x/docs/TESTING_GUIDE.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/docs/UX_ARCHITECTURE.md": {
+  "zayron-x/docs/UX_ARCHITECTURE.md": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/icons.ts": {
+  "zayron-x/lib/icons.ts": {
     "score": 12.4,
     "direct_dependents_count": 39,
     "transitive_dependents_count": 41,
     "dependents": [
-      "gerasys-online/app/(auth)/register/page.tsx",
-      "gerasys-online/components/platform/ActionableAlerts.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/components/platform/SovereignFinancialImpact.tsx",
-      "gerasys-online/components/ui/SearchBar.tsx",
-      "gerasys-online/components/article/ShareButtons.tsx",
-      "gerasys-online/components/platform/CvePanel.tsx",
-      "gerasys-online/components/platform/AnalystPanel.tsx",
-      "gerasys-online/components/platform/ThreatDetailClient.tsx",
-      "gerasys-online/app/(site)/dark-web-recon/page.tsx",
-      "gerasys-online/app/admin/settings/page.tsx",
-      "gerasys-online/components/homepage/ToolSpotlight.tsx",
-      "gerasys-online/components/platform/SitrepExporter.tsx",
-      "gerasys-online/app/admin/error.tsx",
-      "gerasys-online/components/platform/SovereignGateModal.tsx",
-      "gerasys-online/app/(site)/developers/page.tsx",
-      "gerasys-online/components/layout/MobileNav.tsx",
-      "gerasys-online/components/layout/Header.tsx",
-      "gerasys-online/components/platform/SectorWorkspace.tsx",
-      "gerasys-online/components/platform/FinancialBlastRadius.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/error.tsx",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/components/platform/InfrastructureRadar.tsx",
-      "gerasys-online/app/(site)/programming/page.tsx",
-      "gerasys-online/components/homepage/CategoryShowcase.tsx",
-      "gerasys-online/components/homepage/HeroSection.tsx",
-      "gerasys-online/components/cve/CveDetailCard.tsx",
-      "gerasys-online/components/platform/AutomatedRoiCalculator.tsx",
-      "gerasys-online/components/platform/IntelCard.tsx",
-      "gerasys-online/app/layout.tsx",
-      "gerasys-online/app/(site)/tools/page.tsx",
-      "gerasys-online/app/(site)/tools/[slug]/page.tsx",
-      "gerasys-online/app/(auth)/login/page.tsx",
-      "gerasys-online/components/cve/CveFilters.tsx",
-      "gerasys-online/app/(site)/error.tsx",
-      "gerasys-online/app/not-found.tsx",
-      "gerasys-online/components/platform/DarkWebDashboard.tsx",
-      "gerasys-online/app/news/page.tsx",
-      "gerasys-online/app/threats/[id]/page.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/app/(auth)/register/page.tsx",
+      "zayron-x/components/platform/ActionableAlerts.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/components/platform/SovereignFinancialImpact.tsx",
+      "zayron-x/components/ui/SearchBar.tsx",
+      "zayron-x/components/article/ShareButtons.tsx",
+      "zayron-x/components/platform/CvePanel.tsx",
+      "zayron-x/components/platform/AnalystPanel.tsx",
+      "zayron-x/components/platform/ThreatDetailClient.tsx",
+      "zayron-x/app/(site)/dark-web-recon/page.tsx",
+      "zayron-x/app/admin/settings/page.tsx",
+      "zayron-x/components/homepage/ToolSpotlight.tsx",
+      "zayron-x/components/platform/SitrepExporter.tsx",
+      "zayron-x/app/admin/error.tsx",
+      "zayron-x/components/platform/SovereignGateModal.tsx",
+      "zayron-x/app/(site)/developers/page.tsx",
+      "zayron-x/components/layout/MobileNav.tsx",
+      "zayron-x/components/layout/Header.tsx",
+      "zayron-x/components/platform/SectorWorkspace.tsx",
+      "zayron-x/components/platform/FinancialBlastRadius.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/error.tsx",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/components/platform/InfrastructureRadar.tsx",
+      "zayron-x/app/(site)/programming/page.tsx",
+      "zayron-x/components/homepage/CategoryShowcase.tsx",
+      "zayron-x/components/homepage/HeroSection.tsx",
+      "zayron-x/components/cve/CveDetailCard.tsx",
+      "zayron-x/components/platform/AutomatedRoiCalculator.tsx",
+      "zayron-x/components/platform/IntelCard.tsx",
+      "zayron-x/app/layout.tsx",
+      "zayron-x/app/(site)/tools/page.tsx",
+      "zayron-x/app/(site)/tools/[slug]/page.tsx",
+      "zayron-x/app/(auth)/login/page.tsx",
+      "zayron-x/components/cve/CveFilters.tsx",
+      "zayron-x/app/(site)/error.tsx",
+      "zayron-x/app/not-found.tsx",
+      "zayron-x/components/platform/DarkWebDashboard.tsx",
+      "zayron-x/app/news/page.tsx",
+      "zayron-x/app/threats/[id]/page.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/lib/silos.ts": {
+  "zayron-x/lib/silos.ts": {
     "score": 0.6,
     "direct_dependents_count": 2,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/components/article/ArticleHeader.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx"
+      "zayron-x/components/article/ArticleHeader.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx"
     ]
   },
-  "gerasys-online/lib/types.ts": {
+  "zayron-x/lib/types.ts": {
     "score": 17.0,
     "direct_dependents_count": 31,
     "transitive_dependents_count": 56,
     "dependents": [
-      "gerasys-online/lib/supabase/queries/articles.ts",
-      "gerasys-online/app/sitemap.ts",
-      "gerasys-online/components/platform/ActionableAlerts.tsx",
-      "gerasys-online/app/intelligence/threat-intelligence/page.tsx",
-      "gerasys-online/components/homepage/TabbedContent.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/components/homepage/TrendingWidget.tsx",
-      "gerasys-online/app/api/views/[id]/route.ts",
-      "gerasys-online/components/homepage/FeaturedGrid.tsx",
-      "gerasys-online/components/platform/CvePanel.tsx",
-      "gerasys-online/components/platform/AnalystPanel.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/components/homepage/AnalystTeam.tsx",
-      "gerasys-online/components/article/RelatedArticles.tsx",
-      "gerasys-online/app/api/db-status/route.ts",
-      "gerasys-online/app/admin/feeds/page.tsx",
-      "gerasys-online/components/platform/SitrepExporter.tsx",
-      "gerasys-online/lib/supabase/queries/tools.ts",
-      "gerasys-online/components/homepage/ToolSpotlight.tsx",
-      "gerasys-online/app/admin/articles/page.tsx",
-      "gerasys-online/app/api/rss/route.ts",
-      "gerasys-online/app/(site)/article/[slug]/page.tsx",
-      "gerasys-online/components/layout/NewsTicker.tsx",
-      "gerasys-online/app/admin/cves/page.tsx",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/app/admin/feeds/[id]/page.tsx",
-      "gerasys-online/app/(site)/programming/page.tsx",
-      "gerasys-online/components/homepage/ThreatTicker.tsx",
-      "gerasys-online/components/homepage/LatestReports.tsx",
-      "gerasys-online/app/admin/page.tsx",
-      "gerasys-online/components/homepage/HeroSection.tsx",
-      "gerasys-online/components/cve/CveDetailCard.tsx",
-      "gerasys-online/app/(site)/cve/page.tsx",
-      "gerasys-online/app/(site)/analysts/page.tsx",
-      "gerasys-online/components/article/Article3DImage.tsx",
-      "gerasys-online/lib/supabase/queries/cves.ts",
-      "gerasys-online/components/platform/IntelCard.tsx",
-      "gerasys-online/components/article/ArticleSidebar.tsx",
-      "gerasys-online/app/(site)/tools/page.tsx",
-      "gerasys-online/app/(site)/tools/[slug]/page.tsx",
-      "gerasys-online/app/api/cves/route.ts",
-      "gerasys-online/components/homepage/CveTracker.tsx",
-      "gerasys-online/app/api/articles/route.ts",
-      "gerasys-online/lib/supabase/queries/analysts.ts",
-      "gerasys-online/components/article/ArticleHeader.tsx",
-      "gerasys-online/app/api/articles/[slug]/route.ts",
-      "gerasys-online/components/ui/ArticleCard.tsx",
-      "gerasys-online/lib/ingestion/orchestrator.ts",
-      "gerasys-online/components/cve/CveTable.tsx",
-      "gerasys-online/app/api/search/route.ts",
-      "gerasys-online/lib/supabase/queries/rawFeeds.ts",
-      "gerasys-online/lib/supabase/queries/programming.ts",
-      "gerasys-online/app/news/page.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/lib/supabase/queries/articles.ts",
+      "zayron-x/app/sitemap.ts",
+      "zayron-x/components/platform/ActionableAlerts.tsx",
+      "zayron-x/app/intelligence/threat-intelligence/page.tsx",
+      "zayron-x/components/homepage/TabbedContent.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/components/homepage/TrendingWidget.tsx",
+      "zayron-x/app/api/views/[id]/route.ts",
+      "zayron-x/components/homepage/FeaturedGrid.tsx",
+      "zayron-x/components/platform/CvePanel.tsx",
+      "zayron-x/components/platform/AnalystPanel.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/components/homepage/AnalystTeam.tsx",
+      "zayron-x/components/article/RelatedArticles.tsx",
+      "zayron-x/app/api/db-status/route.ts",
+      "zayron-x/app/admin/feeds/page.tsx",
+      "zayron-x/components/platform/SitrepExporter.tsx",
+      "zayron-x/lib/supabase/queries/tools.ts",
+      "zayron-x/components/homepage/ToolSpotlight.tsx",
+      "zayron-x/app/admin/articles/page.tsx",
+      "zayron-x/app/api/rss/route.ts",
+      "zayron-x/app/(site)/article/[slug]/page.tsx",
+      "zayron-x/components/layout/NewsTicker.tsx",
+      "zayron-x/app/admin/cves/page.tsx",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/app/admin/feeds/[id]/page.tsx",
+      "zayron-x/app/(site)/programming/page.tsx",
+      "zayron-x/components/homepage/ThreatTicker.tsx",
+      "zayron-x/components/homepage/LatestReports.tsx",
+      "zayron-x/app/admin/page.tsx",
+      "zayron-x/components/homepage/HeroSection.tsx",
+      "zayron-x/components/cve/CveDetailCard.tsx",
+      "zayron-x/app/(site)/cve/page.tsx",
+      "zayron-x/app/(site)/analysts/page.tsx",
+      "zayron-x/components/article/Article3DImage.tsx",
+      "zayron-x/lib/supabase/queries/cves.ts",
+      "zayron-x/components/platform/IntelCard.tsx",
+      "zayron-x/components/article/ArticleSidebar.tsx",
+      "zayron-x/app/(site)/tools/page.tsx",
+      "zayron-x/app/(site)/tools/[slug]/page.tsx",
+      "zayron-x/app/api/cves/route.ts",
+      "zayron-x/components/homepage/CveTracker.tsx",
+      "zayron-x/app/api/articles/route.ts",
+      "zayron-x/lib/supabase/queries/analysts.ts",
+      "zayron-x/components/article/ArticleHeader.tsx",
+      "zayron-x/app/api/articles/[slug]/route.ts",
+      "zayron-x/components/ui/ArticleCard.tsx",
+      "zayron-x/lib/ingestion/orchestrator.ts",
+      "zayron-x/components/cve/CveTable.tsx",
+      "zayron-x/app/api/search/route.ts",
+      "zayron-x/lib/supabase/queries/rawFeeds.ts",
+      "zayron-x/lib/supabase/queries/programming.ts",
+      "zayron-x/app/news/page.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/lib/cache/ratelimit.ts": {
+  "zayron-x/lib/cache/ratelimit.ts": {
     "score": 1.8,
     "direct_dependents_count": 6,
     "transitive_dependents_count": 6,
     "dependents": [
-      "gerasys-online/app/api/cves/route.ts",
-      "gerasys-online/app/api/subscribe/route.ts",
-      "gerasys-online/app/api/articles/route.ts",
-      "gerasys-online/app/api/search/route.ts",
-      "gerasys-online/app/api/views/[id]/route.ts",
-      "gerasys-online/middleware.ts"
+      "zayron-x/app/api/cves/route.ts",
+      "zayron-x/app/api/subscribe/route.ts",
+      "zayron-x/app/api/articles/route.ts",
+      "zayron-x/app/api/search/route.ts",
+      "zayron-x/app/api/views/[id]/route.ts",
+      "zayron-x/middleware.ts"
     ]
   },
-  "gerasys-online/lib/cache/redis.ts": {
+  "zayron-x/lib/cache/redis.ts": {
     "score": 3.3,
     "direct_dependents_count": 6,
     "transitive_dependents_count": 11,
     "dependents": [
-      "gerasys-online/lib/cache/ratelimit.ts",
-      "gerasys-online/app/api/cves/route.ts",
-      "gerasys-online/app/api/subscribe/route.ts",
-      "gerasys-online/app/api/articles/route.ts",
-      "gerasys-online/app/intelligence/threat-intelligence/page.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/api/search/route.ts",
-      "gerasys-online/app/api/views/[id]/route.ts",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/middleware.ts",
-      "gerasys-online/app/intelligence/operations/page.tsx"
+      "zayron-x/lib/cache/ratelimit.ts",
+      "zayron-x/app/api/cves/route.ts",
+      "zayron-x/app/api/subscribe/route.ts",
+      "zayron-x/app/api/articles/route.ts",
+      "zayron-x/app/intelligence/threat-intelligence/page.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/api/search/route.ts",
+      "zayron-x/app/api/views/[id]/route.ts",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/middleware.ts",
+      "zayron-x/app/intelligence/operations/page.tsx"
     ]
   },
-  "gerasys-online/lib/email/resend.ts": {
+  "zayron-x/lib/email/resend.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/ingestion/channels.ts": {
+  "zayron-x/lib/ingestion/channels.ts": {
     "score": 0.6,
     "direct_dependents_count": 2,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/scripts/telegram-ingestion.ts",
-      "gerasys-online/lib/ingestion/orchestrator.ts"
+      "zayron-x/scripts/telegram-ingestion.ts",
+      "zayron-x/lib/ingestion/orchestrator.ts"
     ]
   },
-  "gerasys-online/lib/ingestion/index.ts": {
+  "zayron-x/lib/ingestion/index.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/ingestion/orchestrator.ts": {
+  "zayron-x/lib/ingestion/orchestrator.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/pipeline/telegram-prompt.ts": {
+  "zayron-x/lib/pipeline/telegram-prompt.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/polyfills/fs.ts": {
+  "zayron-x/lib/polyfills/fs.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/polyfills/os.ts": {
+  "zayron-x/lib/polyfills/os.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/seo/metadata.ts": {
+  "zayron-x/lib/seo/metadata.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/supabase/client.ts": {
+  "zayron-x/lib/supabase/client.ts": {
     "score": 11.5,
     "direct_dependents_count": 11,
     "transitive_dependents_count": 38,
     "dependents": [
-      "gerasys-online/lib/supabase/queries/articles.ts",
-      "gerasys-online/app/(auth)/register/page.tsx",
-      "gerasys-online/app/sitemap.ts",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/app/api/views/[id]/route.ts",
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/app/api/db-status/route.ts",
-      "gerasys-online/app/admin/feeds/page.tsx",
-      "gerasys-online/app/(site)/article/[slug]/page.tsx",
-      "gerasys-online/lib/supabase/queries/tools.ts",
-      "gerasys-online/app/admin/articles/page.tsx",
-      "gerasys-online/app/api/rss/route.ts",
-      "gerasys-online/components/layout/NewsTicker.tsx",
-      "gerasys-online/app/admin/cves/page.tsx",
-      "gerasys-online/app/admin/feeds/[id]/page.tsx",
-      "gerasys-online/app/(site)/programming/page.tsx",
-      "gerasys-online/app/api/subscribe/route.ts",
-      "gerasys-online/lib/supabase/queries/analytics.ts",
-      "gerasys-online/app/admin/page.tsx",
-      "gerasys-online/app/(site)/cve/page.tsx",
-      "gerasys-online/app/(site)/analysts/page.tsx",
-      "gerasys-online/app/api/seed-analysts/route.ts",
-      "gerasys-online/lib/supabase/queries/cves.ts",
-      "gerasys-online/app/(site)/tools/page.tsx",
-      "gerasys-online/app/(site)/tools/[slug]/page.tsx",
-      "gerasys-online/app/api/cves/route.ts",
-      "gerasys-online/app/(auth)/login/page.tsx",
-      "gerasys-online/app/api/articles/route.ts",
-      "gerasys-online/lib/supabase/queries/analysts.ts",
-      "gerasys-online/app/api/articles/[slug]/route.ts",
-      "gerasys-online/lib/ingestion/orchestrator.ts",
-      "gerasys-online/app/api/search/route.ts",
-      "gerasys-online/lib/supabase/queries/rawFeeds.ts",
-      "gerasys-online/lib/supabase/queries/programming.ts",
-      "gerasys-online/app/news/page.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/lib/supabase/queries/articles.ts",
+      "zayron-x/app/(auth)/register/page.tsx",
+      "zayron-x/app/sitemap.ts",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/app/api/views/[id]/route.ts",
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/app/api/db-status/route.ts",
+      "zayron-x/app/admin/feeds/page.tsx",
+      "zayron-x/app/(site)/article/[slug]/page.tsx",
+      "zayron-x/lib/supabase/queries/tools.ts",
+      "zayron-x/app/admin/articles/page.tsx",
+      "zayron-x/app/api/rss/route.ts",
+      "zayron-x/components/layout/NewsTicker.tsx",
+      "zayron-x/app/admin/cves/page.tsx",
+      "zayron-x/app/admin/feeds/[id]/page.tsx",
+      "zayron-x/app/(site)/programming/page.tsx",
+      "zayron-x/app/api/subscribe/route.ts",
+      "zayron-x/lib/supabase/queries/analytics.ts",
+      "zayron-x/app/admin/page.tsx",
+      "zayron-x/app/(site)/cve/page.tsx",
+      "zayron-x/app/(site)/analysts/page.tsx",
+      "zayron-x/app/api/seed-analysts/route.ts",
+      "zayron-x/lib/supabase/queries/cves.ts",
+      "zayron-x/app/(site)/tools/page.tsx",
+      "zayron-x/app/(site)/tools/[slug]/page.tsx",
+      "zayron-x/app/api/cves/route.ts",
+      "zayron-x/app/(auth)/login/page.tsx",
+      "zayron-x/app/api/articles/route.ts",
+      "zayron-x/lib/supabase/queries/analysts.ts",
+      "zayron-x/app/api/articles/[slug]/route.ts",
+      "zayron-x/lib/ingestion/orchestrator.ts",
+      "zayron-x/app/api/search/route.ts",
+      "zayron-x/lib/supabase/queries/rawFeeds.ts",
+      "zayron-x/lib/supabase/queries/programming.ts",
+      "zayron-x/app/news/page.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/lib/supabase/middleware.ts": {
+  "zayron-x/lib/supabase/middleware.ts": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/middleware.ts"
+      "zayron-x/middleware.ts"
     ]
   },
-  "gerasys-online/lib/supabase/server.ts": {
+  "zayron-x/lib/supabase/server.ts": {
     "score": 2.1,
     "direct_dependents_count": 7,
     "transitive_dependents_count": 7,
     "dependents": [
-      "gerasys-online/app/auth/callback/route.ts",
-      "gerasys-online/app/(site)/dark-web-recon/page.tsx",
-      "gerasys-online/app/admin/layout.tsx",
-      "gerasys-online/app/api/download-sitrep/route.ts",
-      "gerasys-online/app/threats/[id]/page.tsx",
-      "gerasys-online/app/api/remediate/route.ts",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/app/auth/callback/route.ts",
+      "zayron-x/app/(site)/dark-web-recon/page.tsx",
+      "zayron-x/app/admin/layout.tsx",
+      "zayron-x/app/api/download-sitrep/route.ts",
+      "zayron-x/app/threats/[id]/page.tsx",
+      "zayron-x/app/api/remediate/route.ts",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/lib/supabase/queries/analysts.ts": {
+  "zayron-x/lib/supabase/queries/analysts.ts": {
     "score": 1.2,
     "direct_dependents_count": 4,
     "transitive_dependents_count": 4,
     "dependents": [
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/app/(site)/analysts/page.tsx",
-      "gerasys-online/lib/ingestion/orchestrator.ts"
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/app/(site)/analysts/page.tsx",
+      "zayron-x/lib/ingestion/orchestrator.ts"
     ]
   },
-  "gerasys-online/lib/supabase/queries/analytics.ts": {
+  "zayron-x/lib/supabase/queries/analytics.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/supabase/queries/articles.ts": {
+  "zayron-x/lib/supabase/queries/articles.ts": {
     "score": 4.5,
     "direct_dependents_count": 15,
     "transitive_dependents_count": 15,
     "dependents": [
-      "gerasys-online/app/sitemap.ts",
-      "gerasys-online/app/api/db-status/route.ts",
-      "gerasys-online/app/api/articles/route.ts",
-      "gerasys-online/app/(site)/article/[slug]/page.tsx",
-      "gerasys-online/app/admin/articles/page.tsx",
-      "gerasys-online/app/api/articles/[slug]/route.ts",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/app/admin/page.tsx",
-      "gerasys-online/components/layout/NewsTicker.tsx",
-      "gerasys-online/app/api/rss/route.ts",
-      "gerasys-online/app/api/search/route.ts",
-      "gerasys-online/app/api/views/[id]/route.ts",
-      "gerasys-online/app/news/page.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/admin/feeds/[id]/page.tsx"
+      "zayron-x/app/sitemap.ts",
+      "zayron-x/app/api/db-status/route.ts",
+      "zayron-x/app/api/articles/route.ts",
+      "zayron-x/app/(site)/article/[slug]/page.tsx",
+      "zayron-x/app/admin/articles/page.tsx",
+      "zayron-x/app/api/articles/[slug]/route.ts",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/app/admin/page.tsx",
+      "zayron-x/components/layout/NewsTicker.tsx",
+      "zayron-x/app/api/rss/route.ts",
+      "zayron-x/app/api/search/route.ts",
+      "zayron-x/app/api/views/[id]/route.ts",
+      "zayron-x/app/news/page.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/admin/feeds/[id]/page.tsx"
     ]
   },
-  "gerasys-online/lib/supabase/queries/cves.ts": {
+  "zayron-x/lib/supabase/queries/cves.ts": {
     "score": 2.7,
     "direct_dependents_count": 9,
     "transitive_dependents_count": 9,
     "dependents": [
-      "gerasys-online/app/api/cves/route.ts",
-      "gerasys-online/app/api/db-status/route.ts",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/app/admin/page.tsx",
-      "gerasys-online/app/api/search/route.ts",
-      "gerasys-online/app/admin/cves/page.tsx",
-      "gerasys-online/app/(site)/cve/page.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/app/api/cves/route.ts",
+      "zayron-x/app/api/db-status/route.ts",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/app/admin/page.tsx",
+      "zayron-x/app/api/search/route.ts",
+      "zayron-x/app/admin/cves/page.tsx",
+      "zayron-x/app/(site)/cve/page.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/lib/supabase/queries/programming.ts": {
+  "zayron-x/lib/supabase/queries/programming.ts": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/app/(site)/programming/page.tsx"
+      "zayron-x/app/(site)/programming/page.tsx"
     ]
   },
-  "gerasys-online/lib/supabase/queries/rawFeeds.ts": {
+  "zayron-x/lib/supabase/queries/rawFeeds.ts": {
     "score": 0.9,
     "direct_dependents_count": 3,
     "transitive_dependents_count": 3,
     "dependents": [
-      "gerasys-online/app/admin/feeds/page.tsx",
-      "gerasys-online/app/admin/feeds/[id]/page.tsx",
-      "gerasys-online/app/admin/page.tsx"
+      "zayron-x/app/admin/feeds/page.tsx",
+      "zayron-x/app/admin/feeds/[id]/page.tsx",
+      "zayron-x/app/admin/page.tsx"
     ]
   },
-  "gerasys-online/lib/supabase/queries/tools.ts": {
+  "zayron-x/lib/supabase/queries/tools.ts": {
     "score": 0.6,
     "direct_dependents_count": 2,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/app/(site)/tools/[slug]/page.tsx",
-      "gerasys-online/app/(site)/tools/page.tsx"
+      "zayron-x/app/(site)/tools/[slug]/page.tsx",
+      "zayron-x/app/(site)/tools/page.tsx"
     ]
   },
-  "gerasys-online/lib/utils/fallbackImages.ts": {
+  "zayron-x/lib/utils/fallbackImages.ts": {
     "score": 0.6,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 2,
     "dependents": [
-      "gerasys-online/components/platform/IntelCard.tsx",
-      "gerasys-online/app/(site)/page.tsx"
+      "zayron-x/components/platform/IntelCard.tsx",
+      "zayron-x/app/(site)/page.tsx"
     ]
   },
-  "gerasys-online/lib/utils/formatDate.ts": {
+  "zayron-x/lib/utils/formatDate.ts": {
     "score": 6.1,
     "direct_dependents_count": 10,
     "transitive_dependents_count": 20,
     "dependents": [
-      "gerasys-online/app/intelligence/threat-intelligence/page.tsx",
-      "gerasys-online/components/homepage/TabbedContent.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/components/homepage/FeaturedGrid.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx",
-      "gerasys-online/components/article/RelatedArticles.tsx",
-      "gerasys-online/app/admin/articles/page.tsx",
-      "gerasys-online/app/admin/cves/page.tsx",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/app/admin/feeds/[id]/page.tsx",
-      "gerasys-online/components/homepage/LatestReports.tsx",
-      "gerasys-online/components/homepage/HeroSection.tsx",
-      "gerasys-online/components/cve/CveDetailCard.tsx",
-      "gerasys-online/app/(site)/cve/page.tsx",
-      "gerasys-online/components/homepage/CveTracker.tsx",
-      "gerasys-online/components/article/ArticleHeader.tsx",
-      "gerasys-online/components/ui/ArticleCard.tsx",
-      "gerasys-online/components/cve/CveTable.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/(site)/cve/[cveId]/page.tsx"
+      "zayron-x/app/intelligence/threat-intelligence/page.tsx",
+      "zayron-x/components/homepage/TabbedContent.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/components/homepage/FeaturedGrid.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx",
+      "zayron-x/components/article/RelatedArticles.tsx",
+      "zayron-x/app/admin/articles/page.tsx",
+      "zayron-x/app/admin/cves/page.tsx",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/app/admin/feeds/[id]/page.tsx",
+      "zayron-x/components/homepage/LatestReports.tsx",
+      "zayron-x/components/homepage/HeroSection.tsx",
+      "zayron-x/components/cve/CveDetailCard.tsx",
+      "zayron-x/app/(site)/cve/page.tsx",
+      "zayron-x/components/homepage/CveTracker.tsx",
+      "zayron-x/components/article/ArticleHeader.tsx",
+      "zayron-x/components/ui/ArticleCard.tsx",
+      "zayron-x/components/cve/CveTable.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/(site)/cve/[cveId]/page.tsx"
     ]
   },
-  "gerasys-online/lib/utils/markdown.ts": {
+  "zayron-x/lib/utils/markdown.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/utils/readingTime.ts": {
+  "zayron-x/lib/utils/readingTime.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/utils/sanitize-edge.ts": {
+  "zayron-x/lib/utils/sanitize-edge.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/lib/utils/slugify.ts": {
+  "zayron-x/lib/utils/slugify.ts": {
     "score": 3.3,
     "direct_dependents_count": 2,
     "transitive_dependents_count": 11,
     "dependents": [
-      "gerasys-online/components/article/RelatedArticles.tsx",
-      "gerasys-online/app/intelligence/threat-intelligence/page.tsx",
-      "gerasys-online/components/homepage/TabbedContent.tsx",
-      "gerasys-online/app/(site)/page.tsx",
-      "gerasys-online/components/ui/ArticleCard.tsx",
-      "gerasys-online/app/intelligence/[category]/[slug]/page.tsx",
-      "gerasys-online/components/homepage/FeaturedGrid.tsx",
-      "gerasys-online/app/(site)/search/page.tsx",
-      "gerasys-online/app/intelligence/[category]/page.tsx",
-      "gerasys-online/components/platform/IntelCard.tsx",
-      "gerasys-online/app/intelligence/operations/page.tsx"
+      "zayron-x/components/article/RelatedArticles.tsx",
+      "zayron-x/app/intelligence/threat-intelligence/page.tsx",
+      "zayron-x/components/homepage/TabbedContent.tsx",
+      "zayron-x/app/(site)/page.tsx",
+      "zayron-x/components/ui/ArticleCard.tsx",
+      "zayron-x/app/intelligence/[category]/[slug]/page.tsx",
+      "zayron-x/components/homepage/FeaturedGrid.tsx",
+      "zayron-x/app/(site)/search/page.tsx",
+      "zayron-x/app/intelligence/[category]/page.tsx",
+      "zayron-x/components/platform/IntelCard.tsx",
+      "zayron-x/app/intelligence/operations/page.tsx"
     ]
   },
-  "gerasys-online/messages/ar.json": {
+  "zayron-x/messages/ar.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/messages/en.json": {
+  "zayron-x/messages/en.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/pages/dummy.tsx": {
+  "zayron-x/pages/dummy.tsx": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/public/manifest.json": {
+  "zayron-x/public/manifest.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/scripts/run-migration.ts": {
+  "zayron-x/scripts/run-migration.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/scripts/seed-analysts.sql": {
+  "zayron-x/scripts/seed-analysts.sql": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/scripts/seed-analysts.ts": {
+  "zayron-x/scripts/seed-analysts.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/scripts/telegram-ingestion.ts": {
+  "zayron-x/scripts/telegram-ingestion.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/scripts/verify-security.ts": {
+  "zayron-x/scripts/verify-security.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/shared/__init__.py": {
+  "zayron-x/shared/__init__.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/shared/models/article.py": {
+  "zayron-x/shared/models/article.py": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/shared/models/__init__.py"
+      "zayron-x/shared/models/__init__.py"
     ]
   },
-  "gerasys-online/shared/models/cve.py": {
+  "zayron-x/shared/models/cve.py": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/shared/models/__init__.py"
+      "zayron-x/shared/models/__init__.py"
     ]
   },
-  "gerasys-online/shared/models/ioc.py": {
+  "zayron-x/shared/models/ioc.py": {
     "score": 0.3,
     "direct_dependents_count": 1,
     "transitive_dependents_count": 1,
     "dependents": [
-      "gerasys-online/shared/models/__init__.py"
+      "zayron-x/shared/models/__init__.py"
     ]
   },
-  "gerasys-online/shared/models/__init__.py": {
+  "zayron-x/shared/models/__init__.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/types/lucide-react.d.ts": {
+  "zayron-x/types/lucide-react.d.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/config.py": {
+  "zayron-x/workers/config.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/omni_crew.py": {
+  "zayron-x/workers/omni_crew.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/persistence.py": {
+  "zayron-x/workers/persistence.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/targets.json": {
+  "zayron-x/workers/targets.json": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/verify_imports.py": {
+  "zayron-x/workers/verify_imports.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/__init__.py": {
+  "zayron-x/workers/__init__.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/agents/compliance.py": {
+  "zayron-x/workers/agents/compliance.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/agents/harvester.py": {
+  "zayron-x/workers/agents/harvester.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/agents/quant.py": {
+  "zayron-x/workers/agents/quant.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/agents/validator.py": {
+  "zayron-x/workers/agents/validator.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/agents/weaver.py": {
+  "zayron-x/workers/agents/weaver.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/agents/__init__.py": {
+  "zayron-x/workers/agents/__init__.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/contracts/inter_agent.py": {
+  "zayron-x/workers/contracts/inter_agent.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/workers/contracts/__init__.py": {
+  "zayron-x/workers/contracts/__init__.py": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/__tests__/e2e/auth.spec.ts": {
+  "zayron-x/__tests__/e2e/auth.spec.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/__tests__/e2e/homepage.spec.ts": {
+  "zayron-x/__tests__/e2e/homepage.spec.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/__tests__/e2e/pages.spec.ts": {
+  "zayron-x/__tests__/e2e/pages.spec.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/__tests__/integration/api.test.ts": {
+  "zayron-x/__tests__/integration/api.test.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/__tests__/unit/db.test.ts": {
+  "zayron-x/__tests__/unit/db.test.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
     "dependents": []
   },
-  "gerasys-online/__tests__/unit/lib/db/queries/articles.test.ts": {
+  "zayron-x/__tests__/unit/lib/db/queries/articles.test.ts": {
     "score": 0.0,
     "direct_dependents_count": 0,
     "transitive_dependents_count": 0,
@@ -2192,16 +2192,16 @@
     "direct_dependents_count": 1,
     "transitive_dependents_count": 10,
     "dependents": [
-      "gerasys-online/workers/persistence.py",
+      "zayron-x/workers/persistence.py",
       "workers/persistence.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/tests/verify_imports.py",
       "workers/omni_crew.py",
       "scratch/test_routing.py",
       "shared/models/__init__.py",
-      "gerasys-online/workers/verify_imports.py",
+      "zayron-x/workers/verify_imports.py",
       "workers/agents/validator.py",
-      "gerasys-online/workers/agents/validator.py"
+      "zayron-x/workers/agents/validator.py"
     ]
   },
   "shared/models/cve.py": {
@@ -2209,17 +2209,17 @@
     "direct_dependents_count": 2,
     "transitive_dependents_count": 11,
     "dependents": [
-      "gerasys-online/workers/persistence.py",
+      "zayron-x/workers/persistence.py",
       "workers/persistence.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/tests/verify_imports.py",
       "workers/omni_crew.py",
       "scratch/test_routing.py",
       "shared/models/__init__.py",
-      "gerasys-online/workers/verify_imports.py",
+      "zayron-x/workers/verify_imports.py",
       "workers/ingestors/cve_worker.py",
       "workers/agents/validator.py",
-      "gerasys-online/workers/agents/validator.py"
+      "zayron-x/workers/agents/validator.py"
     ]
   },
   "shared/models/fbr_calculator.py": {
@@ -2229,11 +2229,11 @@
     "dependents": [
       "workers/agents/quant.py",
       "workers/persistence.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/tests/verify_imports.py",
       "workers/omni_crew.py",
       "scratch/test_routing.py",
-      "gerasys-online/workers/verify_imports.py",
+      "zayron-x/workers/verify_imports.py",
       "workers/ingestors/cve_worker.py"
     ]
   },
@@ -2242,16 +2242,16 @@
     "direct_dependents_count": 1,
     "transitive_dependents_count": 10,
     "dependents": [
-      "gerasys-online/workers/persistence.py",
+      "zayron-x/workers/persistence.py",
       "workers/persistence.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/tests/verify_imports.py",
       "workers/omni_crew.py",
       "scratch/test_routing.py",
       "shared/models/__init__.py",
-      "gerasys-online/workers/verify_imports.py",
+      "zayron-x/workers/verify_imports.py",
       "workers/agents/validator.py",
-      "gerasys-online/workers/agents/validator.py"
+      "zayron-x/workers/agents/validator.py"
     ]
   },
   "shared/models/__init__.py": {
@@ -2259,15 +2259,15 @@
     "direct_dependents_count": 6,
     "transitive_dependents_count": 9,
     "dependents": [
-      "gerasys-online/workers/persistence.py",
+      "zayron-x/workers/persistence.py",
       "workers/persistence.py",
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/omni_crew.py",
       "scratch/test_routing.py",
-      "gerasys-online/workers/verify_imports.py",
+      "zayron-x/workers/verify_imports.py",
       "workers/agents/validator.py",
-      "gerasys-online/workers/agents/validator.py"
+      "zayron-x/workers/agents/validator.py"
     ]
   },
   "telemetry/api_endpoints.json": {
@@ -2288,18 +2288,18 @@
     "transitive_dependents_count": 13,
     "dependents": [
       "workers/agents/weaver.py",
-      "gerasys-online/workers/agents/weaver.py",
+      "zayron-x/workers/agents/weaver.py",
       "workers/persistence.py",
-      "gerasys-online/workers/persistence.py",
+      "zayron-x/workers/persistence.py",
       "workers/tests/verify_imports.py",
       "workers/ingestors/darkweb_ingestor.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/omni_crew.py",
-      "gerasys-online/workers/agents/quant.py",
+      "zayron-x/workers/agents/quant.py",
       "scratch/test_routing.py",
       "workers/ingestors/rss_ingestor.py",
       "workers/scripts/upload_knowledge.py",
-      "gerasys-online/workers/verify_imports.py"
+      "zayron-x/workers/verify_imports.py"
     ]
   },
   "workers/omni_crew.py": {
@@ -2314,10 +2314,10 @@
     "transitive_dependents_count": 5,
     "dependents": [
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/omni_crew.py",
       "scratch/test_routing.py",
-      "gerasys-online/workers/verify_imports.py"
+      "zayron-x/workers/verify_imports.py"
     ]
   },
   "workers/targets.json": {
@@ -2338,8 +2338,8 @@
     "transitive_dependents_count": 3,
     "dependents": [
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py"
+      "zayron-x/workers/verify_imports.py",
+      "zayron-x/workers/omni_crew.py"
     ]
   },
   "workers/agents/harvester.py": {
@@ -2348,8 +2348,8 @@
     "transitive_dependents_count": 3,
     "dependents": [
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py"
+      "zayron-x/workers/verify_imports.py",
+      "zayron-x/workers/omni_crew.py"
     ]
   },
   "workers/agents/infra_architect.py": {
@@ -2370,8 +2370,8 @@
     "transitive_dependents_count": 3,
     "dependents": [
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py"
+      "zayron-x/workers/verify_imports.py",
+      "zayron-x/workers/omni_crew.py"
     ]
   },
   "workers/agents/validator.py": {
@@ -2380,8 +2380,8 @@
     "transitive_dependents_count": 3,
     "dependents": [
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py"
+      "zayron-x/workers/verify_imports.py",
+      "zayron-x/workers/omni_crew.py"
     ]
   },
   "workers/agents/weaver.py": {
@@ -2390,8 +2390,8 @@
     "transitive_dependents_count": 3,
     "dependents": [
       "workers/tests/verify_imports.py",
-      "gerasys-online/workers/verify_imports.py",
-      "gerasys-online/workers/omni_crew.py"
+      "zayron-x/workers/verify_imports.py",
+      "zayron-x/workers/omni_crew.py"
     ]
   },
   "workers/agents/__init__.py": {
@@ -2407,23 +2407,23 @@
     "dependents": [
       "workers/tests/verify_imports.py",
       "workers/agents/quant.py",
-      "gerasys-online/workers/agents/weaver.py",
-      "gerasys-online/workers/omni_crew.py",
+      "zayron-x/workers/agents/weaver.py",
+      "zayron-x/workers/omni_crew.py",
       "workers/omni_crew.py",
-      "gerasys-online/workers/agents/quant.py",
+      "zayron-x/workers/agents/quant.py",
       "workers/agents/validator.py",
-      "gerasys-online/workers/agents/validator.py",
+      "zayron-x/workers/agents/validator.py",
       "workers/agents/osint_spy.py",
       "workers/persistence.py",
-      "gerasys-online/workers/persistence.py",
+      "zayron-x/workers/persistence.py",
       "scratch/test_routing.py",
       "workers/agents/harvester.py",
-      "gerasys-online/workers/verify_imports.py",
+      "zayron-x/workers/verify_imports.py",
       "workers/agents/weaver.py",
-      "gerasys-online/workers/agents/compliance.py",
+      "zayron-x/workers/agents/compliance.py",
       "workers/agents/compliance.py",
       "workers/agents/infra_architect.py",
-      "gerasys-online/workers/agents/harvester.py"
+      "zayron-x/workers/agents/harvester.py"
     ]
   },
   "workers/contracts/__init__.py": {
