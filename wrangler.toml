@@ -1,6 +1,13 @@
+# ═══════════════════════════════════════════════════════════════
+# ZAYRON-X — ROOT CLOUDFLARE TOOLING CONFIGURATION
+# Purpose: Used for executing D1 migrations (`wrangler d1 migrations apply DB`)
+# and root-level developer tooling. NOT a deployable worker.
+# Canonical deployable workers reside in `apps/web` and `workers/`.
+# ═══════════════════════════════════════════════════════════════
 name = "zayron-x"
 compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat"]
+
 
 # ═══════════════════════════════════════════════════════════════
 # CLOUDFLARE D1 RELATIONAL DATABASE
