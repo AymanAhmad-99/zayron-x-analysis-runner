@@ -1,0 +1,69 @@
+{
+  "system": "ZAYRON-X Visual Governance Fingerprint",
+  "version": "1.0.0",
+  "canonical": {
+    "colors": [
+      "#F5F4F0",
+      "#FFFFFF",
+      "#EBEAE5",
+      "#111215",
+      "#1A1B1F",
+      "#111214",
+      "#5A5D65",
+      "#8C8F98",
+      "#E1DFD7",
+      "#28292E",
+      "#D9531E",
+      "#C82323",
+      "#D9821E",
+      "#2A7B62",
+      "#1D8A5E"
+    ],
+    "fonts": [
+      "Playfair Display",
+      "Fraunces",
+      "Georgia",
+      "Inter",
+      "Geist Sans",
+      "Geist Mono"
+    ],
+    "radius": [
+      "0px",
+      "4px",
+      "6px",
+      "8px",
+      "9999px"
+    ],
+    "borders": [
+      "1px solid #E1DFD7",
+      "1px solid #28292E"
+    ],
+    "containers": {
+      "maxWidth": "1280px"
+    }
+  },
+  "approvedComponents": [
+    "Header",
+    "Footer",
+    "Hero",
+    "ChapterSection",
+    "ThreatAssessmentCard",
+    "IntelligenceWire",
+    "ThreatNetworkGraph",
+    "ActionPipeline",
+    "SeverityBadge",
+    "ConfidenceScore",
+    "EntityPill",
+    "UnderstatedPricing",
+    "StandardsBar"
+  ],
+  "forbiddenStyles": [
+    "backdrop-blur-xl",
+    "text-green-500",
+    "bg-gradient-to-r",
+    "animate-pulse-glow",
+    "terminal-crt",
+    "cyber-grid",
+    "neon-border"
+  ]
+}

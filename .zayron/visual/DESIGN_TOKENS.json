@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "system": "ZAYRON-X Master Visual Governance",
+  "tokens": {
+    "colors": {
+      "base": {
+        "value": "#F5F4F0",
+        "description": "Warm neutral background canvas",
+        "usage": "Global body background, outer frame canvas"
+      },
+      "surface": {
+        "value": "#FFFFFF",
+        "description": "Pure white surface container",
+        "usage": "Primary cards, dossiers, tables, flyouts"
+      },
+      "surfaceSubtle": {
+        "value": "#EBEAE5",
+        "description": "Subtle off-white structural container",
+        "usage": "Secondary cards, category pills, search inputs"
+      },
+      "surfaceDark": {
+        "value": "#111215",
+        "description": "High-authority dark surface block",
+        "usage": "Method pipelines, action frameworks, dark category cards"
+      },
+      "surfaceDarkSubtle": {
+        "value": "#1A1B1F",
+        "description": "Subtle dark container for nested dark controls",
+        "usage": "Dark card headers, nested pipeline items"
+      },
+      "ink": {
+        "value": "#111214",
+        "description": "Primary high-contrast dark text",
+        "usage": "Headings, body primary, primary CTA buttons"
+      },
+      "inkMuted": {
+        "value": "#5A5D65",
+        "description": "Secondary muted neutral text",
+        "usage": "Subtitles, metadata keys, timestamps, descriptions"
+      },
+      "inkTertiary": {
+        "value": "#8C8F98",
+        "description": "Low-contrast tertiary text",
+        "usage": "Chapter indicators, breadcrumbs, passive icons"
+      },
+      "border": {
+        "value": "#E1DFD7",
+        "description": "Primary architectural border line",
+        "usage": "Card borders, table dividers, chapter rules"
+      },
+      "borderDark": {
+        "value": "#28292E",
+        "description": "Border line inside dark surfaces",
+        "usage": "Dark card borders, pipeline connector lines"
+      },
+      "signal": {
+        "value": "#D9531E",
+        "description": "Restrained semantic signal orange",
+        "usage": "Live status pulse, active chart bars, central graph actor node"
+      },
+      "critical": {
+        "value": "#C82323",
+        "description": "Critical threat severity indicator",
+        "usage": "Critical severity badges, active exploit alerts"
+      },
+      "high": {
+        "value": "#D9531E",
+        "description": "High threat severity indicator",
+        "usage": "High severity badges"
+      },
+      "medium": {
+        "value": "#D9821E",
+        "description": "Medium threat severity indicator",
+        "usage": "Medium severity badges"
+      },
+      "low": {
+        "value": "#2A7B62",
+        "description": "Low threat severity indicator",
+        "usage": "Low severity badges, informatory telemetry"
+      },
+      "success": {
+        "value": "#1D8A5E",
+        "description": "Verified confidence and active health",
+        "usage": "Verified confidence score text, clean status"
+      }
+    },
+    "typography": {
+      "fontFamily": {
+        "display": "Playfair Display, Fraunces, Georgia, serif",
+        "sans": "Inter, Geist Sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        "mono": "Geist Mono, JetBrains Mono, 'Fira Code', Menlo, monospace"
+      },
+      "scale": {
+        "displayHero": {
+          "size": "56px",
+          "lineHeight": "1.08",
+          "weight": "600",
+          "letterSpacing": "-0.025em"
+        },
+        "h1": {
+          "size": "40px",
+          "lineHeight": "1.15",
+          "weight": "600",
+          "letterSpacing": "-0.02em"
+        },
+        "h2": {
+          "size": "32px",
+          "lineHeight": "1.2",
+          "weight": "600",
+          "letterSpacing": "-0.015em"
+        },
+        "h3": {
+          "size": "22px",
+          "lineHeight": "1.3",
+          "weight": "700",
+          "letterSpacing": "-0.01em"
+        },
+        "body": {
+          "size": "15px",
+          "lineHeight": "1.55",
+          "weight": "400",
+          "letterSpacing": "0"
+        },
+        "small": {
+          "size": "13px",
+          "lineHeight": "1.45",
+          "weight": "400",
+          "letterSpacing": "0"
+        },
+        "chapterLabel": {
+          "size": "11px",
+          "lineHeight": "1.0",
+          "weight": "700",
+          "letterSpacing": "0.08em"
+        },
+        "metadata": {
+          "size": "12px",
+          "lineHeight": "1.4",
+          "weight": "500",
+          "letterSpacing": "0.02em"
+        },
+        "badge": {
+          "size": "10px",
+          "lineHeight": "1.0",
+          "weight": "700",
+          "letterSpacing": "0.06em"
+        }
+      }
+    },
+    "spacing": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "2xl": "48px",
+      "3xl": "64px",
+      "4xl": "96px"
+    },
+    "radius": {
+      "none": "0px",
+      "sm": "4px",
+      "md": "6px",
+      "lg": "8px",
+      "pill": "9999px"
+    },
+    "borders": {
+      "thin": "1px solid #E1DFD7",
+      "dark": "1px solid #28292E"
+    },
+    "shadows": {
+      "none": "none",
+      "card": "0 1px 3px rgba(0, 0, 0, 0.04)",
+      "floating": "0 12px 32px -4px rgba(17, 18, 20, 0.08), 0 4px 12px -2px rgba(17, 18, 20, 0.04)"
+    },
+    "breakpoints": {
+      "mobile": "390px",
+      "tablet": "768px",
+      "desktop": "1024px",
+      "wide": "1440px"
+    },
+    "containers": {
+      "maxWidth": "1280px",
+      "contentWidth": "1140px"
+    },
+    "motion": {
+      "transitionFast": "150ms cubic-bezier(0.16, 1, 0.3, 1)",
+      "transitionStandard": "250ms cubic-bezier(0.16, 1, 0.3, 1)"
+    }
+  }
+}
