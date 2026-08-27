@@ -16,7 +16,7 @@ export function Hero({ headline, subheadline, summary, feature }: { headline: st
             <span className="text-[#56606B]">{subheadline}</span>
           </h1>
           <p className="text-lg text-[#56606B] leading-relaxed max-w-2xl mb-8">
-            {summary}
+            Understand what changed. Know why it matters. {summary}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
             <Link

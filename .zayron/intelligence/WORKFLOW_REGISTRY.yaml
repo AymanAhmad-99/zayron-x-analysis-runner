@@ -1,0 +1,9 @@
+workflows:
+  - file: "zayron-web-production.yml"
+    worker: "zayron-x-web"
+    target: "production"
+    canonical: true
+  - file: "zayron-governance.yml"
+    purpose: "CI Governance Gates"
+    target: "production"
+    canonical: true

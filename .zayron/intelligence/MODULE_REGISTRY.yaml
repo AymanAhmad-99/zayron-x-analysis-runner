@@ -1,0 +1,16 @@
+modules:
+  - name: "web"
+    purpose: "Next.js public frontend"
+    production_relevance: "High"
+    protected_status: false
+    canonical_status: true
+  - name: "api"
+    purpose: "API Endpoints"
+    production_relevance: "High"
+    protected_status: false
+    canonical_status: true
+  - name: "ingest"
+    purpose: "Queue consumer for intelligence ingestion"
+    production_relevance: "High"
+    protected_status: false
+    canonical_status: true

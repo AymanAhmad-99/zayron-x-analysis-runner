@@ -7,6 +7,7 @@ import {
   extractGraphRelations,
   lookupTTP,
   detectCampaignCandidate,
+  generatePlatformDerivatives,
 } from '@zayron/intelligence';
 
 export interface Env {
@@ -15,6 +16,8 @@ export interface Env {
   AI?: any;
   VECTORIZE?: any;
   PUBLISH_QUEUE?: Queue;
+  TELEGRAM_COLLECTOR_SERVICE?: Fetcher;
+  TELEGRAM_TARGET_CHANNEL?: string;
   ENVIRONMENT: string;
 }
 
@@ -574,6 +577,71 @@ CRITICAL RULES:
             )
             .run();
           console.log(`[INGEST] Public article created: ${articleSlug} (${articleId})`);
+
+          // ── 16B. Outbound Social Publication to Official Channel "Zeron X" (@zayronxai) ──
+          if (env.TELEGRAM_COLLECTOR_SERVICE) {
+            try {
+              const canonicalUrl = `https://zayron-x.co/threats/${articleSlug}`;
+              const reportForDerivatives = {
+                assessment: {
+                  headline: finalTitle,
+                  executive_summary: articleDek,
+                  threat_level: result.severity.toUpperCase(),
+                  confidence_state: result.confidenceState,
+                  confidence_score: result.confidenceScore,
+                },
+                what_happened: articleAiSummary || finalSummary,
+                why_it_matters: articleExcerpt || finalSummary,
+                vulnerabilities: result.entities.cves.map(c => ({ cveId: c, isExploitedInWild: result.severity === 'critical', severity: result.severity.toUpperCase() })),
+                actors: result.entities.actors.map(a => ({ name: a })),
+                malware: result.entities.malware.map(m => ({ name: m })),
+                iocs: [
+                  ...result.entities.ipv4s.map(ip => ({ type: 'ipv4' as const, value: ip, confidence: result.confidenceScore })),
+                  ...result.entities.sha256s.map(h => ({ type: 'sha256' as const, value: h, confidence: result.confidenceScore })),
+                ],
+                depth: 'STANDARD' as const,
+              };
+
+              const derivatives = generatePlatformDerivatives(reportForDerivatives, canonicalUrl);
+              const targetChannel = env.TELEGRAM_TARGET_CHANNEL || 'zayronxai';
+              
+              const pubResp = await env.TELEGRAM_COLLECTOR_SERVICE.fetch('http://internal/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  target: targetChannel,
+                  message: derivatives.telegram,
+                }),
+              });
+
+              if (pubResp.ok) {
+                const pubData = await pubResp.json() as any;
+                const assetId = `asset_tg_${crypto.randomUUID().slice(0, 10)}`;
+                const pubId = `pub_tg_${crypto.randomUUID().slice(0, 10)}`;
+                const idempotencyKey = `idem_tg_${articleId}`;
+
+                await env.DB.prepare(
+                  `INSERT INTO social_assets (id, event_id, article_id, platform, format, status, body, idempotency_key, created_at, updated_at)
+                   VALUES (?, ?, ?, 'telegram', 'ALERT', 'PUBLISHED', ?, ?, datetime('now'), datetime('now'))`
+                )
+                  .bind(assetId, eventId, articleId, derivatives.telegram, idempotencyKey)
+                  .run();
+
+                await env.DB.prepare(
+                  `INSERT INTO social_publications (id, asset_id, platform, external_post_id, status, attempts, published_at, created_at, updated_at)
+                   VALUES (?, ?, 'telegram', ?, 'PUBLISHED', 1, datetime('now'), datetime('now'), datetime('now'))`
+                )
+                  .bind(pubId, assetId, String(pubData.message_id || ''))
+                  .run();
+
+                console.log(`[INGEST] Successfully published article ${articleId} to Telegram @${targetChannel} (MsgID: ${pubData.message_id})`);
+              } else {
+                console.warn(`[INGEST] Telegram publish response not ok: ${pubResp.status}`);
+              }
+            } catch (pubErr) {
+              console.error('[INGEST] Outbound Telegram publish error (non-fatal):', pubErr);
+            }
+          }
         } else {
           console.log(`[INGEST] Signal retained as internal intelligence event ${eventId} (Status: ${result.publicationStatus})`);
         }

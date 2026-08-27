@@ -1,0 +1,19 @@
+{
+  "zayron-x-web": [
+    "zayron-x-db",
+    "apps/web",
+    "packages/ui"
+  ],
+  "zayron-x-api": [
+    "zayron-x-db"
+  ],
+  "zayron-x-ingest": [
+    "zayron-x-db",
+    "zayron-knowledge-index",
+    "zayron-telegram-collector-do",
+    "AI"
+  ],
+  "zayron-telegram-collector-do": [
+    "zayron-ingest-queue"
+  ]
+}

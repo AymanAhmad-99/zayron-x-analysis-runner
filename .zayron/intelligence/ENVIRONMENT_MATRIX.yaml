@@ -1,0 +1,6 @@
+environments:
+  production:
+    workers: ["zayron-x-web", "zayron-x-api", "zayron-x-ingest", "zayron-telegram-collector-do"]
+    d1: ["zayron-x-db"]
+    queues: ["zayron-ingest-queue"]
+    domains: ["zayron-x.co", "www.zayron-x.co"]

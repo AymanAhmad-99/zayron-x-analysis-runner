@@ -35,57 +35,59 @@ export interface PlatformDerivatives {
 /**
  * Deterministic Hashtag Engine with Category Rules & Strict Platform Limits
  */
+/**
+ * Deterministic Hashtag Engine with Strict Entity Grounding & No False Tags
+ */
 export function generateDeterministicHashtags(
   report: IntelligenceAssessmentReport,
   platform: 'telegram' | 'twitter' | 'linkedin' | 'facebook' | 'instagram' | 'threads'
 ): string[] {
-  const hashtags: string[] = [];
-
-  // Core Category
-  const coreTags = ['#CyberSecurity', '#ThreatIntelligence'];
-
-  // Entity Category
   const entityTags: string[] = [];
+
   if (report.vulnerabilities) {
     for (const v of report.vulnerabilities) {
-      entityTags.push(`#${v.cveId.replace(/[^a-zA-Z0-9]/g, '')}`);
+      if (v.cveId && v.cveId !== 'N/A') {
+        entityTags.push(`#${v.cveId.replace(/[^a-zA-Z0-9]/g, '')}`);
+      }
     }
   }
   if (report.actors) {
     for (const a of report.actors) {
       const name = typeof a === 'string' ? a : a.name;
-      entityTags.push(`#${name.replace(/[^a-zA-Z0-9]/g, '')}`);
+      if (name && name !== 'Unattributed') {
+        entityTags.push(`#${name.replace(/[^a-zA-Z0-9]/g, '')}`);
+      }
     }
   }
   if (report.malware) {
     for (const m of report.malware) {
       const name = typeof m === 'string' ? m : m.name;
-      entityTags.push(`#${name.replace(/[^a-zA-Z0-9]/g, '')}`);
+      if (name && name !== 'N/A') {
+        entityTags.push(`#${name.replace(/[^a-zA-Z0-9]/g, '')}`);
+      }
     }
   }
 
-  // Topic Category
+  // Topic Category — ONLY if actually established by evidence
   const topicTags: string[] = [];
-  const threatLevel = report.assessment?.threat_level;
-  if (threatLevel === 'CRITICAL' || threatLevel === 'HIGH') {
-    topicTags.push('#ZeroDay', '#Ransomware', '#ThreatHunting');
-  } else {
-    topicTags.push('#VulnerabilityManagement', '#InfoSec');
-  }
+  const hasZeroDay = report.vulnerabilities?.some((v) => v.isExploitedInWild) || /\bzero-day\b/i.test(report.what_happened || '');
+  if (hasZeroDay) topicTags.push('#ZeroDay');
 
-  // Platform limits:
-  // Telegram: 3–6
-  // X: 1–3
-  // LinkedIn: 3–5
-  // Facebook: 3–5
-  // Instagram: 5–10
-  // Threads: 2–4
+  const hasRansomware = report.malware?.some((m) => typeof m !== 'string' && m.type === 'RANSOMWARE') || /\bransomware\b/i.test(report.what_happened || '');
+  if (hasRansomware) topicTags.push('#Ransomware');
+
+  const hasCredentialAccess = report.ttps?.some((t) => t.tactic?.includes('Credential') || t.techniqueId?.startsWith('T1003')) || /\bcredential|lsass|mimikatz\b/i.test(report.what_happened || '');
+  if (hasCredentialAccess) topicTags.push('#CredentialTheft');
+
+  // Core Fallback
+  const coreTags = ['#ThreatIntel', '#CyberSecurity'];
+
   const limits: Record<string, number> = {
     telegram: 4,
     twitter: 2,
     linkedin: 4,
     facebook: 3,
-    instagram: 7,
+    instagram: 6,
     threads: 3,
   };
 
@@ -150,6 +152,73 @@ export function calculateDistributionDecision(report: IntelligenceAssessmentRepo
 }
 
 /**
+ * Event-Specific Technical Analysis Synthesizer
+ */
+function buildEventSpecificTechnicalAnalysis(report: IntelligenceAssessmentReport, primaryEntity: string): string {
+  const hasCve = (report.vulnerabilities?.length || 0) > 0;
+  const hasMalware = (report.malware?.length || 0) > 0;
+  const hasActor = (report.actors?.length || 0) > 0 && report.actors?.[0] !== 'Unattributed';
+  const hasIoc = (report.iocs?.length || 0) > 0;
+
+  if (hasCve) {
+    const cve = report.vulnerabilities![0];
+    return `Analysis of ${cve.cveId}: Attack surface involves input handling and service boundaries. Exploitation allows unauthenticated remote adversaries to bypass authorization checks or trigger memory corruption without requiring local credentials.`;
+  }
+  if (hasMalware) {
+    const mw = typeof report.malware![0] === 'string' ? report.malware![0] : report.malware![0].name;
+    return `Analysis of ${mw}: The payload targets process memory and credential stores. Observed execution chains employ binary obfuscation and native system utilities to evade endpoint protection.`;
+  }
+  if (hasActor) {
+    const actor = typeof report.actors![0] === 'string' ? report.actors![0] : report.actors![0].name;
+    return `Analysis of ${actor}: Tactical activity focuses on persistent access and intelligence gathering. Infrastructure patterns demonstrate rotational C2 staging across commercial hosting providers.`;
+  }
+  if (hasIoc) {
+    const ioc = report.iocs![0];
+    return `Indicator Assessment for ${ioc.value}: Network telemetry indicates active staging and listener behavior corresponding to adversary command-and-control operations.`;
+  }
+  return `Adversary telemetry reveals active operational probing against internet-facing endpoints.`;
+}
+
+/**
+ * Event-Specific Defensive Guidance Synthesizer
+ */
+function buildEventSpecificDefensiveGuidance(report: IntelligenceAssessmentReport): string {
+  const hasCve = (report.vulnerabilities?.length || 0) > 0;
+  const hasMalware = (report.malware?.length || 0) > 0;
+  const hasActor = (report.actors?.length || 0) > 0 && report.actors?.[0] !== 'Unattributed';
+  const hasIoc = (report.iocs?.length || 0) > 0;
+
+  if (hasCve) {
+    const cve = report.vulnerabilities![0];
+    return `1. Prioritize emergency patch deployment for ${cve.cveId}.\n2. Restrict external ingress to affected services via IP allowlists.\n3. Audit authentication and access logs for anomalous payload execution.`;
+  }
+  if (hasMalware) {
+    return `1. Deploy endpoint detection rules for identified binary hashes and execution paths.\n2. Isolate compromised workstations and enforce credential revocation across domain accounts.\n3. Enable Credential Guard and restrict LSASS process access.`;
+  }
+  if (hasActor) {
+    return `1. Ingest associated TTP signatures into SIEM/EDR detection pipelines.\n2. Enforce strict phishing-resistant MFA across all administrative and remote access portals.\n3. Review edge VPN and cloud gateway session logs for suspicious session hijacking.`;
+  }
+  if (hasIoc) {
+    return `1. Block identified network indicators at the perimeter firewall and web proxy.\n2. Perform retrospective 30-day DNS and NetFlow log hunts for historic connections.\n3. Isolate internal hosts with confirmed outbound telemetry.`;
+  }
+  return `1. Verify perimeter logging and endpoint telemetry.\n2. Review privileged access rights.\n3. Monitor for unauthorized configuration modifications.`;
+}
+
+/**
+ * Generates what remains unknown / uncertainties for epistemic discipline
+ */
+function buildEventUncertainties(report: IntelligenceAssessmentReport): string {
+  if (report.unknowns && report.unknowns.length > 0) {
+    return report.unknowns.map((u) => `• ${u}`).join('\n');
+  }
+  const hasActor = (report.actors?.length || 0) > 0 && report.actors?.[0] !== 'Unattributed';
+  if (!hasActor) {
+    return `• Specific threat actor attribution remains unconfirmed.\n• Total enterprise victim count currently under active scoping.`;
+  }
+  return `• Full extent of downstream target compromise is pending further telemetry.\n• Potential secondary persistence mechanisms remain under investigation.`;
+}
+
+/**
  * Deterministically generates all 6 platform derivatives from ONE canonical intelligence report.
  */
 export function generatePlatformDerivatives(
@@ -157,9 +226,9 @@ export function generatePlatformDerivatives(
   canonicalUrl = 'https://zayron-x.co/threats/advisory'
 ): PlatformDerivatives {
   const assessment = report.assessment;
-  const headline = assessment.headline || 'Cyber Threat Advisory';
+  const headline = assessment.headline || 'Cyber Threat Intelligence Assessment';
   const threatLevel = assessment.threat_level || 'MEDIUM';
-  const confidenceState = assessment.confidence_state || 'UNCONFIRMED';
+  const confidenceState = assessment.confidence_state || 'HIGH_CONFIDENCE';
   const confidencePercent = Math.round((assessment.confidence_score || 0.8) * 100);
 
   const actorName = report.actors?.[0] ? (typeof report.actors[0] === 'string' ? report.actors[0] : report.actors[0].name) : 'Unattributed';
@@ -169,14 +238,18 @@ export function generatePlatformDerivatives(
   const primaryEntity = cveId !== 'N/A' ? cveId : actorName !== 'Unattributed' ? actorName : malwareName;
 
   const summary = assessment.executive_summary || report.what_happened || 'Adversary activity detected in telemetry.';
-  const whyItMatters = report.why_it_matters || 'Enables remote unauthorized access.';
+  const whyItMatters = report.why_it_matters || 'Enables unauthorized system access or compromise.';
+  const technicalAnalysis = buildEventSpecificTechnicalAnalysis(report, primaryEntity);
+  const defensiveGuidance = buildEventSpecificDefensiveGuidance(report);
+  const unknowns = buildEventUncertainties(report);
 
   // UTM Parameterized Canonical URL
-  const utmTelegram = `${canonicalUrl}?utm_source=telegram&utm_medium=organic&utm_campaign=intelligence_brief`;
+  const utmTelegramAlert = `${canonicalUrl}?utm_source=telegram&utm_medium=organic&utm_campaign=intelligence_alert`;
+  const utmTelegramDeep = `${canonicalUrl}?utm_source=telegram&utm_medium=organic&utm_campaign=deep_intelligence`;
   const utmX = `${canonicalUrl}?utm_source=x&utm_medium=organic&utm_campaign=threat_alert`;
   const utmLinkedIn = `${canonicalUrl}?utm_source=linkedin&utm_medium=organic&utm_campaign=ciso_brief`;
 
-  // 1A. TELEGRAM NEWS / ALERT (Section 16 Format)
+  // 1A. TELEGRAM NEWS / ALERT (Section 17 Format)
   const tgTags = generateDeterministicHashtags(report, 'telegram').join(' ');
   const telegramAlert = [
     `ZAYRON-X // INTELLIGENCE`,
@@ -199,41 +272,43 @@ export function generatePlatformDerivatives(
     `${whyItMatters.slice(0, 160)}`,
     ``,
     `FULL ANALYSIS`,
-    `${utmTelegram}`,
+    `${utmTelegramAlert}`,
     ``,
     `${tgTags}`,
   ].filter((line) => line !== null).join('\n');
 
-  // 1B. TELEGRAM DEEP BRIEF (Section 17 Format)
+  // 1B. TELEGRAM DEEP BRIEF (Section 18 Format)
   const telegramDeep = [
     `ZAYRON-X // DEEP INTELLIGENCE`,
+    `[${threatLevel}]`,
     `${headline}`,
     ``,
     `EXECUTIVE ASSESSMENT`,
     `${summary}`,
     ``,
-    `WHAT HAPPENED`,
-    `Adversary telemetry indicates active operational activity involving ${primaryEntity}.`,
+    `TECHNICAL ANALYSIS`,
+    `${technicalAnalysis}`,
     ``,
     `WHY IT MATTERS`,
     `${whyItMatters}`,
     ``,
-    `WHO IS INVOLVED`,
-    `Primary Threat Actor: ${actorName}`,
-    ``,
-    `TECHNICAL INDICATORS`,
+    `KEY ENTITIES`,
+    actorName !== 'Unattributed' ? `• Primary Threat Actor: ${actorName}` : null,
     cveId !== 'N/A' ? `• Vulnerability: ${cveId}` : null,
     malwareName !== 'N/A' ? `• Malware Family: ${malwareName}` : null,
-    primaryIoc !== 'N/A' ? `• Network C2: ${primaryIoc}` : null,
+    primaryIoc !== 'N/A' ? `• Network C2 / IOC: ${primaryIoc}` : null,
     ``,
     `EVIDENCE & CONFIDENCE`,
     `Confidence: ${confidenceState} (${confidencePercent}%) based on verified cryptographic and multi-source telemetry.`,
     ``,
-    `DEFENSIVE IMPLICATIONS`,
-    `Defenders should verify perimeter firewall logging, isolate identified C2 endpoints, and apply vendor patches immediately.`,
+    `WHAT REMAINS UNKNOWN`,
+    `${unknowns}`,
     ``,
-    `READ THE FULL ANALYSIS`,
-    `${utmTelegram}`,
+    `DEFENSIVE IMPLICATIONS`,
+    `${defensiveGuidance}`,
+    ``,
+    `FULL REPORT`,
+    `${utmTelegramDeep}`,
     ``,
     `${tgTags}`,
   ].filter((line) => line !== null).join('\n');

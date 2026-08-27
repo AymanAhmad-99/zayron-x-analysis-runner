@@ -1,0 +1,10 @@
+contracts:
+  - endpoint: "/api/intelligence/events"
+    method: "GET"
+    owner: "API"
+    production: true
+  - endpoint: "/publish"
+    method: "POST"
+    owner: "TELEGRAM"
+    consumer: "INGEST"
+    production: true

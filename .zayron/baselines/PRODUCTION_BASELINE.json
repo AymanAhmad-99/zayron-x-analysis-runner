@@ -1,0 +1,17 @@
+{
+  "workers": [
+    "zayron-x-web",
+    "zayron-x-api",
+    "zayron-x-ingest",
+    "zayron-telegram-collector-do"
+  ],
+  "domains": [
+    "zayron-x.co",
+    "www.zayron-x.co"
+  ],
+  "d1": "zayron-x-db",
+  "queue": "zayron-ingest-queue",
+  "vectorize": "zayron-knowledge-index",
+  "deployment_workflow": ".github/workflows/zayron-web-production.yml",
+  "production_branch": "production"
+}

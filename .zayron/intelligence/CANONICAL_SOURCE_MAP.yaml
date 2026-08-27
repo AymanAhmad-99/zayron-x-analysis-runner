@@ -1,0 +1,15 @@
+canonical_sources:
+  homepage:
+    canonical: "apps/web/app/page.tsx"
+  frontend:
+    canonical: "apps/web/"
+  web_worker:
+    canonical: "zayron-x-web"
+  api:
+    canonical: "workers/api/"
+  telegram:
+    canonical: "workers/telegram-collector-do/"
+  database:
+    canonical: "zayron-x-db"
+  deployment:
+    canonical: ".github/workflows/zayron-web-production.yml"

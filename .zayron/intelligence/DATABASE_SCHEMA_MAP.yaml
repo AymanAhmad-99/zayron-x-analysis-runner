@@ -1,0 +1,15 @@
+database:
+  name: "zayron-x-db"
+  tables:
+    - name: "intelligence_events"
+      owner: "INGEST"
+      production_relevance: "High"
+    - name: "articles"
+      owner: "INTELLIGENCE"
+      production_relevance: "High"
+    - name: "social_assets"
+      owner: "INTELLIGENCE"
+      production_relevance: "High"
+    - name: "social_publications"
+      owner: "INTELLIGENCE"
+      production_relevance: "High"

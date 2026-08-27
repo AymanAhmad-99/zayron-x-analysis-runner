@@ -1,0 +1,37 @@
+{
+  "protected_paths": [
+    ".github/",
+    ".zayron/",
+    "packages/",
+    "workers/"
+  ],
+  "allowed_production_worker": "zayron-x-web",
+  "allowed_domains": [
+    "zayron-x.co",
+    "www.zayron-x.co"
+  ],
+  "allowed_deployment_workflow": "zayron-web-production.yml",
+  "protected_resources": [
+    "zayron-x-db",
+    "zayron-knowledge-index",
+    "zayron-ingest-queue",
+    "zayron-telegram-collector-do"
+  ],
+  "forbidden_patterns": [
+    "npm run deploy",
+    "legacy",
+    "zayron-x-old"
+  ],
+  "required_checks": [
+    "secret-scan",
+    "architecture-drift",
+    "legacy-drift"
+  ],
+  "bundle_limits": {
+    "max_worker_size_bytes": 5242880
+  },
+  "required_verification_levels": [
+    "L4",
+    "L5"
+  ]
+}

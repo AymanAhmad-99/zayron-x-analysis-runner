@@ -1,0 +1,9 @@
+{
+  "forbidden_markers": [
+    "zayron-x-terminal",
+    "legacy-ui-v1"
+  ],
+  "required_markers": [
+    "Understand what changed"
+  ]
+}

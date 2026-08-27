@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "id": "apps/web",
+      "type": "PACKAGE"
+    },
+    {
+      "id": "zayron-x-web",
+      "type": "WORKER"
+    }
+  ],
+  "edges": [
+    {
+      "from": "apps/web",
+      "to": "zayron-x-web",
+      "type": "DEPLOYMENT"
+    }
+  ]
+}

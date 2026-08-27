@@ -1,0 +1,47 @@
+services:
+  - service_id: "zayron-x-web"
+    name: "Web Worker"
+    provider: "Cloudflare Workers"
+    purpose: "Serves frontend"
+    environment: "production"
+    owner: "FRONTEND"
+    canonical: true
+  - service_id: "zayron-x-api"
+    name: "API Worker"
+    provider: "Cloudflare Workers"
+    purpose: "Serves API"
+    environment: "production"
+    owner: "API"
+    canonical: true
+  - service_id: "zayron-telegram-collector-do"
+    name: "Telegram Collector"
+    provider: "Cloudflare Durable Objects"
+    purpose: "Telegram MTProto Session"
+    environment: "production"
+    owner: "TELEGRAM"
+    canonical: true
+  - service_id: "zayron-x-ingest"
+    name: "Ingest Worker"
+    provider: "Cloudflare Workers"
+    purpose: "Processes Telegram queue"
+    environment: "production"
+    owner: "INGEST"
+    canonical: true
+  - service_id: "zayron-x-db"
+    name: "D1 Database"
+    provider: "Cloudflare D1"
+    environment: "production"
+    owner: "DATABASE"
+    canonical: true
+  - service_id: "zayron-ingest-queue"
+    name: "Ingestion Queue"
+    provider: "Cloudflare Queues"
+    environment: "production"
+    owner: "INGEST"
+    canonical: true
+  - service_id: "zayron-knowledge-index"
+    name: "Vectorize Index"
+    provider: "Cloudflare Vectorize"
+    environment: "production"
+    owner: "INTELLIGENCE"
+    canonical: true

@@ -370,6 +370,87 @@ export class TelegramCollectorDO {
       });
     }
 
+    if (path === '/me' && request.method === 'GET') {
+      try {
+        if (!this.client || this.status !== 'CONNECTED') {
+          await this.connect();
+        }
+        const me = await this.client!.getMe() as any;
+        return new Response(JSON.stringify({
+          status: 'SUCCESS',
+          account: {
+            id: me?.id?.toString(),
+            firstName: me?.firstName,
+            lastName: me?.lastName,
+            username: me?.username,
+            phone: me?.phone ? `***${me.phone.slice(-4)}` : null,
+            bot: me?.bot || false,
+          }
+        }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+      }
+    }
+
+    if (path === '/dialogs' && request.method === 'GET') {
+      try {
+        if (!this.client || this.status !== 'CONNECTED') {
+          await this.connect();
+        }
+        const dialogs = await this.client!.getDialogs({});
+        const list = dialogs.map((d: any) => ({
+          id: d.id?.toString(),
+          title: d.title || d.name,
+          isChannel: d.isChannel,
+          isGroup: d.isGroup,
+          isUser: d.isUser,
+          unreadCount: d.unreadCount,
+          entity: {
+            id: d.entity?.id?.toString(),
+            username: d.entity?.username,
+            title: d.entity?.title,
+            adminRights: d.entity?.adminRights ? true : false,
+            creator: d.entity?.creator ? true : false,
+            broadcast: d.entity?.broadcast ? true : false,
+            megagroup: d.entity?.megagroup ? true : false,
+          }
+        }));
+        return new Response(JSON.stringify({ status: 'SUCCESS', count: list.length, dialogs: list }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+      }
+    }
+
+    if (path === '/publish' && request.method === 'POST') {
+      try {
+        const body = await request.json().catch(() => ({})) as any;
+        const target = body?.target || body?.channel;
+        const message = body?.message;
+        if (!target || !message) {
+          return new Response(JSON.stringify({ error: 'Missing target or message' }), { status: 400 });
+        }
+        if (!this.client || this.status !== 'CONNECTED') {
+          await this.connect();
+        }
+        const entity = await this.client!.getEntity(target);
+        const sent = await this.client!.sendMessage(entity, { message }) as any;
+        return new Response(JSON.stringify({
+          status: 'SUCCESS',
+          message_id: sent.id,
+          date: sent.date,
+          chat_id: sent.chatId?.toString() || sent.peerId?.channelId?.toString(),
+        }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+      }
+    }
+
     if (path === '/sync' && request.method === 'POST') {
       const sources = await this.syncSourcesFromD1();
       return new Response(JSON.stringify({ status: 'SUCCESS', channels: sources }), {

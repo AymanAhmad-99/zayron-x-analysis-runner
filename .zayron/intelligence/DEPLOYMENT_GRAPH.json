@@ -1,0 +1,6 @@
+{
+  "frontend": "Git -> GitHub Actions -> apps/web -> Next.js -> OpenNext -> Governance -> zayron-x-web -> zayron-x.co",
+  "api": "Git -> Cloudflare Workers -> zayron-x-api",
+  "ingest": "Git -> Cloudflare Workers -> zayron-x-ingest",
+  "telegram": "Git -> Cloudflare Workers -> zayron-telegram-collector-do"
+}

@@ -1,0 +1,7 @@
+generated_artifacts:
+  - name: ".next"
+    tracked: false
+    production_required: true
+  - name: ".open-next"
+    tracked: false
+    production_required: true

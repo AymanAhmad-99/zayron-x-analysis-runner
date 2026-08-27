@@ -1,0 +1,37 @@
+manifest:
+  - id: "apps-web"
+    path: "apps/web"
+    type: "application"
+    purpose: "Canonical frontend"
+    owner: "FRONTEND"
+    status: "VERIFIED"
+    environment: "production"
+    canonical: true
+    protected: true
+  - id: "workers-api"
+    path: "workers/api"
+    type: "worker"
+    purpose: "Canonical API"
+    owner: "API"
+    status: "VERIFIED"
+    environment: "production"
+    canonical: true
+    protected: true
+  - id: "workers-ingest"
+    path: "workers/ingest"
+    type: "worker"
+    purpose: "Canonical Ingest Worker"
+    owner: "INGEST"
+    status: "VERIFIED"
+    environment: "production"
+    canonical: true
+    protected: true
+  - id: "workers-telegram"
+    path: "workers/telegram-collector-do"
+    type: "worker"
+    purpose: "Canonical Telegram Collector DO"
+    owner: "TELEGRAM"
+    status: "VERIFIED"
+    environment: "production"
+    canonical: true
+    protected: true

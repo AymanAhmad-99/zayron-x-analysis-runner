@@ -1,0 +1,5 @@
+external_dependencies:
+  - name: "Telegram MTProto"
+    classification: "PRODUCTION_CRITICAL"
+  - name: "Cloudflare Workers AI"
+    classification: "PRODUCTION_CRITICAL"

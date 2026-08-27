@@ -1,0 +1,36 @@
+routes:
+  - path: "/"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true
+  - path: "/threats"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true
+  - path: "/threats/[slug]"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true
+  - path: "/vulnerabilities"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true
+  - path: "/actors"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true
+  - path: "/malware"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true
+  - path: "/sources"
+    application: "apps/web"
+    owner: "FRONTEND"
+    production: true
+    canonical: true

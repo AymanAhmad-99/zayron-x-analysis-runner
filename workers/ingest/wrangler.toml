@@ -20,5 +20,11 @@ binding = "AI"
 binding = "VECTORIZE"
 index_name = "zayron-knowledge-index"
 
+[[services]]
+binding = "TELEGRAM_COLLECTOR_SERVICE"
+service = "zayron-telegram-collector-do"
+
 [vars]
 ENVIRONMENT = "production"
+TELEGRAM_TARGET_CHANNEL = "zayronxai"
+

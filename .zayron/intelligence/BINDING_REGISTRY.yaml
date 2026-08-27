@@ -1,0 +1,26 @@
+bindings:
+  - worker: "zayron-x-web"
+    binding_name: "DB"
+    target: "zayron-x-db"
+    environment: "production"
+    canonical: true
+  - worker: "zayron-x-api"
+    binding_name: "DB"
+    target: "zayron-x-db"
+    environment: "production"
+    canonical: true
+  - worker: "zayron-x-ingest"
+    binding_name: "DB"
+    target: "zayron-x-db"
+    environment: "production"
+    canonical: true
+  - worker: "zayron-x-ingest"
+    binding_name: "VECTORIZE"
+    target: "zayron-knowledge-index"
+    environment: "production"
+    canonical: true
+  - worker: "zayron-x-ingest"
+    binding_name: "TELEGRAM_COLLECTOR_SERVICE"
+    target: "zayron-telegram-collector-do"
+    environment: "production"
+    canonical: true

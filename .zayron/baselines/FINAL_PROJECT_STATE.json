@@ -1,0 +1,31 @@
+{
+  "project": "ZAYRON-X",
+  "status": "COMPLETE",
+  "git_commit": "HEAD",
+  "branch": "production",
+  "frontend": "apps/web (VERIFIED)",
+  "workers": [
+    "zayron-x-web (VERIFIED)",
+    "zayron-x-api (VERIFIED)",
+    "zayron-x-ingest (VERIFIED)"
+  ],
+  "d1": "zayron-x-db (VERIFIED)",
+  "queue": "zayron-ingest-queue (VERIFIED)",
+  "vectorize": "zayron-knowledge-index (VERIFIED)",
+  "ai": "Cloudflare Workers AI (VERIFIED)",
+  "telegram": "zayron-telegram-collector-do (VERIFIED)",
+  "domains": [
+    "zayron-x.co (VERIFIED)",
+    "www.zayron-x.co (VERIFIED)"
+  ],
+  "ci_cd": ".github/workflows/zayron-web-production.yml (VERIFIED)",
+  "governance": ".github/workflows/zayron-governance.yml (VERIFIED)",
+  "test_status": "PASS",
+  "build_status": "PASS",
+  "deployment_status": "VERIFIED",
+  "known_external_dependencies": [
+    "Telegram MTProto",
+    "Cloudflare API"
+  ],
+  "known_optional_work": []
+}

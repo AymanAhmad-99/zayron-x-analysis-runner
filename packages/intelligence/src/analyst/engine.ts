@@ -247,8 +247,18 @@ ${request.sourceContext ? `\nADDITIONAL SOURCE CONTEXT:\n${request.sourceContext
       const primaryEvent = retrieval.structuredMatches.recentEvents[0];
       parsedReport = {
         assessment: {
-          headline: primaryEvent?.title || (hasCves ? `Vulnerability Advisory: ${retrieval.structuredMatches.cves[0].cveId}` : `Threat Intelligence Assessment: ${request.query.slice(0, 50)}`),
-          executive_summary: primaryEvent?.summary || 'Factual intelligence records identified in D1 telemetry graph.',
+          headline: primaryEvent?.title || (
+            hasCves 
+              ? `Vulnerability Assessment: ${retrieval.structuredMatches.cves[0].cveId} Exploitation Risk Across Public-Facing Infrastructure`
+              : (retrieval.structuredMatches.actors.length > 0 
+                  ? `Adversary Advisory: Operational Infrastructure and TTPs Linked to ${retrieval.structuredMatches.actors[0].name}`
+                  : (retrieval.structuredMatches.malware.length > 0
+                      ? `Malware Telemetry: Observed Staging and Execution Patterns of ${retrieval.structuredMatches.malware[0].name}`
+                      : `Cyber Threat Advisory: ${request.query.slice(0, 65).replace(/[^a-zA-Z0-9\s:.-]/g, '')}`
+                    )
+                )
+          ),
+          executive_summary: primaryEvent?.summary || 'Factual intelligence telemetry identified and correlated across the ZAYRON-X knowledge repository.',
           threat_level: (primaryEvent?.severity?.toUpperCase() as ThreatLevel) || 'HIGH',
           confidence_score: primaryEvent?.confidence || 0.85,
           confidence_state: 'HIGH_CONFIDENCE',

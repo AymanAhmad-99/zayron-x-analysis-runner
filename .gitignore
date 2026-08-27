@@ -2,6 +2,10 @@
 # ZAYRON-X — Root-level exclusions
 # ═══════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════
+# ZAYRON-X — Root-level exclusions
+# ═══════════════════════════════════════════════════
+
 # Vercel & Next build outputs
 .vercel
 .next/
@@ -15,6 +19,15 @@ node_modules/
 .env.production
 *.env
 workers/.env.production
+
+# Auth and local state (NEVER commit)
+*.session
+*.tg_session
+.tg_session.txt
+.tg_login_state.json
+scripts/.tg_session.txt
+scripts/.tg_login_state.json
+queue.db
 
 # MCP secrets (NEVER commit)
 .mcp-secrets
@@ -55,6 +68,11 @@ Thumbs.db
 # Local scratch directories
 scratch/
 
+# Temporary HTML and Logs
+*.html
+*.log
+!README.md
+
 # Nested app build/runtime artifacts
 **/.open-next/
 **/.wrangler/
@@ -65,3 +83,62 @@ scratch/
 **/.next/standalone/.env
 **/.open-next/**/.env
 
+# ════════════════════════════════════════════════
+# ORPHANED AI-GENERATED DIRECTORIES (superseded by .zayron/)
+# ════════════════════════════════════════════════
+/agents/
+/architecture/
+/audits/
+/decisions/
+/evidence/
+/governance/
+/graphs/
+/knowledge/
+/knowledge_base/
+/memory/
+/metrics/
+/shared/
+/specifications/
+/telemetry/
+
+# ════════════════════════════════════════════════
+# DEBUG / ONE-OFF SCRIPTS (not canonical build tooling)
+# ════════════════════════════════════════════════
+/scripts/
+/scratch/
+
+
+# ════════════════════════════════════════════════
+# ORPHANED ROOT DOCUMENTATION (superseded by .zayron/intelligence/)
+# ════════════════════════════════════════════════
+ABSOLUTE_TRUTH_300.md
+ai_memory_index.md
+api_map.md
+architectural_drift_report.md
+database_dependency_graph.md
+database_map.md
+dead_code_report.md
+dependency_graph.md
+enterprise_system_intelligence_report.md
+enterprise_validation_report.md
+event_flow_map.md
+governance_audit.md
+impact_analysis.md
+permission_matrix.md
+recovery_framework.md
+risk_assessment.md
+semantic_knowledge_graph.md
+system_architecture.md
+system_inventory.md
+VISUAL_DEPLOYMENT_INCIDENT.md
+ZAYRON-X_FINAL_VISUAL_REFINEMENT_REPORT.md
+instrumentation-client.ts
+noor
+DESIGN_SYSTEM.md
+FRONTEND_RECONSTRUCTION_MAP.md
+INTELLIGENCE_QUALITY_REPORT.md
+PRODUCTION_BASELINE.json
+ROUTE_AUDIT_MATRIX.md
+VISUAL_DESIGN_FINGERPRINT.json
+ZAYRON-X_Core_Architecture_and_Strategic_Feasibility_2026.md
+docs/audits/wip-homepage-redesign-backup/

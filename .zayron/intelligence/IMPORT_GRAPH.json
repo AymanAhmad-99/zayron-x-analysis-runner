@@ -1,0 +1,15 @@
+{
+  "apps/web": [
+    "packages/ui",
+    "packages/types",
+    "packages/intelligence"
+  ],
+  "workers/api": [
+    "packages/types",
+    "packages/intelligence"
+  ],
+  "workers/ingest": [
+    "packages/types",
+    "packages/intelligence"
+  ]
+}

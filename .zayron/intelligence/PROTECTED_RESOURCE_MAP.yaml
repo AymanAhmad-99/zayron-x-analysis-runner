@@ -1,0 +1,6 @@
+protected_resources:
+  - "zayron-x-db"
+  - "zayron-ingest-queue"
+  - "zayron-knowledge-index"
+  - "zayron-telegram-collector-do"
+  - "zayron-x.co"

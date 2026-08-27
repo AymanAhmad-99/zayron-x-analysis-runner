@@ -1,11 +1,5 @@
-import React from 'react';
-import { EmptyState } from '@/components/EmptyState';
+import { redirect } from 'next/navigation';
 
-export default function StubPage() {
-  return (
-    <div className="py-24 max-w-7xl mx-auto px-6">
-      <h1 className="text-3xl font-bold mb-8 uppercase text-[#111111]">Intelligence</h1>
-      <EmptyState message="This intelligence module is currently being rebuilt from first principles. Canonical data integration pending." />
-    </div>
-  );
+export default function IntelligencePage() {
+  redirect('/threats');
 }

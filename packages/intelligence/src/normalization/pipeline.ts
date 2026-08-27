@@ -25,15 +25,44 @@ const KNOWN_MALWARE = [
 
 // Spam & Low-Value Signal Filter Keywords
 const SPAM_KEYWORDS = [
+  // Crypto / financial scams
   'crypto pump', 'binance signal', 'free giveaway', '100x gem',
   'join my vip', 'casino bonus', 'buy followers', 'telegram premium cheap',
-  'airdrop', 'free spin', 'crypto trading bot'
+  'airdrop', 'free spin', 'crypto trading bot', 'profit guaranteed',
+  'guaranteed profit', 'instant withdrawal', 'passive income',
+  // Gift card / fraud solicitation
+  'gift card', 'gift cards', 'send gift', 'itunes card', 'amazon card',
+  'google play card', 'steam card', 'gift code',
+  // Phone / DM solicitation (commercial fraud patterns)
+  'call now', 'call us now', 'dm me', 'dm for', 'whatsapp me',
+  'contact on whatsapp', 'text me at', 'call for more info',
+  // Generic ad/promo noise
+  'click here to join', 'limited time offer', 'act now', 'hurry up',
+  'earn money online', 'work from home', 'make money fast',
+  'investment opportunity', 'double your money',
+  // Referral / MLM
+  'referral link', 'use my code', 'use my referral', 'promo code',
+];
+
+// Structural promotional pattern regexes (applied even if no entity found)
+const PROMOTIONAL_REGEXES: RegExp[] = [
+  // Phone number + call-to-action
+  /(?:\+?\d[\d\s\-().]{6,}\d)\s*(?:call|text|whatsapp|contact|reach)/i,
+  // "DM me" or "DM us" followed by anything
+  /\bdm\s+(me|us|for|to)\b/i,
+  // Crypto solicitation with amount
+  /\b(invest|send|transfer)\s+\d+\s*(usdt|btc|eth|sol|busd|bnb)/i,
+  // Gift card solicitation
+  /\bgift\s*card\b.{0,60}\b(buy|send|get|redeem|use)\b/i,
+  // Telegram join links mixed with commercial language
+  /t\.me\/[a-zA-Z0-9_]+.{0,80}(?:earn|profit|invest|buy|sell|trade)/i,
 ];
 
 // Casual Chatter / Low Intelligence Markers
 const CHATTER_PREFIXES = [
   '> how can you tell', 'i have lots of stuff cooking', 'just a quick thought',
-  'good morning everyone', 'anyone know if'
+  'good morning everyone', 'anyone know if', 'what do you think',
+  'lol ', 'lmao ', 'haha ', 'wtf ', 'omg ',
 ];
 
 export interface ExtractedEntities {
@@ -153,14 +182,24 @@ export function validateEnglishQuality(text: string): { isValid: boolean; reason
 
 /**
  * Fast spam, promotional noise, and low-value chatter filter.
+ *
+ * Blocks:
+ * 1. Narrow keyword list hits (crypto scams, gift cards, solicitation)
+ * 2. Structural promotional patterns (phone+CTA, crypto amounts, DM solicitation)
+ * 3. Chatter prefixes with zero technical entities
+ * 4. Content that is purely promotional/commercial with zero security entities
  */
 export function isSpamOrLowValue(text: string, entities?: ExtractedEntities): boolean {
   const lower = text.trim().toLowerCase();
   if (lower.length < 20) return true;
 
+  // 1. Hard keyword blocklist
   if (SPAM_KEYWORDS.some((kw) => lower.includes(kw))) return true;
 
-  // If casual chatter with 0 technical entities, filter out
+  // 2. Structural promotional pattern detection
+  //    These patterns indicate commercial solicitation regardless of entity presence
+  if (PROMOTIONAL_REGEXES.some((re) => re.test(text))) return true;
+
   const hasTechnicalEntity = entities && (
     entities.cves.length > 0 ||
     entities.actors.length > 0 ||
@@ -169,10 +208,14 @@ export function isSpamOrLowValue(text: string, entities?: ExtractedEntities): bo
     entities.ttps.length > 0
   );
 
+  // 3. Zero-entity content: apply additional chatter heuristics
   if (!hasTechnicalEntity) {
     if (CHATTER_PREFIXES.some((p) => lower.startsWith(p))) return true;
-    // Check if text is just a question or personal remark without indicators
     if (lower.length < 50 && (lower.endsWith('?') || lower.startsWith('>'))) return true;
+
+    // 4. English-language text with no technical entity at all:
+    //    Reject if it contains any phone number pattern (phone spam without CVE/actor/malware)
+    if (/(?:\+?\d[\d\s\-().]{6,}\d)/.test(text)) return true;
   }
 
   return false;
@@ -361,9 +404,22 @@ export function synthesizeEnglishTechnicalSignal(params: {
   };
 }
 
+// Stub titles produced by synthesizeEnglishTechnicalSignal when no entities
+// match and AI translation was not available. These must NOT become public articles.
+const STUB_TITLE_PATTERNS: RegExp[] = [
+  /^Security Advisory: Threat Signal Ingested from /i,
+  /Intelligence Telemetry Signal Observed$/i,
+  /^Raw threat telemetry captured in/i,
+];
+
 /**
  * Evaluates publication eligibility for standalone public articles.
  * NOT every raw signal becomes an article.
+ *
+ * Additional gate: stub/fallback titles produced by deterministic synthesis
+ * (when AI translation failed or no named entities existed) are HELD for review,
+ * not auto-published. This prevents bare pipeline-generated titles from appearing
+ * publicly.
  */
 export function evaluatePublicationEligibility(params: {
   severity: SeverityLevel;
@@ -371,14 +427,24 @@ export function evaluatePublicationEligibility(params: {
   entities: ExtractedEntities;
   isEnglishValid: boolean;
   isForeign: boolean;
+  normalizedTitle?: string;
 }): { isEligibleForArticle: boolean; publicationStatus: PublicationStatus; reason: string } {
-  const { severity, confidenceScore, entities, isEnglishValid, isForeign } = params;
+  const { severity, confidenceScore, entities, isEnglishValid, isForeign, normalizedTitle } = params;
 
   if (!isEnglishValid) {
     return {
       isEligibleForArticle: false,
       publicationStatus: 'NEEDS_TRANSLATION',
       reason: 'Failed English quality gate (non-English or corrupt characters detected)',
+    };
+  }
+
+  // Stub title guard: deterministic fallback titles may not auto-publish
+  if (normalizedTitle && STUB_TITLE_PATTERNS.some((re) => re.test(normalizedTitle))) {
+    return {
+      isEligibleForArticle: false,
+      publicationStatus: 'NEEDS_REVIEW',
+      reason: 'Auto-generated stub title detected; requires AI synthesis or human review before publication',
     };
   }
 
@@ -492,6 +558,7 @@ export async function normalizeIntelligenceSignal(params: {
     entities,
     isEnglishValid,
     isForeign: originalLanguage !== 'en',
+    normalizedTitle,
   });
 
   // 6. Provenance Record

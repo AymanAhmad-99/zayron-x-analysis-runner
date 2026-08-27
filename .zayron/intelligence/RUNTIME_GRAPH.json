@@ -1,0 +1,22 @@
+{
+  "zayron-x-web": {
+    "location": "Cloudflare Workers",
+    "trigger": "HTTP",
+    "state": "Stateless"
+  },
+  "zayron-x-api": {
+    "location": "Cloudflare Workers",
+    "trigger": "HTTP",
+    "state": "Stateless"
+  },
+  "zayron-x-ingest": {
+    "location": "Cloudflare Workers",
+    "trigger": "Queue",
+    "state": "Stateless"
+  },
+  "zayron-telegram-collector-do": {
+    "location": "Cloudflare Durable Objects",
+    "trigger": "WebSocket/Fetch",
+    "state": "Stateful"
+  }
+}

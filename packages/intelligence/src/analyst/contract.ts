@@ -1,6 +1,25 @@
 export type ThreatLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFORMATIONAL';
 export type ConfidenceState = 'CONFIRMED' | 'HIGH_CONFIDENCE' | 'MODERATE_CONFIDENCE' | 'LOW_CONFIDENCE' | 'UNVERIFIED' | 'INSUFFICIENT_EVIDENCE';
-export type EpistemicStatus = 'OBSERVED_FACT' | 'REPORTED_CLAIM' | 'ANALYTICAL_INFERENCE' | 'UNKNOWN';
+export type EpistemicStatus = 'OBSERVED_FACT' | 'CORROBORATED' | 'ANALYTICAL_INFERENCE' | 'REPORTED_CLAIM' | 'UNKNOWN';
+
+export type EventTaxonomy =
+  | 'VULNERABILITY'
+  | 'ACTIVE_EXPLOITATION'
+  | 'MALWARE'
+  | 'THREAT_ACTOR'
+  | 'CAMPAIGN'
+  | 'IOC'
+  | 'DATA_BREACH'
+  | 'CREDENTIAL_THEFT'
+  | 'RANSOMWARE'
+  | 'PHISHING'
+  | 'CLOUD_ATTACK'
+  | 'IDENTITY_ATTACK'
+  | 'SUPPLY_CHAIN'
+  | 'REGULATORY_CHANGE'
+  | 'SECURITY_ADVISORY'
+  | 'RESEARCH'
+  | 'OTHER';
 
 export interface GroundedClaim {
   claimId: string;

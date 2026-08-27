@@ -1,0 +1,11 @@
+patterns:
+  "apps/web/**": "FRONTEND"
+  "workers/api/**": "API"
+  "workers/ingest/**": "INGEST"
+  "workers/telegram-collector-do/**": "TELEGRAM"
+  "packages/intelligence/**": "INTELLIGENCE"
+  "packages/ui/**": "FRONTEND"
+  "packages/types/**": "SHARED"
+  ".github/workflows/**": "CI/CD"
+  "migrations/**": "DATABASE"
+  ".zayron/**": "GOVERNANCE"
