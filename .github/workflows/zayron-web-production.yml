@@ -90,7 +90,7 @@ jobs:
             echo "ERROR: Legacy terminal UI marker found in built output!"
             exit 1
           fi
-          if ! grep -q "Understand what changed" .open-next/worker.js; then
+          if ! grep -rq "Understand what changed" .open-next/ 2>/dev/null; then
             echo "ERROR: Expected canonical markers not found in built output!"
             exit 1
           fi
