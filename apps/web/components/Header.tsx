@@ -2,43 +2,46 @@ import Link from "next/link";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#D9DDE2] bg-[#F7F7F5]">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-10">
-          <Link href="/" className="text-xl font-bold tracking-tight text-[#111111] hover:text-[#FF6A00] transition-colors">
-            ZAYRON-X
+    <header className="sticky top-0 z-50 w-full border-b border-[#E1DFD7] bg-[#F5F4F0]/95 backdrop-blur-none">
+      <div className="max-w-[1280px] mx-auto px-6 h-15 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-baseline gap-2.5 group">
+            <span className="text-lg font-bold tracking-tight text-[#111214] group-hover:text-[#D9531E] transition-colors">
+              ZAYRON-X
+            </span>
+            <span className="hidden lg:inline text-[9px] font-bold uppercase tracking-[0.12em] text-[#8C8F98]">
+              Cyber Threat Intelligence &amp; Research
+            </span>
           </Link>
-          <Navigation />
         </div>
-        <div className="flex items-center gap-4">
+
+        <nav className="hidden xl:flex items-center gap-6 text-[11px] font-bold uppercase tracking-[0.06em] text-[#5A5D65]">
+          <Link href="/threats" className="hover:text-[#111214] transition-colors">Intelligence</Link>
+          <Link href="/threats" className="hover:text-[#111214] transition-colors">Threats</Link>
+          <Link href="/vulnerabilities" className="hover:text-[#111214] transition-colors">Vulnerabilities</Link>
+          <Link href="/actors" className="hover:text-[#111214] transition-colors">Actors</Link>
+          <Link href="/malware" className="hover:text-[#111214] transition-colors">Malware</Link>
+          <Link href="/knowledge" className="hover:text-[#111214] transition-colors">Knowledge</Link>
+          <Link href="/regulations" className="hover:text-[#111214] transition-colors">Regulations</Link>
+          <Link href="/search" className="hover:text-[#111214] transition-colors">Search</Link>
+          <Link href="/pricing" className="hover:text-[#111214] transition-colors">Pricing</Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
           <Link
             href="/search"
-            className="hidden sm:inline-flex items-center text-xs font-mono text-[#56606B] bg-[#FFFFFF] border border-[#D9DDE2] px-3 py-1.5 hover:border-[#111111] transition-colors"
+            className="hidden sm:inline-flex xl:hidden items-center text-[11px] font-mono text-[#5A5D65] bg-[#FFFFFF] border border-[#E1DFD7] px-2.5 py-1.5 rounded-[4px] hover:border-[#111214] transition-colors"
           >
-            Search CVE, Actor...
+            Search...
           </Link>
           <Link
             href="/threats"
-            className="text-xs font-bold uppercase tracking-wider bg-[#111111] text-[#FFFFFF] px-4 py-2 hover:bg-[#FF6A00] transition-colors"
+            className="text-[11px] font-bold uppercase tracking-[0.06em] bg-[#111214] text-[#FFFFFF] px-4 py-2 rounded-[4px] hover:bg-[#28292E] transition-colors shadow-none"
           >
             Explore Intelligence
           </Link>
         </div>
       </div>
     </header>
-  );
-}
-
-function Navigation() {
-  return (
-    <nav className="hidden md:flex gap-8 text-sm font-medium text-[#56606B]">
-      <Link href="/threats" className="hover:text-[#111111] transition-colors">Intelligence</Link>
-      <Link href="/intelligence/today" className="hover:text-[#111111] transition-colors">Daily Brief</Link>
-      <Link href="/vulnerabilities" className="hover:text-[#111111] transition-colors">Vulnerabilities</Link>
-      <Link href="/actors" className="hover:text-[#111111] transition-colors">Actors</Link>
-      <Link href="/knowledge" className="hover:text-[#111111] transition-colors">Knowledge</Link>
-      <Link href="/sources" className="hover:text-[#111111] transition-colors">Sources</Link>
-      <Link href="/regulations" className="hover:text-[#111111] transition-colors">Regulations</Link>
-    </nav>
   );
 }

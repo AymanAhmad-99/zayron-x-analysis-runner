@@ -1,27 +1,27 @@
 import React from "react";
 
-export function SeverityBadge({ severity }: { severity: string }) {
-  const upper = severity?.toUpperCase() || "HIGH";
-  let bg = "bg-[#252B33]/5";
-  let text = "text-[#56606B]";
-  let border = "border-[#D9DDE2]";
+export function SeverityBadge({ severity }: { severity?: unknown }) {
+  const upper = typeof severity === "string" ? severity.toUpperCase() : "HIGH";
+  let bg = "bg-[#2A7B62]/10";
+  let text = "text-[#2A7B62]";
+  let border = "border-[#2A7B62]/25";
 
   if (upper === "CRITICAL") {
-    bg = "bg-red-500/10";
-    text = "text-red-600";
-    border = "border-red-500/20";
+    bg = "bg-[#C82323]/10";
+    text = "text-[#C82323]";
+    border = "border-[#C82323]/25";
   } else if (upper === "HIGH") {
-    bg = "bg-orange-500/10";
-    text = "text-[#FF6A00]";
-    border = "border-orange-500/20";
+    bg = "bg-[#D9531E]/10";
+    text = "text-[#D9531E]";
+    border = "border-[#D9531E]/25";
   } else if (upper === "MEDIUM") {
-    bg = "bg-yellow-500/10";
-    text = "text-yellow-700";
-    border = "border-yellow-500/20";
+    bg = "bg-[#D9821E]/10";
+    text = "text-[#D9821E]";
+    border = "border-[#D9821E]/25";
   }
 
   return (
-    <span className={`px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase border ${bg} ${text} ${border}`}>
+    <span className={`px-2 py-0.5 text-[9px] font-mono font-bold tracking-[0.06em] uppercase border rounded-[3px] ${bg} ${text} ${border}`}>
       {upper}
     </span>
   );
