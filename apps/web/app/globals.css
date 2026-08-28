@@ -179,11 +179,35 @@ a, button {
               opacity 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── Marquee Animation ── */
+.marquee-container {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+}
+.marquee-track {
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 100%;
+  animation: marquee 40s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* ── Reduce motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
   }
 }
 

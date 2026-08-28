@@ -1,6 +1,6 @@
 import { Hero } from "@/components/Hero";
 import { ValueGrid } from "@/components/ValueGrid";
-import { StandardsBar } from "@/components/StandardsBar";
+import { StandardsRail } from "@/components/StandardsRail";
 import { MethodPipeline } from "@/components/MethodPipeline";
 import { ThreatNetworkGraph } from "@/components/ThreatNetworkGraph";
 import { IntelligenceLandscape } from "@/components/IntelligenceLandscape";
@@ -32,17 +32,13 @@ export default async function Home() {
   return (
     <div className="flex flex-col w-full bg-[#F5F4F0] text-[#111214]">
       {/* Chapter 01 — Identity */}
-      <Hero
-        headline="UNDERSTAND WHAT CHANGED."
-        subheadline="KNOW WHY IT MATTERS."
-        summary="A concise inter sans product statement. Evidence-driven cyber intelligence analyzing vulnerabilities, adversaries, malware, and infrastructure with cryptographic certainty."
-      />
+      <Hero />
 
-      {/* Chapter 02 — Value */}
+      {/* Chapter 02 — Proof / Standards Identity */}
+      <StandardsRail />
+
+      {/* Chapter 03 — Value */}
       <ValueGrid />
-
-      {/* Chapter 03 — Proof */}
-      <StandardsBar />
 
       {/* Chapter 04 — Method */}
       <MethodPipeline />

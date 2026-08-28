@@ -35,7 +35,7 @@ export function ResearchArchive() {
   ];
 
   return (
-    <section className="w-full border-b border-[#E1DFD7] py-14 px-6 max-w-[1280px] mx-auto bg-[#F5F4F0]">
+    <section className="w-full border-b border-[#E1DFD7] py-20 px-6 max-w-[1280px] mx-auto bg-[#F5F4F0]">
       <div className="text-[10px] font-bold tracking-[0.1em] text-[#8C8F98] uppercase mb-2">
         CHAPTER 07 — RESEARCH
       </div>
