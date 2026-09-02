@@ -4,7 +4,7 @@ import { Hero } from "./_components/hero";
 import { TrustStrip } from "./_components/trust-strip";
 import { Methodology } from "./_components/methodology";
 import { DualGrid } from "./_components/dual-grid";
-import { PricingSection } from "./_components/pricing-section";
+import { EvidencePricing } from "./_components/evidence-pricing";
 import { BannerCta } from "./_components/banner-cta";
 
 export const revalidate = 60;
@@ -27,8 +27,8 @@ export default function HomePage() {
       {/* 5. Dual Asymmetric Grid (Platform Preview & Deeper Analysis Split) */}
       <DualGrid />
 
-      {/* 6. Simple, Transparent Pricing ($0 Free, $20 Pro, $50 Researcher) */}
-      <PricingSection />
+      {/* 6. Evidence & Simple Transparent Pricing */}
+      <EvidencePricing />
 
       {/* 7. Closing CTA Banner */}
       <BannerCta />
