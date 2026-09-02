@@ -7,8 +7,7 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@zayron/types": "workspace:*",
-    "drizzle-orm": "^0.39.0",
-    "@supabase/supabase-js": "^2.49.1"
+    "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.10",

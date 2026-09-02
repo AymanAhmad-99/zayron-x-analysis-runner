@@ -61,7 +61,7 @@ export interface FeedResponse {
     count: number;
     limit: number;
     offset: number;
-    filters: Record<string, any>;
+    filters: Record<string, unknown>;
   };
 }
 
@@ -193,7 +193,7 @@ export interface ActorDetailResponse {
     description?: string;
     first_seen?: string;
     last_active?: string;
-    campaigns?: Array<any>;
+    campaigns?: Array<Record<string, unknown>>;
     linked_events?: Array<{
       id: string;
       title: string;
@@ -317,6 +317,7 @@ export async function getThreatFeed(params?: {
   limit?: number;
   offset?: number;
   severity?: string;
+  status?: string;
   type?: string;
   q?: string;
 }): Promise<FeedResponse | null> {
@@ -324,6 +325,7 @@ export async function getThreatFeed(params?: {
   if (params?.limit) query.set('limit', String(params.limit));
   if (params?.offset) query.set('offset', String(params.offset));
   if (params?.severity) query.set('severity', params.severity);
+  if (params?.status) query.set('status', params.status);
   if (params?.type) query.set('type', params.type);
   if (params?.q) query.set('q', params.q);
 
@@ -411,20 +413,20 @@ export async function getIOCByValue(val: string): Promise<IOCDetailResponse | nu
   return fetchAPI<IOCDetailResponse>(`/api/v1/iocs/${encodeURIComponent(val)}`);
 }
 
-export async function getCampaigns(): Promise<{ data: Array<any>; meta: { count: number } } | null> {
-  return fetchAPI<{ data: Array<any>; meta: { count: number } }>('/api/v1/campaigns');
+export async function getCampaigns(): Promise<{ data: Array<Record<string, unknown>>; meta: { count: number } } | null> {
+  return fetchAPI<{ data: Array<Record<string, unknown>>; meta: { count: number } }>('/api/v1/campaigns');
 }
 
-export async function getCampaignById(idOrSlug: string): Promise<{ data: any } | null> {
-  return fetchAPI<{ data: any }>(`/api/v1/campaigns/${encodeURIComponent(idOrSlug)}`);
+export async function getCampaignById(idOrSlug: string): Promise<{ data: Record<string, unknown> } | null> {
+  return fetchAPI<{ data: Record<string, unknown> }>(`/api/v1/campaigns/${encodeURIComponent(idOrSlug)}`);
 }
 
-export async function getReports(): Promise<{ data: Array<any>; meta: { count: number } } | null> {
-  return fetchAPI<{ data: Array<any>; meta: { count: number } }>('/api/v1/reports');
+export async function getReports(): Promise<{ data: Array<Record<string, unknown>>; meta: { count: number } } | null> {
+  return fetchAPI<{ data: Array<Record<string, unknown>>; meta: { count: number } }>('/api/v1/reports');
 }
 
-export async function getReportById(idOrSlug: string): Promise<{ data: any } | null> {
-  return fetchAPI<{ data: any }>(`/api/v1/reports/${encodeURIComponent(idOrSlug)}`);
+export async function getReportById(idOrSlug: string): Promise<{ data: Record<string, unknown> } | null> {
+  return fetchAPI<{ data: Record<string, unknown> }>(`/api/v1/reports/${encodeURIComponent(idOrSlug)}`);
 }
 
 export async function searchGlobal(q: string): Promise<SearchResponse | null> {
@@ -461,6 +463,6 @@ export async function getAIAnalysis(query?: string): Promise<AIAnalysisResponse 
   });
 }
 
-export async function getGraphEdges(limit = 100): Promise<{ data: Array<any> } | null> {
-  return fetchAPI<{ data: Array<any> }>(`/api/v1/graph/edges?limit=${limit}`);
+export async function getGraphEdges(limit = 100): Promise<{ data: Array<Record<string, unknown>> } | null> {
+  return fetchAPI<{ data: Array<Record<string, unknown>> }>(`/api/v1/graph/edges?limit=${limit}`);
 }

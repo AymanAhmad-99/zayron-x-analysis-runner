@@ -23,5 +23,4 @@ database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
 
 [vars]
 ENVIRONMENT = "production"
-API_ID = 37585861
-API_HASH = "e38c7289b2050a99557bcc0d1813cfac"
+# Secrets (API_ID, API_HASH) must be configured via Cloudflare Secrets (`wrangler secret put API_ID` and `wrangler secret put API_HASH`)

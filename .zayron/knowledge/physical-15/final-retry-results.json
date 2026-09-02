@@ -1,0 +1,26 @@
+[
+    {
+        "id":  "02-icd-203",
+        "url":  "https://www.dni.gov/files/documents/ICD/ICD-203.pdf",
+        "file":  "02-icd-203.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (403) Forbidden."
+    },
+    {
+        "id":  "08-first-epss",
+        "url":  "https://www.first.org/epss/",
+        "file":  "08-first-epss.html",
+        "bytes":  26804,
+        "sha256":  "8296EDEE51C9665F408209E3ED27213F3E6A9E44D23FB4A48277C23A36668A1F",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "15-owasp-top10",
+        "url":  "https://owasp.org/www-project-top-ten/",
+        "file":  "15-owasp-top10.html",
+        "bytes":  71432,
+        "sha256":  "E9D0D652F54B9F882101DA06E1A23B8A9D3BE9E4560424AB3A7A5374D0FFB6C2",
+        "status":  "DOWNLOADED"
+    }
+]

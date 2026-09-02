@@ -202,8 +202,7 @@ export interface RawFeed {
   aiGeneratedFlag?: boolean;
   promptTokens?: number;
   completionTokens?: number;
-  timestamp?: string;
-  createdAt?: string;
-  promotedAt?: string;
   metaData?: any;
 }
+
+export * from './marketing';

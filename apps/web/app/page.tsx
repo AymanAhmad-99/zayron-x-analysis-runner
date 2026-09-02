@@ -1,65 +1,38 @@
-import { Hero } from "@/components/Hero";
-import { ValueGrid } from "@/components/ValueGrid";
-import { StandardsRail } from "@/components/StandardsRail";
-import { MethodPipeline } from "@/components/MethodPipeline";
-import { ThreatNetworkGraph } from "@/components/ThreatNetworkGraph";
-import { IntelligenceLandscape } from "@/components/IntelligenceLandscape";
-import { ResearchArchive } from "@/components/ResearchArchive";
-import { ActionPipeline } from "@/components/ActionPipeline";
-import { UnderstatedPricing } from "@/components/UnderstatedPricing";
-import { TrustMatrix } from "@/components/TrustMatrix";
+import React from "react";
+import { Navbar } from "./_components/navbar";
+import { Hero } from "./_components/hero";
+import { TrustStrip } from "./_components/trust-strip";
+import { Methodology } from "./_components/methodology";
+import { DualGrid } from "./_components/dual-grid";
+import { PricingSection } from "./_components/pricing-section";
+import { BannerCta } from "./_components/banner-cta";
 
-export const revalidate = 10;
+export const revalidate = 60;
 
-export default async function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://zayron-x-api.aabusabih.workers.dev';
-  let articles: Record<string, unknown>[] = [];
-  let events: Record<string, unknown>[] = [];
-
-  try {
-    const [artRes, feedRes] = await Promise.all([
-      fetch(`${baseUrl}/api/v1/articles?limit=6`, { next: { revalidate: 60 } }),
-      fetch(`${baseUrl}/api/v1/feed?limit=6`, { next: { revalidate: 30 } }),
-    ]);
-    if (artRes.ok) articles = (await artRes.json())?.data || [];
-    if (feedRes.ok) events = (await feedRes.json())?.data || [];
-  } catch (err) {
-    console.error('Failed to fetch homepage live data', err);
-  }
-
-  const featuredArticle = articles[0];
-
+export default function HomePage() {
   return (
-    <div className="flex flex-col w-full bg-[#F5F4F0] text-[#111214]">
-      {/* Chapter 01 — Identity */}
+    <div className="flex min-h-screen flex-col w-full bg-[var(--bg-page)] text-[var(--text-primary-light)] selection:bg-[var(--accent)] selection:text-white">
+      {/* 1. Global Navigation Header */}
+      <Navbar />
+
+      {/* 2. Hero Section (Editorial Headline + Dark Preview Panel) */}
       <Hero />
 
-      {/* Chapter 02 — Proof / Standards Identity */}
-      <StandardsRail />
+      {/* 3. Trusted By Security Teams Worldwide (Proof Pillars) */}
+      <TrustStrip />
 
-      {/* Chapter 03 — Value */}
-      <ValueGrid />
+      {/* 4. Intelligence Without the Noise (3-Stage Pipeline Methodology) */}
+      <Methodology />
 
-      {/* Chapter 04 — Method */}
-      <MethodPipeline />
+      {/* 5. Dual Asymmetric Grid (Platform Preview & Deeper Analysis Split) */}
+      <DualGrid />
 
-      {/* Chapter 05 — Graph */}
-      <ThreatNetworkGraph />
+      {/* 6. Simple, Transparent Pricing ($0 Free, $20 Pro, $50 Researcher) */}
+      <PricingSection />
 
-      {/* Chapter 06 — Intelligence */}
-      <IntelligenceLandscape events={events} article={featuredArticle} />
-
-      {/* Chapter 07 — Research */}
-      <ResearchArchive />
-
-      {/* Chapter 08 — Action */}
-      <ActionPipeline />
-
-      {/* Chapter 09 — Price */}
-      <UnderstatedPricing />
-
-      {/* Chapter 10 — Trust */}
-      <TrustMatrix />
+      {/* 7. Closing CTA Banner */}
+      <BannerCta />
     </div>
   );
 }
+

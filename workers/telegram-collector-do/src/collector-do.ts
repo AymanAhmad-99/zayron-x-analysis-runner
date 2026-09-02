@@ -172,8 +172,11 @@ export class TelegramCollectorDO {
 
     try {
       this.status = 'CONNECTING';
-      const apiId = Number(this.env.API_ID) || 37585861;
-      const apiHash = this.env.API_HASH || 'e38c7289b2050a99557bcc0d1813cfac';
+      const apiId = Number(this.env.API_ID);
+      const apiHash = this.env.API_HASH;
+      if (!apiId || !apiHash) {
+        throw new Error('[TelegramCollectorDO] Missing required API_ID or API_HASH in environment secrets.');
+      }
 
       const session = new StringSession(sessionStr);
       this.client = new TelegramClient(session, apiId, apiHash, {

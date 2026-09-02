@@ -1,4 +1,5 @@
 import { SeverityLevel, ConfidenceState, ProvenanceRecord } from '@zayron/types';
+import { validateSourceTimestamp } from '../integrity/timestamps';
 
 // ── REGEX PATTERNS FOR TECHNICAL ENTITY EXTRACTION ───────────
 const CVE_REGEX = /CVE-\d{4}-\d{4,7}/gi;
@@ -193,6 +194,10 @@ export function isSpamOrLowValue(text: string, entities?: ExtractedEntities): bo
   const lower = text.trim().toLowerCase();
   if (lower.length < 20) return true;
 
+  // Callers may omit entities during an early gate; avoid treating CVE/IOC
+  // identifiers as phone numbers in that case.
+  const detectedEntities = entities ?? extractEntities(text);
+
   // 1. Hard keyword blocklist
   if (SPAM_KEYWORDS.some((kw) => lower.includes(kw))) return true;
 
@@ -200,12 +205,12 @@ export function isSpamOrLowValue(text: string, entities?: ExtractedEntities): bo
   //    These patterns indicate commercial solicitation regardless of entity presence
   if (PROMOTIONAL_REGEXES.some((re) => re.test(text))) return true;
 
-  const hasTechnicalEntity = entities && (
-    entities.cves.length > 0 ||
-    entities.actors.length > 0 ||
-    entities.malware.length > 0 ||
-    entities.sha256s.length > 0 ||
-    entities.ttps.length > 0
+  const hasTechnicalEntity = (
+    detectedEntities.cves.length > 0 ||
+    detectedEntities.actors.length > 0 ||
+    detectedEntities.malware.length > 0 ||
+    detectedEntities.sha256s.length > 0 ||
+    detectedEntities.ttps.length > 0
   );
 
   // 3. Zero-entity content: apply additional chatter heuristics
@@ -499,6 +504,35 @@ export async function normalizeIntelligenceSignal(params: {
   const originalLanguage = detectLanguage(rawText);
   const contentHash = await computeContentHash(rawText);
   const entities = extractEntities(rawText);
+  const sourceTimestamp = validateSourceTimestamp(publishedAt);
+
+  if (!sourceTimestamp.valid && publishedAt) {
+    return {
+      isSpam: false,
+      originalLanguage,
+      contentHash,
+      entities,
+      normalizedTitle: '',
+      normalizedSummary: '',
+      severity: 'low',
+      confidenceScore: 0,
+      confidenceState: 'LOW',
+      provenance: {
+        sourceId,
+        sourceMessageId: externalMessageId,
+        sourceUrl,
+        capturedAt: new Date().toISOString(),
+        evidenceType: 'raw_message',
+        hash: contentHash,
+        weight: 0,
+      },
+      requiresAITranslation: false,
+      isEnglishValid: false,
+      isEligibleForArticle: false,
+      publicationStatus: 'REJECTED',
+      rejectionReason: `Invalid source timestamp: ${sourceTimestamp.reason}`,
+    };
+  }
 
   // 1. Noise / Spam Filter
   if (isSpamOrLowValue(rawText, entities)) {

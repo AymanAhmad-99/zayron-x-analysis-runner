@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-09-01T00:20:00+03:00",
+  "database_id": "c19c8f45-801b-4034-bd76-402e5e5389b5",
+  "files": {
+    "intelligence_events.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "evidence.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "articles.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "iocs.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "actors.json": {
+      "row_count": 8,
+      "sha256": "92e9a1162cb0ec63981a512f1152d9775f6570c54663c4723b79abdd9b47a415",
+      "bytes": 3362
+    },
+    "malware.json": {
+      "row_count": 5,
+      "sha256": "32b333a7dd9544bc09573a3cca0fa58855ef87083ea788d1bcf30468158dea1c",
+      "bytes": 1660
+    },
+    "campaigns.json": {
+      "row_count": 2,
+      "sha256": "d9c124c10d05101f80d8a89ebb3099577f8bff523ca1f8fe996e62b150184231",
+      "bytes": 1003
+    },
+    "vulnerabilities.json": {
+      "row_count": 56,
+      "sha256": "0c60c6340fffa36b49f07464e3ef79248041fbf58fd96e17d760a8315eb33230",
+      "bytes": 50809
+    },
+    "source_messages.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "relations.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "ttp_mappings.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "social_assets.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "social_publications.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "canary_events.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "evidence_ledger.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "event_trace.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "ai_runs.json": {
+      "row_count": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    }
+  }
+}

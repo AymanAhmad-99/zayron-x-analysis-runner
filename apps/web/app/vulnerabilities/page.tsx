@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Vulnerability Intelligence Radar — ZAYRON-X',
   description: 'Evidence-grounded vulnerability registry tracking CVE disclosures, CISA KEV active exploitation, and FIRST EPSS probability scores.',
+  alternates: { canonical: '/vulnerabilities' },
 };
 
 export default async function VulnerabilitiesPage({
@@ -61,9 +62,7 @@ export default async function VulnerabilitiesPage({
             />
           </form>
 
-          <div className="text-[11px] font-mono text-[#8C8F98]">
-            {vulns.length} Vulnerabilities Tracked
-          </div>
+          <div className="flex items-center gap-3"><select name="severity" defaultValue={severityFilter} aria-label="Filter by severity" className="border border-[#D9D7D0] bg-[#F7F7F4] px-3 py-2 text-[10px] font-mono uppercase"><option value="">All severity</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option></select><div className="text-[11px] font-mono text-[#8C8F98]">{vulns.length} records</div></div>
         </div>
       </div>
 
@@ -77,7 +76,7 @@ export default async function VulnerabilitiesPage({
               <Link
                 key={v.id}
                 href={`/vulnerabilities/${v.cve_id}`}
-                className="group block bg-[#FFFFFF] border border-[#E1DFD7] rounded-[6px] p-6 hover:border-[#111214] transition-colors flex flex-col justify-between shadow-sm"
+                className="group block bg-[#FFFFFF] border border-[#D9D7D0] rounded-[8px] p-5 hover:border-[#C94F00] transition-colors flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">

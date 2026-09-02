@@ -17,6 +17,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/knowledge',
     '/sources',
     '/regulations',
+    '/about',
+    '/methodology',
+    '/trust',
+    '/trust/ai-governance',
+    '/standards',
+    '/contact',
+    '/responsible-disclosure',
+    '/transparency',
+    '/terms',
+    '/privacy',
+    '/cookies',
+    '/acceptable-use',
+    '/intelligence-disclaimer',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -36,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (articlesRes.ok) {
       const articlesData = await articlesRes.json();
       const articles = articlesData?.data || [];
-      const articleRoutes = articles.map((article: any) => ({
+      const articleRoutes = articles.map((article: { slug?: string; updated_at?: string; published_at?: string }) => ({
         url: `${baseUrl}/articles/${article.slug}`,
         lastModified: new Date(article.updated_at || article.published_at || new Date()),
         changeFrequency: 'daily' as const,
@@ -48,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (threatsRes.ok) {
       const threatsData = await threatsRes.json();
       const threats = threatsData?.data || [];
-      const threatRoutes = threats.map((threat: any) => ({
+      const threatRoutes = threats.map((threat: { id?: string; last_updated_at?: string; first_seen_at?: string }) => ({
         url: `${baseUrl}/threats/${threat.id}`,
         lastModified: new Date(threat.last_updated_at || threat.first_seen_at || new Date()),
         changeFrequency: 'hourly' as const,

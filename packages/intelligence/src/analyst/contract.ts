@@ -79,6 +79,7 @@ export interface IntelligenceAssessmentReport {
     country?: string;
     motivation?: string;
     aliases?: string[];
+    description?: string;
   }>;
 
   iocs: Array<{
@@ -137,5 +138,6 @@ export interface IntelligenceAssessmentReport {
     referenceType: 'primary_standard' | 'research_paper' | 'cisa_advisory' | 'telemetry_evidence' | 'book_methodology';
   }>;
 
+  depth?: 'FLASH' | 'STANDARD' | 'DEEP' | 'SPECIAL_REPORT';
   groundedClaims?: GroundedClaim[];
 }

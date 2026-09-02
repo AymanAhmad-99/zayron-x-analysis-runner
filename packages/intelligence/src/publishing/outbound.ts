@@ -49,7 +49,7 @@ export async function dispatchMultiPlatformDerivatives(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: credentials.telegramChatId,
-            text: derivatives.telegram.text,
+            text: typeof derivatives.telegram === 'string' ? derivatives.telegram : (derivatives.telegram as any).text,
             parse_mode: 'HTML',
           }),
         });
@@ -71,7 +71,7 @@ export async function dispatchMultiPlatformDerivatives(
   }
 
   // 2. X / Twitter Dispatch
-  if (derivatives.x) {
+  if (derivatives.twitter) {
     const key = `${eventId}:x:v5`;
     results.push({ platform: 'X', status: credentials?.xApiKey ? 'PUBLISHED' : 'MOCKED_SUCCESS', idempotency_key: key, external_id: `x_${Date.now()}`, dispatched_at: now });
   } else {

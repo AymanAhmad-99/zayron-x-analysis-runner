@@ -1,0 +1,122 @@
+[
+    {
+        "id":  "01-heuer-psychology",
+        "url":  "https://www.cia.gov/resources/csi/static/Psychology-of-Intelligence-Analysis.pdf",
+        "file":  "01-heuer-psychology.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The request was aborted: The connection was closed unexpectedly."
+    },
+    {
+        "id":  "02-icd-203",
+        "url":  "https://www.dni.gov/files/documents/ICD/ICD%20203%20Analytic%20Standards.pdf",
+        "file":  "02-icd-203.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (403) Forbidden."
+    },
+    {
+        "id":  "03-nist-sp-800-150",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-150.pdf",
+        "file":  "03-nist-sp-800-150.pdf",
+        "bytes":  509487,
+        "sha256":  "C9ADE17B8524D0BAE4F77E4AEFA79F0B752CA18DCAF01C84214BF2B8A05376F8",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "04-nist-sp-800-86",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-86.pdf",
+        "file":  "04-nist-sp-800-86.pdf",
+        "bytes":  2818618,
+        "sha256":  "EA7EB645BCD3FEAF3AB9EA7DFC3C8987A08BF260C40682DF1E5E8292BF9FE9B4",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "05-nist-sp-800-61r3",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r3.pdf",
+        "file":  "05-nist-sp-800-61r3.pdf",
+        "bytes":  1040566,
+        "sha256":  "E5593D6BB85DAECEC7E8D9549400C7B3473BCC3F06E469C82218073AFA7FBA2D",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "06-nist-csf-2",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+        "file":  "06-nist-csf-2.pdf",
+        "bytes":  1518858,
+        "sha256":  "3C31F46FEE98CAC0C4323453E5109291A213B4DE7FEF8C058AF9BF67F717433C",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "07-first-cvss4",
+        "url":  "https://www.first.org/cvss/v4.0/specification-document",
+        "file":  "07-first-cvss4.html",
+        "bytes":  118046,
+        "sha256":  "888A1511D51140291EE84EBAE103C92FB129DC2DE41557D1FA23FDEFC674B328",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "08-first-epss",
+        "url":  "https://www.first.org/epss/model",
+        "file":  "08-first-epss.html",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (404) Not Found."
+    },
+    {
+        "id":  "09-mitre-attack",
+        "url":  "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json",
+        "file":  "09-mitre-attack.json",
+        "bytes":  53835637,
+        "sha256":  "DC1639CAA5501D720E280CF1CBD8FBE009884A0C9B3E6E9ED9D0C25166C3D8F4",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "10-oasis-stix21",
+        "url":  "https://docs.oasis-open.org/cti/stix/v2.1/cs01/part1-stix-core/stix-v2.1-cs01-part1-stix-core.pdf",
+        "file":  "10-oasis-stix21.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (404) Not Found."
+    },
+    {
+        "id":  "11-oasis-taxii21",
+        "url":  "https://docs.oasis-open.org/cti/taxii/v2.1/cs01/part1-taxii-client-server/part1-taxii-client-server.pdf",
+        "file":  "11-oasis-taxii21.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (404) Not Found."
+    },
+    {
+        "id":  "12-nist-ai-rmf",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+        "file":  "12-nist-ai-rmf.pdf",
+        "bytes":  1946127,
+        "sha256":  "7576EDB531D9848825814EE88E28B1795D3A84B435B4B797D3670EAFDC4A89F1",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "13-nist-genai-profile",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf",
+        "file":  "13-nist-genai-profile.pdf",
+        "bytes":  1174643,
+        "sha256":  "6E73620AB6B64E90EF2C04BF0E0D6246185A2F4B1B13CAB0DF494496CFF89B6A",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "14-nist-sp-800-53",
+        "url":  "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf",
+        "file":  "14-nist-sp-800-53.pdf",
+        "bytes":  6073678,
+        "sha256":  "FC63BCD61715D0181DD8E85998B1E6201AE3515FC6626102101CAB1841E11EC6",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "15-owasp-top10",
+        "url":  "https://owasp.org/www-project-top-ten/assets/mapping/OWASP_Top_10-2021-v1.1.pdf",
+        "file":  "15-owasp-top10.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (404) Not Found."
+    }
+]

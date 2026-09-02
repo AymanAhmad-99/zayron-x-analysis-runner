@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { ArrowLeft, Share2 } from 'lucide-react';
 import { SeverityBadge } from '@/components/SeverityBadge';
 import { ConfidenceBadge } from '@/components/ConfidenceBadge';
@@ -21,18 +20,31 @@ export async function generateMetadata({ params }: ArticlePageProps) {
   };
 }
 
+interface ArticleData {
+  id?: string;
+  slug?: string;
+  title?: string;
+  severity?: string;
+  confidence?: number;
+  published_at?: string;
+  updated_at?: string;
+  excerpt?: string;
+  dek?: string;
+  content?: string;
+}
+
 export default async function ThreatArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://zayron-x-api.aabusabih.workers.dev';
 
-  let article: Record<string, unknown> | null = null;
+  let article: ArticleData | null = null;
 
   try {
     const res = await fetch(`${baseUrl}/api/v1/articles?limit=20`, { next: { revalidate: 60 } });
     if (res.ok) {
       const data = await res.json();
-      const articles = data?.data || [];
-      article = articles.find((a: Record<string, unknown>) => a.slug === slug || a.id === slug) || articles[0];
+      const articles: ArticleData[] = data?.data || [];
+      article = articles.find((a) => a.slug === slug || a.id === slug) || articles[0] || null;
     }
   } catch (err) {
     console.error('Failed to load threat article', err);
@@ -41,7 +53,7 @@ export default async function ThreatArticlePage({ params }: ArticlePageProps) {
   const displayTitle = article?.title || `CRITICAL: APT29 Weaponization of CVE-2026-1453 with Cobalt Strike Malleable C2`;
   const severity = article?.severity || 'CRITICAL';
   const confidenceScore = article?.confidence || 0.98;
-  const publishedDate = article?.published_at?.slice(0, 10) || '25 AUG 2026';
+  const publishedDate = article?.published_at ? article.published_at.slice(0, 10) : '25 AUG 2026';
 
   const jsonLd = {
     '@context': 'https://schema.org',

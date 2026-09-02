@@ -1,171 +1,21 @@
-import React from 'react';
-import Link from 'next/link';
-import { searchGlobal } from '@/lib/api';
+import Link from "next/link";
+import { searchGlobal, type SearchResponse } from "@/lib/api";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Intelligence Search | ZAYRON-X", description: "Search returned actor, vulnerability, malware, IOC, event, and article records.", alternates: { canonical: "/search" }, robots: { index: false, follow: true } };
 
-export default async function GlobalSearchPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ q?: string }>;
-}) {
-  const resolvedParams = await searchParams;
-  const query = resolvedParams?.q || '';
+function ResultSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="space-y-3"><h2 className="text-xs font-bold uppercase tracking-[.12em] text-[#050505]">{title}</h2><div className="divide-y divide-[#D9D7D0] overflow-hidden border border-[#D9D7D0] bg-white">{children}</div></section>;
+}
 
-  const searchResults = query ? await searchGlobal(query) : null;
-  const results = searchResults?.data;
-  const totalMatches = searchResults?.meta?.total_matches || 0;
+function Row({ href, type, title, context, meta }: { href: string; type: string; title: string; context?: string; meta?: string }) {
+  return <Link href={href} className="group block p-4 hover:bg-[#F7F7F4]"><div className="flex flex-wrap items-center gap-2"><span className="font-mono text-[10px] font-bold uppercase tracking-[.12em] text-[#C94F00]">{type}</span>{meta && <span className="font-mono text-[10px] text-[#8C8F98]">{meta}</span>}</div><h3 className="mt-2 break-words text-sm font-bold group-hover:text-[#C94F00]">{title}</h3>{context && <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-[#56606B]">{context}</p>}</Link>;
+}
 
-  return (
-    <div className="flex-1 flex flex-col bg-[#F5F4F0] min-h-screen">
-      {/* Search Header */}
-      <header className="bg-[#FFFFFF] border-b border-[#E1DFD7] pt-14 pb-10">
-        <div className="max-w-[1280px] mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="text-[10px] font-mono font-bold text-[#D9531E] uppercase tracking-wider mb-2">
-              Cross-Entity Search
-            </div>
-            <h1 className="font-editorial text-3xl sm:text-4xl font-semibold text-[#111214] mb-6 uppercase">
-              Global Intelligence Search
-            </h1>
-            
-            <form method="GET" action="/search" className="relative group">
-              <input
-                type="text"
-                name="q"
-                defaultValue={query}
-                placeholder="Search CVEs, Threat Actors, Malware, IOCs, or Telemetry..."
-                className="w-full bg-[#F5F4F0] border border-[#E1DFD7] text-[#111214] placeholder:text-[#8C8F98] text-sm font-mono rounded-[4px] py-3.5 pl-4 pr-24 focus:outline-none focus:border-[#111214] transition-colors"
-                autoFocus
-              />
-              <button 
-                type="submit"
-                className="absolute inset-y-1.5 right-1.5 px-4 bg-[#111214] text-[#FFFFFF] text-xs font-bold uppercase tracking-wider rounded-[3px] hover:bg-[#28292E] transition-colors"
-              >
-                Search
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      {/* Search Results */}
-      <div className="max-w-[1280px] mx-auto px-6 py-10 flex-1 w-full">
-        <div className="max-w-4xl mx-auto space-y-10">
-          {!query ? (
-            <div className="text-center py-16 space-y-4 bg-[#FFFFFF] border border-[#E1DFD7] rounded-[6px] p-8 shadow-sm">
-              <h3 className="font-editorial text-xl font-bold text-[#111214]">Search the Intelligence Graph</h3>
-              <p className="text-xs text-[#5A5D65] max-w-md mx-auto">
-                Query across sovereign threat actors, active CVE exploits, malware signatures, and verified IOCs.
-              </p>
-              <div className="flex justify-center flex-wrap gap-2 pt-2">
-                {['APT29', 'CVE-2026-1453', 'Cobalt Strike', '194.26.29.112'].map((example) => (
-                  <Link
-                    key={example}
-                    href={`/search?q=${encodeURIComponent(example)}`}
-                    className="px-3 py-1 bg-[#F5F4F0] border border-[#E1DFD7] rounded-[3px] text-xs font-mono font-bold text-[#111214] hover:border-[#111214]"
-                  >
-                    {example}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ) : totalMatches === 0 ? (
-            <div className="text-center py-16 space-y-4 bg-[#FFFFFF] border border-[#E1DFD7] rounded-[6px] p-12 shadow-sm">
-              <h3 className="font-editorial text-xl font-bold text-[#111214]">No Records Found</h3>
-              <p className="text-xs text-[#5A5D65]">
-                No intelligence records matched &quot;{query}&quot;. Try querying another CVE, Actor alias, or IP.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-8">
-              <div className="flex items-center justify-between border-b border-[#E1DFD7] pb-2 text-xs">
-                <span className="font-bold uppercase tracking-wider text-[#111214]">
-                  Search Results for &quot;{query}&quot;
-                </span>
-                <span className="font-mono text-[#8C8F98]">
-                  {totalMatches} matched records
-                </span>
-              </div>
-
-              {/* Threat Actors */}
-              {results?.actors && results.actors.length > 0 && (
-                <section className="space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#111214]">
-                    Threat Actors ({results.actors.length})
-                  </h3>
-                  <div className="divide-y divide-[#E1DFD7] border border-[#E1DFD7] bg-[#FFFFFF] rounded-[6px] overflow-hidden shadow-sm">
-                    {results.actors.map((actor: any) => (
-                      <Link 
-                        key={actor.id} 
-                        href={`/actors/${actor.slug}`}
-                        className="p-4 flex items-center justify-between hover:bg-[#F5F4F0] transition-colors group block"
-                      >
-                        <div>
-                          <h4 className="font-bold text-sm text-[#111214] group-hover:text-[#D9531E]">{actor.name}</h4>
-                          <p className="text-xs text-[#5A5D65]">{actor.description || 'Verified threat actor'}</p>
-                        </div>
-                        <span className="text-xs text-[#8C8F98] group-hover:text-[#111214]">&rarr;</span>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Vulnerabilities */}
-              {results?.vulnerabilities && results.vulnerabilities.length > 0 && (
-                <section className="space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#111214]">
-                    Vulnerabilities ({results.vulnerabilities.length})
-                  </h3>
-                  <div className="divide-y divide-[#E1DFD7] border border-[#E1DFD7] bg-[#FFFFFF] rounded-[6px] overflow-hidden shadow-sm">
-                    {results.vulnerabilities.map((vuln: any) => (
-                      <Link 
-                        key={vuln.id} 
-                        href={`/vulnerabilities/${vuln.cve_id}`}
-                        className="p-4 flex items-center justify-between hover:bg-[#F5F4F0] transition-colors group block"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-xs text-[#111214] group-hover:text-[#D9531E]">{vuln.cve_id}</span>
-                            <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 bg-[#F5F4F0] border border-[#E1DFD7] rounded-[2px]">{vuln.severity}</span>
-                          </div>
-                          <p className="text-xs text-[#5A5D65] mt-1">{vuln.title}</p>
-                        </div>
-                        <span className="text-xs text-[#8C8F98] group-hover:text-[#111214]">&rarr;</span>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Malware */}
-              {results?.malware && results.malware.length > 0 && (
-                <section className="space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#111214]">
-                    Malware Families ({results.malware.length})
-                  </h3>
-                  <div className="divide-y divide-[#E1DFD7] border border-[#E1DFD7] bg-[#FFFFFF] rounded-[6px] overflow-hidden shadow-sm">
-                    {results.malware.map((mw: any) => (
-                      <Link 
-                        key={mw.id} 
-                        href={`/malware/${mw.slug}`}
-                        className="p-4 flex items-center justify-between hover:bg-[#F5F4F0] transition-colors group block"
-                      >
-                        <div>
-                          <h4 className="font-bold text-sm text-[#111214] group-hover:text-[#D9531E]">{mw.name}</h4>
-                          <p className="text-xs text-[#5A5D65]">{mw.description || 'Malware family'}</p>
-                        </div>
-                        <span className="text-xs text-[#8C8F98] group-hover:text-[#111214]">&rarr;</span>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+export default async function GlobalSearchPage({ searchParams }: { searchParams?: Promise<{ q?: string }> }) {
+  const query = (await searchParams)?.q?.trim() || "";
+  const response: SearchResponse | null = query ? await searchGlobal(query) : null;
+  const results = response?.data;
+  const total = response?.meta.total_matches || 0;
+  return <main className="min-h-screen bg-[#F7F7F4] text-[#050505]"><div className="mx-auto max-w-[1100px] px-6 py-12 lg:py-16"><header className="border-b border-[#D9D7D0] pb-10"><p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[.14em] text-[#C94F00]">INTELLIGENCE / DISCOVERY</p><h1 className="font-editorial text-5xl font-bold uppercase leading-[.95] tracking-[-.035em] md:text-7xl">Global Search</h1><p className="mt-5 max-w-2xl text-lg leading-relaxed text-[#56606B]">Search the verified ZAYRON-X intelligence object registry.</p><form method="GET" action="/search" className="mt-8 flex gap-2"><input name="q" defaultValue={query} autoFocus placeholder="CVE, actor, malware, IOC, event, or article" className="min-w-0 flex-1 border border-[#D9D7D0] bg-white px-4 py-3 font-mono text-sm outline-none focus:border-[#C94F00]"/><button className="bg-[#050505] px-5 py-3 text-xs font-bold uppercase tracking-[.1em] text-white hover:bg-[#C94F00]">Search</button></form></header><div className="py-10">{!query ? <div className="border border-[#D9D7D0] bg-white p-10 text-center"><p className="font-mono text-xs uppercase tracking-[.12em] text-[#56606B]">Enter a query to search actors, CVEs, malware, IOCs, events, and articles.</p></div> : !response ? <div className="border border-[#C94F00] bg-white p-10 text-center"><h2 className="font-editorial text-2xl font-bold uppercase">Search unavailable</h2><p className="mt-2 text-sm text-[#56606B]">The intelligence search endpoint did not return a response. Please try again.</p></div> : total === 0 ? <div className="border border-[#D9D7D0] bg-white p-10 text-center"><h2 className="font-editorial text-2xl font-bold uppercase">No records found</h2><p className="mt-2 text-sm text-[#56606B]">No supported intelligence objects matched “{query}”.</p></div> : <div className="space-y-8"><div className="flex items-center justify-between border-b border-[#D9D7D0] pb-3"><span className="font-mono text-xs uppercase">Results for “{query}”</span><span className="font-mono text-xs text-[#56606B]">{total} records</span></div>{results?.actors.length ? <ResultSection title={`Actors · ${results.actors.length}`}>{results.actors.map((item) => <Row key={item.id} href={`/actors/${item.slug}`} type="ACTOR" title={item.name} context={item.description} meta={item.country || "UNKNOWN REGION"}/>)}</ResultSection> : null}{results?.vulnerabilities.length ? <ResultSection title={`Vulnerabilities · ${results.vulnerabilities.length}`}>{results.vulnerabilities.map((item) => <Row key={item.id} href={`/vulnerabilities/${item.cve_id}`} type="CVE" title={item.cve_id} context={item.title || item.description} meta={item.severity}/>)}</ResultSection> : null}{results?.malware.length ? <ResultSection title={`Malware · ${results.malware.length}`}>{results.malware.map((item) => <Row key={item.id} href={`/malware/${item.slug}`} type="MALWARE" title={item.name} context={item.description} meta={item.family || "UNKNOWN FAMILY"}/>)}</ResultSection> : null}{results?.iocs.length ? <ResultSection title={`IOCs · ${results.iocs.length}`}>{results.iocs.map((item) => <Row key={item.id} href={`/iocs/${encodeURIComponent(item.normalized_value)}`} type="IOC" title={item.normalized_value} context={item.event_id ? `Linked event: ${item.event_id}` : "No linked event"} meta={item.type}/>)}</ResultSection> : null}{results?.events.length ? <ResultSection title={`Intelligence Events · ${results.events.length}`}>{results.events.map((item) => <Row key={item.id} href={`/threats/${item.id}`} type="EVENT" title={item.title} context={item.summary} meta={`${item.severity} · CONFIDENCE ${Math.round(item.confidence * 100)}%`}/>)}</ResultSection> : null}{results?.articles.length ? <ResultSection title={`Articles · ${results.articles.length}`}>{results.articles.map((item) => <Row key={item.id} href={`/articles/${item.slug}`} type="ARTICLE" title={item.title} context={item.category} meta={item.published_at || "UNKNOWN DATE"}/>)}</ResultSection> : null}</div>}</div></div></main>;
 }

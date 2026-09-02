@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Threat Actor Index — ZAYRON-X',
   description: 'Global registry of state-sponsored APTs, cybercriminal syndicates, and threat actors extracted from telemetry and threat advisories.',
+  alternates: { canonical: '/actors' },
 };
 
 export default async function ActorsDatabase({
@@ -21,20 +22,20 @@ export default async function ActorsDatabase({
   const actors = res?.data || [];
 
   return (
-    <div className="flex-1 flex flex-col bg-[#F5F4F0] min-h-screen">
+    <div className="flex-1 flex flex-col bg-[#F7F7F4] min-h-screen">
       {/* Editorial Header */}
       <header className="bg-[#FFFFFF] border-b border-[#E1DFD7] pt-14 pb-10">
         <div className="max-w-[1280px] mx-auto px-6">
           <div className="max-w-4xl">
             <div className="flex items-center gap-2 text-[10px] font-mono font-bold text-[#D9531E] uppercase tracking-wider mb-2">
               <span className="w-2 h-2 rounded-full bg-[#D9531E] animate-pulse" />
-              Adversary Profiles
+              PRODUCT / THREAT ACTORS
             </div>
             <h1 className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-[#111214] mb-3 uppercase">
               Threat Actor Index
             </h1>
             <p className="text-xs sm:text-sm text-[#5A5D65] leading-relaxed">
-              Global registry of state-sponsored APTs, cybercriminal syndicates, and threat actors extracted from telemetry and threat advisories.
+              A structured index of actor records available from the current ZAYRON-X intelligence data source.
             </p>
           </div>
         </div>
@@ -74,7 +75,7 @@ export default async function ActorsDatabase({
               <Link 
                 key={actor.id} 
                 href={`/actors/${actor.slug}`} 
-                className="group block border border-[#E1DFD7] bg-[#FFFFFF] rounded-[6px] p-6 hover:border-[#111214] transition-colors flex flex-col justify-between shadow-sm"
+                className="group block border border-[#D9D7D0] bg-[#FFFFFF] rounded-[8px] p-5 hover:border-[#C94F00] transition-colors flex flex-col justify-between"
               >
                 <div>
                   <div className="flex justify-between items-start mb-4">
@@ -82,7 +83,7 @@ export default async function ActorsDatabase({
                       {actor.name}
                     </h3>
                     <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-[#F5F4F0] text-[#111214] border border-[#E1DFD7] px-2 py-0.5 rounded-[3px]">
-                      {actor.country || 'Global Threat'}
+                      {actor.country || 'UNKNOWN REGION'}
                     </span>
                   </div>
                   
@@ -93,12 +94,12 @@ export default async function ActorsDatabase({
                       </div>
                     )}
                     <div className="text-[11px] text-[#5A5D65]">
-                      <span className="font-bold text-[#111214]">Motivation:</span> {actor.motivation || 'Targeted Espionage / Cybercrime'}
+                      <span className="font-bold text-[#111214]">Motivation:</span> {actor.motivation || 'UNKNOWN'}
                     </div>
                   </div>
 
                   <p className="text-xs text-[#5A5D65] line-clamp-3 mb-6 leading-relaxed">
-                    {actor.description || 'Verified threat actor tracked in Zayron-X intelligence registry.'}
+                    {actor.description || 'No source description is available for this actor record. UNKNOWN.'}
                   </p>
                 </div>
 

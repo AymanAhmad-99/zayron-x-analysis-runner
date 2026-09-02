@@ -59,7 +59,7 @@ export function formatCanonicalArticle(
   const mainEntity = cves[0]?.cveId || (actors[0] ? (typeof actors[0] === 'string' ? actors[0] : actors[0].name) : malware[0] ? (typeof malware[0] === 'string' ? malware[0] : malware[0].name) : 'Advisory');
 
   // Slug generation
-  const slugBase = headline
+  const slugBase = mainEntity.match(/^CVE-\d{4}-\d{4,19}$/i) ? mainEntity.toLowerCase() : headline
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()

@@ -1,10 +1,14 @@
 import React from "react";
+import Link from "next/link";
 
-export function EntityPill({ entity, type }: { entity: string, type?: string }) {
+export function EntityPill({ type, value }: { type: string; value: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[#F7F7F5] border border-[#D9DDE2] text-[11px] font-mono text-[#111111] uppercase tracking-wider">
-      {type && <span className="text-[#7A838D]">{type}:</span>}
-      <span className="font-bold">{entity}</span>
-    </span>
+    <Link
+      href={`/search?q=${encodeURIComponent(value)}`}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-mono text-[10px] uppercase font-bold transition-colors"
+    >
+      <span className="text-zinc-500">{type}:</span>
+      <span>{value}</span>
+    </Link>
   );
 }

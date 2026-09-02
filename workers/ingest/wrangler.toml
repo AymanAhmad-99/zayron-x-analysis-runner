@@ -13,6 +13,14 @@ queue = "zayron-ingest-queue"
 max_batch_size = 10
 max_batch_timeout = 5
 
+[[queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue"
+
+[[queues.producers]]
+binding = "PUBLISH_QUEUE"
+queue = "zayron-publish-queue"
+
 [ai]
 binding = "AI"
 
@@ -20,11 +28,34 @@ binding = "AI"
 binding = "VECTORIZE"
 index_name = "zayron-knowledge-index"
 
+[[r2_buckets]]
+binding = "KNOWLEDGE_BUCKET"
+bucket_name = "zayron-x-knowledge"
+
 [[services]]
 binding = "TELEGRAM_COLLECTOR_SERVICE"
 service = "zayron-telegram-collector-do"
+
+[[services]]
+binding = "KNOWLEDGE_PROCESSOR"
+service = "zayron-x-api"
+entrypoint = "KnowledgeProcessor"
+
+[[workflows]]
+name = "zayron-research-workflow"
+binding = "RESEARCH_WORKFLOW"
+class_name = "ResearchWorkflow"
+script_name = "zayron-x-api"
+
+[[workflows]]
+name = "zayron-knowledge-corpus-workflow"
+binding = "KNOWLEDGE_CORPUS_WORKFLOW"
+class_name = "KnowledgeCorpusWorkflow"
+script_name = "zayron-x-api"
 
 [vars]
 ENVIRONMENT = "production"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 
+[triggers]
+crons = ["*/15 * * * *"]

@@ -272,7 +272,7 @@ ${request.sourceContext ? `\nADDITIONAL SOURCE CONTEXT:\n${request.sourceContext
         vulnerabilities: retrieval.structuredMatches.cves,
         malware: retrieval.structuredMatches.malware,
         actors: retrieval.structuredMatches.actors,
-        iocs: retrieval.structuredMatches.iocs.map(i => ({ ...i, type: i.type as any })),
+        iocs: retrieval.structuredMatches.iocs.map(i => ({ type: i.type as any, value: i.normalizedValue, confidence: i.confidence })),
         ttps: retrieval.extractedEntities.ttps.map(t => ({ techniqueId: t, techniqueName: 'Observed Technique', tactic: 'Execution' })),
         infrastructure: [],
         timeline: [{ timestamp: primaryEvent?.firstSeenAt || new Date().toISOString(), eventDescription: primaryEvent?.title || 'Signal Ingested' }],
@@ -339,13 +339,15 @@ ${request.sourceContext ? `\nADDITIONAL SOURCE CONTEXT:\n${request.sourceContext
     }
   }
 
+  const activeReport = parsedReport!;
+
   // ── Step 4: System-Controlled Confidence Engine Calculation ────────────────
   const sourceTiers = [
     ...retrieval.retrievedChunks.map(c => c.authorityTier),
-    ...(parsedReport.corroboration?.source_tiers || []),
+    ...(activeReport.corroboration?.source_tiers || []),
   ];
   const evidenceWeights = retrieval.structuredMatches.evidence.map(e => e.weight);
-  let contradictions = parsedReport.corroboration?.contradictions || [];
+  let contradictions = activeReport.corroboration?.contradictions || [];
 
   // Detect explicit evidentiary disputes/contradictions in query or context
   const isConflictQuery = /\b(while|whereas|disputes?|conflicts?|disagree|contradicts?|attributes\s+.*\s+to\s+.*\s+but|claims\s+.*\s+while|claims\s+.*\s+whereas)\b/i.test(request.query);
@@ -358,22 +360,22 @@ ${request.sourceContext ? `\nADDITIONAL SOURCE CONTEXT:\n${request.sourceContext
       resolutionStatus: 'UNRESOLVED_CONFLICT',
       analystNote: 'Unresolved discrepancy identified between independent intelligence sources. Confidence penalized pending primary authoritative corroboration.',
     }];
-    if (!parsedReport.corroboration) {
-      parsedReport.corroboration = {
+    if (!activeReport.corroboration) {
+      activeReport.corroboration = {
         source_count: 2,
         independent_source_count: 2,
         source_tiers: [2, 3],
         contradictions,
       };
     } else {
-      parsedReport.corroboration.contradictions = contradictions;
+      activeReport.corroboration.contradictions = contradictions;
     }
   }
 
   const confidenceResult = calculateAnalyticalConfidence({
     sourceTiers,
-    sourceCount: Math.max(retrieval.structuredMatches.recentEvents.length, parsedReport.corroboration?.source_count || 0),
-    independentSourceCount: Math.max(1, parsedReport.corroboration?.independent_source_count || 1),
+    sourceCount: Math.max(retrieval.structuredMatches.recentEvents.length, activeReport.corroboration?.source_count || 0),
+    independentSourceCount: Math.max(1, activeReport.corroboration?.independent_source_count || 1),
     evidenceWeights,
     contradictions,
     hasAuthoritativeStandard: retrieval.retrievedChunks.some(c => c.authorityTier === 0),
@@ -383,10 +385,10 @@ ${request.sourceContext ? `\nADDITIONAL SOURCE CONTEXT:\n${request.sourceContext
 
 
   // Inject system-calculated confidence (Decoupled from LLM hallucination and Threat Severity)
-  parsedReport.assessment!.confidence_score = confidenceResult.score;
-  parsedReport.assessment!.confidence_state = confidenceResult.state;
+  activeReport.assessment!.confidence_score = confidenceResult.score;
+  activeReport.assessment!.confidence_state = confidenceResult.state;
 
-  const finalReport = parsedReport as IntelligenceAssessmentReport;
+  const finalReport = activeReport as IntelligenceAssessmentReport;
   const durationMs = Date.now() - startTime;
   const outputHash = await computeHash(JSON.stringify(finalReport));
 

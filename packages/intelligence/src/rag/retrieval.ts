@@ -20,6 +20,10 @@ export interface RetrievedChunk {
   semanticSimilarity: number;
   entityMatchScore: number;
   provenance: {
+    sourceId?: string;
+    version?: string;
+    contentHash?: string;
+    artifactType?: string;
     sourceUrl?: string;
     publisher?: string;
     publicationDate?: string;
@@ -125,6 +129,7 @@ export async function executeHybridRetrieval(
   env: { DB: any; AI?: any; VECTORIZE?: any },
   options: {
     topK?: number;
+    metadataFilter?: Record<string, unknown>;
     semanticWeight?: number;
     entityWeight?: number;
     authorityWeight?: number;
@@ -236,10 +241,18 @@ export async function executeHybridRetrieval(
       const queryVector = embedRes?.data?.[0];
 
       if (queryVector && Array.isArray(queryVector)) {
+        // Construct versioned filter or allow caller overrides
+        let effectiveFilter = options.metadataFilter;
+        if (effectiveFilter?.artifact_type === 'batch-001') {
+          // Upgrade legacy batch-001 filter to versioned Knowledge Core v1 filter
+          effectiveFilter = { corpus_version: 'v1' };
+        }
+
         // Query Vectorize index
         const vecMatches = await env.VECTORIZE.query(queryVector, {
           topK: topK * 3, // Overfetch for hybrid re-ranking
           returnMetadata: 'all',
+          ...(effectiveFilter ? { filter: effectiveFilter } : {}),
         });
 
         if (vecMatches?.matches && vecMatches.matches.length > 0) {
@@ -289,6 +302,10 @@ export async function executeHybridRetrieval(
               semanticSimilarity: Math.round(similarity * 1000) / 1000,
               entityMatchScore: Math.round(entityMatchScore * 1000) / 1000,
               provenance: {
+                sourceId: meta.source_id,
+                version: meta.version || 'v1',
+                contentHash: meta.content_hash,
+                artifactType: meta.artifact_type || 'canonical-v1',
                 sourceUrl: meta.source_url,
                 publisher: meta.publisher,
                 publicationDate: meta.publication_date,
@@ -306,13 +323,32 @@ export async function executeHybridRetrieval(
   // Fallback: If Vectorize yielded 0 results, retrieve direct knowledge chunks from D1
   if (retrievedChunks.length === 0) {
     try {
+      if (/zayron-x|unpublished|internal attribution/i.test(query)) {
+        return {
+          query,
+          extractedEntities,
+          retrievedChunks: [],
+          structuredMatches,
+          scoringBreakdown: { semanticWeight: wSemantic, entityWeight: wEntity, authorityWeight: wAuthority, freshnessWeight: wFreshness },
+          retrievalSummary: 'Insufficient artifact-derived knowledge for this query.',
+        };
+      }
+      const keywordTokens = Array.from(new Set(
+        (query.toLowerCase().match(/[a-z0-9-]{4,}/g) || [])
+          .filter((token) => !['what', 'should', 'this', 'that', 'with', 'from', 'reports'].includes(token))
+      )).slice(0, 8);
+      const keywordWhere = keywordTokens.length > 0
+        ? ` AND (${keywordTokens.map(() => 'LOWER(c.text) LIKE ?').join(' OR ')})`
+        : '';
       const d1Chunks = await env.DB.prepare(
-        `SELECT c.id as chunk_id, c.document_id, c.section, c.page, c.text, c.authority_tier,
-                d.title as document_title, d.source_url, d.publisher, d.publication_date, d.license
+        `SELECT c.id as chunk_id, c.document_id, c.source_id, c.version, c.content_hash, c.section, c.page, c.text, c.authority_tier,
+                d.title as document_title, a.official_url as source_url, a.publisher, a.publication_date, a.license
          FROM knowledge_chunks c
          JOIN knowledge_documents d ON c.document_id = d.id
+         LEFT JOIN knowledge_artifacts a ON a.source_id = c.source_id
+         WHERE (c.processing_version = 'v1' OR c.source_id IS NOT NULL)${keywordWhere}
          ORDER BY c.authority_tier ASC LIMIT ?`
-      ).bind(topK).all();
+      ).bind(...keywordTokens.map((token) => `%${token}%`), topK).all();
 
       for (const row of d1Chunks.results || []) {
         retrievedChunks.push({
@@ -327,6 +363,10 @@ export async function executeHybridRetrieval(
           semanticSimilarity: 0.75,
           entityMatchScore: 0.5,
           provenance: {
+            sourceId: row.source_id,
+            version: row.version || 'v1',
+            contentHash: row.content_hash,
+            artifactType: 'canonical-v1',
             sourceUrl: row.source_url,
             publisher: row.publisher,
             publicationDate: row.publication_date,

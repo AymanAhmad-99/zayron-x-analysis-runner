@@ -12,12 +12,43 @@ database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
 binding = "INGEST_QUEUE"
 queue = "zayron-ingest-queue"
 
+[[queues.producers]]
+binding = "PUBLISH_QUEUE"
+queue = "zayron-publish-queue"
+
+[[queues.consumers]]
+queue = "zayron-publish-queue"
+max_batch_size = 10
+max_batch_timeout = 5
+
+[[services]]
+binding = "TELEGRAM_COLLECTOR_SERVICE"
+service = "zayron-telegram-collector-do"
+
+[[services]]
+binding = "INGEST"
+service = "zayron-x-ingest"
+
+[[workflows]]
+name = "zayron-research-workflow"
+binding = "RESEARCH_WORKFLOW"
+class_name = "ResearchWorkflow"
+
+[[workflows]]
+name = "zayron-knowledge-corpus-workflow"
+binding = "KNOWLEDGE_CORPUS_WORKFLOW"
+class_name = "KnowledgeCorpusWorkflow"
+
 [ai]
 binding = "AI"
 
 [[vectorize]]
 binding = "VECTORIZE"
 index_name = "zayron-knowledge-index"
+
+[[r2_buckets]]
+binding = "KNOWLEDGE_BUCKET"
+bucket_name = "zayron-x-knowledge"
 
 [vars]
 ENVIRONMENT = "production"

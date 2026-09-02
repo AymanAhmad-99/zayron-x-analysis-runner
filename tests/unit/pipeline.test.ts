@@ -68,4 +68,31 @@ describe('Content Intelligence Pipeline (Days 4-7 Specification)', () => {
     expect(['VERY_HIGH', 'CONFIRMED']).toContain(result.confidenceState);
     expect(result.provenance.sourceId).toBe('tg_redteams_ru');
   });
+
+  it('should reject future source timestamps deterministically', async () => {
+    const futureDate = new Date(Date.now() + 86400 * 1000 * 30).toISOString();
+    const result = await normalizeIntelligenceSignal({
+      sourceId: 'test_source',
+      sourceName: 'Test Source',
+      sourceTrustScore: 0.8,
+      externalMessageId: 'future_1',
+      rawText: 'Critical CVE-2026-1111 alert',
+      publishedAt: futureDate,
+    });
+    expect(result.publicationStatus).toBe('REJECTED');
+    expect(result.rejectionReason).toContain('timestamp');
+  });
+
+  it('should quarantine a signal with a future source timestamp', async () => {
+    const futureDate = new Date(Date.now() + 86400 * 1000 * 365).toISOString();
+    const result = await normalizeIntelligenceSignal({
+      sourceId: 'test_source',
+      sourceName: 'Test Source',
+      sourceTrustScore: 0.8,
+      externalMessageId: 'future_2',
+      rawText: 'Critical CVE-2026-2222 alert',
+      publishedAt: futureDate,
+    });
+    expect(result.publicationStatus).toBe('REJECTED');
+  });
 });

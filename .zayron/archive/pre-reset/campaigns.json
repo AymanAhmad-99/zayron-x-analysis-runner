@@ -1,0 +1,28 @@
+[
+  {
+    "id": "camp_d6cc3200-e47",
+    "name": "Operation APT29 (Cobalt Strike)",
+    "slug": "operation-apt29-cobalt-strike",
+    "actor_id": "act_apt29",
+    "target_sectors": "Critical Infrastructure, Government, Enterprise IT",
+    "target_regions": "Global",
+    "description": "Tracked threat activity by APT29 leveraging Cobalt Strike and exploiting CVE-2026-1453.",
+    "start_date": null,
+    "end_date": null,
+    "created_at": "2026-08-25 15:05:39",
+    "updated_at": "2026-08-25 15:05:39"
+  },
+  {
+    "id": "camp_1a12216e-b34",
+    "name": "Operation DarkSide (Lumma)",
+    "slug": "operation-darkside-lumma",
+    "actor_id": "act_darkside",
+    "target_sectors": "Critical Infrastructure, Government, Enterprise IT",
+    "target_regions": "Global",
+    "description": "Tracked threat activity by DarkSide leveraging Lumma and exploiting CVE-2026-69836.",
+    "start_date": null,
+    "end_date": null,
+    "created_at": "2026-08-25 15:05:44",
+    "updated_at": "2026-08-25 15:05:44"
+  }
+]

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getIOCs } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
+export const metadata = { title: 'IOC Intelligence | ZAYRON-X', description: 'Normalized indicators and linked observations from the current intelligence data contract.', alternates: { canonical: '/iocs' } };
 
 export default async function IOCsIndexPage({
   searchParams,
@@ -23,9 +24,9 @@ export default async function IOCsIndexPage({
       <header className="bg-white border-b border-[#111111]/10 pt-16 pb-12">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl">
-            <h1 className="font-serif text-5xl font-bold text-[#111111] mb-6">Indicators of Compromise</h1>
+            <div className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[.14em] text-[#C94F00]">DATA / IOC INTELLIGENCE</div><h1 className="font-editorial text-5xl font-bold uppercase tracking-[-.035em] text-[#050505] mb-6">Indicators of Compromise</h1>
             <p className="text-lg text-[#2D2D2D] font-sans leading-relaxed">
-              Technical artifacts, C2 infrastructure, IP addresses, domains, and cryptographic hashes extracted from threat intelligence pipelines.
+              Searchable technical indicator records returned by the current ZAYRON-X intelligence data source.
             </p>
           </div>
         </div>
@@ -34,7 +35,7 @@ export default async function IOCsIndexPage({
       {/* Search Bar */}
       <div className="border-b border-[#111111]/10 bg-white sticky top-16 z-30 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <form method="GET" action="/iocs" className="relative w-full md:w-96">
+          <form id="ioc-search" method="GET" action="/iocs" className="relative w-full md:w-96">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#2D2D2D]" />
             <input 
               type="text" 
@@ -44,9 +45,7 @@ export default async function IOCsIndexPage({
               className="w-full pl-9 pr-3 py-2 bg-[#F7F7F5] border border-[#111111]/10 rounded-none text-sm font-sans focus:outline-none focus:border-[#FF6B00] transition-colors"
             />
           </form>
-          <div className="text-xs font-mono font-bold text-[#2D2D2D]">
-            {iocs.length} Active Indicators
-          </div>
+          <div className="flex items-center gap-3"><select name="type" form="ioc-search" defaultValue={typeFilter} aria-label="Filter by IOC type" className="border border-[#D9D7D0] bg-[#F7F7F4] px-3 py-2 text-[10px] font-mono uppercase"><option value="">All types</option><option value="ip">IP</option><option value="domain">Domain</option><option value="url">URL</option><option value="hash">Hash</option><option value="email">Email</option></select><div className="text-xs font-mono font-bold text-[#56606B]">{iocs.length} records</div></div>
         </div>
       </div>
 

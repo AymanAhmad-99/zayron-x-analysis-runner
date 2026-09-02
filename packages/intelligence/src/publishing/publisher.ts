@@ -26,6 +26,52 @@ export interface PublishResult {
   publicationKeys: string[];
 }
 
+async function persistEvidenceLedger(
+  report: IntelligenceAssessmentReport,
+  eventId: string,
+  db: any,
+): Promise<{ ok: boolean; reason?: string }> {
+  const evidence = (report.evidence || []).filter(
+    (item) => Boolean(item.evidenceId && item.snippet && item.sourceId),
+  );
+  if (evidence.length === 0) return { ok: false, reason: 'No source-linked evidence to persist' };
+
+  try {
+    for (const item of evidence) {
+      await db.prepare(`
+        INSERT INTO evidence_ledger (
+          claim_id, event_id, claim, classification, source_id, source_tier,
+          published_at, retrieved_at, evidence_type, supports_or_contradicts,
+          citation, content_hash
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(claim_id) DO UPDATE SET
+          claim = excluded.claim,
+          classification = excluded.classification,
+          source_id = excluded.source_id,
+          retrieved_at = excluded.retrieved_at,
+          citation = excluded.citation,
+          content_hash = excluded.content_hash
+      `).bind(
+        item.evidenceId,
+        eventId,
+        item.snippet,
+        'OBSERVED_FACT',
+        item.sourceId,
+        null,
+        null,
+        new Date().toISOString(),
+        item.sourceType || 'source_evidence',
+        'SUPPORTS',
+        item.snippet,
+        null,
+      ).run();
+    }
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, reason: `Evidence ledger persistence failed: ${String(error)}` };
+  }
+}
+
 /**
  * Validates the strict Phase 3 Content Quality Gate (Section 31)
  */
@@ -52,6 +98,21 @@ export function validateQualityGate(report: IntelligenceAssessmentReport): Quali
   const placeholderRegex = /\b(lorem ipsum|placeholder|todo|fake stats|as an ai language model|unknown vulnerability)\b/i;
   if (placeholderRegex.test(assessment.headline || '') || placeholderRegex.test(assessment.executive_summary || '')) {
     violations.push('Text contains placeholder or generic LLM refusal artifacts');
+  }
+
+  // Strong epistemic labels require claim-level evidence, not model output alone.
+  const strongClaim = /CONFIRMED|VERIFIED|ACTIVE EXPLOITATION|ATTRIBUTED/i.test(
+    `${assessment.confidence_state} ${assessment.headline} ${assessment.executive_summary}`,
+  );
+  const groundedEvidence = (report.evidence || []).filter(
+    (item) => Boolean(item.evidenceId && item.snippet && item.sourceId),
+  );
+  if (strongClaim && groundedEvidence.length === 0) {
+    violations.push('Strong intelligence claim has no grounded evidence ledger record');
+  }
+
+  if ((assessment.threat_level === 'CRITICAL' || assessment.threat_level === 'HIGH') && groundedEvidence.length === 0) {
+    violations.push('High-impact report requires at least one source-linked evidence record');
   }
 
   return {
@@ -86,6 +147,30 @@ export async function executePublishingWorkflow(
       qualityGate,
       publicationKeys: [],
     };
+  }
+
+  const strongClaim = /CONFIRMED|VERIFIED|ACTIVE EXPLOITATION|ATTRIBUTED/i.test(
+    `${report.assessment.confidence_state} ${report.assessment.headline} ${report.assessment.executive_summary}`,
+  );
+  if (strongClaim && !options.db) {
+    qualityGate.passed = false;
+    qualityGate.violations.push('Persistent evidence ledger is required for strong public claims');
+    return {
+      status: 'HELD', article: null, distribution: calculateDistributionDecision(report),
+      derivatives: null, qualityGate, publicationKeys: [],
+    };
+  }
+
+  if (options.db) {
+    const ledger = await persistEvidenceLedger(report, eventId, options.db);
+    if (!ledger.ok && strongClaim) {
+      qualityGate.passed = false;
+      qualityGate.violations.push(ledger.reason || 'Persistent evidence ledger unavailable');
+      return {
+        status: 'HELD', article: null, distribution: calculateDistributionDecision(report),
+        derivatives: null, qualityGate, publicationKeys: [],
+      };
+    }
   }
 
   // Step 2: Canonical Article & SEO Generation

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 const inter = Inter({
@@ -55,13 +53,38 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "ZAYRON-X",
+              "alternateName": ["ZAYRON", "ZERONX", "zayron-x.co"],
               "url": "https://zayron-x.co",
-              "description": "Evidence-driven cyber threat intelligence and vulnerability radar."
+              "description": "Evidence-driven cyber threat intelligence and vulnerability radar.",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://zayron-x.co/search?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
             })
           }}
         />
-        <Header />
-        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "ZAYRON-X",
+              "alternateName": ["ZAYRON", "ZERONX", "ZAYRON-X Intelligence"],
+              "url": "https://zayron-x.co",
+              "logo": "https://zayron-x.co/favicon.ico",
+              "description": "Evidence-driven cyber threat intelligence and technical research.",
+              "sameAs": [
+                "https://t.me/zayronxai",
+                "https://twitter.com/zayronx"
+              ]
+            })
+          }}
+        />
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col">
           {children}

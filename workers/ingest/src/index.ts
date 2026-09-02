@@ -9,19 +9,26 @@ import {
   detectCampaignCandidate,
   generatePlatformDerivatives,
 } from '@zayron/intelligence';
+import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
   DB: D1Database;
+  INGEST_QUEUE?: Queue;
   STORAGE?: R2Bucket;
   AI?: any;
   VECTORIZE?: any;
   PUBLISH_QUEUE?: Queue;
   TELEGRAM_COLLECTOR_SERVICE?: Fetcher;
   TELEGRAM_TARGET_CHANNEL?: string;
+  RESEARCH_WORKFLOW?: any;
+  KNOWLEDGE_PROCESSOR?: any;
+  KNOWLEDGE_BUCKET?: R2Bucket;
+  KNOWLEDGE_CORPUS_WORKFLOW?: any;
   ENVIRONMENT: string;
 }
 
 interface IngestionMessagePayload {
+  eventId?: string;
   sourceId: string;
   sourceName?: string;
   sourceTrustScore?: number;
@@ -36,10 +43,145 @@ interface IngestionMessagePayload {
   metadata?: Record<string, unknown>;
 }
 
-export default {
+async function sha256Hex(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function validSourceTimestamp(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime()) || date.getTime() > Date.now() + 5 * 60 * 1000) return undefined;
+  return date.toISOString();
+}
+
+async function enqueueExternalSignal(env: Env, payload: Omit<IngestionMessagePayload, 'contentHash'> & { contentHash?: string }) {
+  if (!env.INGEST_QUEUE) throw new Error('INGEST_QUEUE is not configured');
+  const contentHash = payload.contentHash || await sha256Hex(payload.rawText);
+  await env.INGEST_QUEUE.send({ ...payload, contentHash });
+}
+
+async function recordTrace(env: Env, traceId: string, eventId: string, stage: string, status: string, attempt: number, startedAt: number, resourceId?: string, error?: unknown) {
+  await env.DB.prepare(
+    `INSERT INTO event_trace (trace_id,event_id,stage,status,attempt,started_at,completed_at,duration_ms,resource_id,error_code,error_message)
+     VALUES (?,?,?,?,?,datetime(? / 1000,'unixepoch'),datetime('now'),?,?,?,?)`,
+  ).bind(traceId, eventId, stage, status, attempt, startedAt, Date.now() - startedAt, resourceId || null,
+    error ? 'STAGE_ERROR' : null, error ? String(error).slice(0, 500) : null).run();
+}
+
+async function recordKnowledgeMarker(env: Env, traceId: string, requestId: string, stage: string, startedAt: number, error?: unknown) {
+  await recordTrace(env, traceId, requestId, stage, error ? 'FAILED' : 'COMPLETED', 1, startedAt, requestId, error);
+}
+
+const ingestHandlers = {
+  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    if (env.KNOWLEDGE_PROCESSOR) {
+      try {
+        const smoke = await env.KNOWLEDGE_PROCESSOR.smokeTest();
+        console.log(JSON.stringify({ type: 'KNOWLEDGE_AI_SMOKE_TEST', ...smoke }));
+      } catch (error) {
+        console.error(JSON.stringify({ type: 'KNOWLEDGE_AI_SMOKE_TEST_FAILED', error: String(error) }));
+        return;
+      }
+    }
+    const rssResponse = await fetch('https://www.cisa.gov/cybersecurity-advisories/all.xml', { headers: { accept: 'application/rss+xml, application/xml' } });
+    if (rssResponse.ok) {
+      const xml = await rssResponse.text();
+      const item = xml.match(/<item>[\s\S]*?<\/item>/i)?.[0];
+      if (item) {
+        const readTag = (tag: string) => item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'))?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+        const title = readTag('title') || 'CISA advisory';
+        const link = readTag('link') || 'https://www.cisa.gov/cybersecurity-advisories/all.xml';
+        const publishedAt = validSourceTimestamp(readTag('pubDate') || readTag('published'));
+        const rawText = `${title}\n${readTag('description') || ''}`.slice(0, 12000);
+        await enqueueExternalSignal(env, { sourceId: 'cisa-rss', sourceName: 'CISA Advisories RSS', externalMessageId: link, rawText, sourceUrl: link, publishedAt, receivedAt: new Date().toISOString() });
+      }
+    }
+
+    const nvdStart = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const nvdResponse = await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?pubStartDate=${encodeURIComponent(nvdStart)}&resultsPerPage=20`, { headers: { accept: 'application/json' } });
+    if (nvdResponse.ok) {
+      const data = await nvdResponse.json() as any;
+      for (const item of (data.vulnerabilities || []).slice(0, 5)) {
+        const cve = item.cve;
+        const cveId = cve?.id;
+        if (!cveId) continue;
+        const description = cve.descriptions?.find((entry: any) => entry.lang === 'en')?.value || '';
+        const publishedAt = validSourceTimestamp(cve.published);
+        await enqueueExternalSignal(env, { sourceId: 'nvd-api', sourceName: 'NIST National Vulnerability Database', externalMessageId: cveId, rawText: `${cveId}: ${description}`.slice(0, 12000), sourceUrl: `https://nvd.nist.gov/vuln/detail/${cveId}`, publishedAt, receivedAt: new Date().toISOString(), metadata: { authoritative: true, cvss: cve.metrics } });
+      }
+    }
+
+    // Batch A: CISA KEV and one official vendor feed use the same queue contract.
+    const kevResponse = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', { headers: { accept: 'application/json' } });
+    if (kevResponse.ok) {
+      const kev = await kevResponse.json() as any;
+      const item = kev.vulnerabilities?.[0];
+      if (item?.cveID) {
+        await enqueueExternalSignal(env, {
+          sourceId: 'cisa-kev', sourceName: 'CISA Known Exploited Vulnerabilities',
+          externalMessageId: item.cveID, rawText: `${item.cveID}: ${item.vulnerabilityName || ''}. ${item.shortDescription || ''}`.slice(0, 12000),
+          sourceUrl: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
+          publishedAt: validSourceTimestamp(item.dateAdded), receivedAt: new Date().toISOString(),
+          metadata: { authoritative: true, authority_tier: 1, catalog: 'CISA KEV', version: kev.dateReleased },
+        });
+      }
+    }
+
+    const msrcResponse = await fetch('https://api.msrc.microsoft.com/update-guide/rss', { headers: { accept: 'application/rss+xml, application/xml' } });
+    if (msrcResponse.ok) {
+      const xml = await msrcResponse.text();
+      const item = xml.match(/<item>[\s\S]*?<\/item>/i)?.[0];
+      if (item) {
+        const readTag = (tag: string) => item.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i'))?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim();
+        const link = readTag('link');
+        const title = readTag('title');
+        if (link && title) await enqueueExternalSignal(env, {
+          sourceId: 'msrc-advisory', sourceName: 'Microsoft Security Response Center', externalMessageId: link,
+          rawText: title, sourceUrl: link, publishedAt: validSourceTimestamp(readTag('pubDate')), receivedAt: new Date().toISOString(),
+          metadata: { authoritative: true, authority_tier: 1, parser_version: 'rss-v1' },
+        });
+      }
+    }
+  },
   async queue(batch: MessageBatch<IngestionMessagePayload>, env: Env): Promise<void> {
     for (const msg of batch.messages) {
-      const payload = msg.body;
+      const rawBody = msg.body as any;
+      const payload = rawBody?.body && typeof rawBody.body === 'object' ? rawBody.body : rawBody;
+      if ((payload as any)?.operation === 'SMOKE_TEST') {
+        const requestId = String((payload as any).request_id || crypto.randomUUID());
+        const traceId = String((payload as any).trace_id || `trace_${crypto.randomUUID().slice(0, 12)}`);
+        const started = Date.now();
+        try {
+          await recordKnowledgeMarker(env, traceId, requestId, 'KNOWLEDGE_TRIGGER_RECEIVED', started);
+          if (!env.KNOWLEDGE_PROCESSOR || !env.KNOWLEDGE_BUCKET) throw new Error('Knowledge internal bindings unavailable');
+          await recordKnowledgeMarker(env, traceId, requestId, 'KNOWLEDGE_RPC_STARTED', started);
+          const result = await env.KNOWLEDGE_PROCESSOR.smokeTest({ request_id: requestId, trace_id: traceId });
+          await recordKnowledgeMarker(env, traceId, requestId, 'KNOWLEDGE_RPC_COMPLETED', started);
+          console.log(JSON.stringify({ type: 'KNOWLEDGE_SMOKE_COMPLETED', request_id: requestId, trace_id: traceId, ...result }));
+          msg.ack();
+        } catch (error) {
+          await recordKnowledgeMarker(env, traceId, requestId, 'KNOWLEDGE_RPC_FAILED', started, error);
+          console.error(JSON.stringify({ type: 'KNOWLEDGE_CORE_BATCH_FAILED', error: String(error) }));
+          msg.retry();
+        }
+        continue;
+      }
+      if ((payload as any)?.operation === 'START_KNOWLEDGE_JOB') {
+        try {
+          if (!env.KNOWLEDGE_CORPUS_WORKFLOW) throw new Error('Knowledge corpus workflow binding unavailable');
+          const jobId = String((payload as any).knowledge_job_id || 'knowledge-physical-15-v1');
+          const instance = await env.KNOWLEDGE_CORPUS_WORKFLOW.create({ id: jobId, params: { knowledge_job_id: jobId, corpus_version: 'physical-15-v1', processing_version: 'physical-15-v1', source_object: 'physical-15/derived/physical-15-chunks.ndjson' } });
+          console.log(JSON.stringify({ type: 'KNOWLEDGE_JOB_STARTED', knowledge_job_id: jobId, workflow_instance_id: instance.id }));
+          msg.ack();
+        } catch (error) { console.error(JSON.stringify({ type: 'KNOWLEDGE_JOB_START_FAILED', error: String(error) })); msg.retry(); }
+        continue;
+      }
+      const traceId = String(payload?.metadata?.trace_id || `trace_${crypto.randomUUID().slice(0, 12)}`);
+      const traceEventId = payload.eventId || `ingest_${msg.id}`;
+      const consumerStarted = Date.now();
+      await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'STARTED', msg.attempts || 1, consumerStarted, msg.id);
 
       try {
         // ── 1. Idempotency Check: (source_id + external_message_id) OR content_hash ──
@@ -51,6 +193,7 @@ export default {
 
         if (existing) {
           console.log(`[INGEST] Skipping duplicate message: source=${payload.sourceId}, id=${payload.externalMessageId}`);
+          await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'COMPLETED', msg.attempts || 1, consumerStarted, msg.id);
           msg.ack();
           continue;
         }
@@ -209,7 +352,7 @@ CRITICAL RULES:
         }
 
         // ── 6. Generate Canonical English Intelligence Event ───────────────────
-        const eventId = `evt_${crypto.randomUUID().slice(0, 16)}`;
+        const eventId = payload.eventId || `evt_${crypto.randomUUID().slice(0, 16)}`;
         const eventType = result.entities.cves.length > 0 
           ? 'vulnerability_exploitation' 
           : result.entities.malware.length > 0 
@@ -252,12 +395,21 @@ CRITICAL RULES:
             eventId,
             payload.sourceId,
             messageId,
-            result.provenance.evidenceType,
+             payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
             result.provenance.sourceUrl,
             result.provenance.weight,
             finalSummary.slice(0, 250)
           )
           .run();
+
+        if (payload.eventId && env.RESEARCH_WORKFLOW) {
+          await env.DB.prepare("UPDATE canary_events SET status = 'EVIDENCE_READY', updated_at = datetime('now') WHERE event_id = ?").bind(eventId).run();
+          try {
+            await env.RESEARCH_WORKFLOW.create({ id: eventId, params: { eventId, traceId: String(payload.metadata?.trace_id || `trace_${crypto.randomUUID().slice(0, 12)}`), query: `${result.entities.cves[0] || 'NVD vulnerability'} ${finalTitle}`, sourceId: payload.sourceId, evidenceIds: [evidenceId] } });
+          } catch (workflowError) {
+            console.error('[INGEST] Research Workflow start failed:', workflowError);
+          }
+        }
 
         // ── 8. Persist Extracted CVEs into vulnerabilities table ───────────────
         for (const cve of result.entities.cves) {
@@ -579,68 +731,19 @@ CRITICAL RULES:
           console.log(`[INGEST] Public article created: ${articleSlug} (${articleId})`);
 
           // ── 16B. Outbound Social Publication to Official Channel "Zeron X" (@zayronxai) ──
-          if (env.TELEGRAM_COLLECTOR_SERVICE) {
-            try {
-              const canonicalUrl = `https://zayron-x.co/threats/${articleSlug}`;
-              const reportForDerivatives = {
-                assessment: {
-                  headline: finalTitle,
-                  executive_summary: articleDek,
-                  threat_level: result.severity.toUpperCase(),
-                  confidence_state: result.confidenceState,
-                  confidence_score: result.confidenceScore,
-                },
-                what_happened: articleAiSummary || finalSummary,
-                why_it_matters: articleExcerpt || finalSummary,
-                vulnerabilities: result.entities.cves.map(c => ({ cveId: c, isExploitedInWild: result.severity === 'critical', severity: result.severity.toUpperCase() })),
-                actors: result.entities.actors.map(a => ({ name: a })),
-                malware: result.entities.malware.map(m => ({ name: m })),
-                iocs: [
-                  ...result.entities.ipv4s.map(ip => ({ type: 'ipv4' as const, value: ip, confidence: result.confidenceScore })),
-                  ...result.entities.sha256s.map(h => ({ type: 'sha256' as const, value: h, confidence: result.confidenceScore })),
-                ],
-                depth: 'STANDARD' as const,
-              };
-
-              const derivatives = generatePlatformDerivatives(reportForDerivatives, canonicalUrl);
-              const targetChannel = env.TELEGRAM_TARGET_CHANNEL || 'zayronxai';
-              
-              const pubResp = await env.TELEGRAM_COLLECTOR_SERVICE.fetch('http://internal/publish', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  target: targetChannel,
-                  message: derivatives.telegram,
-                }),
-              });
-
-              if (pubResp.ok) {
-                const pubData = await pubResp.json() as any;
-                const assetId = `asset_tg_${crypto.randomUUID().slice(0, 10)}`;
-                const pubId = `pub_tg_${crypto.randomUUID().slice(0, 10)}`;
-                const idempotencyKey = `idem_tg_${articleId}`;
-
-                await env.DB.prepare(
-                  `INSERT INTO social_assets (id, event_id, article_id, platform, format, status, body, idempotency_key, created_at, updated_at)
-                   VALUES (?, ?, ?, 'telegram', 'ALERT', 'PUBLISHED', ?, ?, datetime('now'), datetime('now'))`
-                )
-                  .bind(assetId, eventId, articleId, derivatives.telegram, idempotencyKey)
-                  .run();
-
-                await env.DB.prepare(
-                  `INSERT INTO social_publications (id, asset_id, platform, external_post_id, status, attempts, published_at, created_at, updated_at)
-                   VALUES (?, ?, 'telegram', ?, 'PUBLISHED', 1, datetime('now'), datetime('now'), datetime('now'))`
-                )
-                  .bind(pubId, assetId, String(pubData.message_id || ''))
-                  .run();
-
-                console.log(`[INGEST] Successfully published article ${articleId} to Telegram @${targetChannel} (MsgID: ${pubData.message_id})`);
-              } else {
-                console.warn(`[INGEST] Telegram publish response not ok: ${pubResp.status}`);
-              }
-            } catch (pubErr) {
-              console.error('[INGEST] Outbound Telegram publish error (non-fatal):', pubErr);
-            }
+          if (env.PUBLISH_QUEUE) {
+            const canonicalUrl = `https://zayron-x.co/threats/${articleSlug}`;
+            const reportForDerivatives = {
+              assessment: { headline: finalTitle, executive_summary: articleDek, threat_level: result.severity.toUpperCase(), confidence_state: result.confidenceState, confidence_score: result.confidenceScore },
+              what_happened: articleAiSummary || finalSummary,
+              why_it_matters: articleExcerpt || finalSummary,
+              vulnerabilities: result.entities.cves.map(c => ({ cveId: c, isExploitedInWild: result.severity === 'critical', severity: result.severity.toUpperCase() })),
+              actors: result.entities.actors.map(a => ({ name: a })), malware: result.entities.malware.map(a => ({ name: a })),
+              iocs: [...result.entities.ipv4s.map(ip => ({ type: 'ipv4' as const, value: ip, confidence: result.confidenceScore })), ...result.entities.sha256s.map(h => ({ type: 'sha256' as const, value: h, confidence: result.confidenceScore }))], depth: 'STANDARD' as const,
+            };
+            const derivatives = generatePlatformDerivatives(reportForDerivatives as any, canonicalUrl);
+            await env.PUBLISH_QUEUE.send({ type: 'PUBLISH_INTELLIGENCE', eventId, articleId, telegramMessage: derivatives.telegram, idempotencyKey: `idem_tg_${articleId}` });
+            console.log(`[INGEST] Queued article ${articleId} for controlled publication`);
           }
         } else {
           console.log(`[INGEST] Signal retained as internal intelligence event ${eventId} (Status: ${result.publicationStatus})`);
@@ -654,8 +757,10 @@ CRITICAL RULES:
           .run();
 
         // Acknowledge queue message
+        await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'COMPLETED', msg.attempts || 1, consumerStarted, msg.id);
         msg.ack();
       } catch (error) {
+        await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'FAILED', msg.attempts || 1, consumerStarted, msg.id, error);
         console.error('Ingestion queue worker processing failure:', error);
         if (msg.attempts < 3) {
           msg.retry();
@@ -667,3 +772,69 @@ CRITICAL RULES:
     }
   },
 };
+
+/** Capability-scoped internal API exposed only through a Worker service binding. */
+export default class IngestWorker extends WorkerEntrypoint<Env> {
+  async processKnowledgeBatch(input: { chunks: any[] }): Promise<any> {
+    if (!this.env.KNOWLEDGE_PROCESSOR) throw new Error('Knowledge processor binding unavailable');
+    return this.env.KNOWLEDGE_PROCESSOR.processBatch(input);
+  }
+
+  async submitNvdCanary(input: { cve_id: string; source: string; raw_record: unknown }): Promise<{ event_id: string; status: string }> {
+    if (!/^CVE-\d{4}-\d{4,19}$/.test(input?.cve_id || '') || !input?.source || !input?.raw_record) {
+      throw new Error('Invalid NVD canary payload');
+    }
+    const rawText = JSON.stringify(input.raw_record).slice(0, 12000);
+    const traceId = `trace_${crypto.randomUUID().slice(0, 12)}`;
+    const externalMessageId = input.cve_id;
+    const contentHash = await sha256Hex(JSON.stringify(input.raw_record));
+    // CVE identity is stable; the content hash tracks a new NVD version.
+    const dedupKey = `nvd-api:${input.cve_id}`;
+    const existing = await this.env.DB.prepare(
+      "SELECT event_id, status FROM canary_events WHERE dedup_key = ? OR dedup_key LIKE ? ORDER BY (dedup_key = ?) DESC, created_at ASC LIMIT 1",
+    ).bind(dedupKey, `${dedupKey}:%`, dedupKey).first<{ event_id: string; status: string }>();
+    if (existing?.event_id) {
+      // A prior DB insert may have outlived a failed queue handoff. Re-drive
+      // only non-terminal events; terminal events remain idempotent duplicates.
+      const terminal = new Set(['EVIDENCE_READY', 'ANALYZED', 'TRUSTED', 'READY_TO_PUBLISH', 'PUBLISHED', 'DUPLICATE']);
+      if (!terminal.has(existing.status)) {
+        const retrievedAt = new Date().toISOString();
+        const rawText = JSON.stringify(input.raw_record).slice(0, 12000);
+        await enqueueExternalSignal(this.env, {
+          eventId: existing.event_id, sourceId: 'nvd-api', sourceName: 'NIST National Vulnerability Database',
+          externalMessageId: input.cve_id, contentHash, rawText,
+          sourceUrl: `https://nvd.nist.gov/vuln/detail/${input.cve_id}`,
+          publishedAt: retrievedAt, receivedAt: retrievedAt,
+          metadata: { authoritative: true, source: input.source, raw_record_hash: contentHash, trace_id: traceId },
+        });
+        await this.env.DB.prepare("UPDATE canary_events SET status = 'QUEUED', updated_at = datetime('now') WHERE event_id = ?")
+          .bind(existing.event_id).run();
+        return { event_id: existing.event_id, status: 'QUEUED_RETRY' };
+      }
+      return { event_id: existing.event_id, status: 'DUPLICATE' };
+    }
+
+    const eventId = `evt_nvd_${crypto.randomUUID().slice(0, 12)}`;
+    const sourceUrl = `https://nvd.nist.gov/vuln/detail/${input.cve_id}`;
+    const retrievedAt = new Date().toISOString();
+    await this.env.DB.prepare(
+      `INSERT INTO canary_events (event_id, source_id, event_type, source_url, published_at, retrieved_at, ingested_at, content_hash, dedup_key, status, created_at, updated_at)
+       VALUES (?, 'nvd-api', 'vulnerability', ?, ?, ?, datetime('now'), ?, ?, 'RECEIVED', datetime('now'), datetime('now'))`,
+    ).bind(eventId, sourceUrl, retrievedAt, retrievedAt, contentHash, dedupKey).run();
+    await enqueueExternalSignal(this.env, {
+      eventId, sourceId: 'nvd-api', sourceName: 'NIST National Vulnerability Database',
+      externalMessageId, contentHash, rawText, sourceUrl, publishedAt: retrievedAt,
+      receivedAt: retrievedAt, metadata: { authoritative: true, source: input.source, raw_record_hash: contentHash, trace_id: traceId },
+    });
+    await this.env.DB.prepare("UPDATE canary_events SET status = 'QUEUED', updated_at = datetime('now') WHERE event_id = ?").bind(eventId).run();
+    return { event_id: eventId, status: 'QUEUED' };
+  }
+
+  async scheduled(controller: ScheduledController): Promise<void> {
+    return ingestHandlers.scheduled(controller, this.env);
+  }
+
+  async queue(batch: MessageBatch<IngestionMessagePayload>): Promise<void> {
+    return ingestHandlers.queue(batch, this.env);
+  }
+}

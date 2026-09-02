@@ -110,7 +110,7 @@ export class TelegramCollectorSupervisor {
       return false;
     }
 
-    const payload = buildTelegramIngestPayload(envelope);
+    const payload = await buildTelegramIngestPayload(envelope);
     if (this.knownHashes.has(payload.contentHash)) {
       this.state.duplicates_dropped++;
       return false;

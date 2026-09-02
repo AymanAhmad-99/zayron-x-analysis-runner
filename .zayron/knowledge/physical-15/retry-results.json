@@ -1,0 +1,50 @@
+[
+    {
+        "id":  "01-heuer-psychology",
+        "url":  "https://www.cia.gov/resources/csi/static/9a5f1162fd0932c29bfed1c030edf4ae/Pyschology-of-Intelligence-Analysis.pdf",
+        "file":  "01-heuer-psychology.pdf",
+        "bytes":  1904188,
+        "sha256":  "BC703F2140E39E14E277C1277A84055A2529161F90DB6633136F5457B6C60849",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "02-icd-203",
+        "url":  "https://www.dni.gov/files/documents/ICD/ICD-203.pdf",
+        "file":  "02-icd-203.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (403) Forbidden."
+    },
+    {
+        "id":  "08-first-epss",
+        "url":  "https://www.first.org/epss/EPSS-v3_SIG_Review.pdf",
+        "file":  "08-first-epss.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (404) Not Found."
+    },
+    {
+        "id":  "10-oasis-stix21",
+        "url":  "https://docs.oasis-open.org/cti/stix/v2.1/stix-v2.1.pdf",
+        "file":  "10-oasis-stix21.pdf",
+        "bytes":  6133192,
+        "sha256":  "EBF562ADC1F20216CCBBEA958A492292BD9A54496FDD834A6331EDE405614EB3",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "11-oasis-taxii21",
+        "url":  "https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.pdf",
+        "file":  "11-oasis-taxii21.pdf",
+        "bytes":  1275632,
+        "sha256":  "28D19DD11F3B4558B0CCFDA2205F163D8EB62C52BEC8E073B0DA29831D250213",
+        "status":  "DOWNLOADED"
+    },
+    {
+        "id":  "15-owasp-top10",
+        "url":  "https://owasp.org/Top10/2021/PDF/OWASP%20Top%2010-2021.pdf",
+        "file":  "15-owasp-top10.pdf",
+        "bytes":  0,
+        "sha256":  null,
+        "status":  "FAILED: The remote server returned an error: (404) Not Found."
+    }
+]

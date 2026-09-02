@@ -1,23 +1,24 @@
 import React from 'react';
-import { Target, ShieldAlert } from 'lucide-react';
+import { Target } from 'lucide-react';
 import Link from 'next/link';
 import { getCampaigns } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
+export const metadata = { title: 'Campaign Intelligence | ZAYRON-X', description: 'Campaign records and relationships returned by the current intelligence data contract.', alternates: { canonical: '/campaigns' } };
 
 export default async function CampaignsPage() {
   const res = await getCampaigns();
   const campaigns = res?.data || [];
 
   return (
-    <div className="flex-1 flex flex-col bg-[#F7F7F5] min-h-screen">
+    <div className="flex-1 flex flex-col bg-[#F7F7F4] min-h-screen">
       {/* Editorial Header */}
       <header className="bg-white border-b border-[#111111]/10 pt-16 pb-12">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl">
             <h1 className="font-serif text-5xl font-bold text-[#111111] mb-6">Threat Campaigns</h1>
             <p className="text-lg text-[#2D2D2D] font-sans leading-relaxed">
-              Tracked adversary campaigns correlating multi-stage attack chains, targeted sectors, and geopolitical motivations.
+              Structured campaign records available from the current ZAYRON-X intelligence data source.
             </p>
           </div>
         </div>
@@ -47,10 +48,11 @@ export default async function CampaignsPage() {
               <Link 
                 key={camp.id} 
                 href={`/campaigns/${camp.slug}`}
-                className="p-6 bg-white border border-[#111111]/10 hover:border-[#111111] transition-colors block"
+                className="p-5 bg-white border border-[#D9D7D0] rounded-[8px] hover:border-[#C94F00] transition-colors block"
               >
                 <h3 className="font-serif text-2xl font-bold text-[#111111] mb-2">{camp.name}</h3>
-                <p className="text-sm text-[#2D2D2D] mb-4">{camp.description}</p>
+                <p className="text-sm text-[#56606B] mb-4">{camp.description || 'UNKNOWN'}</p>
+                <div className="mb-4 flex flex-wrap gap-3 font-mono text-[10px] uppercase text-[#8C8F98]"><span>ACTOR {camp.actor_id || 'UNKNOWN'}</span><span>START {camp.start_date || 'UNKNOWN'}</span><span>END {camp.end_date || 'UNKNOWN'}</span></div>
                 <span className="text-xs font-bold text-[#FF6B00] uppercase tracking-wider">Inspect Campaign →</span>
               </Link>
             ))}

@@ -1,0 +1,64 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "zayron-x-web",
+  "main": "vinext/server/fetch-handler",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "assets": {
+    "directory": "dist/client",
+    "not_found_handling": "none",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "API_WORKER",
+      "service": "zayron-x-api"
+    }
+  ],
+  "routes": [
+    { "pattern": "zayron-x.co", "custom_domain": true },
+    { "pattern": "www.zayron-x.co", "custom_domain": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "zayron-x-db",
+      "database_id": "c19c8f45-801b-4034-bd76-402e5e5389b5"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "NEXT_PUBLIC_SITE_NAME": "ZAYRON-X",
+    "NEXT_PUBLIC_SITE_URL": "https://zayron-x.co"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "cache": { "enabled": true },
+  "env": {
+    "preview": {
+      "name": "zayron-x-web-preview",
+      "main": "vinext/server/fetch-handler",
+      "workers_dev": true,
+      "assets": {
+        "directory": "dist/client",
+        "not_found_handling": "none",
+        "binding": "ASSETS"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "zayron-x-db",
+          "database_id": "c19c8f45-801b-4034-bd76-402e5e5389b5"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "preview",
+        "NEXT_PUBLIC_SITE_NAME": "ZAYRON-X [PREVIEW]",
+        "NEXT_PUBLIC_SITE_URL": "https://zayron-x-web-preview.aabusabih.workers.dev"
+      }
+    }
+  }
+}

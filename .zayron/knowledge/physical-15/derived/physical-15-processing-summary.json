@@ -1,0 +1,21 @@
+{
+  "documents": 14,
+  "chunks": 35185,
+  "processing_version": "physical-15-v1",
+  "source_files": [
+    "01-heuer-psychology",
+    "03-nist-sp-800-150",
+    "04-nist-sp-800-86",
+    "05-nist-sp-800-61r3",
+    "06-nist-csf-2",
+    "07-first-cvss4",
+    "08-first-epss",
+    "09-mitre-attack",
+    "10-oasis-stix21",
+    "11-oasis-taxii21",
+    "12-nist-ai-rmf",
+    "13-nist-genai-profile",
+    "14-nist-sp-800-53",
+    "15-owasp-top10"
+  ]
+}

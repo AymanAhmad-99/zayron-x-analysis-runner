@@ -1,10 +1,21 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── ZAYRON-X Master Visual System Tokens ── */
+  /* ── ZAYRON-X Marketing Design Tokens ── */
+  --color-background:            #FFFFFF;
+  --color-surface-soft:          #F7F7F5;
+  --color-ink:                   #111111;
+  --color-muted:                 #666666;
+  --color-brand-orange:          #FF6B00;
+  --color-brand-blue:            #00A8FF;
+  --color-status-critical:       #D92D20;
+  --color-status-success:        #22C55E;
+  --color-border-subtle:         #EAEAEA;
+  --color-workspace-base:        #050505;
+  --color-workspace-surface:     #101214;
 
-  /* Colors */
-  --color-zx-base:               #F5F4F0;
+  /* ── ZAYRON-X Platinum Editorial Tokens ── */
+  --color-zx-base:               #F7F7F4;
   --color-zx-surface:            #FFFFFF;
   --color-zx-surface-subtle:     #EBEAE5;
   --color-zx-surface-dark:       #111215;
@@ -14,12 +25,12 @@
   --color-zx-ink-tertiary:       #8C8F98;
   --color-zx-border:             #E1DFD7;
   --color-zx-border-dark:        #28292E;
-  --color-zx-signal:             #D9531E;
+  --color-zx-signal:             #C94F00;
   --color-zx-critical:           #C82323;
   --color-zx-high:               #D9531E;
   --color-zx-medium:             #D9821E;
-  --color-zx-low:                #2A7B62;
-  --color-zx-success:            #1D8A5E;
+  --color-zx-low:                #56606B;
+  --color-zx-success:            #56606B;
 
   /* Typography */
   --font-sans:  var(--font-sans), 'Inter', system-ui, -apple-system, sans-serif;
@@ -39,16 +50,74 @@
 }
 
 :root {
-  --background: #F5F4F0;
-  --foreground: #111214;
+  /* Backgrounds */
+  --bg-page: #FAFAF7;        /* main page background, warm off-white */
+  --bg-panel-dark: #0E0F11;  /* dark sections (hero side panel, footer, pricing) */
+  --bg-card: #FFFFFF;        /* card background on light sections */
+  --bg-card-dark: #16181C;   /* card background on dark sections */
+  --bg-hover: #F3F2EE;       /* hover state on light cards */
+
+  /* Borders */
+  --border-light: #E5E4DF;   /* hairline border, light sections */
+  --border-dark: #26282D;    /* hairline border, dark sections */
+
+  /* Text */
+  --text-primary-light: #0E0F11;   /* headlines on light bg */
+  --text-secondary-light: #55564F; /* body text on light bg */
+  --text-muted-light: #8B8A82;     /* meta/timestamps on light bg */
+
+  --text-primary-dark: #F5F4F0;    /* headlines on dark bg */
+  --text-secondary-dark: #A8A6A0;  /* body text on dark bg */
+  --text-muted-dark: #6E6D67;      /* meta/timestamps on dark bg */
+
+  /* Accent (single accent color — used sparingly) */
+  --accent: #D9531E;         /* warm rust-orange, primary CTA + emphasis word */
+  --accent-hover: #C24A1A;   /* darken 10% on hover */
+  --accent-subtle: #FBE9E1;  /* 8% tint, for subtle backgrounds/badges only */
+
+  /* Severity (used ONLY on threat/intelligence cards, never decoratively) */
+  --severity-critical: #D9531E;
+  --severity-high: #E0A030;
+  --severity-medium: #4A90A4;
+  --severity-low: #8B8A82;
+
+  /* Font families */
+  --font-display: var(--font-serif), 'Fraunces', serif;
+  --font-body: var(--font-sans), 'Inter', sans-serif;
+  --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 96px;
+  --space-8: 128px;
+
+  /* Border & Radius */
+  --radius-card: 4px;
+  --radius-badge: 2px;
+  --radius-button: 4px;
+  --border-width: 1px;
 }
 
-/* ── Base Reset ── */
+/* ── Base Reset & Mobile-First 390px Baseline ── */
 *, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  min-width: 390px;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
+  min-width: 390px;
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -56,6 +125,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: 15px;
   line-height: 1.55;
+  overflow-x: hidden;
 }
 
 /* ── Editorial Typography Utilities ── */
@@ -66,9 +136,15 @@ body {
 .zx-display {
   font-family: var(--font-serif);
   font-size: clamp(38px, 5.5vw, 60px);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.06;
+}
+
+.zx-signal { color: #FF6B00; }
+.zx-grid-paper {
+  background-image: linear-gradient(rgba(5,5,5,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(5,5,5,.055) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 .zx-h1 {
@@ -117,9 +193,9 @@ body {
 
 /* ── Severity Badges ── */
 .badge-critical {
-  background: rgba(200, 35, 35, 0.08);
-  color: #C82323;
-  border: 1px solid rgba(200, 35, 35, 0.22);
+  background: rgba(217, 45, 32, 0.08);
+  color: #D92D20;
+  border: 1px solid rgba(217, 45, 32, 0.22);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -153,9 +229,9 @@ body {
 }
 
 .badge-low {
-  background: rgba(42, 123, 98, 0.08);
-  color: #2A7B62;
-  border: 1px solid rgba(42, 123, 98, 0.22);
+  background: rgba(34, 197, 94, 0.08);
+  color: #22C55E;
+  border: 1px solid rgba(34, 197, 94, 0.22);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -167,7 +243,7 @@ body {
 /* ── Architectural Dividers ── */
 .zx-rule {
   border: none;
-  border-top: 1px solid #E1DFD7;
+  border-top: 1px solid #EAEAEA;
   margin: 0;
 }
 
@@ -228,3 +304,10 @@ a, button {
   background: #111214;
   color: #FFFFFF;
 }
+
+/* ── Container Centering Guarantee ── */
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+

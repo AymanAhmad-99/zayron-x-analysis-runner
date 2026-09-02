@@ -9,6 +9,7 @@
     "workers/*"
   ],
   "scripts": {
+    "dev": "bun --filter web dev",
     "build": "bun --filter '*' build",
     "lint": "bun --filter '*' lint",
     "typecheck": "bun --filter '*' typecheck",

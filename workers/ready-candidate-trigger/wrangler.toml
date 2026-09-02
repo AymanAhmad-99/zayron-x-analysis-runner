@@ -1,0 +1,9 @@
+name = "zayron-ready-candidate-trigger"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+[triggers]
+crons = ["*/1 * * * *"]
+[[services]]
+binding = "INGEST"
+service = "zayron-x-ingest"
+entrypoint = "IngestWorker"

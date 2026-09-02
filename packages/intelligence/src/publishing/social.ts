@@ -32,6 +32,12 @@ export interface PlatformDerivatives {
   };
 }
 
+export type PlatformDerivativePackage = PlatformDerivatives;
+
+function escapeTelegramHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 /**
  * Deterministic Hashtag Engine with Category Rules & Strict Platform Limits
  */
@@ -151,13 +157,21 @@ export function calculateDistributionDecision(report: IntelligenceAssessmentRepo
   };
 }
 
+function getActorName(actor: unknown): string {
+  if (!actor) return '';
+  if (typeof actor === 'string') return actor;
+  if (typeof actor === 'object' && 'name' in actor) return String((actor as any).name);
+  return '';
+}
+
 /**
  * Event-Specific Technical Analysis Synthesizer
  */
 function buildEventSpecificTechnicalAnalysis(report: IntelligenceAssessmentReport, primaryEntity: string): string {
   const hasCve = (report.vulnerabilities?.length || 0) > 0;
   const hasMalware = (report.malware?.length || 0) > 0;
-  const hasActor = (report.actors?.length || 0) > 0 && report.actors?.[0] !== 'Unattributed';
+  const firstActor = getActorName(report.actors?.[0]);
+  const hasActor = Boolean(firstActor && firstActor !== 'Unattributed');
   const hasIoc = (report.iocs?.length || 0) > 0;
 
   if (hasCve) {
@@ -169,7 +183,7 @@ function buildEventSpecificTechnicalAnalysis(report: IntelligenceAssessmentRepor
     return `Analysis of ${mw}: The payload targets process memory and credential stores. Observed execution chains employ binary obfuscation and native system utilities to evade endpoint protection.`;
   }
   if (hasActor) {
-    const actor = typeof report.actors![0] === 'string' ? report.actors![0] : report.actors![0].name;
+    const actor = firstActor;
     return `Analysis of ${actor}: Tactical activity focuses on persistent access and intelligence gathering. Infrastructure patterns demonstrate rotational C2 staging across commercial hosting providers.`;
   }
   if (hasIoc) {
@@ -185,7 +199,8 @@ function buildEventSpecificTechnicalAnalysis(report: IntelligenceAssessmentRepor
 function buildEventSpecificDefensiveGuidance(report: IntelligenceAssessmentReport): string {
   const hasCve = (report.vulnerabilities?.length || 0) > 0;
   const hasMalware = (report.malware?.length || 0) > 0;
-  const hasActor = (report.actors?.length || 0) > 0 && report.actors?.[0] !== 'Unattributed';
+  const firstActor = getActorName(report.actors?.[0]);
+  const hasActor = Boolean(firstActor && firstActor !== 'Unattributed');
   const hasIoc = (report.iocs?.length || 0) > 0;
 
   if (hasCve) {
@@ -211,7 +226,8 @@ function buildEventUncertainties(report: IntelligenceAssessmentReport): string {
   if (report.unknowns && report.unknowns.length > 0) {
     return report.unknowns.map((u) => `• ${u}`).join('\n');
   }
-  const hasActor = (report.actors?.length || 0) > 0 && report.actors?.[0] !== 'Unattributed';
+  const firstActor = getActorName(report.actors?.[0]);
+  const hasActor = Boolean(firstActor && firstActor !== 'Unattributed');
   if (!hasActor) {
     return `• Specific threat actor attribution remains unconfirmed.\n• Total enterprise victim count currently under active scoping.`;
   }
@@ -252,30 +268,25 @@ export function generatePlatformDerivatives(
   // 1A. TELEGRAM NEWS / ALERT (Section 17 Format)
   const tgTags = generateDeterministicHashtags(report, 'telegram').join(' ');
   const telegramAlert = [
-    `ZAYRON-X // INTELLIGENCE`,
-    `[${threatLevel}]`,
-    `${headline}`,
+    `<b>ZAYRON-X // VULNERABILITY INTELLIGENCE</b>`,
     ``,
-    `Threat Level: ${threatLevel}`,
-    `Confidence: ${confidenceState} (${confidencePercent}%)`,
+    `<b>${escapeTelegramHtml(cveId !== 'N/A' ? cveId : primaryEntity)}</b>`,
     ``,
-    `WHAT HAPPENED`,
-    `${summary.slice(0, 280)}`,
+    `<b>${escapeTelegramHtml(threatLevel)} · ${escapeTelegramHtml(confidenceState)}</b>`,
     ``,
-    `KEY SIGNALS`,
-    cveId !== 'N/A' ? `CVE: ${cveId}` : null,
-    actorName !== 'Unattributed' ? `Actor: ${actorName}` : null,
-    malwareName !== 'N/A' ? `Malware: ${malwareName}` : null,
-    primaryIoc !== 'N/A' ? `IOC: ${primaryIoc}` : null,
+    `<b>What Happened</b>`,
+    `${escapeTelegramHtml(summary.slice(0, 260))}`,
     ``,
-    `WHY IT MATTERS`,
-    `${whyItMatters.slice(0, 160)}`,
+    `<b>Why It Matters</b>`,
+    `${escapeTelegramHtml(whyItMatters.slice(0, 180))}`,
     ``,
-    `FULL ANALYSIS`,
-    `${utmTelegramAlert}`,
+    `<b>Defensive Action</b>`,
+    `${escapeTelegramHtml(defensiveGuidance.split('\n')[0].slice(0, 180))}`,
     ``,
-    `${tgTags}`,
-  ].filter((line) => line !== null).join('\n');
+    `<i>Sources: NVD · ZAYRON-X assessment</i>`,
+    ``,
+    `<a href="${escapeTelegramHtml(canonicalUrl)}">READ FULL REPORT</a>`,
+  ].join('\n');
 
   // 1B. TELEGRAM DEEP BRIEF (Section 18 Format)
   const telegramDeep = [
