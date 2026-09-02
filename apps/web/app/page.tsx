@@ -5,34 +5,41 @@ import { TrustStrip } from "./_components/trust-strip";
 import { Methodology } from "./_components/methodology";
 import { DualGrid } from "./_components/dual-grid";
 import { EvidencePricing } from "./_components/evidence-pricing";
+import { IntelligenceCompany } from "./_components/intelligence-company";
 import { BannerCta } from "./_components/banner-cta";
+import { Footer } from "./_components/footer";
 
 export const revalidate = 60;
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col w-full bg-[var(--bg-page)] text-[var(--text-primary-light)] selection:bg-[var(--accent)] selection:text-white">
+    <div className="flex min-h-screen flex-col w-full bg-[#F6F4EE]">
       {/* 1. Global Navigation Header */}
       <Navbar />
 
-      {/* 2. Hero Section (Editorial Headline + Dark Preview Panel) */}
+      {/* 2. Hero — Editorial Headline + Terminal Dashboard */}
       <Hero />
 
-      {/* 3. Trusted By Security Teams Worldwide (Proof Pillars) */}
+      {/* 3. Trust Strip — Proof Pills */}
       <TrustStrip />
 
-      {/* 4. Intelligence Without the Noise (3-Stage Pipeline Methodology) */}
+      {/* 4. Methodology — 3-Stage Intelligence Pipeline */}
       <Methodology />
 
-      {/* 5. Dual Asymmetric Grid (Platform Preview & Deeper Analysis Split) */}
+      {/* 5. Dual Grid — Platform Preview + Research Articles */}
       <DualGrid />
 
-      {/* 6. Evidence & Simple Transparent Pricing */}
+      {/* 6. Evidence + Pricing — Side by side dark blocks */}
       <EvidencePricing />
 
-      {/* 7. Closing CTA Banner */}
+      {/* 7. Built as an Intelligence Company — Values + CTA */}
+      <IntelligenceCompany />
+
+      {/* 8. Closing CTA Banner */}
       <BannerCta />
+
+      {/* 9. Footer */}
+      <Footer />
     </div>
   );
 }
-

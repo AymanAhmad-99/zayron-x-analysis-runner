@@ -3,113 +3,51 @@ import Link from "next/link";
 
 export function BannerCta() {
   return (
-    <section
-      style={{
-        backgroundColor: "var(--accent)",
-        paddingTop: "var(--space-7)",
-        paddingBottom: "var(--space-7)",
-      }}
-      className="w-full text-white"
-    >
-      <div
-        style={{
-          maxWidth: "1200px",
-          marginLeft: "auto",
-          marginRight: "auto",
-          paddingLeft: "var(--space-3)",
-          paddingRight: "var(--space-3)",
-        }}
-        className="mx-auto"
-      >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          
-          {/* Left Text */}
-          <div className="max-w-2xl">
-            <span
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "var(--text-label)",
-                lineHeight: "1.4",
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                color: "#FFFFFF",
-                opacity: 0.9,
-              }}
-              className="uppercase block mb-2"
-            >
-              READY TO STRENGTHEN YOUR SECURITY POSTURE?
-            </span>
+    <section className="w-full bg-[#FF5500] py-16 lg:py-20">
+      <div className="max-w-[1380px] mx-auto px-8 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
 
-            <h2
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "var(--text-h2)",
-                lineHeight: 1.15,
-                fontWeight: 400,
-                color: "#FFFFFF",
-              }}
-            >
-              SEE WHAT MATTERS. UNDERSTAND WHY IT MATTERS.
-            </h2>
-
-            <p
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: "var(--text-body)",
-                lineHeight: 1.6,
-                fontWeight: 400,
-                color: "#FFFFFF",
-                opacity: 0.9,
-                marginTop: "var(--space-2)",
-              }}
-            >
-              Accelerate your threat investigation with evidence-based intelligence feeds. Join 2,500+ active security analysts [SAMPLE DATA].
-            </p>
-          </div>
-
-          {/* Right Dual Actions */}
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Link
-              href="/pricing"
-              style={{
-                backgroundColor: "#FFFFFF",
-                color: "var(--accent)",
-                padding: "14px 24px",
-                fontFamily: "var(--font-body)",
-                fontSize: "14px",
-                fontWeight: 600,
-                letterSpacing: "0.04em",
-                borderRadius: "var(--radius-button)",
-                textTransform: "uppercase",
-              }}
-              className="inline-flex items-center justify-center transition-colors hover:bg-white/90"
-            >
-              GET STARTED TODAY →
-            </Link>
-
-            <Link
-              href="/contact"
-              style={{
-                backgroundColor: "transparent",
-                border: "1px solid #FFFFFF",
-                color: "#FFFFFF",
-                padding: "14px 24px",
-                fontFamily: "var(--font-body)",
-                fontSize: "14px",
-                fontWeight: 600,
-                letterSpacing: "0.04em",
-                borderRadius: "var(--radius-button)",
-                textTransform: "uppercase",
-              }}
-              className="inline-flex items-center justify-center transition-colors hover:bg-white/10"
-            >
-              CONTACT SALES →
-            </Link>
-          </div>
-
+        {/* Left */}
+        <div className="max-w-xl">
+          <span
+            className="uppercase text-[9.5px] font-bold tracking-[0.16em] text-white/80 block mb-3"
+            style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}
+          >
+            READY TO STRENGTHEN YOUR SECURITY POSTURE?
+          </span>
+          <h2
+            className="text-[28px] lg:text-[32px] font-extrabold text-white leading-[1.1] tracking-tight uppercase mb-5"
+            style={{ fontFamily: "'Space Grotesk', 'Inter Tight', sans-serif" }}
+          >
+            SEE WHAT MATTERS. UNDERSTAND WHY IT MATTERS.
+          </h2>
+          <p
+            className="text-[14px] leading-[1.65] text-white/80"
+            style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}
+          >
+            Accelerate your threat investigation with evidence-based intelligence feeds.
+            Join thousands of security analysts who rely on ZAYRON-X daily.
+          </p>
         </div>
+
+        {/* Right — actions */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <Link
+            href="/pricing"
+            className="inline-flex items-center justify-center bg-white text-[#FF5500] px-6 py-3 rounded-[2px] uppercase text-[10.5px] font-bold tracking-[0.12em] hover:bg-white/90 transition-colors"
+            style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}
+          >
+            GET STARTED TODAY →
+          </Link>
+          <Link
+            href="/contact"
+            className="inline-flex items-center justify-center bg-transparent border border-white text-white px-6 py-3 rounded-[2px] uppercase text-[10.5px] font-bold tracking-[0.12em] hover:bg-white/10 transition-colors"
+            style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}
+          >
+            CONTACT SALES →
+          </Link>
+        </div>
+
       </div>
     </section>
   );
 }
-
