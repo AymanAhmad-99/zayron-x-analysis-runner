@@ -8,6 +8,13 @@ import {
   lookupTTP,
   detectCampaignCandidate,
   generatePlatformDerivatives,
+  formatEvidenceGroundedDossier,
+  EvidencePack,
+  matchCanonicalEvent,
+  detectSourceConflicts,
+  evaluateCorroboration,
+  ExistingCanonicalEvent,
+  IncomingSignalObservation,
 } from '@zayron/intelligence';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
@@ -20,6 +27,7 @@ export interface Env {
   PUBLISH_QUEUE?: Queue;
   TELEGRAM_COLLECTOR_SERVICE?: Fetcher;
   TELEGRAM_TARGET_CHANNEL?: string;
+  LEGACY_FREEZE?: string;
   RESEARCH_WORKFLOW?: any;
   KNOWLEDGE_PROCESSOR?: any;
   KNOWLEDGE_BUCKET?: R2Bucket;
@@ -76,6 +84,7 @@ async function recordKnowledgeMarker(env: Env, traceId: string, requestId: strin
 
 const ingestHandlers = {
   async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    if (env.LEGACY_FREEZE === 'true') return;
     if (env.KNOWLEDGE_PROCESSOR) {
       try {
         const smoke = await env.KNOWLEDGE_PROCESSOR.smokeTest();
@@ -146,7 +155,32 @@ const ingestHandlers = {
     }
   },
   async queue(batch: MessageBatch<IngestionMessagePayload>, env: Env): Promise<void> {
-    for (const msg of batch.messages) {
+    if (env.LEGACY_FREEZE === 'true') return;
+    const messages = batch.messages.slice(0, 20);
+    // Batch-level memoized recent events lookup (avoids N+1 full scans across messages)
+    let batchRecentEventsCache: ExistingCanonicalEvent[] | null = null;
+    const getRecentEvents = async (): Promise<ExistingCanonicalEvent[]> => {
+      if (batchRecentEventsCache) return batchRecentEventsCache;
+      const recentEventsRaw = await env.DB.prepare(
+        "SELECT id, type, title, summary, severity, confidence, status, content_hash, first_seen_at, last_updated_at, entities_json FROM intelligence_events WHERE first_seen_at >= datetime('now', '-3 days') ORDER BY first_seen_at DESC LIMIT 50"
+      ).all();
+      batchRecentEventsCache = (recentEventsRaw.results || []).map((row: any) => ({
+        id: row.id,
+        type: row.type,
+        title: row.title,
+        summary: row.summary,
+        severity: row.severity,
+        confidence: row.confidence,
+        status: row.status,
+        contentHash: row.content_hash,
+        firstSeenAt: row.first_seen_at,
+        lastUpdatedAt: row.last_updated_at,
+        entitiesJson: row.entities_json,
+      }));
+      return batchRecentEventsCache;
+    };
+
+    for (const msg of messages) {
       const rawBody = msg.body as any;
       const payload = rawBody?.body && typeof rawBody.body === 'object' ? rawBody.body : rawBody;
       if ((payload as any)?.operation === 'SMOKE_TEST') {
@@ -184,6 +218,20 @@ const ingestHandlers = {
       await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'STARTED', msg.attempts || 1, consumerStarted, msg.id);
 
       try {
+        // ── 0. Anti-Recursion Gate: Prohibit Ingesting Outbound ZAYRON-X Channel ──
+        const isFromOutbound = 
+          payload.sourceId === 'tg_zayronxai' ||
+          payload.sourceId === 'tg_zayron_x' ||
+          payload.sourceUrl?.includes('t.me/zayronxai') ||
+          payload.sourceName?.toLowerCase().includes('zayronxai');
+
+        if (isFromOutbound) {
+          console.warn(`[INGEST] Anti-recursion guard: Dropping signal originating from outbound publication channel @zayronxai`);
+          await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'COMPLETED', msg.attempts || 1, consumerStarted, msg.id);
+          msg.ack();
+          continue;
+        }
+
         // ── 1. Idempotency Check: (source_id + external_message_id) OR content_hash ──
         const existing = await env.DB.prepare(
           'SELECT id FROM source_messages WHERE (source_id = ? AND external_message_id = ?) OR content_hash = ? LIMIT 1'
@@ -346,61 +394,175 @@ CRITICAL RULES:
 
         // If translation completely failed and English is invalid, stop before public event creation
         if (!isEnglishVerified) {
-          console.log(`[INGEST] Message ${messageId} held for translation. Not creating public intelligence event.`);
-          msg.ack();
+          console.log(`[INGEST] Message ${messageId} held for translation. Not promoting to public intelligence.`);
           continue;
         }
 
-        // ── 6. Generate Canonical English Intelligence Event ───────────────────
-        const eventId = payload.eventId || `evt_${crypto.randomUUID().slice(0, 16)}`;
-        const eventType = result.entities.cves.length > 0 
-          ? 'vulnerability_exploitation' 
-          : result.entities.malware.length > 0 
-          ? 'malware_campaign' 
-          : result.entities.actors.length > 0 
-          ? 'threat_actor_activity' 
-          : 'threat_intelligence';
+        // ── 6. Check for Multi-Source Corroboration with Existing Canonical Event ──
+        const incomingObservation: IncomingSignalObservation = {
+          sourceId: payload.sourceId,
+          sourceName,
+          sourceTrustScore: sourceTrust,
+          sourceAuthorityTier: (sourceRecord as any)?.authority_tier ?? 3,
+          externalMessageId: payload.externalMessageId,
+          contentHash: result.contentHash,
+          normalizedTitle: finalTitle,
+          normalizedSummary: finalSummary,
+          severity: result.severity,
+          entities: result.entities,
+          sourceUrl: payload.sourceUrl,
+          publishedAt: payload.publishedAt || new Date().toISOString(),
+        };
 
-        await env.DB.prepare(
-          `INSERT INTO intelligence_events (
-            id, type, title, summary, severity, confidence, status, content_hash,
-            first_seen_at, last_updated_at, entities_json, mitre_matrix, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-        )
-          .bind(
-            eventId,
-            eventType,
-            finalTitle,
-            finalSummary,
-            result.severity,
-            result.confidenceScore,
-            result.confidenceState,
-            result.contentHash,
-            payload.publishedAt || new Date().toISOString(),
-            new Date().toISOString(),
-            JSON.stringify(result.entities),
-            JSON.stringify(result.entities.ttps)
-          )
-          .run();
+        const recentEvents = await getRecentEvents();
 
-        // ── 7. Attach Provenance Evidence ──────────────────────────────────────
-        const evidenceId = `evi_${crypto.randomUUID().slice(0, 12)}`;
-        await env.DB.prepare(
-          `INSERT INTO evidence (
-            id, event_id, source_id, source_message_id, type, url, weight, snippet, reviewer_state, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
-        )
-          .bind(
-            evidenceId,
-            eventId,
-            payload.sourceId,
-            messageId,
-             payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
-            result.provenance.sourceUrl,
-            result.provenance.weight,
-            finalSummary.slice(0, 250)
+        const matchResult = matchCanonicalEvent(incomingObservation, recentEvents);
+        let eventId: string;
+        let evidenceId: string;
+        let isExistingCorroboration = false;
+
+        if (matchResult.matchedEvent) {
+          // CORROBORATION CASE: Multiple sources reporting on the same event
+          isExistingCorroboration = true;
+          const matched = matchResult.matchedEvent;
+          eventId = matched.id;
+          evidenceId = 'evi_' + crypto.randomUUID().slice(0, 12);
+          console.log(`[INGEST] Multi-source corroboration: Signal from ${sourceName} matches existing canonical event ${eventId} (${matchResult.matchReason})`);
+
+          // Fetch prior source tiers
+          const priorSources = await env.DB.prepare(
+            "SELECT DISTINCT s.authority_tier FROM evidence e LEFT JOIN sources s ON e.source_id = s.id WHERE e.event_id = ?"
+          ).bind(eventId).all();
+          const priorTiers = (priorSources.results || []).map((r: any) => r.authority_tier ?? 3);
+
+          const corroboration = evaluateCorroboration(matched, incomingObservation, priorTiers);
+
+          // Update canonical event with elevated confidence and updated timeline
+          await env.DB.prepare(
+            `UPDATE intelligence_events SET 
+               confidence = ?, 
+               status = ?, 
+               severity = ?,
+               last_updated_at = datetime('now'),
+               updated_at = datetime('now')
+             WHERE id = ?`
           )
-          .run();
+            .bind(
+              corroboration.newConfidenceScore,
+              corroboration.newConfidenceState,
+              corroboration.updatedSeverity,
+              eventId
+            )
+            .run();
+
+          // Attach new Evidence Record linked to existing canonical event
+          await env.DB.prepare(
+            `INSERT INTO evidence (
+              id, event_id, source_id, source_message_id, type, url, weight, snippet, reviewer_state, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
+          )
+            .bind(
+              evidenceId,
+              eventId,
+              payload.sourceId,
+              messageId,
+              payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
+              result.provenance.sourceUrl,
+              result.provenance.weight,
+              finalSummary.slice(0, 250)
+            )
+            .run();
+
+          // Check if article exists to bump version
+          const existingArticle = await env.DB.prepare(
+            'SELECT id, version, title, content FROM articles WHERE canonical_intel_event_id = ? LIMIT 1'
+          ).bind(eventId).first<{ id: string; version: number; title: string; content: string }>();
+
+          if (existingArticle) {
+            const newVersion = (existingArticle.version || 1) + 1;
+            await env.DB.prepare(
+              `INSERT INTO report_revisions (
+                id, article_id, event_id, version, previous_confidence, new_confidence,
+                evidence_added_count, reason, content_snapshot, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, datetime('now'))`
+            )
+              .bind(
+                `rev_${crypto.randomUUID().slice(0, 12)}`,
+                existingArticle.id,
+                eventId,
+                newVersion,
+                matched.confidence,
+                corroboration.newConfidenceScore,
+                corroboration.revisionReason || 'Corroborating telemetry received',
+                existingArticle.content.slice(0, 1000)
+              )
+              .run();
+
+            await env.DB.prepare(
+              `UPDATE articles SET 
+                 version = ?, 
+                 confidence = ?, 
+                 revision_reason = ?,
+                 updated_at = datetime('now')
+               WHERE id = ?`
+            )
+              .bind(newVersion, corroboration.newConfidenceScore, corroboration.revisionReason, existingArticle.id)
+              .run();
+
+            console.log(`[INGEST] Updated existing article ${existingArticle.id} to version ${newVersion} with corroborating evidence.`);
+          }
+        } else {
+          // NEW CANONICAL EVENT CASE
+          eventId = payload.eventId || `evt_${crypto.randomUUID().slice(0, 16)}`;
+          evidenceId = `evi_${crypto.randomUUID().slice(0, 12)}`;
+          const eventType = result.entities.cves.length > 0 
+            ? 'vulnerability_exploitation' 
+            : result.entities.malware.length > 0 
+            ? 'malware_campaign' 
+            : result.entities.actors.length > 0 
+            ? 'threat_actor_activity' 
+            : 'threat_intelligence';
+
+          await env.DB.prepare(
+            `INSERT INTO intelligence_events (
+              id, type, title, summary, severity, confidence, status, content_hash,
+              first_seen_at, last_updated_at, entities_json, mitre_matrix, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+          )
+            .bind(
+              eventId,
+              eventType,
+              finalTitle,
+              finalSummary,
+              result.severity,
+              result.confidenceScore,
+              result.confidenceState,
+              result.contentHash,
+              payload.publishedAt || new Date().toISOString(),
+              new Date().toISOString(),
+              JSON.stringify(result.entities),
+              JSON.stringify(result.entities.ttps)
+            )
+            .run();
+
+          // Attach initial Evidence Record
+          await env.DB.prepare(
+            `INSERT INTO evidence (
+              id, event_id, source_id, source_message_id, type, url, weight, snippet, reviewer_state, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
+          )
+            .bind(
+              evidenceId,
+              eventId,
+              payload.sourceId,
+              messageId,
+              payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
+              result.provenance.sourceUrl,
+              result.provenance.weight,
+              finalSummary.slice(0, 250)
+            )
+            .run();
+        }
 
         if (payload.eventId && env.RESEARCH_WORKFLOW) {
           await env.DB.prepare("UPDATE canary_events SET status = 'EVIDENCE_READY', updated_at = datetime('now') WHERE event_id = ?").bind(eventId).run();
@@ -605,8 +767,8 @@ CRITICAL RULES:
         }
 
         // ── 16. PUBLICATION GATE & DEEP AI GENERATION ──────────────────────────
-        // Only high-value signals meeting publication criteria become public articles.
-        if (result.isEligibleForArticle && result.publicationStatus === 'PUBLISHED') {
+        // Only high-value signals meeting publication criteria become public articles (and not already corroborated).
+        if (!isExistingCorroboration && result.isEligibleForArticle && result.publicationStatus === 'PUBLISHED') {
           let articleContent = finalSummary;
           let articleDek = finalSummary.slice(0, 140);
           let articleExcerpt = finalSummary.slice(0, 180);
@@ -617,7 +779,7 @@ CRITICAL RULES:
             try {
               // 1. Budget Guard: Limit deep AI runs per day
               const todayRuns = await env.DB.prepare(
-                "SELECT count(*) as count FROM ai_runs WHERE date(created_at) = date('now')"
+                "SELECT count(*) as count FROM ai_runs WHERE created_at >= date('now') AND created_at < date('now', '+1 day')"
               ).first<{ count: number }>();
               
               if ((todayRuns?.count || 0) < 150) {
@@ -664,19 +826,6 @@ CRITICAL RULES:
                     articleDek = parsed.executive_assessment;
                     articleExcerpt = parsed.executive_assessment;
                     articleAiSummary = parsed.what_happened;
-                    
-                    // Build Canonical Markdown
-                    articleContent = `## Executive Assessment\n${parsed.executive_assessment}\n\n## What Happened\n${parsed.what_happened}\n\n## Why It Matters\n${parsed.why_it_matters}\n\n## Defensive Implications\n${parsed.defensive_implications}`;
-                    
-                    // Append structured entity evidence
-                    articleContent += `\n\n## Intelligence Evidence & Entities\n`;
-                    if (result.entities.cves.length > 0) articleContent += `- **Vulnerabilities:** ${result.entities.cves.join(', ')}\n`;
-                    if (result.entities.actors.length > 0) articleContent += `- **Threat Actors:** ${result.entities.actors.join(', ')}\n`;
-                    if (result.entities.malware.length > 0) articleContent += `- **Malware:** ${result.entities.malware.join(', ')}\n`;
-                    if (result.entities.ttps.length > 0) articleContent += `- **MITRE ATT&CK:** ${result.entities.ttps.join(', ')}\n`;
-                    
-                    articleContent += `\n*Analysis grounded in verified telemetry from ${sourceName}.*`;
-                    
                     isDeepAiSuccessful = true;
                   }
                 }
@@ -688,14 +837,49 @@ CRITICAL RULES:
             }
           }
 
-          // Quality Gate: If AI failed, use deterministic markdown layout
-          if (!isDeepAiSuccessful) {
-             articleContent = `## Executive Assessment\n${finalSummary}\n\n## Intelligence Evidence & Entities\n`;
-             if (result.entities.cves.length > 0) articleContent += `- **Vulnerabilities:** ${result.entities.cves.join(', ')}\n`;
-             if (result.entities.actors.length > 0) articleContent += `- **Threat Actors:** ${result.entities.actors.join(', ')}\n`;
-             if (result.entities.malware.length > 0) articleContent += `- **Malware:** ${result.entities.malware.join(', ')}\n`;
-             if (result.entities.ttps.length > 0) articleContent += `- **MITRE ATT&CK:** ${result.entities.ttps.join(', ')}\n`;
-          }
+          // ── Assemble Comprehensive Evidence Pack ────────────────────────────
+          const eventType = result.entities.cves.length > 0 
+            ? 'vulnerability_exploitation' 
+            : result.entities.malware.length > 0 
+            ? 'malware_campaign' 
+            : result.entities.actors.length > 0 
+            ? 'threat_actor_activity' 
+            : 'threat_intelligence';
+
+          const evidencePack: EvidencePack = {
+            eventId,
+            sourceId: payload.sourceId,
+            sourceName,
+            sourceTrustScore: (payload as any).sourceTrustScore || 0.85,
+            rawText: payload.rawText,
+            normalizedTitle: finalTitle,
+            normalizedSummary: finalSummary,
+            contentHash: result.contentHash,
+            originalLanguage: result.originalLanguage,
+            publishedAt: payload.publishedAt || new Date().toISOString(),
+            receivedAt: payload.receivedAt || new Date().toISOString(),
+            sourceUrl: payload.sourceUrl,
+            severity: result.severity,
+            confidenceScore: result.confidenceScore,
+            confidenceState: result.confidenceState,
+            entities: result.entities,
+            evidenceRecords: [{
+              id: evidenceId,
+              type: payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
+              weight: result.provenance.weight,
+              snippet: finalSummary.slice(0, 250),
+              url: result.provenance.sourceUrl,
+            }],
+          };
+
+          // ── Format Upgraded 18-Part Evidence-Grounded Dossier ───────────────
+          articleContent = formatEvidenceGroundedDossier({
+            pack: evidencePack,
+            assessmentSummary: articleDek,
+            technicalAnalysis: articleAiSummary || finalSummary,
+            whyItMatters: articleExcerpt || finalSummary,
+            defensiveImplications: isDeepAiSuccessful ? undefined : 'Audit external attack surfaces, inspect perimeter firewalls, and apply latest security patches.',
+          });
 
           const articleSlug = finalTitle
             .toLowerCase()
@@ -709,7 +893,7 @@ CRITICAL RULES:
               id, title, slug, dek, content, excerpt, author, category, tags,
               severity, confidence, ai_summary, is_published, is_featured, is_breaking,
               canonical_intel_event_id, published_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, 'ZAYRON-X Intelligence Crew', ?, ?, ?, ?, ?, 1, 0, ?, ?, ?, datetime('now'), datetime('now'))`
+            ) VALUES (?, ?, ?, ?, ?, ?, 'ZAYRON-X Intelligence Crew', ?, ?, ?, ?, ?, 0, 0, ?, ?, ?, datetime('now'), datetime('now'))`
           )
             .bind(
               articleId,
@@ -723,15 +907,24 @@ CRITICAL RULES:
               result.severity,
               result.confidenceScore,
               articleAiSummary,
-              result.severity === 'critical' ? 1 : 0,
+              0,
               eventId,
               payload.publishedAt || new Date().toISOString()
             )
             .run();
           console.log(`[INGEST] Public article created: ${articleSlug} (${articleId})`);
 
+          // ── Update Intelligence Event Status for Downstream Publication Gate ──
+          await env.DB.prepare(
+            `UPDATE intelligence_events SET status = 'QUARANTINED', quarantine_reason = 'INGEST_TRUST_GATE_NOT_PROVEN', updated_at = datetime('now') WHERE id = ?`
+          )
+            .bind(eventId)
+            .run();
+
           // ── 16B. Outbound Social Publication to Official Channel "Zeron X" (@zayronxai) ──
-          if (env.PUBLISH_QUEUE) {
+          // Containment: this ingestion path has not proven the canonical Trust gate.
+          const trustGateProven = false;
+          if (trustGateProven && env.PUBLISH_QUEUE) {
             const canonicalUrl = `https://zayron-x.co/threats/${articleSlug}`;
             const reportForDerivatives = {
               assessment: { headline: finalTitle, executive_summary: articleDek, threat_level: result.severity.toUpperCase(), confidence_state: result.confidenceState, confidence_score: result.confidenceScore },
@@ -742,8 +935,14 @@ CRITICAL RULES:
               iocs: [...result.entities.ipv4s.map(ip => ({ type: 'ipv4' as const, value: ip, confidence: result.confidenceScore })), ...result.entities.sha256s.map(h => ({ type: 'sha256' as const, value: h, confidence: result.confidenceScore }))], depth: 'STANDARD' as const,
             };
             const derivatives = generatePlatformDerivatives(reportForDerivatives as any, canonicalUrl);
-            await env.PUBLISH_QUEUE.send({ type: 'PUBLISH_INTELLIGENCE', eventId, articleId, telegramMessage: derivatives.telegram, idempotencyKey: `idem_tg_${articleId}` });
-            console.log(`[INGEST] Queued article ${articleId} for controlled publication`);
+            await env.PUBLISH_QUEUE.send({
+              type: 'PUBLISH_INTELLIGENCE',
+              eventId,
+              articleId,
+              telegramMessage: derivatives.telegram,
+              idempotencyKey: `idem_tg_${articleId}`
+            });
+            console.log(`[INGEST] Dispatched approved intelligence ${articleId} to PUBLISH_QUEUE with ~50-60 word derivative`);
           }
         } else {
           console.log(`[INGEST] Signal retained as internal intelligence event ${eventId} (Status: ${result.publicationStatus})`);
@@ -762,10 +961,10 @@ CRITICAL RULES:
       } catch (error) {
         await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'FAILED', msg.attempts || 1, consumerStarted, msg.id, error);
         console.error('Ingestion queue worker processing failure:', error);
-        if (msg.attempts < 3) {
+        if (msg.attempts < 2) {
           msg.retry();
         } else {
-          console.error(`[INGEST] Max retries reached for message ${msg.id}. Dropping.`);
+          console.error(`[INGEST] Max retries reached (${msg.attempts}) for message ${msg.id}. Dropping safely.`);
           msg.ack();
         }
       }
@@ -781,6 +980,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
   }
 
   async submitNvdCanary(input: { cve_id: string; source: string; raw_record: unknown }): Promise<{ event_id: string; status: string }> {
+    if (this.env.LEGACY_FREEZE === 'true') throw new Error('Legacy production mutation surface is frozen');
     if (!/^CVE-\d{4}-\d{4,19}$/.test(input?.cve_id || '') || !input?.source || !input?.raw_record) {
       throw new Error('Invalid NVD canary payload');
     }

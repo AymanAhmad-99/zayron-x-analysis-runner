@@ -1,4 +1,4 @@
-import { SeverityLevel, ConfidenceState, ProvenanceRecord } from '@zayron/types';
+import type { SeverityLevel, ConfidenceState, ProvenanceRecord } from '../../../types/src/index';
 import { validateSourceTimestamp } from '../integrity/timestamps';
 
 // ── REGEX PATTERNS FOR TECHNICAL ENTITY EXTRACTION ───────────
@@ -43,6 +43,12 @@ const SPAM_KEYWORDS = [
   'investment opportunity', 'double your money',
   // Referral / MLM
   'referral link', 'use my code', 'use my referral', 'promo code',
+  // Raw ChatGPT translation dumps & autotext
+  'chatgpt translated', 'autotext', 'auto translate', 'ti report analyser', 'parsedreport',
+  // Social banter & memes without intelligence substance
+  'vibe coded', 'stalk my ex', 'cause i can', 'stupid sissy ai', 'lots of stuff cooking',
+  // Commercial ad markers
+  'реклама.', 'акб «новикомбанк»', 'канал с исключительно оригинальным',
 ];
 
 // Structural promotional pattern regexes (applied even if no entity found)
@@ -64,6 +70,7 @@ const CHATTER_PREFIXES = [
   '> how can you tell', 'i have lots of stuff cooking', 'just a quick thought',
   'good morning everyone', 'anyone know if', 'what do you think',
   'lol ', 'lmao ', 'haha ', 'wtf ', 'omg ',
+  'reverse-engineering find my people to stalk',
 ];
 
 export interface ExtractedEntities {

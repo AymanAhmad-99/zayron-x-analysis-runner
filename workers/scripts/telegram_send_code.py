@@ -5,8 +5,8 @@ import json
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 
-API_ID = 37585861
-API_HASH = "e38c7289b2050a99557bcc0d1813cfac"
+API_ID = int(os.environ["TELEGRAM_API_ID"])
+API_HASH = os.environ["TELEGRAM_API_HASH"]
 PHONE = "+962788479169"
 STATE_FILE = "scripts/.tg_login_state.json"
 

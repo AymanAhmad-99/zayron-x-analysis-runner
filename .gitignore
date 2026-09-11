@@ -142,3 +142,10 @@ ROUTE_AUDIT_MATRIX.md
 VISUAL_DESIGN_FINGERPRINT.json
 ZAYRON-X_Core_Architecture_and_Strategic_Feasibility_2026.md
 docs/audits/wip-homepage-redesign-backup/
+
+# Credential scratch and local secret files
+.env.*
+.pilot-token.tmp
+**/.pilot-token.tmp
+*.token.tmp
+*.session.tmp

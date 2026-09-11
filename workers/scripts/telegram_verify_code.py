@@ -7,7 +7,7 @@ from telethon.sessions import StringSession
 from telethon.errors import SessionPasswordNeededError
 
 STATE_FILE = "scripts/.tg_login_state.json"
-SESSION_OUTPUT_FILE = "scripts/.tg_session.txt"
+SESSION_OUTPUT_FILE = os.environ.get("TELEGRAM_SESSION_OUTPUT_FILE", "scripts/.tg_session.txt")
 
 async def verify(code: str, password: str = None):
     if not os.path.exists(STATE_FILE):
@@ -20,8 +20,8 @@ async def verify(code: str, password: str = None):
     phone = state["phone"]
     phone_code_hash = state["phone_code_hash"]
     session_str = state["session_str"]
-    api_id = state["api_id"]
-    api_hash = state["api_hash"]
+    api_id = int(os.environ["TELEGRAM_API_ID"])
+    api_hash = os.environ["TELEGRAM_API_HASH"]
     
     session = StringSession(session_str)
     client = TelegramClient(session, api_id, api_hash)

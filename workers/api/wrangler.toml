@@ -19,7 +19,8 @@ queue = "zayron-publish-queue"
 [[queues.consumers]]
 queue = "zayron-publish-queue"
 max_batch_size = 10
-max_batch_timeout = 5
+max_batch_timeout = 30
+max_retries = 3
 
 [[services]]
 binding = "TELEGRAM_COLLECTOR_SERVICE"
@@ -52,6 +53,7 @@ bucket_name = "zayron-x-knowledge"
 
 [vars]
 ENVIRONMENT = "production"
+LEGACY_FREEZE = "true"
 
 routes = [
   { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
