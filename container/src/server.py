@@ -28,12 +28,15 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import io
 import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
+import traceback
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -398,8 +401,25 @@ def run_job(job: dict) -> dict:
             "results": results,
         }
     finally:
-        # ephemeral teardown: sample + every tool temp artifact
+        # ephemeral teardown: sample + every tool temp artifact (§24)
         shutil.rmtree(workdir, ignore_errors=True)
+
+
+def _bounded_diagnostic(exc: BaseException) -> str:
+    """Bounded, secret-free diagnostic line for the HTTP error response.
+
+    Contains ONLY the exception class name — never sample bytes, never
+    environment values, never a traceback (the traceback goes to stderr only).
+    """
+    return f"{type(exc).__name__} raised during job execution"[:512]
+
+
+def _log_bounded_traceback(exc: BaseException) -> None:
+    """Full traceback to container stderr ONLY (bounded), for docker logs."""
+    buf = io.StringIO()
+    traceback.print_exception(type(exc), exc, exc.__traceback__, file=buf, limit=25)
+    print(("[zx-container] unexpected exception:\n" + buf.getvalue())[:8192],
+          file=sys.stderr, flush=True)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -431,7 +451,26 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             return
-        result = run_job(job)
+        # M14.4.1: an unexpected run_job exception must NEVER silently close
+        # the HTTP connection. Bounded top-level handler: HTTP 500 + bounded
+        # JSON {job_status: ERROR, reason: <exception class>, diagnostic}.
+        # The full traceback goes to stderr only; the response never carries
+        # sample bytes, secrets, or a traceback.
+        try:
+            result = run_job(job)
+        except Exception as exc:  # deliberate top-level observability boundary
+            _log_bounded_traceback(exc)
+            body = json.dumps({
+                "job_status": "ERROR",
+                "reason": type(exc).__name__,
+                "diagnostic": _bounded_diagnostic(exc),
+            }).encode()
+            self.send_response(500)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         status = 200 if result.get("job_status") == "COMPLETED" else 422
         body = json.dumps(result).encode()
         self.send_response(status)
@@ -440,7 +479,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def log_message(self, fmt, *args):  # bounded, secret-free logging
+    def log_message(self, fmt, *args):  # bounded, secret-free logging (§45)
         print(f"[zx-container] {self.address_string()} {fmt % args}"[:512], flush=True)
 
 
