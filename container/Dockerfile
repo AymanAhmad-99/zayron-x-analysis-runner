@@ -38,8 +38,11 @@ ENV TOOLS_HOME=/opt/zx-tools \
 # the distribution's own ABI, so no bundled desktop runtime is required and no
 # unversioned package is pulled.
 ARG DIE_URL=https://github.com/horsicq/DIE-engine/releases/download/3.21/die_3.21_Ubuntu_24.04_amd64.deb
+# build-essential + python3-dev: required to compile the `binary2strings`
+# native extension that flare-floss depends on (verified live — its sdist has
+# no prebuilt cp312 wheel and needs a C++ toolchain at install time).
 RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 python3-venv ca-certificates curl \
+ && apt-get install -y --no-install-recommends python3 python3-venv python3-dev build-essential ca-certificates curl \
  && curl -fsSL -o /tmp/die.deb "${DIE_URL}" \
  && apt-get install -y --no-install-recommends /tmp/die.deb \
  && rm -f /tmp/die.deb \
