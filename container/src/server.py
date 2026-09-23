@@ -52,8 +52,12 @@ YARAX_VERSION = os.environ.get("YARAX_VERSION", "1.20.0")
 DIE_VERSION = "3.21"
 CAPA_RULES_VERSION = "9.4.0"
 YARAX_RULESET_VERSION = os.environ.get("YARAX_RULESET_VERSION", "none")
+MAGIKA_VERSION = os.environ.get("MAGIKA_VERSION", "1.0.3")
+# Magika prediction mode is CONFIGURED here (the tool does not echo it back), and
+# is recorded verbatim as provenance. It is a content-typing tolerance only.
+MAGIKA_PREDICTION_MODE = os.environ.get("MAGIKA_PREDICTION_MODE", "HIGH_CONFIDENCE")
 
-SUPPORTED_TOOLS = ("lief", "floss", "die", "yara-x", "capa")
+SUPPORTED_TOOLS = ("lief", "floss", "die", "yara-x", "capa", "magika")
 
 TOOLS_HOME = Path(os.environ.get("TOOLS_HOME", "/opt/zx-tools"))
 CAPA_RULES = Path(os.environ.get("CAPA_RULES", str(TOOLS_HOME / "capa-rules")))
@@ -230,6 +234,114 @@ def adapt_die(sample: Path, timeout, max_out):
     }
 
 
+def adapt_magika(sample: Path, timeout, max_out):
+    """Content-type classification via the pinned Google Magika python binding.
+
+    Answers ONE question: what type of content does this artifact appear to
+    contain? It is NOT a malware verdict, family, capability, behavior, or
+    intent assessment, and its prediction score is NOT threat confidence.
+
+    Runs in-process like the LIEF adapter (same pinned venv, no new runtime, no
+    network); the model is loaded once per job. A missing package is UNAVAILABLE
+    and a failure is ERROR — never a default content type.
+    """
+    try:
+        from magika import Magika  # pinned in-image
+    except Exception as exc:
+        return {
+            "status": "UNAVAILABLE",
+            "output": None,
+            "note": f"magika module not present in image: {type(exc).__name__}",
+        }
+
+    try:
+        from magika import PredictionMode
+
+        mode = PredictionMode[MAGIKA_PREDICTION_MODE]
+    except Exception:
+        # An unknown configured mode is a configuration error, never silently
+        # downgraded to a different mode.
+        return {
+            "status": "ERROR",
+            "output": None,
+            "note": f"magika prediction mode '{MAGIKA_PREDICTION_MODE}' is not supported by this magika version",
+        }
+
+    started = time.monotonic()
+    try:
+        identifier = Magika(prediction_mode=mode)
+        result = identifier.identify_path(str(sample))
+    except Exception as exc:  # execution failure → ERROR, never a default type
+        return {
+            "status": "ERROR",
+            "output": None,
+            "note": f"magika execution failed: {type(exc).__name__}",
+        }
+    duration_ms = round((time.monotonic() - started) * 1000, 3)
+
+    if not getattr(result, "ok", False):
+        # Every non-OK magika status (FILE_NOT_FOUND_ERROR, PERMISSION_ERROR,
+        # UNKNOWN) is an EXECUTION FAILURE, not an empty result: mapping it to
+        # NO_RESULT would collapse "magika could not run on this input" into
+        # "magika ran and found nothing", which the canonical state contract
+        # forbids (ERROR and NO_RESULT are never collapsed).
+        status = getattr(getattr(result, "status", None), "name", None)
+        return {
+            "status": "ERROR",
+            "output": None,
+            "note": f"magika could not classify the input (status {status or 'UNKNOWN'})",
+        }
+
+    try:
+        final = result.output
+        raw = result.dl
+        label = str(getattr(final, "label", "") or "")
+        if not label:
+            return {"status": "NO_RESULT", "output": None, "note": "magika returned an empty content-type label"}
+        overrule = getattr(result, "overwrite_reason", None)
+        if overrule is None:
+            prediction = result.prediction
+            overrule = getattr(prediction, "overwrite_reason", None)
+        overrule_name = getattr(overrule, "name", None)
+        score = getattr(result, "score", None)
+        try:
+            score_value = float(score) if score is not None else None
+        except (TypeError, ValueError):
+            score_value = None
+        # Version/model provenance is read from the tool itself and NEVER
+        # defaulted: magika exposes its module version and its model NAME
+        # (`standard_v3_3`); it exposes no separate model-version accessor, so
+        # the model identifier recorded here IS the model name and nothing is
+        # invented to fill a version-shaped field. A getter that fails raises
+        # into the fail-closed normalization handler below rather than being
+        # swallowed into a silent null.
+        model_version = str(identifier.get_model_name())
+        package_version = str(identifier.get_module_version())
+        payload = {
+            "kind": "magika",
+            "content_type": label,
+            "content_type_description": str(getattr(final, "description", "") or "") or None,
+            "content_type_group": str(getattr(final, "group", "") or "") or None,
+            "mime_type": str(getattr(final, "mime_type", "") or "") or None,
+            "is_text": bool(getattr(final, "is_text", False)),
+            "prediction_score": score_value,
+            "prediction_mode": MAGIKA_PREDICTION_MODE,
+            "model_prediction": (str(getattr(raw, "label", "") or "") or None),
+            "overwrite_reason": (overrule_name if isinstance(overrule_name, str) else None),
+            "model_version": model_version,
+            "package_version": package_version,
+            "execution_duration_ms": duration_ms,
+        }
+    except Exception as exc:
+        return {
+            "status": "ERROR",
+            "output": None,
+            "note": f"magika result normalization failed: {type(exc).__name__}",
+        }
+
+    return {"status": "OBSERVED", "output": payload, "note": None}
+
+
 def adapt_yarax(sample: Path, timeout, max_out):
     """YARA-X rule matching against the (optional) vendored ruleset.
 
@@ -315,6 +427,7 @@ ADAPTERS = {
     "die": adapt_die,
     "yara-x": adapt_yarax,
     "capa": adapt_capa,
+    "magika": adapt_magika,
 }
 
 TOOL_VERSIONS = {
@@ -323,6 +436,7 @@ TOOL_VERSIONS = {
     "capa": CAPA_VERSION,
     "yara-x": YARAX_VERSION,
     "die": DIE_VERSION,
+    "magika": MAGIKA_VERSION,
 }
 
 
