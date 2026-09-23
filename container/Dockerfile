@@ -15,6 +15,9 @@
 #   capa     9.4.0  PyPI `flare-capa` (pure-python wheel)
 #   yara-x   1.20.0 GitHub release asset yara-x-v1.20.0-x86_64-unknown-linux-gnu.tar.gz (CLI `yr`)
 #   diec     3.21   GitHub release asset die_3.21_Ubuntu_24.04_amd64.deb (installs /usr/bin/diec)
+#   magika   1.0.3  PyPI `magika` (official google/magika; Rust core + python binding,
+#                   wheels for cp38+ manylinux; Apache-2.0). Content-type classification
+#                   ONLY — never a malware verdict, family, or behavior assessment.
 #   rules    capa-rules v9.4.0 source tarball (vendored at build time, never fetched at runtime)
 #
 # Network policy (runtime): outbound DENY — enforced by the host runtime
@@ -29,6 +32,7 @@ ENV TOOLS_HOME=/opt/zx-tools \
     YARA_RULES=/opt/zx-tools/yara-rules \
     VIRTUAL_ENV=/opt/zx-venv \
     YARAX_RULESET_VERSION=none \
+    MAGIKA_VERSION=1.0.3 \
     PYTHONUNBUFFERED=1 \
     PATH=/opt/zx-venv/bin:/opt/zx-tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -53,7 +57,8 @@ RUN python3 -m venv ${VIRTUAL_ENV} \
  && ${VIRTUAL_ENV}/bin/pip install --no-cache-dir \
       "lief==1.0.0" \
       "flare-floss==3.1.1" \
-      "flare-capa==9.4.0"
+      "flare-capa==9.4.0" \
+      "magika==1.0.3"
 
 # ---- pinned native tooling: yara-x official release binary (static musl build) ----
 ARG YARAX_VERSION=1.20.0
