@@ -18,6 +18,10 @@
 #   magika   1.0.3  PyPI `magika` (official google/magika; Rust core + python binding,
 #                   wheels for cp38+ manylinux; Apache-2.0). Content-type classification
 #                   ONLY — never a malware verdict, family, or behavior assessment.
+#   autoit-ripper 1.2.0 PyPI `autoit-ripper` (nazywam, MIT; based on ClamAV autoit.c +
+#                   MyAutToExe). Deterministic EA06 data transformation ONLY — never a
+#                   verdict; output is verified against the format's own declared
+#                   adler32 checksums and declared sizes before publication.
 #   rules    capa-rules v9.4.0 source tarball (vendored at build time, never fetched at runtime)
 #
 # Network policy (runtime): outbound DENY — enforced by the host runtime
@@ -38,19 +42,11 @@ ENV TOOLS_HOME=/opt/zx-tools \
 
 # ---- python runtime + pinned native tooling in one resolver pass ----
 # diec 3.21 ships as an official Ubuntu 24.04 package; apt resolves its Qt5
-# runtime dependencies (libqt5core5a, libqt5script5, libqt5dbus5, …) against
-# the distribution's own ABI, so no bundled desktop runtime is required and no
-# unversioned package is pulled.
-ARG DIE_URL=https://github.com/horsicq/DIE-engine/releases/download/3.21/die_3.21_Ubuntu_24.04_amd64.deb
-# build-essential + python3-dev: required to compile the `binary2strings`
-# native extension that flare-floss depends on (verified live — its sdist has
-# no prebuilt cp312 wheel and needs a C++ toolchain at install time).
-RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 python3-venv python3-dev build-essential ca-certificates curl \
- && curl -fsSL -o /tmp/die.deb "${DIE_URL}" \
- && apt-get install -y --no-install-recommends /tmp/die.deb \
- && rm -f /tmp/die.deb \
- && rm -rf /var/lib/apt/lists/*
+# dependencies from the SAME ubuntu:24.04 index pinned by the base image.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      python3 python3-venv \
+      diec=3.21* \
+      && rm -rf /var/lib/apt/lists/*
 
 # ---- pinned python tooling (official PyPI wheels, exact versions) ----
 RUN python3 -m venv ${VIRTUAL_ENV} \
@@ -58,7 +54,8 @@ RUN python3 -m venv ${VIRTUAL_ENV} \
       "lief==1.0.0" \
       "flare-floss==3.1.1" \
       "flare-capa==9.4.0" \
-      "magika==1.0.3"
+      "magika==1.0.3" \
+      "autoit-ripper==1.2.0"
 
 # ---- pinned native tooling: yara-x official release binary (static musl build) ----
 ARG YARAX_VERSION=1.20.0
@@ -69,26 +66,12 @@ RUN mkdir -p ${TOOLS_HOME}/bin \
  && chmod +x ${TOOLS_HOME}/bin/yr \
  && rm -f /tmp/yarax.tgz
 
-# ---- vendored capa ruleset (pinned source release; never fetched at runtime) ----
-ARG CAPA_RULES_VERSION=9.4.0
-RUN mkdir -p ${CAPA_RULES} \
- && curl -fsSL -o /tmp/rules.tgz \
-      "https://github.com/mandiant/capa-rules/archive/refs/tags/v${CAPA_RULES_VERSION}.tar.gz" \
- && tar -xzf /tmp/rules.tgz -C ${CAPA_RULES} --strip-components=1 \
- && rm -f /tmp/rules.tgz
+# ---- non-root analysis user ----
+RUN useradd -m -s /usr/sbin/nologin zxanalyst
 
-# No YARA ruleset is vendored: the repository has NO canonical ruleset (verified
-# during M14.3). YARA-X therefore reports NO_RESULT with explicit tooling
-# coverage until a rules source is approved. Never fabricate rules here.
-
-# ---- unprivileged runtime user; no home credentials, no repo mounts ----
-RUN useradd --system --create-home --shell /usr/sbin/nologin zxanalyst
-
-COPY --chown=zxanalyst:zxanalyst src/ /app/src/
 WORKDIR /app
-USER zxanalyst
+COPY --chown=zxanalyst:zxanalyst src/ /app/src/
 
-# Job intake only: POST /analyze with a canonical AnalysisJob. No shell, no
-# arbitrary command execution surface; per-job ephemeral workdir under /tmp.
+USER zxanalyst
 EXPOSE 8080
 CMD ["python", "-m", "src.server"]
