@@ -15,6 +15,11 @@ The read-only extraction pass (phase 6) returns one typed result per request
 (EXTRACTED / NO_RESULT / ERROR) under `extractions`; it never executes what it
 extracts and never guesses a boundary.
 
+The decode pass (phase 6.2) deterministically decodes each successful
+extraction's recovered bytes with the PINNED AutoIt-Ripper EA06 decoder and
+verifies every record against the format's own declared adler32 checksum and
+declared sizes before returning anything. It never executes what it decodes.
+
 Constraints enforced here:
   - static analysis ONLY; the sample never touches the network (the container
     is run with networking disabled by the host runtime AND this process
@@ -65,6 +70,14 @@ AUTOIT_EXTRACTOR_VERSION = os.environ.get(
     "AUTOIT_EXTRACTOR_VERSION", "1.0.0-autoitresourceextractor-canonical"
 )
 AUTOIT_RESOURCE_MAGIC = b"AU3!EA06"
+
+# Phase 6.2 — pinned, deterministic EA06 decoder (AutoIt-Ripper, MIT, PyPI wheel).
+# The pin is enforced at import time: a different installed version is an
+# UNAVAILABLE state, never a silent downgrade to "whatever is present".
+AUTOIT_DECODER_PACKAGE = "autoit-ripper"
+AUTOIT_DECODER_VERSION = "1.2.0"
+AUTOIT_DECODER_METHOD = "AUTOIT_RIPPER_EA06_LAME_DEFLATE"
+AUTOIT_MAX_DECODED_BYTES = 8 * 1024 * 1024
 AUTOIT_EXTRACTION_METHOD = "PE_RESOURCE_DIRECTORY_RCDATA"
 MAX_EXTRACTION_REQUESTS = 4
 MAX_EXTRACTED_BYTES = 4 * 1024 * 1024
@@ -396,7 +409,7 @@ def adapt_yarax(sample: Path, timeout, max_out):
             rule = m.get("rule", {})
             matches.append({
                 "rule": str(rule.get("identifier", "")),
-                "namespace": str(rule.get("namespace", "")) or None,
+                "namespace": str(rule.get("namespace", "") or "") or None,
                 "meta": {str(k): str(v) for k, v in (rule.get("metadata") or {}).items()},
             })
             status = "OBSERVED"
@@ -596,6 +609,157 @@ def _extraction_error(error_class: str, note: str, started: float):
     }
 
 
+def decode_autoit_ea06(payload: bytes) -> dict:
+    """Deterministically decode a recovered AU3!EA06 resource extent.
+
+    The record layout of THIS plane's extracted extent is fixed and validated
+    before any transform: 16-byte pass prefix, 8-byte AU3!EA06 magic, 16-byte
+    checksum area, then the AU3 records (the layout the library's own
+    ``unpack_ea06`` uses after PE-resource slicing, verified against the live
+    specimen and its declared adler32/uncompressed-size ground truth).
+
+    Ground truth, not plausibility: every accepted record's decrypted compressed
+    payload must match the adler32 checksum the record itself declares, and the
+    decompressed length must equal the record's declared uncompressed size.
+    A decode that cannot prove both is an ERROR, never output.
+
+    Pure data transformation: nothing is written, executed or sent anywhere.
+    """
+    started = time.monotonic()
+    try:
+        import autoit_ripper  # noqa: F401
+        from importlib.metadata import version as _pkg_version
+
+        installed = _pkg_version(AUTOIT_DECODER_PACKAGE)
+    except Exception as exc:  # missing package → UNAVAILABLE, never a guess
+        return {
+            "status": "UNAVAILABLE",
+            "note": f"decoder package not present in image: {type(exc).__name__}",
+            "decoder_method": AUTOIT_DECODER_METHOD,
+            "decoder_version": AUTOIT_DECODER_VERSION,
+            "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        }
+    if installed != AUTOIT_DECODER_VERSION:
+        return {
+            "status": "ERROR",
+            "note": f"decoder version drift: installed {installed}, pinned {AUTOIT_DECODER_VERSION}",
+            "decoder_method": AUTOIT_DECODER_METHOD,
+            "decoder_version": AUTOIT_DECODER_VERSION,
+            "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        }
+
+    if len(payload) < 0x18 + 16 or payload[0x10:0x18] != AUTOIT_RESOURCE_MAGIC:
+        return {
+            "status": "ERROR",
+            "note": "payload is not a recognised AU3!EA06 extent layout",
+            "decoder_method": AUTOIT_DECODER_METHOD,
+            "decoder_version": AUTOIT_DECODER_VERSION,
+            "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        }
+
+    try:
+        from autoit_ripper.autoit_unpack import EA06Decryptor, decompress, parse_all
+        from autoit_ripper.utils import ByteStream
+        from zlib import adler32
+
+        dec = EA06Decryptor()
+        stream = ByteStream(payload[0x18:])
+        stream.get_bytes(16)  # checksum area (parse_all reads it; EA06 key is static)
+
+        records = []
+        while True:
+            try:
+                head = stream.get_bytes(4)
+            except Exception:
+                break
+            if len(head) < 4 or dec.decrypt(head, dec.au3_ResType) != b"FILE":
+                break  # end of embedded data — a normal, verified termination
+
+            def _string(keys) -> str:
+                length = stream.u32() ^ keys[0]
+                enc_key = length + keys[1]
+                blob = dec.decrypt(stream.get_bytes(length << 1), enc_key)
+                return blob.decode("utf-16")
+
+            subtype = _string(dec.au3_ResSubType)
+            name = _string(dec.au3_ResName)
+            if subtype == ">>>AUTOIT NO CMDEXECUTE<<<":
+                stream.skip_bytes(1)
+                stream.skip_bytes((stream.u32() ^ dec.au3_ResSize) + 0x18)
+                continue
+
+            is_compressed = stream.u8()
+            size_compressed = stream.u32() ^ dec.au3_ResSize
+            size_plain = stream.u32() ^ dec.au3_ResSize
+            crc_declared = stream.u32() ^ dec.au3_ResCrcCompressed
+            stream.get_bytes(16)  # creation/last-write FILETIMEs
+            if size_compressed > len(payload) or size_plain > AUTOIT_MAX_DECODED_BYTES:
+                return {
+                    "status": "ERROR",
+                    "note": "record declares sizes outside the verified bounds; nothing is decoded",
+                    "decoder_method": AUTOIT_DECODER_METHOD,
+                    "decoder_version": AUTOIT_DECODER_VERSION,
+                    "duration_ms": round((time.monotonic() - started) * 1000, 3),
+                }
+            decrypted = dec.decrypt(stream.get_bytes(size_compressed), dec.au3_ResContent)
+            if (adler32(decrypted) & 0xFFFFFFFF) != crc_declared:
+                return {
+                    "status": "ERROR",
+                    "note": "record content failed its own declared adler32 checksum; no output is published",
+                    "decoder_method": AUTOIT_DECODER_METHOD,
+                    "decoder_version": AUTOIT_DECODER_VERSION,
+                    "duration_ms": round((time.monotonic() - started) * 1000, 3),
+                }
+            plain = decrypted if is_compressed != 1 else decompress(ByteStream(decrypted))
+            if plain is None or len(plain) != size_plain:
+                return {
+                    "status": "ERROR",
+                    "note": "decompressed length does not equal the record's declared uncompressed size",
+                    "decoder_method": AUTOIT_DECODER_METHOD,
+                    "decoder_version": AUTOIT_DECODER_VERSION,
+                    "duration_ms": round((time.monotonic() - started) * 1000, 3),
+                }
+            records.append({"subtype": subtype, "name": name, "size": len(plain), "content": plain})
+
+        if not records:
+            return {
+                "status": "NO_RESULT",
+                "note": "extent parsed as EA06 but contained no decodable script record",
+                "decoder_method": AUTOIT_DECODER_METHOD,
+                "decoder_version": AUTOIT_DECODER_VERSION,
+                "duration_ms": round((time.monotonic() - started) * 1000, 3),
+            }
+        # The compiled script is the record the canonical configuration layer
+        # models; extra records stay listed with their digests, never dropped
+        # silently and never interpreted.
+        script = next((r for r in records if r["subtype"] == ">>>AUTOIT SCRIPT<<<"), records[0])
+        return {
+            "status": "DECODED",
+            "note": None,
+            "decoder_method": AUTOIT_DECODER_METHOD,
+            "decoder_version": AUTOIT_DECODER_VERSION,
+            "output_sha256": hashlib.sha256(script["content"]).hexdigest(),
+            "output_size_bytes": len(script["content"]),
+            "output_b64": base64.b64encode(script["content"]).decode("ascii"),
+            "output_name": script["name"],
+            "records": [
+                {"subtype": r["subtype"], "name": r["name"], "size": r["size"],
+                 "sha256": hashlib.sha256(r["content"]).hexdigest()}
+                for r in records
+            ],
+            "verification": "adler32-of-decrypted-content == record-declared crc AND decompressed length == record-declared uncompressed size (every record)",
+            "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        }
+    except Exception as exc:  # decoder crash → typed ERROR, never a default
+        return {
+            "status": "ERROR",
+            "note": f"decoder execution failed: {type(exc).__name__}",
+            "decoder_method": AUTOIT_DECODER_METHOD,
+            "decoder_version": AUTOIT_DECODER_VERSION,
+            "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        }
+
+
 def extract_autoit_resource(sample: Path, request: dict) -> dict:
     """Extract the RCDATA resource extent that hosts a compiled-AutoIt magic.
 
@@ -789,6 +953,24 @@ def run_job(job: dict) -> dict:
                         "extractor_version": AUTOIT_EXTRACTOR_VERSION,
                         "extraction_method": AUTOIT_EXTRACTION_METHOD,
                     })
+        # Phase 6.2 — deterministic decode pass over the RECOVERED payloads of
+        # this same job. Input = this job's own successful extraction records
+        # (never a caller-supplied byte source). Every record's output is
+        # verified against the format's own declared checksums before it is
+        # returned; a decode failure is a typed state, never a default.
+        decodings = []
+        for rec in extractions:
+            if rec.get("status") != "EXTRACTED":
+                continue
+            try:
+                decodings.append(decode_autoit_ea06(base64.b64decode(rec["output_b64"])))
+            except Exception as exc:  # decode crash → typed ERROR, job continues
+                decodings.append({
+                    "status": "ERROR",
+                    "note": f"decode pass crash: {type(exc).__name__}",
+                    "decoder_method": AUTOIT_DECODER_METHOD,
+                    "decoder_version": AUTOIT_DECODER_VERSION,
+                })
         return {
             "job_status": "COMPLETED",
             "analysis_run_id": analysis_run_id,
@@ -796,6 +978,7 @@ def run_job(job: dict) -> dict:
             "sha256": declared_sha,
             "results": results,
             "extractions": extractions,
+            "decodings": decodings,
         }
     finally:
         # ephemeral teardown: sample + every tool temp artifact (§24)
