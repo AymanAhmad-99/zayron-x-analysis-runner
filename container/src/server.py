@@ -6,8 +6,14 @@ Accepts ONE canonical analysis job shape (POST /analyze):
     AnalysisJob {
       analysis_run_id, artifact_id, sha256,
       sample_b64 (or sample_path for mounted transports),
-      requested_tools[], limits {timeout_seconds, max_output_bytes}
+      requested_tools[], limits {timeout_seconds, max_output_bytes},
+      extraction_requests[] {kind: "AUTOIT_RCDATA_RESOURCE", magic?,
+                             host_extent? {host_offset, size_bytes}, magic_offset?}
     }
+
+The read-only extraction pass (phase 6) returns one typed result per request
+(EXTRACTED / NO_RESULT / ERROR) under `extractions`; it never executes what it
+extracts and never guesses a boundary.
 
 Constraints enforced here:
   - static analysis ONLY; the sample never touches the network (the container
@@ -53,6 +59,19 @@ DIE_VERSION = "3.21"
 CAPA_RULES_VERSION = "9.4.0"
 YARAX_RULESET_VERSION = os.environ.get("YARAX_RULESET_VERSION", "none")
 MAGIKA_VERSION = os.environ.get("MAGIKA_VERSION", "1.0.3")
+# Phase 6: deterministic READ-ONLY resource extraction. No new runtime, no new
+# dependency, no execution of the extracted bytes.
+AUTOIT_EXTRACTOR_VERSION = os.environ.get(
+    "AUTOIT_EXTRACTOR_VERSION", "1.0.0-autoitresourceextractor-canonical"
+)
+AUTOIT_RESOURCE_MAGIC = b"AU3!EA06"
+AUTOIT_EXTRACTION_METHOD = "PE_RESOURCE_DIRECTORY_RCDATA"
+MAX_EXTRACTION_REQUESTS = 4
+MAX_EXTRACTED_BYTES = 4 * 1024 * 1024
+PE_RESOURCE_TYPE_RCDATA = 10
+MAX_PE_SECTIONS = 96
+MAX_RESOURCE_ENTRIES = 4096
+MAX_RESOURCE_DEPTH = 3
 # Magika prediction mode is CONFIGURED here (the tool does not echo it back), and
 # is recorded verbatim as provenance. It is a content-typing tolerance only.
 MAGIKA_PREDICTION_MODE = os.environ.get("MAGIKA_PREDICTION_MODE", "HIGH_CONFIDENCE")
@@ -440,6 +459,237 @@ TOOL_VERSIONS = {
 }
 
 
+# ── phase 6: deterministic PE-resource extraction (read-only) ─────────────
+#
+# The ONLY boundary source is the PE resource directory: an extracted payload
+# must BE an IMAGE_RESOURCE_DATA_ENTRY (type RCDATA) extent, never a range found
+# by scanning the file for a signature. Fixed offsets only, hard bounds, no
+# shell, no execution, no network, no write outside the ephemeral job dir.
+# (bounded, typed, fail-closed)
+
+
+class _PeLayoutError(Exception):
+    """Typed PE/resource parse failure — never silently treated as absence."""
+
+    def __init__(self, error_class: str, note: str):
+        super().__init__(note)
+        self.error_class = error_class
+        self.note = note
+
+
+def _u16(raw: bytes, off: int) -> int:
+    return int.from_bytes(raw[off:off + 2], "little")
+
+
+def _u32(raw: bytes, off: int) -> int:
+    return int.from_bytes(raw[off:off + 4], "little")
+
+
+def _pe_sections(raw: bytes):
+    """Bounded PE header parse → (sections, resource_dir_rva, resource_dir_size)."""
+    if len(raw) < 0x40:
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "input is smaller than a DOS header")
+    if raw[0:2] != b"MZ":
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "no MZ signature")
+    pe = _u32(raw, 0x3C)
+    if pe <= 0 or pe + 24 > len(raw) or raw[pe:pe + 4] != b"PE\x00\x00":
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "no PE signature at e_lfanew")
+    num_sections = _u16(raw, pe + 6)
+    size_opt = _u16(raw, pe + 20)
+    if num_sections == 0 or num_sections > MAX_PE_SECTIONS:
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "section count outside the supported bound")
+    opt = pe + 24
+    if opt + size_opt > len(raw):
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "optional header extends past end of file")
+    magic = _u16(raw, opt)
+    if magic not in (0x10B, 0x20B):
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "optional header magic is neither PE32 nor PE32+")
+    dd = opt + (112 if magic == 0x20B else 96)
+    if dd + 24 > len(raw):
+        raise _PeLayoutError("PE_LAYOUT_INVALID", "data directory table truncated")
+    res_rva = _u32(raw, dd + 2 * 8)
+    res_size = _u32(raw, dd + 2 * 8 + 4)
+    table = opt + size_opt
+    sections = []
+    for i in range(num_sections):
+        base = table + i * 40
+        if base + 40 > len(raw):
+            raise _PeLayoutError("PE_LAYOUT_INVALID", "section table truncated")
+        sections.append((_u32(raw, base + 12), _u32(raw, base + 8), _u32(raw, base + 20), _u32(raw, base + 16)))
+    return sections, res_rva, res_size
+
+
+def _rva_to_offset(sections, rva: int, size: int):
+    """Map an RVA to a file offset using the section table; None when unmapped."""
+    for va, vsize, poff, rsize in sections:
+        span = max(vsize, rsize)
+        if va <= rva < va + span:
+            delta = rva - va
+            if delta + size > max(vsize, rsize):
+                return None
+            return poff + delta
+    return None
+
+
+def _resource_data_entries(raw: bytes, sections, res_rva: int, res_size: int):
+    """Walk the resource directory (bounded, ≤3 levels) → RCDATA data entries."""
+    if res_rva == 0 or res_size == 0:
+        raise _PeLayoutError("RESOURCE_DIRECTORY_ABSENT", "the PE image declares no resource directory")
+    base = _rva_to_offset(sections, res_rva, res_size)
+    if base is None or base + 16 > len(raw):
+        raise _PeLayoutError("RESOURCE_DIRECTORY_UNMAPPED", "resource directory RVA does not map into the file")
+    entries = []
+    walked = {"count": 0}
+
+    def walk(dir_off: int, path, depth: int) -> None:
+        if depth > MAX_RESOURCE_DEPTH:
+            raise _PeLayoutError("RESOURCE_DEPTH_EXCEEDED", "resource directory nesting exceeded the bound")
+        if dir_off < 0 or dir_off + 16 > len(raw):
+            raise _PeLayoutError("RESOURCE_ENTRY_OUT_OF_BOUNDS", "resource directory entry outside the file")
+        named = _u16(raw, dir_off + 12)
+        ids = _u16(raw, dir_off + 14)
+        for i in range(named + ids):
+            ent = dir_off + 16 + i * 8
+            if ent + 8 > len(raw):
+                raise _PeLayoutError("RESOURCE_ENTRY_OUT_OF_BOUNDS", "resource directory entry outside the file")
+            walked["count"] += 1
+            if walked["count"] > MAX_RESOURCE_ENTRIES:
+                raise _PeLayoutError("RESOURCE_ENTRY_BUDGET_EXHAUSTED", "resource inventory exceeded the entry budget")
+            name_field = _u32(raw, ent)
+            child = _u32(raw, ent + 4)
+            ident = None if (name_field & 0x80000000) else name_field
+            if child & 0x80000000:
+                walk(base + (child & 0x7FFFFFFF), path + [ident], depth + 1)
+                continue
+            data_ent = base + child
+            if data_ent + 16 > len(raw):
+                raise _PeLayoutError("RESOURCE_ENTRY_OUT_OF_BOUNDS", "resource data entry outside the file")
+            data_rva = _u32(raw, data_ent)
+            size = _u32(raw, data_ent + 4)
+            if size == 0:
+                continue
+            if data_rva == 0:
+                raise _PeLayoutError("RESOURCE_ENTRY_OUT_OF_BOUNDS", "resource data entry has a null address")
+            off = _rva_to_offset(sections, data_rva, size)
+            if off is None or off + size > len(raw):
+                raise _PeLayoutError("EXTENT_OUT_OF_BOUNDS", "resource extent is not inside the file")
+            entries.append({
+                "type_id": path[0] if path else None,
+                "id": ident if depth == 1 else (path[1] if len(path) > 1 else None),
+                "offset": off,
+                "size": size,
+            })
+
+    walk(base, [], 0)
+    return entries
+
+
+def _extraction_error(error_class: str, note: str, started: float):
+    """Typed extraction failure — never bytes, never a guessed extent."""
+    return {
+        "status": "ERROR",
+        "error_class": error_class,
+        "note": note[:512],
+        "extractor_version": AUTOIT_EXTRACTOR_VERSION,
+        "extraction_method": AUTOIT_EXTRACTION_METHOD,
+        "duration_ms": round((time.monotonic() - started) * 1000, 3),
+    }
+
+
+def extract_autoit_resource(sample: Path, request: dict) -> dict:
+    """Extract the RCDATA resource extent that hosts a compiled-AutoIt magic.
+
+    Validates, in order: declared parent sha256 == measured bytes; PE layout
+    parses; the resource directory exists; RCDATA extents exist and stay inside
+    the file; exactly ONE RCDATA extent contains the magic (more than one is
+    AMBIGUOUS and refused — never guessed); any caller-declared extent / magic
+    offset matches that entry exactly; the payload is within the transport bound.
+    """
+    started = time.monotonic()
+    try:
+        raw = sample.read_bytes()
+    except OSError as exc:
+        return _extraction_error("SAMPLE_UNREADABLE", type(exc).__name__, started)
+    measured = hashlib.sha256(raw).hexdigest()
+    declared = str(request.get("expected_parent_sha256") or "").strip().lower()
+    if declared and declared != measured:
+        return _extraction_error(
+            "PARENT_SHA256_MISMATCH", "measured parent bytes do not match the declared parent sha256", started
+        )
+    magic_field = request.get("magic")
+    magic = AUTOIT_RESOURCE_MAGIC if not magic_field else str(magic_field).encode("ascii", "ignore")
+    if not magic:
+        return _extraction_error("INVALID_REQUEST", "magic must be a non-empty ASCII string", started)
+    declared_extent = request.get("host_extent")
+    declared_magic_offset = request.get("magic_offset")
+    try:
+        sections, res_rva, res_size = _pe_sections(raw)
+        entries = _resource_data_entries(raw, sections, res_rva, res_size)
+    except _PeLayoutError as exc:
+        return _extraction_error(exc.error_class, exc.note, started)
+
+    candidates = []
+    for entry in entries:
+        if entry["type_id"] != PE_RESOURCE_TYPE_RCDATA:
+            continue
+        segment = raw[entry["offset"]:entry["offset"] + entry["size"]]
+        at = segment.find(magic)
+        if at < 0:
+            continue
+        candidates.append({**entry, "magic_offset": entry["offset"] + at})
+    candidates.sort(key=lambda c: (c["offset"], c["size"], c["magic_offset"]))
+    if not candidates:
+        return {
+            "status": "NO_RESULT",
+            "error_class": None,
+            "note": "no RCDATA resource extent contains the requested magic; this is NOT evidence of absence",
+            "extractor_version": AUTOIT_EXTRACTOR_VERSION,
+            "extraction_method": AUTOIT_EXTRACTION_METHOD,
+            "parent_sha256": measured,
+            "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        }
+    if len(candidates) > 1:
+        return _extraction_error(
+            "AMBIGUOUS_RESOURCE_MATCH",
+            f"{len(candidates)} RCDATA extents contain the magic; the boundary is ambiguous and nothing is extracted",
+            started,
+        )
+    chosen = candidates[0]
+    if isinstance(declared_extent, dict):
+        host = declared_extent.get("host_offset")
+        size = declared_extent.get("size_bytes")
+        if host is not None and int(host) != chosen["offset"]:
+            return _extraction_error("DECLARED_EXTENT_MISMATCH", "declared host offset is not a resource extent", started)
+        if size is not None and int(size) != chosen["size"]:
+            return _extraction_error("DECLARED_EXTENT_MISMATCH", "declared extent size is not the resource extent size", started)
+    if declared_magic_offset is not None and int(declared_magic_offset) != chosen["magic_offset"]:
+        return _extraction_error("MAGIC_OFFSET_MISMATCH", "declared magic offset differs from the resource-contained magic", started)
+    if chosen["size"] > MAX_EXTRACTED_BYTES:
+        return _extraction_error(
+            "OUTPUT_TOO_LARGE", f"resource extent {chosen['size']} exceeds the extraction transport bound", started
+        )
+    payload = raw[chosen["offset"]:chosen["offset"] + chosen["size"]]
+    if len(payload) != chosen["size"]:
+        return _extraction_error("EXTENT_OUT_OF_BOUNDS", "resource extent is not fully inside the file", started)
+    return {
+        "status": "EXTRACTED",
+        "error_class": None,
+        "note": None,
+        "extractor_version": AUTOIT_EXTRACTOR_VERSION,
+        "extraction_method": AUTOIT_EXTRACTION_METHOD,
+        "parent_sha256": measured,
+        "host_offset": chosen["offset"],
+        "size_bytes": chosen["size"],
+        "resource_type": "RCDATA",
+        "resource_id": chosen["id"],
+        "magic_offset": chosen["magic_offset"],
+        "output_sha256": hashlib.sha256(payload).hexdigest(),
+        "output_size_bytes": len(payload),
+        "output_b64": base64.b64encode(payload).decode("ascii"),
+        "duration_ms": round((time.monotonic() - started) * 1000, 3),
+    }
+
+
 def run_job(job: dict) -> dict:
     analysis_run_id = str(job.get("analysis_run_id", ""))
     artifact_id = str(job.get("artifact_id", ""))
@@ -507,12 +757,45 @@ def run_job(job: dict) -> dict:
                     "tool_binary_digest": "UNKNOWN",
                 },
             })
+        # Deterministic, read-only extraction pass over the canonical evidence
+        # boundary (PE resource directory). Runs AFTER the analyzers, never
+        # before, and its failure can never fail the job.
+        extractions = []
+        requests = job.get("extraction_requests") or []
+        if isinstance(requests, list):
+            for req in requests[:MAX_EXTRACTION_REQUESTS]:
+                if not isinstance(req, dict):
+                    extractions.append({
+                        "status": "ERROR", "error_class": "INVALID_REQUEST",
+                        "note": "extraction request must be an object",
+                        "extractor_version": AUTOIT_EXTRACTOR_VERSION,
+                        "extraction_method": AUTOIT_EXTRACTION_METHOD,
+                    })
+                    continue
+                if req.get("kind") != "AUTOIT_RCDATA_RESOURCE":
+                    extractions.append({
+                        "status": "ERROR", "error_class": "UNSUPPORTED_EXTRACTION_KIND",
+                        "note": "only AUTOIT_RCDATA_RESOURCE is supported by this plane",
+                        "extractor_version": AUTOIT_EXTRACTOR_VERSION,
+                        "extraction_method": AUTOIT_EXTRACTION_METHOD,
+                    })
+                    continue
+                try:
+                    extractions.append(extract_autoit_resource(sample, req))
+                except Exception as exc:  # extraction crash → typed ERROR, job continues
+                    extractions.append({
+                        "status": "ERROR", "error_class": "EXTRACTOR_CRASH",
+                        "note": type(exc).__name__,
+                        "extractor_version": AUTOIT_EXTRACTOR_VERSION,
+                        "extraction_method": AUTOIT_EXTRACTION_METHOD,
+                    })
         return {
             "job_status": "COMPLETED",
             "analysis_run_id": analysis_run_id,
             "artifact_id": artifact_id,
             "sha256": declared_sha,
             "results": results,
+            "extractions": extractions,
         }
     finally:
         # ephemeral teardown: sample + every tool temp artifact (§24)
