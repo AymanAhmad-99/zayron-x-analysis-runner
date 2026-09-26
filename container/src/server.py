@@ -109,6 +109,51 @@ def _file_digest(path: Path) -> str:
     return h.hexdigest()
 
 
+DIAGNOSTIC_MAX_BYTES = 512
+
+
+def _diagnostic_fragment(raw, limit=DIAGNOSTIC_MAX_BYTES):
+    """Bounded, sanitized subprocess stderr fragment for failure diagnostics.
+
+    Observability ONLY: it never changes a tool's status, argv, timeout or
+    output, and it never fabricates a cause. Deterministic: control bytes are
+    dropped, whitespace is collapsed, and the result is hard-truncated to at
+    most `limit` UTF-8 bytes. Empty/absent input returns None, so an empty
+    stderr never produces an artificial diagnostic. Never raises.
+    """
+    if not raw:
+        return None
+    try:
+        text = raw if isinstance(raw, str) else raw.decode("utf-8", "replace")
+    except Exception:
+        return None
+    try:
+        chars = []
+        for ch in text:
+            code = ord(ch)
+            if ch in ("\n", "\r", "\t"):
+                chars.append(" ")
+            elif code < 32 or code == 127:
+                continue  # drop NUL and other non-printable control bytes
+            else:
+                chars.append(ch)
+        cleaned = " ".join("".join(chars).split())
+        if not cleaned:
+            return None
+        encoded = cleaned.encode("utf-8")
+        if len(encoded) > limit:
+            cleaned = encoded[:limit].decode("utf-8", "ignore")
+        return cleaned or None
+    except Exception:
+        return None
+
+
+def _failure_note(base, stderr):
+    """`base` plus a bounded stderr diagnostic when one exists, else `base`."""
+    fragment = _diagnostic_fragment(stderr)
+    return "%s; stderr: %s" % (base, fragment) if fragment else base
+
+
 def _run_argv(argv, timeout, max_out, cwd):
     """Fixed-argv execution with hard timeout and output bounds. No shell."""
     started = time.monotonic()
@@ -214,7 +259,7 @@ def adapt_floss(sample: Path, timeout, max_out):
     if res["error_class"] == "TIMEOUT":
         return {"status": "ERROR", "output": None, "note": "floss timed out"}
     if res["exit_status"] != 0:
-        return {"status": "ERROR", "output": None, "note": f"floss exit {res['exit_status']}"}
+        return {"status": "ERROR", "output": None, "note": _failure_note(f"floss exit {res['exit_status']}", res.get("stderr"))}
     try:
         doc = json.loads(res["stdout"])
     except json.JSONDecodeError:
@@ -431,7 +476,7 @@ def adapt_capa(sample: Path, timeout, max_out):
     if res["error_class"] == "TIMEOUT":
         return {"status": "ERROR", "output": None, "note": "capa timed out"}
     if res["exit_status"] != 0:
-        return {"status": "ERROR", "output": None, "note": f"capa exit {res['exit_status']}"}
+        return {"status": "ERROR", "output": None, "note": _failure_note(f"capa exit {res['exit_status']}", res.get("stderr"))}
     try:
         doc = json.loads(res["stdout"])
     except json.JSONDecodeError:
