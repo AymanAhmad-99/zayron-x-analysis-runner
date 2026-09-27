@@ -18,11 +18,9 @@
 #   magika   1.0.3  PyPI `magika` (official google/magika; Rust core + python binding,
 #                   wheels for cp38+ manylinux; Apache-2.0). Content-type classification
 #                   ONLY — never a malware verdict, family, or behavior assessment.
-#   autoit-ripper 1.2.0 PyPI `autoit-ripper` (nazywam, MIT; based on ClamAV autoit.c +
-#                   MyAutToExe). Deterministic EA06 data transformation ONLY — never a
-#                   verdict; output is verified against the format's own declared
-#                   adler32 checksums and declared sizes before publication.
 #   rules    capa-rules v9.4.0 source tarball (vendored at build time, never fetched at runtime)
+#            yara-rules: signature-base DRL-1.1 subset @94a1c48d (717 files, vendored at build time
+#                        from an immutable commit; 13 external-variable + 21 non-DRL excluded)
 #
 # Network policy (runtime): outbound DENY — enforced by the host runtime
 # (--network none / Cloudflare Container no networking) AND by the absence of
@@ -35,7 +33,13 @@ ENV TOOLS_HOME=/opt/zx-tools \
     CAPA_RULES=/opt/zx-tools/capa-rules \
     YARA_RULES=/opt/zx-tools/yara-rules \
     VIRTUAL_ENV=/opt/zx-venv \
-    YARAX_RULESET_VERSION=none \
+    YARAX_RULESET_VERSION=signature-base@94a1c48d7ab499879287ff611dfe7f9c56376030 \
+    YARAX_RULESET_SOURCE=github.com/Neo23x0/signature-base \
+    YARAX_RULESET_COMMIT=94a1c48d7ab499879287ff611dfe7f9c56376030 \
+    YARAX_RULESET_FILE_COUNT=717 \
+    YARAX_RULESET_MANIFEST_SHA256=8a8dc006f98488da56bb585cd5dabb790a5ce22887d9344a5d4ca99d44291c47 \
+    YARAX_RULESET_SOURCE_DIGEST=87da7f984f178db0cadbae6a8790af46aad8b5d15e9e504728c9e2299c051ade \
+    YARAX_RULESET_BUNDLE_SHA256=UNKNOWN \
     MAGIKA_VERSION=1.0.3 \
     PYTHONUNBUFFERED=1 \
     PATH=/opt/zx-venv/bin:/opt/zx-tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -82,9 +86,33 @@ RUN mkdir -p ${CAPA_RULES} \
  && tar -xzf /tmp/rules.tgz -C ${CAPA_RULES} --strip-components=1 \
  && rm -f /tmp/rules.tgz
 
-# No YARA ruleset is vendored: the repository has NO canonical ruleset (verified
-# during M14.3). YARA-X therefore reports NO_RESULT with explicit tooling
-# coverage until a rules source is approved. Never fabricate rules here.
+# ---- vendored YARA ruleset (M16.3.10) ----
+# DRL-1.1 subset of Neo23x0/signature-base at an IMMUTABLE commit (never `latest`,
+# never fetched at runtime). Built from the exact audited manifest: 717 files, with
+# all 13 external-variable rules and all 21 non-DRL files excluded (34 total — see
+# yara-ruleset.excluded.txt). The subset compiles 717/717 under YARA-X 1.20.0 with
+# zero errors. The build FAILS CLOSED if the manifest hash or the source-set digest
+# does not match the recorded constants — no silent drift, no silent rule exclusion.
+ARG YARAX_RULES_COMMIT=94a1c48d7ab499879287ff611dfe7f9c56376030
+ARG YARAX_RULES_SOURCE_DIGEST=87da7f984f178db0cadbae6a8790af46aad8b5d15e9e504728c9e2299c051ade
+ARG YARAX_RULES_MANIFEST_SHA256=8a8dc006f98488da56bb585cd5dabb790a5ce22887d9344a5d4ca99d44291c47
+COPY yara-ruleset.manifest.txt yara-ruleset.excluded.txt yara-ruleset.provenance.json /tmp/yara-ruleset/
+RUN set -eu; \
+    cd /tmp/yara-ruleset; \
+    test "$(sha256sum yara-ruleset.manifest.txt | cut -d' ' -f1)" = "${YARAX_RULES_MANIFEST_SHA256}"; \
+    curl -fsSL -o sb.tgz "https://github.com/Neo23x0/signature-base/archive/${YARAX_RULES_COMMIT}.tar.gz"; \
+    mkdir -p sb; \
+    tar -xzf sb.tgz -C sb --strip-components=1; \
+    mkdir -p "${YARA_RULES}"; \
+    while IFS= read -r rel; do [ -n "$rel" ] && cp "sb/$rel" "${YARA_RULES}/"; done < yara-ruleset.manifest.txt; \
+    count="$(ls -1 ${YARA_RULES}/*.yar ${YARA_RULES}/*.yara | wc -l)"; \
+    test "$count" = "717"; \
+    digest="$(cd sb && while IFS= read -r rel; do cat "$rel"; done < ../yara-ruleset.manifest.txt | sha256sum | cut -d' ' -f1)"; \
+    test "$digest" = "${YARAX_RULES_SOURCE_DIGEST}"; \
+    cp sb/LICENSE "${YARA_RULES}/LICENSE.signature-base-DRL-1.1.txt"; \
+    cp yara-ruleset.provenance.json "${YARA_RULES}/RULESET_PROVENANCE.json"; \
+    cp yara-ruleset.excluded.txt "${YARA_RULES}/EXCLUDED_RULES.txt"; \
+    rm -rf /tmp/yara-ruleset
 
 # ---- unprivileged runtime user; no home credentials, no repo mounts ----
 RUN useradd --system --create-home --shell /usr/sbin/nologin zxanalyst

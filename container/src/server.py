@@ -15,11 +15,6 @@ The read-only extraction pass (phase 6) returns one typed result per request
 (EXTRACTED / NO_RESULT / ERROR) under `extractions`; it never executes what it
 extracts and never guesses a boundary.
 
-The decode pass (phase 6.2) deterministically decodes each successful
-extraction's recovered bytes with the PINNED AutoIt-Ripper EA06 decoder and
-verifies every record against the format's own declared adler32 checksum and
-declared sizes before returning anything. It never executes what it decodes.
-
 Constraints enforced here:
   - static analysis ONLY; the sample never touches the network (the container
     is run with networking disabled by the host runtime AND this process
@@ -63,6 +58,16 @@ YARAX_VERSION = os.environ.get("YARAX_VERSION", "1.20.0")
 DIE_VERSION = "3.21"
 CAPA_RULES_VERSION = "9.4.0"
 YARAX_RULESET_VERSION = os.environ.get("YARAX_RULESET_VERSION", "none")
+# Pinned DRL-1.1 ruleset provenance (M16.3.10). These values are recorded verbatim
+# and default to UNKNOWN — they are never fabricated and never inferred.
+YARAX_RULESET_SOURCE = os.environ.get("YARAX_RULESET_SOURCE", "UNKNOWN")
+YARAX_RULESET_COMMIT = os.environ.get("YARAX_RULESET_COMMIT", "UNKNOWN")
+YARAX_RULESET_FILE_COUNT = os.environ.get("YARAX_RULESET_FILE_COUNT", "UNKNOWN")
+YARAX_RULESET_MANIFEST_SHA256 = os.environ.get("YARAX_RULESET_MANIFEST_SHA256", "UNKNOWN")
+YARAX_RULESET_SOURCE_DIGEST = os.environ.get("YARAX_RULESET_SOURCE_DIGEST", "UNKNOWN")
+# A compiled bundle hash is only known when a bundle is actually built; it is
+# deliberately separate from the source digest and is NEVER substituted with it.
+YARAX_RULESET_BUNDLE_SHA256 = os.environ.get("YARAX_RULESET_BUNDLE_SHA256", "UNKNOWN")
 MAGIKA_VERSION = os.environ.get("MAGIKA_VERSION", "1.0.3")
 # Phase 6: deterministic READ-ONLY resource extraction. No new runtime, no new
 # dependency, no execution of the extracted bytes.
@@ -250,11 +255,24 @@ def adapt_lief(sample: Path):
 
 
 def adapt_floss(sample: Path, timeout, max_out):
-    """String intelligence via FLOSS: static, stack, tight, decoded strings."""
+    """String intelligence via FLOSS in the BOUNDED static-string mode.
+
+    FLOSS's default mode runs emulation-based stack/tight/decoded extraction,
+    which has no deterministic termination bound and exceeded the per-tool
+    wrapper timeout on the product sample class (the whole analysis was lost to
+    `status=ERROR`). FLOSS 3.1.1 supports `--only {static,decoded,stack,tight}`;
+    this adapter runs `--only static`, a deterministic linear string scan with a
+    predictable runtime and no emulation. Decoded/deobfuscated extraction is
+    DEFERRED as an explicit limitation (never silently claimed) until a bounded
+    emulation strategy is approved; the bounded static evidence is what this
+    plane can return within its execution envelope.
+    """
     exe = _probe("floss")
     if not exe:
         return {"status": "UNAVAILABLE", "output": None, "note": "floss binary not present in image"}
-    argv = [exe, "--json", str(sample)]
+    # Bounded static-only extraction. `--` terminates options so a sample path
+    # can never be read as a flag; fixed argv, no shell.
+    argv = [exe, "--json", "--only", "static", "--", str(sample)]
     res = _run_argv(argv, timeout, max_out, sample.parent)
     if res["error_class"] == "TIMEOUT":
         return {"status": "ERROR", "output": None, "note": "floss timed out"}
@@ -268,13 +286,17 @@ def adapt_floss(sample: Path, timeout, max_out):
     stack = [s.get("string", "") for s in strings.get("stack", [])][:512]
     tight = [s.get("string", "") for s in strings.get("tight", [])][:512]
     decoded = [d.get("string", "") for d in strings.get("decoded", [])][:512]
-    static = doc.get("strings", {}).get("static", [])
+    static = [s.get("string", "") for s in strings.get("static", [])][:512]
     return {
         "status": "OBSERVED" if (stack or tight or decoded or static) else "NO_RESULT",
         "output": {
             "kind": "floss",
-            "strings": {"stack": stack, "decoded": decoded, "tight": tight, "static": len(static)},
-            "total_extracted": len(stack) + len(tight) + len(decoded),
+            # Records the bounded mode that produced this result. `static` is a
+            # LIST (bounded) so static-string evidence is preserved, not just
+            # counted; the emulation phases are present-but-empty by construction.
+            "mode": "static_only_bounded",
+            "strings": {"stack": stack, "decoded": decoded, "tight": tight, "static": static},
+            "total_extracted": len(stack) + len(tight) + len(decoded) + len(static),
         },
         "note": None,
     }
@@ -419,17 +441,42 @@ def adapt_magika(sample: Path, timeout, max_out):
     return {"status": "OBSERVED", "output": payload, "note": None}
 
 
-def adapt_yarax(sample: Path, timeout, max_out):
-    """YARA-X rule matching against the (optional) vendored ruleset.
+def _discover_yara_rules():
+    """Deterministic rule discovery: EVERY *.yar and *.yara, sorted by name.
 
-    No canonical ruleset exists in the repository, so the no-rules case is the
-    expected production state: NO_RESULT with explicit tooling coverage.
-    Rules are NEVER invented here.
+    Filename prefixes are never used to select rules; the vendored set is the
+    exact audited manifest, materialized into YARA_RULES at image build time.
+    """
+    files = list(YARA_RULES.glob("*.yar")) + list(YARA_RULES.glob("*.yara"))
+    return sorted(files, key=lambda p: p.name)
+
+
+def _yara_ruleset_provenance():
+    """Pinned ruleset provenance (recorded verbatim; UNKNOWN when unset)."""
+    return {
+        "source": YARAX_RULESET_SOURCE,
+        "commit": YARAX_RULESET_COMMIT,
+        "version": YARAX_RULESET_VERSION,
+        "file_count": YARAX_RULESET_FILE_COUNT,
+        "manifest_sha256": YARAX_RULESET_MANIFEST_SHA256,
+        "source_digest": YARAX_RULESET_SOURCE_DIGEST,
+        "bundle_sha256": YARAX_RULESET_BUNDLE_SHA256,
+    }
+
+
+def adapt_yarax(sample: Path, timeout, max_out):
+    """YARA-X rule matching against the vendored, pinned (DRL-1.1) ruleset.
+
+    Each rule file is scanned as SOURCE (never `-C`, which requires a compiled
+    artifact) with JSON output. A match is a static indicator only — never a
+    family or attribution claim. An empty rules directory is NO_RESULT (explicit
+    non-coverage); a loadable ruleset that matches nothing is NO_RESULT with note
+    NO_MATCH. Rules are NEVER invented here.
     """
     exe = _probe("yr")
     if not exe:
         return {"status": "UNAVAILABLE", "output": None, "note": "yr binary not present in image"}
-    rules = sorted(YARA_RULES.glob("*.yar")) + sorted(YARA_RULES.glob("*.yara"))
+    rules = _discover_yara_rules()
     if not rules:
         return {
             "status": "NO_RESULT",
@@ -439,27 +486,43 @@ def adapt_yarax(sample: Path, timeout, max_out):
     matches = []
     status = "NO_RESULT"
     for rule_file in rules:
-        argv = [exe, "scan", "-C", str(rule_file), str(sample)]
+        argv = [exe, "scan", "--output-format", "json", str(rule_file), str(sample)]
         res = _run_argv(argv, timeout, max_out, sample.parent)
         if res["error_class"] == "TIMEOUT":
             return {"status": "ERROR", "output": None, "note": f"yara-x timed out on {rule_file.name}"}
         # yr scan exit 0/1/2: 1 = matches found (exit code 1), 2 = error
         if res["exit_status"] not in (0, 1):
-            return {"status": "ERROR", "output": None, "note": f"yara-x exit {res['exit_status']} on {rule_file.name}"}
+            return {"status": "ERROR", "output": None, "note": _failure_note(f"yara-x exit {res['exit_status']} on {rule_file.name}", res.get("stderr"))}
         try:
             doc = json.loads(res["stdout"])
         except json.JSONDecodeError:
             return {"status": "ERROR", "output": None, "note": "yara-x produced malformed JSON"}
         for m in doc.get("matches", []):
-            rule = m.get("rule", {})
-            matches.append({
-                "rule": str(rule.get("identifier", "")),
-                "namespace": str(rule.get("namespace", "") or "") or None,
-                "meta": {str(k): str(v) for k, v in (rule.get("metadata") or {}).items()},
-            })
-            status = "OBSERVED"
+            # YARA-X 1.20.0 JSON emits `rule` as the rule ID (string). A structured
+            # object is also accepted (older/alternative schema) — never guessed.
+            rule = m.get("rule")
+            if isinstance(rule, dict):
+                rule_id = str(rule.get("identifier", ""))
+                namespace = str(rule.get("namespace", "")) or None
+                meta = {str(k): str(v) for k, v in (rule.get("metadata") or {}).items()}
+            else:
+                rule_id = str(rule or "")
+                namespace = str(m.get("namespace", "")) or None
+                meta = {}
+            matches.append({"rule": rule_id, "namespace": namespace, "meta": meta})
     matches.sort(key=lambda m: (m["namespace"] or "", m["rule"]))
-    return {"status": status, "output": {"kind": "yara", "matches": matches}, "note": None}
+    ruleset = _yara_ruleset_provenance()
+    if not matches:
+        return {
+            "status": "NO_RESULT",
+            "output": {"kind": "yara", "engine_version": YARAX_VERSION, "ruleset": ruleset, "matches": []},
+            "note": "NO_MATCH",
+        }
+    return {
+        "status": "OBSERVED",
+        "output": {"kind": "yara", "engine_version": YARAX_VERSION, "ruleset": ruleset, "matches": matches},
+        "note": None,
+    }
 
 
 def adapt_capa(sample: Path, timeout, max_out):
@@ -964,6 +1027,13 @@ def run_job(job: dict) -> dict:
                     ),
                     "ruleset_digest": "UNKNOWN",
                     "tool_binary_digest": "UNKNOWN",
+                    # M16.3.10 — pinned YARA-X ruleset provenance (yara-x only)
+                    "ruleset_source": YARAX_RULESET_SOURCE if tool == "yara-x" else None,
+                    "ruleset_commit": YARAX_RULESET_COMMIT if tool == "yara-x" else None,
+                    "ruleset_file_count": YARAX_RULESET_FILE_COUNT if tool == "yara-x" else None,
+                    "ruleset_manifest_sha256": YARAX_RULESET_MANIFEST_SHA256 if tool == "yara-x" else None,
+                    "ruleset_source_digest": YARAX_RULESET_SOURCE_DIGEST if tool == "yara-x" else None,
+                    "ruleset_bundle_sha256": YARAX_RULESET_BUNDLE_SHA256 if tool == "yara-x" else None,
                 },
             })
         # Deterministic, read-only extraction pass over the canonical evidence
