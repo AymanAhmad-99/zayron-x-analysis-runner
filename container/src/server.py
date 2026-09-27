@@ -580,6 +580,56 @@ TOOL_VERSIONS = {
 }
 
 
+# ── M16.4.13: child-analyzer routing policy ─────────────────────────
+#
+# Explicit eligibility only: a tool runs on a child only if the child's
+# detected type is within the tool's supported surface. Unsupported combos
+# are NEVER invoked just to produce green statuses; the child's aggregate
+# result simply records which tools were eligible. (bounded, deterministic)
+
+_CHILD_TOOL_ROUTING: dict = {
+    "PE":      ("lief", "die", "magika", "floss", "yara-x", "capa"),
+    "ELF":     ("lief", "die", "magika", "floss", "yara-x", "capa"),
+    "MACHO":   ("lief", "die", "magika", "yara-x"),
+    "SCRIPT":  ("magika", "floss", "yara-x"),
+    "TEXT":    ("magika", "floss"),
+    "zip":     ("magika", "die", "yara-x"),   # nested archive: yara-x scans the bytes; no re-expansion within one job
+    "tar":     ("magika", "die", "yara-x"),
+    "gzip":    ("magika", "yara-x"),
+    "UNKNOWN": ("magika", "die", "yara-x"),
+}
+
+
+def _child_tools_for(detected_type: str) -> tuple:
+    """Deterministic, type-based analyzer selection for one child artifact."""
+    return _CHILD_TOOL_ROUTING.get(detected_type, ("magika", "die", "yara-x"))
+
+
+def adapt_lief_bytes(cbytes: bytes):
+    """LIEF adapter over in-memory child bytes (same parse, no disk write)."""
+    import io as _io
+    import lief as _lief
+    try:
+        parsed = _lief.parse(_io.BytesIO(cbytes))
+    except Exception as exc:
+        return {"status": "ERROR", "output": None, "note": f"lief parse exception: {type(exc).__name__}"}
+    if parsed is None:
+        return {"status": "NO_RESULT", "output": None, "note": "lief could not parse the artifact"}
+    out: dict = {}
+    if isinstance(parsed, _lief.PE.Binary):
+        out["format"] = "PE"
+        out["sections"] = [s.name for s in parsed.sections][:32]
+        out["machine"] = str(parsed.header.machine)
+        out["subsystem"] = str(parsed.optional_header.subsystem)
+    elif isinstance(parsed, _lief.ELF.Binary):
+        out["format"] = "ELF"
+        out["sections"] = [s.name for s in parsed.sections][:32]
+        out["machine"] = str(parsed.header.machine_type)
+    else:
+        return {"status": "SAMPLE_UNSUPPORTED", "output": None, "note": "parsed but not PE/ELF"}
+    return {"status": "OBSERVED", "output": out, "note": None}
+
+
 # ── phase 6: deterministic PE-resource extraction (read-only) ─────────────
 #
 # The ONLY boundary source is the PE resource directory: an extracted payload
@@ -1086,6 +1136,85 @@ def run_job(job: dict) -> dict:
                     "decoder_method": AUTOIT_DECODER_METHOD,
                     "decoder_version": AUTOIT_DECODER_VERSION,
                 })
+        # M16.4.13 — bounded STATIC archive expansion with child analysis.
+        # EXTRACT != EXECUTE: extracted bytes are DATA only; children are
+        # re-analyzed through the SAME adapters with no subprocess surface.
+        # Runs AFTER the analyzers (never before) and its failure can never
+        # fail the job or erase parent results.
+        child_analyses = []
+        try:
+            from .archive_expansion import expand_archive  # noqa: PLC0415
+            expansion = expand_archive(raw, declared_sha, declared_depth=0)
+            expansion_record = {
+                "expansion_version": expansion["expansion_version"],
+                "expansion_method": expansion["expansion_method"],
+                "archive_format": expansion["archive_format"],
+                "expansion_status": expansion["expansion_status"],
+                "limit_outcomes": expansion["limit_outcomes"],
+                "child_count": expansion["child_count"],
+                "parent_artifact_id": artifact_id,
+                "parent_sha256": declared_sha,
+            }
+            for child in expansion["children"]:
+                if child.get("extraction_status") != "EXTRACTED":
+                    continue  # typed skip record; preserved inside expansion
+                cbytes = child.get("__bytes__")
+                if cbytes is None:
+                    continue
+                child_sha = child["child_sha256"]
+                child_id = child["child_artifact_id"]
+                detected = child["detected_type"]
+                for tool in _child_tools_for(detected):
+                    try:
+                        if tool == "lief":
+                            out = adapt_lief_bytes(cbytes)
+                    except Exception as exc:  # adapter crash → typed ERROR, siblings continue
+                        out = {"status": "ERROR", "output": None, "note": f"adapter crash: {type(exc).__name__}"}
+                    child_analyses.append({
+                        "child_artifact_id": child_id,
+                        "child_sha256": child_sha,
+                        "parent_artifact_id": artifact_id,
+                        "parent_sha256": declared_sha,
+                        "relative_path": child["relative_path"],
+                        "detected_type": detected,
+                        "depth": child["depth"],
+                        "tool_id": tool,
+                        "tool_version": TOOL_VERSIONS[tool],
+                        "status": out["status"],
+                        "output": out["output"],
+                        "note": out.get("note"),
+                        "provenance": {
+                            "tool_id": tool,
+                            "tool_version": TOOL_VERSIONS[tool],
+                            "analysis_run_id": analysis_run_id,
+                            "artifact_id": artifact_id,
+                            "child_artifact_id": child_id,
+                            "input_sha256": child_sha,
+                            "parent_sha256": declared_sha,
+                            "relative_path": child["relative_path"],
+                            "runner_identity": RUNNER_IDENTITY,
+                            "ruleset_version": (
+                                CAPA_RULES_VERSION if tool == "capa"
+                                else YARAX_RULESET_VERSION if tool == "yara-x"
+                                else None
+                            ),
+                            "ruleset_source": YARAX_RULESET_SOURCE if tool == "yara-x" else None,
+                            "ruleset_commit": YARAX_RULESET_COMMIT if tool == "yara-x" else None,
+                            "ruleset_file_count": YARAX_RULESET_FILE_COUNT if tool == "yara-x" else None,
+                            "ruleset_manifest_sha256": YARAX_RULESET_MANIFEST_SHA256 if tool == "yara-x" else None,
+                            "ruleset_source_digest": YARAX_RULESET_SOURCE_DIGEST if tool == "yara-x" else None,
+                            "ruleset_bundle_sha256": YARAX_RULESET_BUNDLE_SHA256 if tool == "yara-x" else None,
+                        },
+                    })
+        except Exception as exc:  # expansion crash → typed record, parent results intact
+            expansion_record = {
+                "expansion_version": "unknown",
+                "expansion_status": "ERROR",
+                "note": f"archive expansion crash: {type(exc).__name__}",
+                "parent_artifact_id": artifact_id,
+                "parent_sha256": declared_sha,
+            }
+
         return {
             "job_status": "COMPLETED",
             "analysis_run_id": analysis_run_id,
@@ -1094,6 +1223,8 @@ def run_job(job: dict) -> dict:
             "results": results,
             "extractions": extractions,
             "decodings": decodings,
+            "archive_expansion": expansion_record,
+            "child_analyses": child_analyses,
         }
     finally:
         # ephemeral teardown: sample + every tool temp artifact (§24)
