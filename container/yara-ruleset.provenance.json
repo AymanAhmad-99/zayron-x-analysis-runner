@@ -8,7 +8,7 @@
   "file_count": 717,
   "manifest": "yara-ruleset.manifest.txt",
   "manifest_sha256": "8a8dc006f98488da56bb585cd5dabb790a5ce22887d9344a5d4ca99d44291c47",
-  "source_digest_sha256": "87da7f984f178db0cadbae6a8790af46aad8b5d15e9e504728c9e2299c051ade",
+  "source_digest_sha256": "2afaaf34fb88432c4552b6bac0eb7ef0f41c35993df35ddb78f72061b2cfbdba",
   "source_digest_method": "sha256 over the exact selected rule files concatenated in manifest (lexical) order",
   "bundle_sha256": "UNKNOWN",
   "bundle_note": "A compiled .yarc bundle is produced only when the engine runs; the bundle hash is intentionally UNKNOWN here and is never substituted with the source digest.",

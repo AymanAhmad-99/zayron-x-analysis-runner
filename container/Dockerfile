@@ -38,7 +38,7 @@ ENV TOOLS_HOME=/opt/zx-tools \
     YARAX_RULESET_COMMIT=94a1c48d7ab499879287ff611dfe7f9c56376030 \
     YARAX_RULESET_FILE_COUNT=717 \
     YARAX_RULESET_MANIFEST_SHA256=8a8dc006f98488da56bb585cd5dabb790a5ce22887d9344a5d4ca99d44291c47 \
-    YARAX_RULESET_SOURCE_DIGEST=87da7f984f178db0cadbae6a8790af46aad8b5d15e9e504728c9e2299c051ade \
+    YARAX_RULESET_SOURCE_DIGEST=2afaaf34fb88432c4552b6bac0eb7ef0f41c35993df35ddb78f72061b2cfbdba \
     YARAX_RULESET_BUNDLE_SHA256=UNKNOWN \
     MAGIKA_VERSION=1.0.3 \
     PYTHONUNBUFFERED=1 \
@@ -94,7 +94,7 @@ RUN mkdir -p ${CAPA_RULES} \
 # zero errors. The build FAILS CLOSED if the manifest hash or the source-set digest
 # does not match the recorded constants — no silent drift, no silent rule exclusion.
 ARG YARAX_RULES_COMMIT=94a1c48d7ab499879287ff611dfe7f9c56376030
-ARG YARAX_RULES_SOURCE_DIGEST=87da7f984f178db0cadbae6a8790af46aad8b5d15e9e504728c9e2299c051ade
+ARG YARAX_RULES_SOURCE_DIGEST=2afaaf34fb88432c4552b6bac0eb7ef0f41c35993df35ddb78f72061b2cfbdba
 ARG YARAX_RULES_MANIFEST_SHA256=8a8dc006f98488da56bb585cd5dabb790a5ce22887d9344a5d4ca99d44291c47
 COPY yara-ruleset.manifest.txt yara-ruleset.excluded.txt yara-ruleset.provenance.json /tmp/yara-ruleset/
 RUN set -eu; \
