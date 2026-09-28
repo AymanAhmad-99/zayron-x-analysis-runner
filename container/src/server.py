@@ -1164,12 +1164,29 @@ def run_job(job: dict) -> dict:
                 child_sha = child["child_sha256"]
                 child_id = child["child_artifact_id"]
                 detected = child["detected_type"]
+                # M16.4.18 evidence-ownership invariant: EVERY child tool record
+                # must come from that tool's own executor. The child is
+                # materialized once into the same ephemeral workdir as the
+                # parent sample (never reused, torn down in the job's finally
+                # block) so the Path-based adapters can run; the in-memory
+                # LIEF adapter stays byte-based. Each adapter call creates a
+                # fresh result object — a sibling's output is never reused,
+                # never inherited, and a failure never overwrites a sibling.
+                child_sample = workdir / f"child_{child_sha[:16]}"
+                child_sample.write_bytes(cbytes)
+                child_sample.chmod(0o400)  # read-only for the analysis user
                 for tool in _child_tools_for(detected):
                     try:
                         if tool == "lief":
-                            out = adapt_lief_bytes(cbytes)
+                            outcome = adapt_lief_bytes(cbytes)
+                        else:
+                            outcome = ADAPTERS[tool](child_sample, timeout, max_out)
                     except Exception as exc:  # adapter crash → typed ERROR, siblings continue
-                        out = {"status": "ERROR", "output": None, "note": f"adapter crash: {type(exc).__name__}"}
+                        outcome = {"status": "ERROR", "output": None, "note": f"adapter crash: {type(exc).__name__}"}
+                    out = outcome  # loop-local alias; re-created per tool per child
+                    if not isinstance(out, dict) or "status" not in out:
+                        out = {"status": "ERROR", "output": None,
+                               "note": "adapter returned a malformed result object"}
                     child_analyses.append({
                         "child_artifact_id": child_id,
                         "child_sha256": child_sha,
@@ -1190,6 +1207,7 @@ def run_job(job: dict) -> dict:
                             "artifact_id": artifact_id,
                             "child_artifact_id": child_id,
                             "input_sha256": child_sha,
+                            "child_sample_name": child_sample.name,
                             "parent_sha256": declared_sha,
                             "relative_path": child["relative_path"],
                             "runner_identity": RUNNER_IDENTITY,
