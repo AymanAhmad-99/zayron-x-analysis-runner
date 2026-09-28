@@ -278,15 +278,50 @@ def adapt_floss(sample: Path, timeout, max_out):
         return {"status": "ERROR", "output": None, "note": "floss timed out"}
     if res["exit_status"] != 0:
         return {"status": "ERROR", "output": None, "note": _failure_note(f"floss exit {res['exit_status']}", res.get("stderr"))}
+    if not res["stdout"].strip():
+        # FLOSS renders NO document at all when its byte-level static scan finds
+        # no string meeting the minimum length (main.py: `if not static_strings:
+        # return 0`). A silent process therefore means "scanned, nothing to
+        # report" — but ONLY when the process also reported nothing on stderr.
+        # Stderr alongside an absent document is an abnormal condition and must
+        # never be collapsed into NO_RESULT (M16.4.27 / D-1b).
+        if (res.get("stderr") or "").strip():
+            return {
+                "status": "ERROR",
+                "output": None,
+                "note": _failure_note("floss produced no result document", res.get("stderr")),
+            }
+        return {
+            "status": "NO_RESULT",
+            "output": {
+                "kind": "floss",
+                "mode": "static_only_bounded",
+                "strings": {"stack": [], "decoded": [], "tight": [], "static": []},
+                "total_extracted": 0,
+            },
+            "note": "no static string met the configured minimum length",
+        }
     try:
         doc = json.loads(res["stdout"])
     except json.JSONDecodeError:
         return {"status": "ERROR", "output": None, "note": "floss produced malformed JSON"}
-    strings = doc.get("strings", {})
-    stack = [s.get("string", "") for s in strings.get("stack", [])][:512]
-    tight = [s.get("string", "") for s in strings.get("tight", [])][:512]
-    decoded = [d.get("string", "") for d in strings.get("decoded", [])][:512]
-    static = [s.get("string", "") for s in strings.get("static", [])][:512]
+    # FLOSS renders `dataclasses.asdict(ResultDocument)`, so its string buckets
+    # are the Strings dataclass field names: static_strings / stack_strings /
+    # tight_strings / decoded_strings. Reading short aliases (`static`,
+    # `stack`, ...) matched no key at all and therefore silently discarded EVERY
+    # extracted string, so this adapter could only ever return an empty
+    # NO_RESULT regardless of content (M16.4.27 / D-1b). The container's OUTPUT
+    # schema is deliberately unchanged: the canonical M4 bridge owns
+    # `output.strings.static|decoded|tight|stack`.
+    strings = doc.get("strings", {}) or {}
+
+    def _bucket(field: str):
+        return [s.get("string", "") for s in (strings.get(field) or []) if isinstance(s, dict)][:512]
+
+    stack = _bucket("stack_strings")
+    tight = _bucket("tight_strings")
+    decoded = _bucket("decoded_strings")
+    static = _bucket("static_strings")
     return {
         "status": "OBSERVED" if (stack or tight or decoded or static) else "NO_RESULT",
         "output": {
@@ -591,6 +626,12 @@ _CHILD_TOOL_ROUTING: dict = {
     "PE":      ("lief", "die", "magika", "floss", "yara-x", "capa"),
     "ELF":     ("lief", "die", "magika", "floss", "yara-x", "capa"),
     "MACHO":   ("lief", "die", "magika", "yara-x"),
+    # M16.4.27 / D-1: JVM class files are NOT Mach-O. They share the CAFEBABE
+    # magic with a Mach-O FAT header, which previously routed a Mach-O parser
+    # (LIEF) at every Java class and produced a parse failure per class. LIEF,
+    # capa and FLOSS cannot read JVM bytecode, so no analyzer is forced onto it;
+    # the analyzers that genuinely cover it stay eligible.
+    "JAVA_CLASS": ("magika", "die", "yara-x"),
     "SCRIPT":  ("magika", "floss", "yara-x"),
     "TEXT":    ("magika", "floss"),
     "zip":     ("magika", "die", "yara-x"),   # nested archive: yara-x scans the bytes; no re-expansion within one job

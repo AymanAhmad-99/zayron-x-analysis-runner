@@ -109,6 +109,56 @@ def _child_relative_artifact_id(parent_sha: str, child_sha: str, relative_path: 
     return f"child_{hashlib.sha256(basis).hexdigest()[:24]}"
 
 
+# ── CAFEBABE disambiguation (M16.4.27 / D-1) ──────────────────────────────
+#
+# `CA FE BA BE` is the magic of BOTH a Mach-O FAT/universal binary and a JVM
+# class file. Treating every CAFEBABE object as Mach-O mislabels Java bytecode
+# as a macOS executable AND routes a Mach-O parser at it (observed: 13 Java
+# class files -> 13 LIEF parse failures). The two formats are told apart from
+# their OWN structure — never from a filename or an extension:
+#
+#   Mach-O FAT header : magic(4) nfat_arch(u32 BE), followed by nfat_arch
+#                       20-byte fat_arch entries. nfat_arch is a small count.
+#   Java class file   : magic(4) minor_version(u16), major_version(u16),
+#                       constant_pool_count(u16). minor_version is 0 (or
+#                       0xFFFF for a preview class) and major_version is >=
+#                       45 (Java 1.1), bounded above by the newest class-file
+#                       version this classifier accepts.
+#
+# The two interpretations are DISJOINT by construction, so neither can shadow
+# the other: the Mach-O branch is taken only when u32be[4:8] <=
+# MAX_MACHO_FAT_ARCH, while the Java branch requires major_version >=
+# MIN_JAVA_MAJOR_VERSION. For a Java file with minor_version == 0 that same
+# u32be IS major_version, which cannot be both <= 32 and >= 45; and
+# minor_version == 0xFFFF makes it far larger than the Mach-O bound. Anything
+# satisfying neither is UNKNOWN — a range is never guessed into a type.
+MAX_MACHO_FAT_ARCH = 32
+MACHO_FAT_ARCH_ENTRY_BYTES = 20
+MIN_JAVA_MAJOR_VERSION = 45
+MAX_JAVA_MAJOR_VERSION = 70
+JAVA_PREVIEW_MINOR_VERSION = 0xFFFF
+JAVA_CLASS_MIN_BYTES = 10
+
+
+def _classify_cafebabe(child_bytes: bytes) -> str:
+    """Disambiguate the shared CAFEBABE magic: Mach-O FAT, Java class, UNKNOWN."""
+    nfat_arch = int.from_bytes(child_bytes[4:8], "big")
+    if 1 <= nfat_arch <= MAX_MACHO_FAT_ARCH:
+        if len(child_bytes) >= 8 + nfat_arch * MACHO_FAT_ARCH_ENTRY_BYTES:
+            return "MACHO"
+    if len(child_bytes) >= JAVA_CLASS_MIN_BYTES:
+        minor_version = int.from_bytes(child_bytes[4:6], "big")
+        major_version = int.from_bytes(child_bytes[6:8], "big")
+        constant_pool_count = int.from_bytes(child_bytes[8:10], "big")
+        if (
+            (minor_version == 0 or minor_version == JAVA_PREVIEW_MINOR_VERSION)
+            and MIN_JAVA_MAJOR_VERSION <= major_version <= MAX_JAVA_MAJOR_VERSION
+            and constant_pool_count >= 1
+        ):
+            return "JAVA_CLASS"
+    return "UNKNOWN"
+
+
 def _sniff_child_type(child_bytes: bytes) -> str:
     """Minimal static type sniff — never invents a classification."""
     if child_bytes[:2] == b"MZ":
@@ -119,8 +169,10 @@ def _sniff_child_type(child_bytes: bytes) -> str:
         return "zip"
     if child_bytes[:2] == b"\x1f\x8b":
         return "gzip"
-    if child_bytes[:4] == b"\xcf\xfa\xed\xfe" or child_bytes[:4] == b"\xca\xfe\xba\xbe":
+    if child_bytes[:4] == b"\xcf\xfa\xed\xfe":
         return "MACHO"
+    if child_bytes[:4] == b"\xca\xfe\xba\xbe":
+        return _classify_cafebabe(child_bytes)
     if child_bytes[:262:512].find(b"ustar") != -1 or (len(child_bytes) >= 512 and child_bytes[257:262] == b"ustar"):
         return "tar"
     if child_bytes.startswith(b"#!"):
