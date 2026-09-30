@@ -1,0 +1,14 @@
+ERROR    capa:                                                   helpers.py:274
+         -------------------------------------------------------               
+         -------------------------                                             
+ERROR    capa:  Input file does not appear to be a supported     helpers.py:275
+         file.                                                                 
+ERROR    capa:                                                   helpers.py:276
+ERROR    capa:  See all supported file formats via capa's help   helpers.py:277
+         output (-h).                                                          
+ERROR    capa:  If you don't know the input file type,           helpers.py:278
+ERROR    capa:  you can try using the `file` utility to guess    helpers.py:279
+         it.                                                                   
+ERROR    capa:                                                   helpers.py:280
+         -------------------------------------------------------               
+         -------------------------                                             

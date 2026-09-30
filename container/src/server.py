@@ -116,6 +116,93 @@ def _file_digest(path: Path) -> str:
 
 DIAGNOSTIC_MAX_BYTES = 512
 
+# M16.4.29 — bounded raw-execution provenance. Excerpts are hard-capped so an
+# unbounded tool stream can never reach the job response; the raw stream stays
+# independently verifiable through its sha256.
+EXEC_PROVENANCE_MAX_BYTES = 4096
+
+# Bounded raw-execution records for the CURRENT adapter call. Cleared by the
+# execution wrapper immediately before an adapter runs and drained immediately
+# after, so a sibling tool/child can never inherit another execution's record.
+_ACTIVE_EXECUTIONS: list = []
+
+
+def _make_execution_record(*, exit_status, duration_seconds, stdout, stderr,
+                           stdout_truncated, error_class):
+    """Bounded, independently hashable raw-execution provenance (M16.4.29).
+
+    Byte counts and digests are computed from the RAW process streams; the
+    excerpts are sanitized, hard-capped fragments (never unbounded tool output
+    and never a fabricated cause). The raw stream itself stays verifiable
+    through stdout_sha256 / stderr_sha256. Never raises.
+    """
+    try:
+        out_bytes = stdout if isinstance(stdout, bytes) else (stdout or "").encode("utf-8", "replace")
+        err_bytes = stderr if isinstance(stderr, bytes) else (stderr or "").encode("utf-8", "replace")
+        return {
+            "exit_status": exit_status,
+            "duration_seconds": duration_seconds,
+            "stdout_bytes": len(out_bytes),
+            "stderr_bytes": len(err_bytes),
+            "stdout_sha256": hashlib.sha256(out_bytes).hexdigest(),
+            "stderr_sha256": hashlib.sha256(err_bytes).hexdigest(),
+            "stdout_excerpt": _diagnostic_fragment(out_bytes, EXEC_PROVENANCE_MAX_BYTES),
+            "stderr_excerpt": _diagnostic_fragment(err_bytes, EXEC_PROVENANCE_MAX_BYTES),
+            "stdout_truncated": bool(stdout_truncated),
+            "error_class": error_class,
+        }
+    except Exception:  # provenance capture must never fail the tool
+        return {
+            "exit_status": exit_status, "duration_seconds": duration_seconds,
+            "stdout_bytes": None, "stderr_bytes": None,
+            "stdout_sha256": None, "stderr_sha256": None,
+            "stdout_excerpt": None, "stderr_excerpt": None,
+            "stdout_truncated": bool(stdout_truncated), "error_class": error_class,
+        }
+
+
+def _execution_provenance_fields(outcome):
+    """Flatten an adapter outcome's bounded execution provenance into the flat
+    tool-result provenance record (M16.4.29). Absent execution -> nulls, which
+    are RECORDED, never fabricated. Never raises."""
+    execution = outcome.get("execution") if isinstance(outcome, dict) else None
+    if not isinstance(execution, dict):
+        execution = {}
+    return {
+        "execution_exit_status": execution.get("exit_status"),
+        "execution_duration_seconds": execution.get("duration_seconds"),
+        "execution_stdout_bytes": execution.get("stdout_bytes"),
+        "execution_stderr_bytes": execution.get("stderr_bytes"),
+        "execution_stdout_sha256": execution.get("stdout_sha256"),
+        "execution_stderr_sha256": execution.get("stderr_sha256"),
+        "execution_stdout_excerpt": execution.get("stdout_excerpt"),
+        "execution_stderr_excerpt": execution.get("stderr_excerpt"),
+        "execution_error_class": execution.get("error_class"),
+        "execution_count": (outcome.get("execution_count") if isinstance(outcome, dict) else None),
+    }
+
+
+def _execution_wrapping(fn):
+    """Run one adapter and attach the bounded raw-execution provenance of THAT
+    call. The execution log is cleared immediately before and drained
+    immediately after, so sibling tools/children can never inherit another
+    execution's record. `execution` is the LAST execution of the call (the
+    single execution for every single-invocation tool); `execution_count`
+    records how many executions occurred."""
+    def wrapper(*args, **kwargs):
+        _ACTIVE_EXECUTIONS.clear()
+        try:
+            outcome = fn(*args, **kwargs)
+        finally:
+            executions = list(_ACTIVE_EXECUTIONS)
+            _ACTIVE_EXECUTIONS.clear()
+        if isinstance(outcome, dict):
+            outcome["execution"] = executions[-1] if executions else None
+            outcome["execution_count"] = len(executions)
+        return outcome
+    wrapper.__name__ = getattr(fn, "__name__", "adapter")
+    return wrapper
+
 
 def _diagnostic_fragment(raw, limit=DIAGNOSTIC_MAX_BYTES):
     """Bounded, sanitized subprocess stderr fragment for failure diagnostics.
@@ -160,7 +247,12 @@ def _failure_note(base, stderr):
 
 
 def _run_argv(argv, timeout, max_out, cwd):
-    """Fixed-argv execution with hard timeout and output bounds. No shell."""
+    """Fixed-argv execution with hard timeout and output bounds. No shell.
+
+    Every execution appends its bounded raw-execution provenance to
+    _ACTIVE_EXECUTIONS so the current adapter call can carry exit status,
+    duration, stream byte counts/digests and bounded excerpts into the job's
+    provenance — capture FIRST, interpret second (M16.4.29)."""
     started = time.monotonic()
     try:
         proc = subprocess.run(
@@ -171,29 +263,50 @@ def _run_argv(argv, timeout, max_out, cwd):
             timeout=timeout,
             shell=False,
         )
-        duration = time.monotonic() - started
+        duration = round(time.monotonic() - started, 3)
         out = proc.stdout[:max_out]
         err = proc.stderr[:64 * 1024]
+        execution = _make_execution_record(
+            exit_status=proc.returncode, duration_seconds=duration,
+            stdout=proc.stdout, stderr=proc.stderr,
+            stdout_truncated=len(proc.stdout) > max_out, error_class=None,
+        )
+        _ACTIVE_EXECUTIONS.append(execution)
         return {
             "exit_status": proc.returncode,
-            "duration_seconds": round(duration, 3),
+            "duration_seconds": duration,
             "stdout_bytes": len(proc.stdout),
             "stdout_truncated": len(proc.stdout) > max_out,
             "stdout": out.decode("utf-8", "replace"),
             "stderr": err.decode("utf-8", "replace"),
             "error_class": None,
+            "execution": execution,
         }
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
+        duration = round(time.monotonic() - started, 3)
+        execution = _make_execution_record(
+            exit_status=None, duration_seconds=duration,
+            stdout=exc.stdout or b"", stderr=exc.stderr or b"",
+            stdout_truncated=False, error_class="TIMEOUT",
+        )
+        _ACTIVE_EXECUTIONS.append(execution)
         return {
-            "exit_status": None, "duration_seconds": round(time.monotonic() - started, 3),
+            "exit_status": None, "duration_seconds": duration,
             "stdout_bytes": 0, "stdout_truncated": False, "stdout": "", "stderr": "",
-            "error_class": "TIMEOUT",
+            "error_class": "TIMEOUT", "execution": execution,
         }
     except (OSError, subprocess.SubprocessError) as exc:
+        duration = round(time.monotonic() - started, 3)
+        execution = _make_execution_record(
+            exit_status=None, duration_seconds=duration,
+            stdout=b"", stderr=str(exc)[:2048],
+            stdout_truncated=False, error_class=type(exc).__name__,
+        )
+        _ACTIVE_EXECUTIONS.append(execution)
         return {
-            "exit_status": None, "duration_seconds": round(time.monotonic() - started, 3),
+            "exit_status": None, "duration_seconds": duration,
             "stdout_bytes": 0, "stdout_truncated": False, "stdout": "", "stderr": str(exc)[:2048],
-            "error_class": type(exc).__name__,
+            "error_class": type(exc).__name__, "execution": execution,
         }
 
 
@@ -560,6 +673,149 @@ def adapt_yarax(sample: Path, timeout, max_out):
     }
 
 
+class _CapaSchemaError(ValueError):
+    """Raised when capa's emitted output violates the pinned 9.4.0 schema.
+
+    A schema violation fails the adapter CLOSED (typed ERROR): it never
+    produces an invented capability and never silently drops a match."""
+
+
+# capa 9.4.0 address `type` set (capa/features/freeze/__init__.py AddressType),
+# split by the JSON shape of `value`: a scalar int, a tuple of ints, or absent.
+_CAPA_ADDRESS_SCALAR_TYPES = frozenset({"absolute", "relative", "file", "dn token"})
+_CAPA_ADDRESS_TUPLE_TYPES = frozenset({"process", "thread", "call"})
+
+
+def _capa_render_address(addr):
+    """Deterministic string rendering of a capa 9.4.0 address object.
+
+    Emitted shape (pinned capa 9.4.0: capa/features/freeze/__init__.py `Address`
+    and capa/render/result_document.py): {"type": <AddressType>, "value":
+    int | tuple[int, ...] | null}. The complete type set is: absolute, relative,
+    file, dn token, dn token offset, process, thread, call, no address. Any
+    other shape is a schema violation — never a guess."""
+    if not isinstance(addr, dict):
+        raise _CapaSchemaError("match address is not an object")
+    atype = addr.get("type")
+    value = addr.get("value")
+    if atype == "no address":
+        if value is not None:
+            raise _CapaSchemaError("'no address' carries a non-null value")
+        return None
+    if atype == "dn token offset":
+        if not (isinstance(value, list) and len(value) == 2 and all(isinstance(v, int) and not isinstance(v, bool) for v in value)):
+            raise _CapaSchemaError("'dn token offset' value is not a [token, offset] pair")
+        return "dn token offset:0x%x+0x%x" % (value[0], value[1])
+    if atype in _CAPA_ADDRESS_SCALAR_TYPES:
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise _CapaSchemaError("address type %r value is not an integer" % (atype,))
+        return "%s:0x%x" % (atype, value)
+    if atype in _CAPA_ADDRESS_TUPLE_TYPES:
+        if not (isinstance(value, list) and value and all(isinstance(v, int) and not isinstance(v, bool) for v in value)):
+            raise _CapaSchemaError("address type %r value is not an integer tuple" % (atype,))
+        return "%s:%s" % (atype, ",".join(str(v) for v in value))
+    raise _CapaSchemaError("unknown address type %r" % (atype,))
+
+
+def _capa_first_address(matches):
+    """Address of the FIRST match in a capa 9.4.0 `matches` list.
+
+    Real 9.4.0 serialization: `matches` is a LIST of `[address, match]`
+    two-element pairs (pinned result_document.py: `matches: tuple[tuple[Address,
+    Match], ...]`), where `address` is itself an object. The previous adapter
+    assumed each entry was a mapping with a `loc` key and therefore raised
+    `AttributeError: 'list' object has no attribute 'get'` on every real
+    document (M16.4.29 / D-1)."""
+    if matches is None:
+        return None
+    if not isinstance(matches, list):
+        raise _CapaSchemaError("`matches` is not a list")
+    for entry in matches:
+        if not (isinstance(entry, list) and len(entry) == 2):
+            raise _CapaSchemaError("match entry is not an [address, match] pair")
+        return _capa_render_address(entry[0])
+    return None
+
+
+def _capa_attack_labels(meta):
+    """ATT&CK technique labels from a rule's meta (capa 9.4.0).
+
+    The emitted key is `attack` (RuleMetadata.attack, alias "att&ck", dumped
+    under its FIELD NAME because render/json.py uses `model_dump_json` without
+    by_alias). Each entry is {parts, tactic, technique, subtechnique, id}. There
+    is no `canonical` field; the previous adapter read meta["att&ck"] and
+    `b["canonical"]` and therefore always produced [""] (M16.4.29 / D-1b)."""
+    entries = meta.get("attack")
+    if entries is None:
+        return []
+    if not isinstance(entries, list):
+        raise _CapaSchemaError("meta.attack is not a list")
+    labels = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise _CapaSchemaError("meta.attack entry is not an object")
+        tid = entry.get("id")
+        if not isinstance(tid, str) or not tid:
+            raise _CapaSchemaError("meta.attack entry has no identifier")
+        tail = "::".join(
+            part for part in (entry.get("tactic"), entry.get("technique"), entry.get("subtechnique"))
+            if isinstance(part, str) and part
+        )
+        labels.append("%s %s" % (tid, tail) if tail else tid)
+    return labels
+
+
+def _capa_mbc_labels(meta):
+    """MBC behavior labels from a rule's meta (capa 9.4.0).
+
+    Key `mbc`, entries {parts, objective, behavior, method, id}."""
+    entries = meta.get("mbc")
+    if entries is None:
+        return []
+    if not isinstance(entries, list):
+        raise _CapaSchemaError("meta.mbc is not a list")
+    labels = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise _CapaSchemaError("meta.mbc entry is not an object")
+        mid = entry.get("id")
+        if not isinstance(mid, str) or not mid:
+            raise _CapaSchemaError("meta.mbc entry has no identifier")
+        tail = "::".join(
+            part for part in (entry.get("objective"), entry.get("behavior"), entry.get("method"))
+            if isinstance(part, str) and part
+        )
+        labels.append("%s %s" % (mid, tail) if tail else mid)
+    return labels
+
+
+def _parse_capa_capabilities(rules_doc):
+    """Normalize a capa 9.4.0 `rules` mapping into canonical capability records.
+
+    Every consumed field is evidenced by real capa 9.4.0 output (see the
+    fixtures under tests/fixtures/capa/) and the pinned result_document schema:
+    rule id (mapping key), meta.name, meta.attack, meta.mbc and the first
+    [address, match] pair of `matches`. An unexpected shape raises
+    _CapaSchemaError so the adapter fails CLOSED rather than inventing or
+    silently dropping a capability."""
+    capabilities = []
+    for rule_name, rule in rules_doc.items():
+        if not isinstance(rule, dict):
+            raise _CapaSchemaError("rule entry %r is not an object" % (rule_name,))
+        meta = rule.get("meta")
+        if not isinstance(meta, dict):
+            raise _CapaSchemaError("rule %r carries no meta object" % (rule_name,))
+        source_name = meta.get("name")
+        capabilities.append({
+            "name": str(rule_name),
+            "address": _capa_first_address(rule.get("matches")),
+            "source_rule": str(source_name) if isinstance(source_name, str) and source_name else None,
+            "attack": _capa_attack_labels(meta) or None,
+            "mbc": _capa_mbc_labels(meta) or None,
+        })
+    return capabilities
+
+
 def adapt_capa(sample: Path, timeout, max_out):
     """Capability candidates via capa. Capabilities stay CAN_DO semantics at the
     canonical layer; this adapter only normalizes structured output."""
@@ -571,37 +827,57 @@ def adapt_capa(sample: Path, timeout, max_out):
         return {"status": "NO_RESULT", "output": None, "note": "no capa rules vendored (coverage explicit, NOT a clean result)"}
     argv = [exe, "--quiet", "--json", "--rules", rules, str(sample)]
     res = _run_argv(argv, timeout, max_out, sample.parent)
+    # Capture FIRST, interpret SECOND: the raw stdout/stderr (bytes, digests and
+    # bounded excerpts) are preserved in `execution` on EVERY branch below.
     if res["error_class"] == "TIMEOUT":
         return {"status": "ERROR", "output": None, "note": "capa timed out"}
     if res["exit_status"] != 0:
+        # Pinned capa 9.4.0 exit-code contract (capa/main.py):
+        #   0  = success
+        #   16 = input is not a supported file -> UNSUPPORTED input, which is
+        #        NOT a parser/adapter failure
+        #   13/17/18 and any other non-zero -> genuine tool failure (ERROR);
+        #   exit 1 is observed when a native PE cannot be analyzed because the
+        #   FLIRT signature path is absent (an environment failure, never "no
+        #   capability"). A generic unsupported-input result is NEVER produced
+        #   for these, and an adapter crash is never reported as UNSUPPORTED.
+        if res["exit_status"] == 16:
+            return {
+                "status": "UNSUPPORTED",
+                "output": None,
+                "note": _failure_note("capa does not support this input (exit 16)", res.get("stderr")),
+            }
         return {"status": "ERROR", "output": None, "note": _failure_note(f"capa exit {res['exit_status']}", res.get("stderr"))}
     try:
         doc = json.loads(res["stdout"])
     except json.JSONDecodeError:
         return {"status": "ERROR", "output": None, "note": "capa produced malformed JSON"}
-    capabilities = []
-    for rule_name, rule in (doc.get("rules") or {}).items():
-        meta = rule.get("meta", {})
-        attack = [f"{b.get('canonical', '')}" for b in meta.get("att&ck", [])]
-        mbc = [f"{b.get('canonical', '')}" for b in meta.get("mbc", [])]
-        locs = rule.get("matches", [])
-        capabilities.append({
-            "name": str(rule_name),
-            "address": str(locs[0].get("loc", "")) if locs else None,
-            "source_rule": str(meta.get("name", "")) or None,
-            "attack": attack or None,
-            "mbc": mbc or None,
-        })
+    if not isinstance(doc, dict):
+        return {"status": "ERROR", "output": None, "note": "capa result document is not an object"}
+    rules_doc = doc.get("rules")
+    # A successful capa run ALWAYS emits a `rules` object (possibly empty `{}`).
+    # A missing or non-object `rules` is a schema violation — never an empty
+    # capability set and never an invented one.
+    if not isinstance(rules_doc, dict):
+        return {"status": "ERROR", "output": None, "note": "capa output has no `rules` object"}
+    try:
+        capabilities = _parse_capa_capabilities(rules_doc)
+    except _CapaSchemaError as exc:
+        return {"status": "ERROR", "output": None, "note": f"capa schema violation: {exc}"}
     capabilities.sort(key=lambda c: c["name"])
-    return {"status": "OBSERVED" if capabilities else "NO_RESULT", "output": {"kind": "capa", "capabilities": capabilities}, "note": None}
+    return {
+        "status": "OBSERVED" if capabilities else "NO_RESULT",
+        "output": {"kind": "capa", "capabilities": capabilities},
+        "note": None,
+    }
 
 
 ADAPTERS = {
     "lief": adapt_lief,
-    "floss": adapt_floss,
-    "die": adapt_die,
-    "yara-x": adapt_yarax,
-    "capa": adapt_capa,
+    "floss": _execution_wrapping(adapt_floss),
+    "die": _execution_wrapping(adapt_die),
+    "yara-x": _execution_wrapping(adapt_yarax),
+    "capa": _execution_wrapping(adapt_capa),
     "magika": adapt_magika,
 }
 
@@ -1125,6 +1401,11 @@ def run_job(job: dict) -> dict:
                     "ruleset_manifest_sha256": YARAX_RULESET_MANIFEST_SHA256 if tool == "yara-x" else None,
                     "ruleset_source_digest": YARAX_RULESET_SOURCE_DIGEST if tool == "yara-x" else None,
                     "ruleset_bundle_sha256": YARAX_RULESET_BUNDLE_SHA256 if tool == "yara-x" else None,
+                    # M16.4.29 — bounded raw-execution provenance (exit status,
+                    # duration, stream byte counts/digests and bounded excerpts).
+                    # Nulls for in-process analyzers (lief/magika) or when no
+                    # execution occurred — recorded, never fabricated.
+                    **_execution_provenance_fields(outcome),
                 },
             })
         # Deterministic, read-only extraction pass over the canonical evidence
@@ -1263,6 +1544,9 @@ def run_job(job: dict) -> dict:
                             "ruleset_manifest_sha256": YARAX_RULESET_MANIFEST_SHA256 if tool == "yara-x" else None,
                             "ruleset_source_digest": YARAX_RULESET_SOURCE_DIGEST if tool == "yara-x" else None,
                             "ruleset_bundle_sha256": YARAX_RULESET_BUNDLE_SHA256 if tool == "yara-x" else None,
+                            # M16.4.29 — bounded raw-execution provenance (capture
+                            # first, interpret second); nulls when absent.
+                            **_execution_provenance_fields(out),
                         },
                     })
         except Exception as exc:  # expansion crash → typed record, parent results intact
