@@ -173,7 +173,10 @@ describe('M16.4.31 / FIX 3 — capability vs behaviour', () => {
     expect(COMPONENT_SOURCE).toContain('STATIC CAPABILITY — NOT OBSERVED RUNTIME BEHAVIOR');
     expect(COMPONENT_SOURCE).toContain('It is NOT observed runtime behaviour');
     // The kind is derived from the canonical record, not hard-coded per row.
-    expect(COMPONENT_SOURCE).toContain('const isStaticCapability = String(b?.modality ?? "") === "CAN_DO"');
+    // M16.4.32 — the row classifier mirrors the canonical Behavior classifier
+    // (behaviorProcessor.ts `behaviorExposure`): only OBSERVED_DOING is runtime;
+    // every other modality (e.g. CAN_DO) is a static capability indication.
+    expect(COMPONENT_SOURCE).toContain('const isStaticCapability = String(b?.modality ?? "").toUpperCase() !== "OBSERVED_DOING"');
   });
 });
 
