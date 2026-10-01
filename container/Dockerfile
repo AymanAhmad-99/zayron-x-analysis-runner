@@ -21,6 +21,12 @@
 #   rules    capa-rules v9.4.0 source tarball (vendored at build time, never fetched at runtime)
 #            yara-rules: signature-base DRL-1.1 subset @94a1c48d (717 files, vendored at build time
 #                        from an immutable commit; 13 external-variable + 21 non-DRL excluded)
+#   capa-sigs M16.6/D1 — mandiant/siglib @fe945b30 (immutable commit; no upstream tags exist).
+#                        capa's FLIRT signatures are REQUIRED for native PE library
+#                        identification; without them capa 9.4.0 exits 1 (an environment
+#                        failure, never "no capability"). Only the 3 required .sig files
+#                        (15,179,585 B of a ~1.06 GB repo) are fetched, each digest-verified
+#                        at build time with the build failing closed on mismatch.
 #
 # Network policy (runtime): outbound DENY — enforced by the host runtime
 # (--network none / Cloudflare Container no networking) AND by the absence of
@@ -31,6 +37,8 @@ FROM ubuntu:24.04@sha256:008173c23f95b170204355c12626cb5a965d779a7e1283b09e9cffb
 
 ENV TOOLS_HOME=/opt/zx-tools \
     CAPA_RULES=/opt/zx-tools/capa-rules \
+    CAPA_SIGS=/opt/zx-tools/capa-sigs \
+    CAPA_SIGLIB_COMMIT=fe945b3030028fb915d5e4b0ac8aaa9514a3ae90 \
     YARA_RULES=/opt/zx-tools/yara-rules \
     VIRTUAL_ENV=/opt/zx-venv \
     YARAX_RULESET_VERSION=signature-base@94a1c48d7ab499879287ff611dfe7f9c56376030 \
@@ -85,6 +93,29 @@ RUN mkdir -p ${CAPA_RULES} \
       "https://github.com/mandiant/capa-rules/archive/refs/tags/v${CAPA_RULES_VERSION}.tar.gz" \
  && tar -xzf /tmp/rules.tgz -C ${CAPA_RULES} --strip-components=1 \
  && rm -f /tmp/rules.tgz
+
+# ---- vendored capa FLIRT signatures (M16.6 / D1) ----
+# Pinned to an IMMUTABLE commit; only the 3 required .sig files are fetched (the
+# upstream tarball is ~1.06 GB). Every file is digest-verified against the
+# committed manifest and the BUILD FAILS CLOSED on any mismatch — the signature
+# source is never resolved at runtime and never fetched unpinned.
+COPY capa-sigs.manifest.txt capa-sigs.provenance.json /tmp/capa-sigs/
+RUN set -eu; \
+    mkdir -p "${CAPA_SIGS}"; \
+    while read -r want rel; do \
+      case "${want:-}" in ''|'#'*) continue;; esac; \
+      name="$(basename "$rel")"; \
+      curl -fsSL -o "${CAPA_SIGS}/${name}" \
+        "https://raw.githubusercontent.com/mandiant/siglib/${CAPA_SIGLIB_COMMIT}/${rel}"; \
+      got="$(sha256sum "${CAPA_SIGS}/${name}" | cut -d' ' -f1)"; \
+      test "${got}" = "${want}" || { echo "capa signature digest mismatch: ${name}" >&2; exit 1; }; \
+    done < /tmp/capa-sigs/capa-sigs.manifest.txt; \
+    count="$(ls -1 ${CAPA_SIGS}/*.sig | wc -l)"; \
+    test "${count}" = "3"; \
+    total="$(cat ${CAPA_SIGS}/*.sig | wc -c)"; \
+    test "${total}" = "15179585"; \
+    cp /tmp/capa-sigs/capa-sigs.provenance.json "${CAPA_SIGS}/SIGNATURES_PROVENANCE.json"; \
+    rm -rf /tmp/capa-sigs
 
 # ---- vendored YARA ruleset (M16.3.10) ----
 # DRL-1.1 subset of Neo23x0/signature-base at an IMMUTABLE commit (never `latest`,

@@ -315,3 +315,73 @@ def test_capa_adapter_is_execution_wrapped():
     # The dispatch table must wrap capa so run_job carries its provenance.
     assert server.ADAPTERS["capa"] is not server.adapt_capa
     assert server.ADAPTERS["capa"].__name__ == "adapt_capa"
+
+
+# ── M16.6 / D1 — vendored FLIRT signatures ────────────────────────────────
+
+SIG_MANIFEST = CONTAINER_ROOT / "capa-sigs.manifest.txt"
+SIG_PROVENANCE = CONTAINER_ROOT / "capa-sigs.provenance.json"
+
+
+def test_signatures_flag_is_passed_when_vendored(monkeypatch, tmp_path, capa_env):
+    """D1: the vendored signature directory is passed EXPLICITLY to capa.
+
+    capa 9.4.0 exits 1 on native PE inputs when no signature path exists; the
+    location is never left to capa's default-path guess.
+    """
+    sigs = tmp_path / "capa-sigs"
+    sigs.mkdir()
+    (sigs / "flare_common_libs.sig").write_bytes(b"\x00" * 1024)
+    monkeypatch.setattr(server, "CAPA_SIGS", sigs)
+    capa_env["result"] = _stub_run(stdout=SUCCESS.decode("utf-8"))
+    server.adapt_capa(Path("/tmp/sample.bin"), 120, 8 << 20)
+    argv = capa_env["argv"]
+    assert "--signatures" in argv
+    assert argv[argv.index("--signatures") + 1] == str(sigs)
+    assert argv[argv.index("--rules") + 1] == str(server.CAPA_RULES)
+    assert argv[-1] == str(Path("/tmp/sample.bin"))
+
+
+def test_signatures_flag_absent_when_not_vendored(monkeypatch, tmp_path, capa_env):
+    """A missing signature directory leaves the argv unchanged, so capa's own
+    exit status stays the truthful outcome (never rewritten as NO_RESULT)."""
+    monkeypatch.setattr(server, "CAPA_SIGS", tmp_path / "absent")
+    capa_env["result"] = _stub_run(stdout=SUCCESS.decode("utf-8"))
+    server.adapt_capa(Path("/tmp/sample.bin"), 120, 8 << 20)
+    assert "--signatures" not in capa_env["argv"]
+
+
+def test_signature_manifest_matches_provenance_and_digests():
+    """The committed manifest is the build-time contract: 3 pinned files, real
+    digests, and a total byte count the Dockerfile re-verifies (fail-closed)."""
+    provenance = json.loads(SIG_PROVENANCE.read_text(encoding="utf-8"))
+    rows = []
+    for line in SIG_MANIFEST.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        digest, rel = stripped.split()
+        rows.append((digest, rel))
+    assert len(rows) == 3
+    assert rows == [(f["sha256"], f["path"]) for f in provenance["files"]]
+    assert provenance["files"].__len__() == provenance["file_count"] == 3
+    assert sum(f["bytes"] for f in provenance["files"]) == provenance["total_bytes"] == 15179585
+    for f in provenance["files"]:
+        assert len(f["sha256"]) == 64
+        assert f["file_name"] == f["path"].split("/")[-1]
+    assert provenance["source_revision_kind"] == "immutable_commit"
+    assert provenance["runtime_fetch"] is False
+
+
+def test_dockerfile_vendors_signatures_fail_closed():
+    """D1 wiring: the image vendors the sigs from the PINNED commit, verifies
+    each digest, and fails the build on mismatch (never a runtime fetch)."""
+    dockerfile = (CONTAINER_ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert "CAPA_SIGS=/opt/zx-tools/capa-sigs" in dockerfile
+    assert "CAPA_SIGLIB_COMMIT=fe945b3030028fb915d5e4b0ac8aaa9514a3ae90" in dockerfile
+    assert "capa-sigs.manifest.txt" in dockerfile
+    assert 'test "${got}" = "${want}"' in dockerfile
+    assert "capa signature digest mismatch" in dockerfile
+    assert 'test "${total}" = "15179585"' in dockerfile
+    # the pinned commit is the only signature source referenced
+    assert dockerfile.count("raw.githubusercontent.com/mandiant/siglib") == 1

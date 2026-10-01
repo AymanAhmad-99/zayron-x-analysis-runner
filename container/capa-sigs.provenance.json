@@ -1,0 +1,36 @@
+{
+  "mission": "M16.6",
+  "defect": "M16.5-D1",
+  "purpose": "capa FLIRT signatures for native PE library identification (capa 9.4.0 exits 1 without them)",
+  "source": "github.com/mandiant/siglib",
+  "source_revision": "fe945b3030028fb915d5e4b0ac8aaa9514a3ae90",
+  "source_revision_kind": "immutable_commit",
+  "source_note": "no upstream tags or releases exist; the repository is pinned by commit",
+  "vendored_at_build_time": true,
+  "runtime_fetch": false,
+  "digest_verification": "per-file sha256, fail-closed at image build",
+  "files": [
+    {
+      "path": "sigs/flare_common_libs/flare_common_libs.sig",
+      "file_name": "flare_common_libs.sig",
+      "bytes": 2877687,
+      "sha256": "6fa7dda3ffb523d2f555348db47c67b9820a40153bfacd543c9ea02a1ecd83a8"
+    },
+    {
+      "path": "sigs/flare_msvc_atlmfc/flare_msvc_atlmfc_32_64.sig",
+      "file_name": "flare_msvc_atlmfc_32_64.sig",
+      "bytes": 7581481,
+      "sha256": "c6f6084f1553f3a4a515bcefe7a72fe2b3564c8338c01fa9add1166276bf09f1"
+    },
+    {
+      "path": "sigs/flare_msvc_rtf/flare_msvc_rtf_32_64.sig",
+      "file_name": "flare_msvc_rtf_32_64.sig",
+      "bytes": 4720417,
+      "sha256": "e0042918fa80d432a1914680816996ac397afc30b05d3161192f29de63e66e79"
+    }
+  ],
+  "file_count": 3,
+  "total_bytes": 15179585,
+  "sig_content_digest": "c4bcd6249919cc6d55ee171072ac5f9450281ac0b1f33930a69d17b4aaedaf42",
+  "sig_content_digest_definition": "sha256 over the sorted (repo-relative path, file bytes) pairs of the vendored .sig files"
+}

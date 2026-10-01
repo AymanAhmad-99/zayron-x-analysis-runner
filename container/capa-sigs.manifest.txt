@@ -1,0 +1,18 @@
+# M16.6 / D1 — vendored capa FLIRT signature manifest.
+#
+# capa's library identification is REQUIRED for native PE inputs. Without a
+# signature path, capa 9.4.0 exits 1 ("Using default signature path, but it
+# doesn't exist"), which the container correctly classifies as ERROR — an
+# environment failure, never "no capability". .NET assemblies could be analyzed
+# without signatures, which is why the defect stayed hidden until a native PE
+# was analyzed.
+#
+# Source: mandiant/siglib pinned to an IMMUTABLE commit (no tags/releases exist
+# upstream). The upstream tarball is ~1.06 GB, so ONLY the three required .sig
+# files are fetched. Each file is digest-verified at build time and the image
+# build FAILS CLOSED on any mismatch.
+#
+# format: <sha256>  <siglib repo path>
+6fa7dda3ffb523d2f555348db47c67b9820a40153bfacd543c9ea02a1ecd83a8  sigs/flare_common_libs/flare_common_libs.sig
+c6f6084f1553f3a4a515bcefe7a72fe2b3564c8338c01fa9add1166276bf09f1  sigs/flare_msvc_atlmfc/flare_msvc_atlmfc_32_64.sig
+e0042918fa80d432a1914680816996ac397afc30b05d3161192f29de63e66e79  sigs/flare_msvc_rtf/flare_msvc_rtf_32_64.sig

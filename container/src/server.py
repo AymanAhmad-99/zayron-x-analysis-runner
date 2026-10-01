@@ -98,6 +98,11 @@ SUPPORTED_TOOLS = ("lief", "floss", "die", "yara-x", "capa", "magika")
 
 TOOLS_HOME = Path(os.environ.get("TOOLS_HOME", "/opt/zx-tools"))
 CAPA_RULES = Path(os.environ.get("CAPA_RULES", str(TOOLS_HOME / "capa-rules")))
+# M16.6 / D1 — capa FLIRT signatures (vendored + digest-verified at image build
+# time). Required for native PE library identification: without a signature
+# path, capa 9.4.0 exits 1 and the container reports ERROR (an environment
+# failure, never "no capability").
+CAPA_SIGS = Path(os.environ.get("CAPA_SIGS", str(TOOLS_HOME / "capa-sigs")))
 YARA_RULES = Path(os.environ.get("YARA_RULES", str(TOOLS_HOME / "yara-rules")))
 
 
@@ -825,7 +830,15 @@ def adapt_capa(sample: Path, timeout, max_out):
     rules = str(CAPA_RULES)
     if not CAPA_RULES.exists():
         return {"status": "NO_RESULT", "output": None, "note": "no capa rules vendored (coverage explicit, NOT a clean result)"}
-    argv = [exe, "--quiet", "--json", "--rules", rules, str(sample)]
+    argv = [exe, "--quiet", "--json", "--rules", rules]
+    # M16.6 / D1 — pass the vendored signature directory EXPLICITLY when it is
+    # actually present, so the location is never implicit and never resolved by
+    # capa's default-path guess. If the directory is absent the argv is
+    # unchanged and capa's own exit status remains the truthful outcome (ERROR
+    # for exit 1 — never rewritten as NO_RESULT or "no capability").
+    if CAPA_SIGS.is_dir() and any(CAPA_SIGS.glob("*.sig")):
+        argv += ["--signatures", str(CAPA_SIGS)]
+    argv.append(str(sample))
     res = _run_argv(argv, timeout, max_out, sample.parent)
     # Capture FIRST, interpret SECOND: the raw stdout/stderr (bytes, digests and
     # bounded excerpts) are preserved in `execution` on EVERY branch below.
