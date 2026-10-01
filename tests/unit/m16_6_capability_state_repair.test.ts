@@ -69,6 +69,12 @@ describe('M16.6-D2 — capability status derivation', () => {
     expect(capabilityObservationStatus({ observation_status: null, analyzer_status: null })).toBe('NOT_RUN');
     expect(capabilityObservationStatus({ observation_status: null })).toBe('NOT_RUN');
   });
+
+  test('an OBSERVED analyzer that produced no canonical observation stays OBSERVED', () => {
+    expect(capabilityObservationStatus({ observation_status: null, analyzer_status: 'OBSERVED' })).toBe('OBSERVED');
+    // case-insensitive normalization of a valid terminal state
+    expect(capabilityObservationStatus({ observation_status: null, analyzer_status: 'observed' })).toBe('OBSERVED');
+  });
 });
 
 describe('M16.6-D2 — capability section projection', () => {
@@ -104,6 +110,19 @@ describe('M16.6-D2 — capability section projection', () => {
     expect(section.observation_status).toBe('OBSERVED');
     expect(section.count).toBe(0);
     expect(section.execution_claimed).toBe(false);
+  });
+
+  test('an OBSERVED analyzer with zero canonical observations projects OBSERVED (real M16.5-F case)', () => {
+    const section = projectCapabilitySection({
+      capabilities: [],
+      observation: null,
+      ...SAMPLE,
+      analyzer_status: 'OBSERVED',
+    });
+    expect(section.observation_status).toBe('OBSERVED');
+    expect(section.observation_status).not.toBe('NOT_RUN');
+    expect(section.count).toBe(0);
+    expect(section.items).toEqual([]);
   });
 
   test('unsupported input is its own state, not a failure and not a negative', () => {
@@ -145,6 +164,10 @@ describe('M16.6-D2 — semantic lint detects the collapse', () => {
 
   test('ERROR collapsed into NO_RESULT is detected', () => {
     expect(lintReportSemantics(doc('NO_RESULT', 'ERROR'))).toContain('semantics:capability_status_mismatch:NO_RESULT:ERROR');
+  });
+
+  test('OBSERVED collapsed into NOT_RUN is detected', () => {
+    expect(lintReportSemantics(doc('NOT_RUN', 'OBSERVED'))).toContain('semantics:capability_status_mismatch:NOT_RUN:OBSERVED');
   });
 
   test('the truthful pairing is clean', () => {
