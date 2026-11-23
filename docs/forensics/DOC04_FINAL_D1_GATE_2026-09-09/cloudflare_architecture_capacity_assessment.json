@@ -1,0 +1,10 @@
+{
+  "decision": "ACCEPTED WITH CONTROLS",
+  "d1": "suitable for structured governed metadata and bounded object batches; large-scale limits remain controlled-risk",
+  "workers": "suitable for API/orchestration and bounded seed requests; heavy ingestion remains offline",
+  "r2": "retained for artifact/object storage",
+  "vectorize": "suitable for isolated semantic retrieval; synchronization remains a governance concern",
+  "queues": "suitable for asynchronous source processing where configured",
+  "migration_trigger": "none demonstrated by this gate",
+  "required_controls": ["revision-bound seeds", "bounded batches", "attestation", "isolated staging validation", "production freeze until authorization"]
+}

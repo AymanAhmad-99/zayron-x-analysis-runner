@@ -1,0 +1,17 @@
+[package]
+name = "kernel-fixtures"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+kernel-types = { path = "../kernel-types" }
+kernel-core = { path = "../kernel-core" }
+kernel-wasm = { path = "../kernel-wasm" }
+serde = { workspace = true }
+serde_json = { workspace = true }

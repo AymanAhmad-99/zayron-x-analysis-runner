@@ -1,0 +1,1 @@
+{"required_now":false,"direct_calls":"possible but caller must retain payload","queue_benefits":["backpressure","retry scheduling","delivery durability"],"queue_implementation":"not added","decision":"defer until payload durability and stale-runner semantics are fixed"}

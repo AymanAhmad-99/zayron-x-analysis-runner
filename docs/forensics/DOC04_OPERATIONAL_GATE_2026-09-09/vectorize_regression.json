@@ -1,0 +1,9 @@
+{
+  "index": "zayron-doc04-staging-index",
+  "upsert": "PASS",
+  "retrieval_after_eventual_consistency": "PASS",
+  "d1_without_vectorize": "not separately exercised",
+  "vectorize_without_d1": "not separately exercised",
+  "production_touched": false,
+  "status": "PARTIAL"
+}

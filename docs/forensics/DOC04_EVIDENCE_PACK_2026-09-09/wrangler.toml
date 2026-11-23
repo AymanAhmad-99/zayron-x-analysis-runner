@@ -1,0 +1,75 @@
+# ═══════════════════════════════════════════════════════════════
+# ZAYRON-X — ROOT CLOUDFLARE TOOLING CONFIGURATION
+# Purpose: Used for executing D1 migrations (`wrangler d1 migrations apply DB`)
+# and root-level developer tooling. NOT a deployable worker.
+# Canonical deployable workers reside in `apps/web` and `workers/`.
+# ═══════════════════════════════════════════════════════════════
+name = "zayron-x"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+
+# ═══════════════════════════════════════════════════════════════
+# CLOUDFLARE D1 RELATIONAL DATABASE
+# ═══════════════════════════════════════════════════════════════
+[[d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+migrations_dir = "db/migrations"
+
+# ═══════════════════════════════════════════════════════════════
+# CLOUDFLARE R2 OBJECT STORAGE (Media, Reports, Attachments)
+# ═══════════════════════════════════════════════════════════════
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "zayron-x-storage"
+
+# ═══════════════════════════════════════════════════════════════
+# CLOUDFLARE QUEUES (Asynchronous Ingestion and Distribution)
+# ═══════════════════════════════════════════════════════════════
+[[queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue"
+
+[[queues.consumers]]
+queue = "zayron-ingest-queue"
+max_batch_size = 10
+max_batch_timeout = 5
+
+[[queues.producers]]
+binding = "PUBLISH_QUEUE"
+queue = "zayron-publish-queue"
+
+# ═══════════════════════════════════════════════════════════════
+# PUBLIC VARIABLES (No secrets stored in source)
+# ═══════════════════════════════════════════════════════════════
+[vars]
+ENVIRONMENT = "production"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X"
+NEXT_PUBLIC_SITE_URL = "https://zayron-x.co"
+
+# ═══════════════════════════════════════════════════════════════
+# PREVIEW ENVIRONMENT
+# ═══════════════════════════════════════════════════════════════
+[env.preview]
+name = "zayron-x-preview"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+migrations_dir = "db/migrations"
+
+[[env.preview.r2_buckets]]
+binding = "STORAGE"
+bucket_name = "zayron-x-storage-preview"
+
+[[env.preview.queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue-preview"
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+NEXT_PUBLIC_SITE_NAME = "ZAYRON-X [PREVIEW]"
+NEXT_PUBLIC_SITE_URL = "https://zayron-x-preview.aabusabih.workers.dev"

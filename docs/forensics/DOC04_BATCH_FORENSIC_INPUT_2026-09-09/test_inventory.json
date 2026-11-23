@@ -1,0 +1,10 @@
+{
+  "tests": [
+    {"file":"tests/control_plane_contract.test.ts","command":"bunx vitest run tests/control_plane_contract.test.ts","result":"PASS: 7 tests","coverage":"control-plane validators/idempotency/promotion"},
+    {"file":"workers/scripts/validate_control_plane_staging.py","command":"python workers/scripts/validate_control_plane_staging.py","result":"PASS: local SQLite harness","coverage":"migration/idempotency/constraints"},
+    {"file":"workers/source-fabric/src/index.ts","command":"staging HTTP tests retained under operational evidence","result":"PASS/PARTIAL","coverage":"100/1000/5000/10000, replay, concurrency, FTS, hybrid"}
+  ],
+  "not_covered": ["10,000 retry recovery", "chunking", "network timeout", "29,636 batch", "production writes"],
+  "repository_typecheck": "PRE-EXISTING FAILURES",
+  "repository_lint": "previously timed out"
+}

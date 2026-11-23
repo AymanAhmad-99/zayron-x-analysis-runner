@@ -1,0 +1,9 @@
+{
+  "status": "PASS_FOR_SEED_CLAIM",
+  "requests": 5,
+  "same_seed_revision": true,
+  "same_idempotency_key": true,
+  "results": {"success_200": 1, "rejected_409": 4},
+  "database_constraint_and_conditional_claim": "observed",
+  "remaining": "broader distributed failure/retry behavior remains unverified"
+}

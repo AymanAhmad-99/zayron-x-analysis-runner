@@ -1,0 +1,152 @@
+﻿{
+    "artifact_type":  "DOC04-final-d1-gate-manifest",
+    "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+    "production_excluded":  true,
+    "files":  [
+                  {
+                      "relative_path":  "cloudflare_architecture_capacity_assessment.json",
+                      "sha256":  "FA784EE198B9C72189B29E34FA6ECAA9FAFE1B24F631B9A6FFCACF33C6511417",
+                      "size":  713,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "concurrency_validation.json",
+                      "sha256":  "EAA743D536C54EEC8E79A4D16C33724AD56DE2F976534DA1459B1B3A9B84DAEA",
+                      "size":  308,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "d1_operational_behavior.json",
+                      "sha256":  "F1C3F75079B0556A3C8693B2E851195689C5A66B14B636F4DE8331381E447C09",
+                      "size":  535,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "DOC04_FINAL_D1_GATE_REPORT.md",
+                      "sha256":  "F13418A597143717F438B231893CB3C9D19DE839A9A7DCAB2C19ABCCA8B9F154",
+                      "size":  3249,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "final_production_readonly_verification.json",
+                      "sha256":  "CA94D769D10BB967FD507047B8D69D09BFEE8D531DAF31BB23623EE8C6DD3289",
+                      "size":  326,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "final_result.json",
+                      "sha256":  "9B216AB92DE6E9FCECDF71D53AC767E17A231219DBC576484A06D3C91BF4AF87",
+                      "size":  1082,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "hybrid_retrieval_validation.json",
+                      "sha256":  "7C18BE4EFD3EEE934F2F90E8D9A261052D55C19AF8435427677EE0778266DE20",
+                      "size":  438,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "large_batch_validation.json",
+                      "sha256":  "C79CF1FB88AD5A7B6356C3A29590552C0937316F9E87D1F11A1C7F4C0D713F73",
+                      "size":  384,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "performance_baseline.json",
+                      "sha256":  "9BF185EB46D567C2D00088CB815E24EA8B4CBAB0592A137157F304D5E7FBCF55",
+                      "size":  259,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "seed_endpoint_d1_validation.json",
+                      "sha256":  "867CB2236B5C52A1723901A4D1F9A6CABBFACC3F7DE2563E3C8D92636BDCA83B",
+                      "size":  506,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "staging_reconciliation.json",
+                      "sha256":  "03D17225A170508D85AEC34C22372DC91E1836EE9D56AA74E5171721E5A26ED6",
+                      "size":  291,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "staging_worker_deployment.json",
+                      "sha256":  "DDA144D011386A840311AC081230D43ADE0C7B4A8CD0AA151E27B7A5D99FD353",
+                      "size":  372,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "staging_worker_safety.json",
+                      "sha256":  "A90C0A57B4B3599F6F2E30770320758C968112B6C2E1DE0E980D201A0661AFDB",
+                      "size":  313,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "transaction_failure_validation.json",
+                      "sha256":  "BD17536868D87C99389C208DD78A3671710195B94B5CDAC5DD7F6E1EB375A1D4",
+                      "size":  222,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "vectorize_staging_validation.json",
+                      "sha256":  "FD4DD092BE8AF75EA2D94DA7621A17670E37B827E4F4AC60CFA6220DC6013D3F",
+                      "size":  331,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "worker_runtime_validation.json",
+                      "sha256":  "2A9C874C6310A63E24F017B56D7C4A75635CF0A16EF71B33F5CCE8B624BF2ED9",
+                      "size":  263,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "write_path_inventory.json",
+                      "sha256":  "9D08D21059BA9EE1A6EAB1B0516A60FF34459FE642C50A871980CE521CD6387B",
+                      "size":  530,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/final_production_readonly_verification.txt",
+                      "sha256":  "F823E8EA0C9201C234A474BB16A16861BB973FEDECDEE47A7A44A0CC29FC8FDF",
+                      "size":  1266,
+                      "collection_timestamp":  "2026-09-09T15:58:17.4996838Z",
+                      "generated":  true,
+                      "redacted":  false
+                  }
+              ],
+    "integrity":  "SHA-256 recorded for each evidence artifact"
+}

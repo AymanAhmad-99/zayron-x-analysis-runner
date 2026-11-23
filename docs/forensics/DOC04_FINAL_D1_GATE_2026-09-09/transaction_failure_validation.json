@@ -1,0 +1,7 @@
+{
+  "status": "PARTIAL",
+  "constraint_failures": "PASS; D1 returned controlled constraint errors",
+  "partial_batch_rollback": "UNVERIFIED",
+  "malformed_request": "HTTP 502 observed",
+  "production_experiments": false
+}

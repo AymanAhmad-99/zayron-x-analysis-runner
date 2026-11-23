@@ -1,0 +1,73 @@
+﻿{
+    "total_objects":  29636,
+    "average_serialized_bytes":  2238.38,
+    "median_serialized_bytes":  2075,
+    "p95_serialized_bytes":  3771,
+    "maximum_serialized_bytes":  17448,
+    "total_payload_bytes":  66336634,
+    "estimated_payload_bytes_5000":  11191901,
+    "estimated_payload_bytes_10000":  22383801,
+    "estimated_payload_bytes_29636":  66336634,
+    "largest_10":  [
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:01d337eade071c7e8bdae10a",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  17448,
+                           "canonical_text_bytes":  7608
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:ad021f81a8d67bc74bd55234",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  16199,
+                           "canonical_text_bytes":  14382
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:f6376e0fa404c8c359f9c2cf",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  15586,
+                           "canonical_text_bytes":  6751
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:550234d4ff8c90b3439ed44b",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  14781,
+                           "canonical_text_bytes":  13014
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:639164d6bbc2c220c1a10cc7",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  14396,
+                           "canonical_text_bytes":  6168
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:c0709f7d33b7a8f19f585f5d",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  14093,
+                           "canonical_text_bytes":  12317
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:fa062c354d642c5336c50a2e",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  12312,
+                           "canonical_text_bytes":  5173
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:e2ad7e6ab53f7d3a3268199c",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  10595,
+                           "canonical_text_bytes":  8988
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:da62b43b0901c519bffb5941",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  10371,
+                           "canonical_text_bytes":  8861
+                       },
+                       {
+                           "object_id":  "ko:doc-09-mitre-attack:191e5b8354b97bb3d78cf150",
+                           "document_id":  "doc-09-mitre-attack",
+                           "serialized_bytes":  10203,
+                           "canonical_text_bytes":  8593
+                       }
+                   ]
+}

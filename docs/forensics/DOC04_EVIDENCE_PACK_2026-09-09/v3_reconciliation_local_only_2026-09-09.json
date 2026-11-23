@@ -1,0 +1,9 @@
+{
+  "artifact_type": "v3-reconciliation",
+  "read_only": true,
+  "local_count": 286,
+  "local_duplicate_ids": 0,
+  "local_duplicate_hashes": 0,
+  "local_object_set_digest": "279b08e0cbdd208f7b983e4de6987974fa6351f04ec941010057a05f5e3a6cc1",
+  "status": "UNVERIFIED"
+}

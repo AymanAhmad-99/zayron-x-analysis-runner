@@ -1,0 +1,10 @@
+{
+  "tested": [
+    {"count":100,"status":200,"worker_ms":460,"client_ms":815,"request_bytes":47726},
+    {"count":1000,"status":200,"worker_ms":899,"client_ms":1100,"request_bytes":479133},
+    {"count":5000,"status":200,"worker_ms":11472,"client_ms":12082,"request_bytes":2403133},
+    {"count":10000,"status":502,"client_ms":41069,"request_bytes":4838141,"objects_after_failure":0,"fts_after_failure":0,"seed_state_after":"RUNNING"}
+  ],
+  "stopping_condition": "10,000-object request failed at HTTP 502 after approximately 41 seconds; no larger batch attempted.",
+  "status": "PARTIAL"
+}

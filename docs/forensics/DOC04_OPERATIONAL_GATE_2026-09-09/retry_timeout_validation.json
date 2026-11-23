@@ -1,0 +1,8 @@
+{
+  "normal_success_replay": "409",
+  "concurrent_replay": "one success, four 409",
+  "client_timeout_recovery": "UNVERIFIED",
+  "network_interruption": "UNVERIFIED",
+  "failed_seed_retry": "rejected after FAILED state; explicit recovery protocol not implemented",
+  "classification": "SAFE-WITH-CONTROLS for completed/repeated requests; UNVERIFIED for timeout/network failure"
+}

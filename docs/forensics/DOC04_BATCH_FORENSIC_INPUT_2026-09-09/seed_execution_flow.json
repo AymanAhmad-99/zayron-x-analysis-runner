@@ -1,0 +1,9 @@
+{
+  "route": "/internal/v3-pilot-d1-seed",
+  "stages": ["auth","parse","required_fields","control_plane_lookup","approval_target_state_digest_count_checks","optional_schema_init","payload_count_and_unique_ids","conditional_claim","in_memory_statement_accumulation","D1_batch","success_state_update","failure_state_update"],
+  "source": "workers/source-fabric/src/index.ts",
+  "transaction_boundary": "D1 batch call for object statements; claim/final state are separate calls",
+  "retry_loop": false,
+  "chunking": false,
+  "production_route_used": false
+}

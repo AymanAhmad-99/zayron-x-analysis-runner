@@ -1,0 +1,10 @@
+{
+  "file":"db/migrations/0019_v3_seed_chunks.sql",
+  "statements":[
+    {"type":"CREATE TABLE","target":"v3_seed_chunks","additive":true,"idempotent":true,"foreign_keys":["seed_revision_id -> v3_seed_revisions(seed_revision_id)","corpus_revision_id -> v3_corpus_revisions(corpus_revision_id)"],"unique":["seed_revision_id, chunk_ordinal","seed_revision_id, chunk_digest"],"checks":["PLANNED/RUNNING/COMPLETED/FAILED"],"nullable":["started_at","completed_at","failed_at","last_error_class","last_error"]},
+    {"type":"CREATE INDEX","target":"idx_v3_seed_chunks_seed_state","additive":true,"idempotent":true,"keys":["seed_revision_id","lifecycle","chunk_ordinal"]}
+  ],
+  "supports_claim_retry":true,
+  "supports_stale_takeover":false,
+  "supports_payload_reconstruction":false
+}

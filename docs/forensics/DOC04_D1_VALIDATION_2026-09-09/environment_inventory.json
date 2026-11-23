@@ -1,0 +1,9 @@
+{
+  "account_id": "56534d53775d8280011a325dcf36ed09",
+  "authenticated_context": "Wrangler OAuth account; secret value not recorded",
+  "production": {"name": "zayron-x-intelligence-db", "id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53", "environment": "production"},
+  "isolated_target": {"name": "zayron-x-preview-db", "id": "34962f8f-abd1-4b0b-8bd7-b4eab59bd902", "environment": "preview"},
+  "worker_config": {"worker": "zayron-x-source-fabric", "binding": "SOURCE_STATE", "production_config_environment": "production", "production_vectorize": "zayron-knowledge-index"},
+  "wrangler_version_observed": "4.124.0",
+  "secrets": "not recorded"
+}

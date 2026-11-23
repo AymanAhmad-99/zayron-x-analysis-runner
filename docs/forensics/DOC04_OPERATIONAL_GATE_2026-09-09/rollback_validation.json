@@ -1,0 +1,12 @@
+{
+  "controlled_failure": "missing NOT NULL canonical_text at middle object",
+  "worker_status": 502,
+  "objects_after": 0,
+  "fts_after": 0,
+  "classification": "ATOMIC_FOR_TESTED_D1_BATCH",
+  "seed_state_before": "NOT_STARTED",
+  "seed_state_after_fix": "FAILED",
+  "pre_fix_10000_state": "RUNNING",
+  "retry_after_failed_state": "REJECTED_UNTIL_RECOVERY_PROTOCOL",
+  "broader_rollback_guarantee": "UNVERIFIED"
+}

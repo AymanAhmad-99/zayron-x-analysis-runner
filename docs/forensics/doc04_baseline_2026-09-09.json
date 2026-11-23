@@ -1,0 +1,45 @@
+{
+  "artifact_type": "forensic-baseline",
+  "derived": true,
+  "captured_at": "2026-09-09",
+  "production": {
+    "database": "zayron-x-intelligence-db",
+    "binding": "SOURCE_STATE",
+    "database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53",
+    "knowledge_objects_v3": 371,
+    "knowledge_objects_v3_fts": 371,
+    "knowledge_chunks_present": false,
+    "d1_migrations_rows": 0,
+    "documents": {
+      "doc-01-heuer-psychology": 201,
+      "doc-02-nist-sp-800-150": 85,
+      "doc-03-nist-sp-800-150": 85
+    },
+    "control_plane_tables_present": false,
+    "provenance": "UNATTESTED"
+  },
+  "local": {
+    "pilot_objects": 29636,
+    "pilot_documents": 14,
+    "track_b_objects": 1765,
+    "doc04_to_doc15_objects": 29350
+  },
+  "comparisons": {
+    "doc02_doc03_same_content_hash_multiset": true,
+    "doc02_doc03_same_object_ids": false,
+    "doc01_local_vs_production_ids_equal": true,
+    "doc03_local_vs_production_ids_equal": true,
+    "doc03_local_vs_production_citation_mismatches": 12
+  },
+  "safety": {
+    "production_mutations_performed": false,
+    "migration_chain_replayed": false,
+    "vectorize_modified": false,
+    "fts5_modified": false
+  },
+  "limitations": [
+    "Historical seed payload and execution identity were not retained.",
+    "Historical deployment-to-commit parity is unavailable.",
+    "Vectorize inventory was not treated as proven without a deterministic read-only inventory result."
+  ]
+}

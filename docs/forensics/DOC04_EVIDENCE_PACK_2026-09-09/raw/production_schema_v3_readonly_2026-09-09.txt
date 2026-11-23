@@ -1,0 +1,47 @@
+﻿
+ ⛅️ wrangler 4.124.0 (update available 4.130.0)
+───────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database zayron-x-intelligence-db (91ed8f95-95ad-4451-bb18-e0d1dbadbe53):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 1 command in 0.33ms
+[
+  {
+    "results": [
+      {
+        "type": "table",
+        "name": "d1_migrations",
+        "sql": "CREATE TABLE \"d1_migrations\"(\n\t\tid         INTEGER PRIMARY KEY AUTOINCREMENT,\n\t\tname       TEXT UNIQUE,\n\t\tapplied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n)"
+      },
+      {
+        "type": "table",
+        "name": "knowledge_objects_v3",
+        "sql": "CREATE TABLE knowledge_objects_v3 (\n              object_id TEXT PRIMARY KEY,\n              document_id TEXT NOT NULL,\n              canonical_text TEXT NOT NULL,\n              content_hash TEXT NOT NULL,\n              knowledge_domain TEXT NOT NULL,\n              epistemic_type TEXT NOT NULL,\n              method_category TEXT NOT NULL,\n              hierarchy_json TEXT,\n              citation_json TEXT,\n              created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),\n              parent_node_id TEXT,\n              classification_json TEXT,\n              context_metadata_json TEXT,\n              epistemic_constraints_json TEXT,\n              graph_mappings_json TEXT,\n              version_state_json TEXT\n            )"
+      },
+      {
+        "type": "table",
+        "name": "knowledge_objects_v3_fts",
+        "sql": "CREATE VIRTUAL TABLE knowledge_objects_v3_fts USING fts5(\n              object_id UNINDEXED,\n              document_id,\n              canonical_text,\n              knowledge_domain,\n              epistemic_type,\n              method_category\n            )"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "EEUR",
+      "served_by_colo": "MXP",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.3334
+      },
+      "duration": 0.3334,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 3424256,
+      "rows_read": 49,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

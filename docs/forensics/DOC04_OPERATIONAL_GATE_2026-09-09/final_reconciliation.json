@@ -1,0 +1,9 @@
+{
+  "status": "PARTIAL",
+  "tested_controlled_batches": [100,1000,5000],
+  "10k": {"d1_objects":0,"fts_objects":0,"seed_state":"RUNNING_PRE_FIX"},
+  "new_projection_fts_parity": true,
+  "vectorize_synthetic_identity": "ko:vector:001",
+  "full_corpus_digest": "NOT_RUN",
+  "production_involved": false
+}

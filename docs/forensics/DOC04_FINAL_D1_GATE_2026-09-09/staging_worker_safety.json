@@ -1,0 +1,10 @@
+{
+  "worker_name": "zayron-x-source-fabric-staging",
+  "environment": "staging",
+  "d1_name": "zayron-x-preview-db",
+  "d1_id": "34962f8f-abd1-4b0b-8bd7-b4eab59bd902",
+  "production_name_excluded": true,
+  "production_id_excluded": true,
+  "environment_nonproduction": true,
+  "production_authorization": false
+}

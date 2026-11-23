@@ -1,0 +1,10 @@
+{
+  "status": "PASS_STAGING_ONLY",
+  "index": "zayron-doc04-staging-index",
+  "dimensions": 768,
+  "metric": "cosine",
+  "upsert": "PASS; synthetic object mutation_id observed",
+  "query": "PASS after eventual consistency delay; synthetic match returned",
+  "production_index_touched": false,
+  "production_parity": "UNVERIFIED"
+}

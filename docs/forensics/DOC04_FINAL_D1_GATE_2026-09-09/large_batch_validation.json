@@ -1,0 +1,10 @@
+{
+  "status": "PARTIAL",
+  "batches": [
+    {"count": 100, "request_bytes": 47726, "worker_duration_ms": 460, "client_duration_ms": 815, "status": 200},
+    {"count": 1000, "request_bytes": 479133, "worker_duration_ms": 899, "client_duration_ms": 1100, "status": 200}
+  ],
+  "tested_limit": "1000 objects",
+  "29_636_object_batch": "NOT TESTED",
+  "operational_limit_proven": false
+}

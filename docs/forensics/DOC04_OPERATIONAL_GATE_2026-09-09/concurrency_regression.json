@@ -1,0 +1,6 @@
+{
+  "five_request_test": {"success": 1,"rejected_409": 4,"duplicate_seed_claims": 0},
+  "fts_duplicate_for_new_projection": 0,
+  "status": "PASS_FOR_TESTED_CONTENTION",
+  "ten_request_test": "NOT RUN"
+}

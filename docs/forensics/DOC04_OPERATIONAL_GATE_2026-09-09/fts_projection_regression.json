@@ -1,0 +1,7 @@
+{
+  "new_governed_object_projection": "one FTS row",
+  "pre_fix_replay_artifact": "duplicate staging FTS rows observed and preserved as evidence",
+  "post_fix_replay": "blocked before write",
+  "cleanup_implemented": true,
+  "status": "PASS_FOR_NEW_GOVERNED_WRITES"
+}

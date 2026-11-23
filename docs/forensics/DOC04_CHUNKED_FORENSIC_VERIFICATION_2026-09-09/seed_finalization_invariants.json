@@ -1,0 +1,1 @@
+{"checks":["total chunk count equals expected_chunk_count","completed count equals expected_chunk_count","failed count is zero"],"missing":["expected ordinal set","digest set","object count reconciliation","V3/FTS counts","seed/corpus linkage in finalize request"],"status":"PARTIAL"}

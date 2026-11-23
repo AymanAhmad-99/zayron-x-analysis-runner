@@ -1,0 +1,7 @@
+{
+  "seed_route_vectorize": "does not write Vectorize",
+  "vectorize_route": "/internal/controlled-embedding-batch",
+  "ordering": "separate from D1 seed",
+  "consistency": "not transactionally coupled to D1 seed",
+  "implication": "future chunk/retry design must reconcile D1 and Vectorize separately"
+}

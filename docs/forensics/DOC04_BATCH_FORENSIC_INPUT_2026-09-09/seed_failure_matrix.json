@@ -1,0 +1,13 @@
+{
+  "auth_failure": {"response":404,"write_before_claim":false},
+  "malformed_json": {"observed_response":502,"seed_claimed":false},
+  "missing_linkage": {"response":409,"seed_claimed":false},
+  "unknown_control_plane": {"response":409,"seed_claimed":false},
+  "digest_or_count_mismatch": {"response":409,"seed_claimed":false},
+  "duplicate_ids": {"response":409,"seed_claimed":false},
+  "claim_contention": {"response":409,"seed_claimed":false},
+  "D1_batch_constraint_failure": {"observed_response":502,"objects_after":0,"fts_after":0,"post_fix_seed_state":"FAILED"},
+  "10k_runtime_failure": {"observed_response":502,"objects_after":0,"fts_after":0,"pre_fix_seed_state":"RUNNING"},
+  "retry_loop": false,
+  "network_timeout_handling": "not implemented"
+}

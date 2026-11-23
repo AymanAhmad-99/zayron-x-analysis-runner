@@ -1,0 +1,1 @@
+{"independent_recompute":false,"available_recompute":"local plan files only","required_checks":["object IDs","content hashes","V3 count","FTS count","chunk digest recomputation","seed digest"],"status":"UNVERIFIED"}

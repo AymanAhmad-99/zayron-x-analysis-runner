@@ -1,0 +1,5 @@
+{
+  "proven_safe": ["prepared D1 statements execute in staging", "conditional seed claim prevents sequential/concurrent replay", "invalid governance requests reject before object writes"],
+  "proven_risk": ["malformed JSON returns 502 rather than a client-classified 400", "route builds two or more D1 statements per object", "large batches have no explicit route maximum"],
+  "unverified": ["D1 transaction rollback on mid-batch failure", "retry behavior after network interruption", "Worker CPU/memory ceilings at larger batches"]
+}

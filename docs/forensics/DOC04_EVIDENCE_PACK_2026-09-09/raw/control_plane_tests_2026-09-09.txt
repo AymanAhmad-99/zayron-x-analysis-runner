@@ -1,0 +1,9 @@
+﻿
+ RUN  v5.0.0 D:/Desktop/zayron-app
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  18:24:49
+   Duration  524ms (transform 46%, import 23%, tests 23%, worker 7%)
+

@@ -1,0 +1,1 @@
+{"delete_scope":"one object_id before insert","insert_scope":"one object per canonical object","duplicate_protection":"delete then insert; no separately verified unique constraint","replay":"completed replay is no-op; failed/retry rewrites projection","status":"PASS_WITH_ATOMICITY_CAVEAT"}

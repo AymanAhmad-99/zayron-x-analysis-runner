@@ -1,0 +1,14 @@
+{
+  "migration": ["db/migrations/0018_v3_control_plane.sql", "db/migrations/0016_knowledge_objects_v3_fts.sql", "db/migrations/0017_knowledge_objects_v3_foundation.sql"],
+  "worker_source": ["workers/source-fabric/src/index.ts", "workers/source-fabric/wrangler.toml"],
+  "control_plane": ["packages/intelligence/src/control_plane/contract.ts", "tests/control_plane_contract.test.ts"],
+  "staging": ["workers/scripts/validate_control_plane_staging.py", "docs/forensics/doc04_control_plane_staging_validation_2026-09-09.json"],
+  "reconciliation": ["workers/scripts/v3_reconcile_readonly.py"],
+  "configuration": ["workers/source-fabric/wrangler.toml", "wrangler.toml", "package.json", "drizzle.config.ts"],
+  "production_schema_evidence": ["raw/production_schema_v3_readonly_2026-09-09.txt", "raw/production_readonly_verification_2026-09-09.txt"],
+  "staging_evidence": ["DOC04_CONTROL_PLANE_STAGING_VALIDATION_2026-09-09.md", "doc04_control_plane_staging_validation_2026-09-09.json"],
+  "required_configuration_names": ["SOURCE_STATE", "ENVIRONMENT", "SOURCE_ACTIVATION_ENABLED", "PIPELINE_TEST_TOKEN", "VECTORIZE"],
+  "known_gaps": ["SQLite is not D1", "historical seed provenance unknown", "deployment provenance unknown", "doc-02/doc-03 unresolved"],
+  "unresolved_blockers": ["isolated non-production D1 environment and authorization", "D1-specific migration validation"],
+  "exact_next_test_inputs": ["0018_v3_control_plane.sql", "source-fabric Worker configuration", "control-plane contract", "seed Worker source", "read-only production schema evidence"]
+}

@@ -1,0 +1,26 @@
+[package]
+name = "kernel-wasm"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[lints.rust]
+unsafe_code = "allow"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+kernel-types = { path = "../kernel-types" }
+kernel-core = { path = "../kernel-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }

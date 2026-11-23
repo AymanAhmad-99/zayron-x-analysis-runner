@@ -1,0 +1,8 @@
+{
+  "status": "PARTIAL",
+  "database": "zayron-x-preview-db",
+  "control_plane_records": {"identities": 1, "corpora": 1, "seeds": 1, "deployments": 1, "datasets": 1},
+  "object_set_reconciliation": "NOT_RUN",
+  "reason": "Migration 0018 creates governance metadata only; no staging V3 object seed was authorized in this gate.",
+  "production_involved": false
+}

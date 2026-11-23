@@ -1,0 +1,10 @@
+{
+  "database_name": "zayron-x-preview-db",
+  "database_id": "34962f8f-abd1-4b0b-8bd7-b4eab59bd902",
+  "environment": "preview",
+  "existing_resource": true,
+  "creation_timestamp": "2026-09-06T21:26:11.419Z",
+  "production_database_name": "zayron-x-intelligence-db",
+  "production_database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53",
+  "isolated_from_production_by_identity": true
+}

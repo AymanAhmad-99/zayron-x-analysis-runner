@@ -1,0 +1,32 @@
+﻿[
+    {
+        "object_id":  "ko:doc-01-heuer-psychology:d9e9dffdcfcedf48b19f47c5",
+        "document_id":  "doc-01-heuer-psychology",
+        "serialized_bytes":  1118,
+        "canonical_text_bytes":  98
+    },
+    {
+        "object_id":  "ko:doc-01-heuer-psychology:fcac5797c4f3ded300fa97fa",
+        "document_id":  "doc-01-heuer-psychology",
+        "serialized_bytes":  2276,
+        "canonical_text_bytes":  1257
+    },
+    {
+        "object_id":  "ko:doc-01-heuer-psychology:134cdd1efa85fbccdb132c58",
+        "document_id":  "doc-01-heuer-psychology",
+        "serialized_bytes":  3698,
+        "canonical_text_bytes":  1182
+    },
+    {
+        "object_id":  "ko:doc-01-heuer-psychology:747557e0b627fbe48dd54e11",
+        "document_id":  "doc-01-heuer-psychology",
+        "serialized_bytes":  2036,
+        "canonical_text_bytes":  351
+    },
+    {
+        "object_id":  "ko:doc-01-heuer-psychology:3c3e71838580bd849253b11c",
+        "document_id":  "doc-01-heuer-psychology",
+        "serialized_bytes":  3027,
+        "canonical_text_bytes":  2007
+    }
+]

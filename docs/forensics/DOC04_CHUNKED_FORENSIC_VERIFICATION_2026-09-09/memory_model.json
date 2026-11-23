@@ -1,0 +1,1 @@
+{"planning":"local planner loads all rows into Python memory","execution":"one chunk in Worker request memory","retry":"caller must resend one chunk","full_corpus_in_worker":false,"bounded_request":true,"bounded_memory":true,"independent_payload_durability":false}

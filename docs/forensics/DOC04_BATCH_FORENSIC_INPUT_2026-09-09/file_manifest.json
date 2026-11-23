@@ -1,0 +1,368 @@
+﻿{
+    "artifact_type":  "DOC04-batch-forensic-file-manifest",
+    "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+    "files":  [
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "5000_vs_10000_comparison.md",
+                      "sha256":  "67B8313023C1722843774B5555FEA32C2439766601CD0905C10691E3332557EA",
+                      "size":  989,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "batch_execution_model.json",
+                      "sha256":  "734283271E48BE26EF460DB070EB8863C6EF5F42EE81363CC18CD72607044398",
+                      "size":  819,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "batch_parameter_analysis.json",
+                      "sha256":  "6A09C12B2375FD8815DA8C5F696DEAD63C649D6A1EE4EEBA4965AA5D31AB03FE",
+                      "size":  417,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "cloudflare_limits_analysis.json",
+                      "sha256":  "30E8E1623A25761E6D50BF7CDEA2FB4A6A1D3AEE7CCE5DB40EFCA39364FCD4B5",
+                      "size":  1337,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "latest_seed_remediation_diff.md",
+                      "sha256":  "96348A2E9BEC85E2A52AFEB2ECFFE9D33F212F978CA1A867FFFEF3321B11C6DF",
+                      "size":  669,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "pilot_object_sample.json",
+                      "sha256":  "605F55E435C3496EF4E22C1926D071A4FC7840BF2C64014F52B53C52253DCDB3",
+                      "size":  1105,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "pilot_object_size_profile.json",
+                      "sha256":  "F8751F94148D55A0FA6DCA0DBEB90A7F1D1984D2396C6BBD24351B63CD15CC86",
+                      "size":  3699,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "queue_async_capability.json",
+                      "sha256":  "DB3256F83E17E8DED275F9A7F5656F56868BF724B2613D447A183416FF16A48B",
+                      "size":  496,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "repository_context.json",
+                      "sha256":  "ED5017493B3A7152CDFC353AF3070BF37EAF443123B955CAF24E73EDD2C38F38",
+                      "size":  583,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "seed_execution_flow.json",
+                      "sha256":  "BA757908A47F13486C0D861F2B08C1CE15FF19B22CB572012E4FC2073B11B234",
+                      "size":  556,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "seed_execution_flow.md",
+                      "sha256":  "F18675B8C37277A29971D08B3C8BACF193A8200961273DA53A2278599C3AB61F",
+                      "size":  1364,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "seed_failure_matrix.json",
+                      "sha256":  "FC49504A289A80A30E6DF89C64FC498E973D9F750D45FC6767CEA53FCA42DA3A",
+                      "size":  758,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "test_inventory.json",
+                      "sha256":  "377D2C61A47D4643508E67F8366EF88954E9BA7C62444EDB31450F217943621F",
+                      "size":  860,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "transaction_model.md",
+                      "sha256":  "D9DAF278BB5D45D9D85AF4D1F25E4D40D40696825BA4427F9C55D7DA862A3745",
+                      "size":  810,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "derived evidence artifact",
+                      "evidence_pack_path":  "vectorize_relationship.json",
+                      "sha256":  "168BE4E020A52845AA3ACD8FD2DB1731167A8C716DF2866CB3CF4B6EE2A159A0",
+                      "size":  305,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "derived-analysis",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "package.json",
+                      "evidence_pack_path":  "files/config/package.json",
+                      "sha256":  "83339B09F37E4B3786873900A3DD1C6F50B2C37D52A5C1FB7753BCBDE285308B",
+                      "size":  812,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "workers/source-fabric/wrangler.toml",
+                      "evidence_pack_path":  "files/config/wrangler.toml",
+                      "sha256":  "A857C73105D69C434F0647A9A5C5F892D79225BB3C775197E956813B712D2E4E",
+                      "size":  4029,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "packages/intelligence/src/control_plane/contract.ts",
+                      "evidence_pack_path":  "files/control-plane/contract.ts",
+                      "sha256":  "F112409E01E1F47094892FFC1C2317E35B6166035A104A062CF17C171BADAFF4",
+                      "size":  7262,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "db/migrations/0016_knowledge_objects_v3_fts.sql",
+                      "evidence_pack_path":  "files/migrations/0016_knowledge_objects_v3_fts.sql",
+                      "sha256":  "254CA1BA06970D4D8E1F0B90A3C30AC8A1DA543A0EA032707591793D7CB7D196",
+                      "size":  1104,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "db/migrations/0017_knowledge_objects_v3_foundation.sql",
+                      "evidence_pack_path":  "files/migrations/0017_knowledge_objects_v3_foundation.sql",
+                      "sha256":  "9641A8BDEF32C5E7C7CC83D89D5DA5C59B412B1168317B6770460E0F61FC9FC3",
+                      "size":  601,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "db/migrations/0018_v3_control_plane.sql",
+                      "evidence_pack_path":  "files/migrations/0018_v3_control_plane.sql",
+                      "sha256":  "53D9652F76B77537B8635151A4E05C8304430B6D0705F148E60743EFAD69CEBE",
+                      "size":  5075,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "workers/scripts/structural_knowledge_ingest.py",
+                      "evidence_pack_path":  "files/scripts/structural_knowledge_ingest.py",
+                      "sha256":  "D83FFE72D98EA85DA68BD11791E8B64DEA915F59708A613636C6290560F297A3",
+                      "size":  8724,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "workers/scripts/v3_reconcile_readonly.py",
+                      "evidence_pack_path":  "files/scripts/v3_reconcile_readonly.py",
+                      "sha256":  "559908BE5814C8E2C83DD9955F85D30A56CC09F3B02B1E20C81067002BD41785",
+                      "size":  2393,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "workers/scripts/validate_control_plane_staging.py",
+                      "evidence_pack_path":  "files/scripts/validate_control_plane_staging.py",
+                      "sha256":  "89DAEAEB4C4BFFF041ED230F1E48198181FE08B5FF0F8FFDC464A0F95D0A708C",
+                      "size":  4787,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "workers/source-fabric/src/index.ts",
+                      "evidence_pack_path":  "files/source-fabric/index.ts",
+                      "sha256":  "50034589DDF04CFD0E82521BB4DBAEB0B37FCD7E5679D94E4F7CD870748EC3A6",
+                      "size":  39373,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "packages/intelligence/src/source-fabric/registry.ts",
+                      "evidence_pack_path":  "files/source-fabric/registry.ts",
+                      "sha256":  "3A062500219B53A1696DAD76D619DC4AA189831B564341C3BF607719011CF7A3",
+                      "size":  6475,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "packages/intelligence/src/knowledge/v3/unicode.ts",
+                      "evidence_pack_path":  "files/source-fabric/unicode.ts",
+                      "sha256":  "5C3666CE8867ADFD51CD268AC9924AC761AC9C9D947A67ABDE65810CC5718A94",
+                      "size":  4491,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "tests/control_plane_contract.test.ts",
+                      "evidence_pack_path":  "files/tests/control_plane_contract.test.ts",
+                      "sha256":  "B3F54910CEC515DCA0D03883493013A24929533B8F839A07601B795A91E06E36",
+                      "size":  3140,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "source-or-config",
+                      "redacted":  false,
+                      "original_or_derived":  "original-copy"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_batch10000_result.json",
+                      "sha256":  "58A15B433E08AA7AEBF8A2D04961F4946FCF8C331B263AACF2F5F5157506A754",
+                      "size":  134,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_batch10000_state.txt",
+                      "sha256":  "BA15C3F051BA27F2036E44FC732C286870F25018E9FB445B49CD672FF1F85A05",
+                      "size":  4990,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_batch5000_result.json",
+                      "sha256":  "4E39A43877DD7E4EB61A9A4C8BF2500F42931BED8E22ADEC180BDC342A5869DC",
+                      "size":  223,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_failure_response.txt",
+                      "sha256":  "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6",
+                      "size":  2,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_failure_state.txt",
+                      "sha256":  "D59BCEB1D3C162F1E26DCA85FAC82E8B5289B312BC2914F17B67208060105C35",
+                      "size":  3920,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/git_diff_doc04_targeted.txt",
+                      "sha256":  "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+                      "size":  0,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/git_diff_stat.txt",
+                      "sha256":  "FBBF83574803A261C3AB408F06305E12AB3BBC5A9F495907E99C7E5A86AC0D32",
+                      "size":  5750,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  },
+                  {
+                      "original_repository_path":  "retained operational output",
+                      "evidence_pack_path":  "raw/git_status.txt",
+                      "sha256":  "979F40AAA7D8D0D658B0200FB3D65658065E8BA8408732481D29BCF0AF3FC337",
+                      "size":  11258,
+                      "collection_timestamp":  "2026-09-09T16:18:33.3021766Z",
+                      "category":  "raw-output",
+                      "redacted":  false,
+                      "original_or_derived":  "derived"
+                  }
+              ],
+    "source_code_changed_by_task":  false,
+    "production_changed_by_task":  false
+}

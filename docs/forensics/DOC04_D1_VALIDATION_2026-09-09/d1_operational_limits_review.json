@@ -1,0 +1,6 @@
+{
+  "status": "RISK",
+  "observed": ["seed route accepts arbitrary object arrays after governance checks", "seed route batches one statement per object plus one FTS statement", "no explicit maximum batch size is enforced in the route"],
+  "unverified": ["D1 statement/parameter limits for large seed batches", "D1 execution time for large seed batches", "retry behavior under concurrent requests"],
+  "production_large_write_performed": false
+}

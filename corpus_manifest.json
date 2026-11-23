@@ -1,0 +1,179 @@
+{
+  "manifest_version": "1.0.0",
+  "updated_at": "2026-09-04T17:52:00.000Z",
+  "embedding_model": "@cf/baai/bge-base-en-v1.5",
+  "vectorize_index": "zayron-knowledge-index",
+  "database_table": "knowledge_chunks",
+  "documents": [
+    {
+      "document_id": "doc-nist-800-150",
+      "title": "NIST SP 800-150: Guide to Cyber Threat Information Sharing",
+      "source_path": ".zayron/knowledge/physical-15/03-nist-sp-800-150/03-nist-sp-800-150.pdf",
+      "domain": "NETWORK_SECURITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 105,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-nist-800-86",
+      "title": "NIST SP 800-86: Guide to Integrating Forensic Techniques into Incident Response",
+      "source_path": ".zayron/knowledge/physical-15/04-nist-sp-800-86/04-nist-sp-800-86.pdf",
+      "domain": "DFIR_MEMORY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 224,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-cisa-kev",
+      "title": "CISA Known Exploited Vulnerabilities (KEV) Catalog",
+      "source_path": ".zayron/knowledge/physical-15/02-cisa-kev/known_exploited_vulnerabilities.json",
+      "domain": "VULNERABILITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 1685,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-01-heuer-psychology",
+      "title": "Psychology of Intelligence Analysis (Richards J. Heuer, Jr.)",
+      "source_path": ".zayron/knowledge/physical-15/01-heuer-psychology/01-heuer-psychology.pdf",
+      "domain": "THREAT_ACTOR",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 1014,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-03-nist-sp-800-150",
+      "title": "NIST SP 800-150 Full Standard",
+      "source_path": ".zayron/knowledge/physical-15/03-nist-sp-800-150/03-nist-sp-800-150.pdf",
+      "domain": "NETWORK_SECURITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 210,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-04-nist-sp-800-86",
+      "title": "NIST SP 800-86 Full Standard",
+      "source_path": ".zayron/knowledge/physical-15/04-nist-sp-800-86/04-nist-sp-800-86.pdf",
+      "domain": "DFIR_MEMORY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 1846,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-05-nist-sp-800-61r3",
+      "title": "NIST SP 800-61 Rev. 3: Incident Handling Guide",
+      "source_path": ".zayron/knowledge/physical-15/05-nist-sp-800-61r3/05-nist-sp-800-61r3.pdf",
+      "domain": "INCIDENT_RESPONSE",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 322,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-06-nist-csf-2",
+      "title": "NIST Cybersecurity Framework 2.0 (CSF 2.0)",
+      "source_path": ".zayron/knowledge/physical-15/06-nist-csf-2/06-nist-csf-2.pdf",
+      "domain": "INCIDENT_RESPONSE",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 157,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-07-first-cvss4",
+      "title": "FIRST CVSS v4.0 Specification Document",
+      "source_path": ".zayron/knowledge/physical-15/07-first-cvss4/cvss-v4.0.pdf",
+      "domain": "VULNERABILITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 1,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-08-first-epss",
+      "title": "FIRST EPSS v3 User Guide & Specification",
+      "source_path": ".zayron/knowledge/physical-15/08-first-epss/epss-user-guide.pdf",
+      "domain": "VULNERABILITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 1,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-09-mitre-attack",
+      "title": "MITRE ATT&CK Enterprise Matrix v14.1",
+      "source_path": ".zayron/knowledge/physical-15/09-mitre-attack/enterprise-attack.json",
+      "domain": "MALWARE",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 26086,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-10-oasis-stix21",
+      "title": "OASIS STIX 2.1 Specification Document",
+      "source_path": ".zayron/knowledge/physical-15/10-oasis-stix21/stix-v2.1-os.pdf",
+      "domain": "NETWORK_SECURITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 331,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-11-oasis-taxii21",
+      "title": "OASIS TAXII 2.1 Specification Document",
+      "source_path": ".zayron/knowledge/physical-15/11-oasis-taxii21/taxii-v2.1-os.pdf",
+      "domain": "NETWORK_SECURITY",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 512,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-12-nist-ai-rmf",
+      "title": "NIST AI Risk Management Framework 1.0 (AI RMF 1.0)",
+      "source_path": ".zayron/knowledge/physical-15/12-nist-ai-rmf/NIST.AI.100-1.pdf",
+      "domain": "GOVERNANCE_AI",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 48,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-13-nist-genai-profile",
+      "title": "NIST GenAI Profile (NIST SP 600-1)",
+      "source_path": ".zayron/knowledge/physical-15/13-nist-genai-profile/NIST.SP.600-1.pdf",
+      "domain": "GOVERNANCE_AI",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 501,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-14-nist-sp-800-53",
+      "title": "NIST SP 800-53 Rev. 5: Security and Privacy Controls for Information Systems",
+      "source_path": ".zayron/knowledge/physical-15/14-nist-sp-800-53/NIST.SP.800-53r5.pdf",
+      "domain": "INCIDENT_RESPONSE",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 3919,
+      "ingestion_status": "INDEXED"
+    },
+    {
+      "document_id": "doc-15-owasp-top10",
+      "title": "OWASP Top 10 API Security Risks",
+      "source_path": ".zayron/knowledge/physical-15/15-owasp-top10/owasp-api-security-top-10.pdf",
+      "domain": "GOVERNANCE_AI",
+      "version": "v1",
+      "authority_tier": 0,
+      "expected_chunk_count": 1,
+      "ingestion_status": "INDEXED"
+    }
+  ]
+}

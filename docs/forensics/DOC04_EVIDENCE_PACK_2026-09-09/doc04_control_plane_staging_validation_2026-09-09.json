@@ -1,0 +1,104 @@
+{
+  "artifact_type": "control-plane-staging-validation",
+  "staging": "in_memory_sqlite",
+  "production_touched": false,
+  "migration": "db/migrations/0018_v3_control_plane.sql",
+  "before_schema": [
+    "knowledge_objects_v3",
+    "knowledge_objects_v3_fts",
+    "knowledge_objects_v3_fts_config",
+    "knowledge_objects_v3_fts_content",
+    "knowledge_objects_v3_fts_data",
+    "knowledge_objects_v3_fts_docsize",
+    "knowledge_objects_v3_fts_idx",
+    "sqlite_autoindex_knowledge_objects_v3_1"
+  ],
+  "after_schema": [
+    "idx_v3_seed_target_idempotency",
+    "knowledge_objects_v3",
+    "knowledge_objects_v3_fts",
+    "knowledge_objects_v3_fts_config",
+    "knowledge_objects_v3_fts_content",
+    "knowledge_objects_v3_fts_data",
+    "knowledge_objects_v3_fts_docsize",
+    "knowledge_objects_v3_fts_idx",
+    "sqlite_autoindex_knowledge_objects_v3_1",
+    "sqlite_autoindex_v3_corpus_documents_1",
+    "sqlite_autoindex_v3_corpus_revisions_1",
+    "sqlite_autoindex_v3_deployment_revisions_1",
+    "sqlite_autoindex_v3_document_identities_1",
+    "sqlite_autoindex_v3_document_identities_2",
+    "sqlite_autoindex_v3_document_identity_relations_1",
+    "sqlite_autoindex_v3_document_identity_relations_2",
+    "sqlite_autoindex_v3_ingestion_revisions_1",
+    "sqlite_autoindex_v3_production_dataset_states_1",
+    "sqlite_autoindex_v3_seed_revisions_1",
+    "sqlite_autoindex_v3_seed_revisions_2",
+    "v3_corpus_documents",
+    "v3_corpus_revisions",
+    "v3_deployment_revisions",
+    "v3_document_identities",
+    "v3_document_identity_relations",
+    "v3_ingestion_revisions",
+    "v3_production_dataset_states",
+    "v3_seed_revisions"
+  ],
+  "first_execution": "PASS",
+  "second_execution": "PASS",
+  "idempotency": "PASS",
+  "v3_compatibility": "PASS",
+  "governance_tests": {
+    "identity": {
+      "status": "ACCEPTED"
+    },
+    "identity_duplicate": {
+      "status": "REJECTED",
+      "error": "UNIQUE constraint failed: v3_document_identities.document_id"
+    },
+    "corpus": {
+      "status": "ACCEPTED"
+    },
+    "document_link": {
+      "status": "ACCEPTED"
+    },
+    "invalid_relationship": {
+      "status": "REJECTED",
+      "error": "CHECK constraint failed: predicate IN ('ALIAS_OF','RENAMED_FROM','SUPERSEDES','SAME_CONTENT_UNCONFIRMED')"
+    },
+    "seed_missing_corpus": {
+      "status": "REJECTED",
+      "error": "FOREIGN KEY constraint failed"
+    },
+    "seed": {
+      "status": "ACCEPTED"
+    },
+    "seed_duplicate_idempotency": {
+      "status": "REJECTED",
+      "error": "UNIQUE constraint failed: v3_seed_revisions.target_environment, v3_seed_revisions.target_d1_database_id, v3_seed_revisions.idempotency_key"
+    },
+    "deployment_missing_corpus": {
+      "status": "REJECTED",
+      "error": "FOREIGN KEY constraint failed"
+    },
+    "deployment": {
+      "status": "ACCEPTED"
+    },
+    "dataset": {
+      "status": "ACCEPTED"
+    }
+  },
+  "expected_control_plane_tables": [
+    "v3_document_identities",
+    "v3_document_identity_relations",
+    "v3_corpus_revisions",
+    "v3_corpus_documents",
+    "v3_ingestion_revisions",
+    "v3_seed_revisions",
+    "v3_deployment_revisions",
+    "v3_production_dataset_states"
+  ],
+  "notes": [
+    "Historical production provenance was not backfilled.",
+    "SQLite staging validates SQL/constraints only; it is not a D1 runtime deployment test."
+  ]
+}

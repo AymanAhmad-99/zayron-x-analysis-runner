@@ -1,0 +1,1 @@
+{"planner_identity":"chunk:<object_set_digest prefix>:<zero-padded ordinal>","deterministic_local":true,"worker_derives_identity":false,"worker_recomputes_digest":false,"same_id_different_payload":"not rejected if caller supplies the registered digest and count","status":"FAIL"}

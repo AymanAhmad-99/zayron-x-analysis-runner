@@ -1,0 +1,13 @@
+{
+  "sources": ["https://developers.cloudflare.com/d1/platform/limits/","https://developers.cloudflare.com/workers/platform/limits/","https://developers.cloudflare.com/vectorize/platform/limits/"],
+  "limits": [
+    {"product":"D1","limit":"maximum SQL statement length","value":"100 KB","causal_status":"not proven causal"},
+    {"product":"D1","limit":"maximum bound parameters per query","value":100,"causal_status":"relevant risk; current batch parameters are distributed across statements"},
+    {"product":"D1","limit":"maximum SQL query duration","value":"30 seconds","causal_status":"correlated with 10k 41-second request; causality not isolated"},
+    {"product":"Workers Paid","limit":"default CPU time per HTTP request","value":"30 seconds","causal_status":"correlated candidate; exact account/runtime cause not captured"},
+    {"product":"Workers","limit":"request body","value":"plan-dependent","causal_status":"4.84 MB request below documented common plan limits"},
+    {"product":"Workers","limit":"memory","value":"128 MB","causal_status":"memory not observed"},
+    {"product":"Vectorize Workers","limit":"upsert batch","value":1000,"causal_status":"not a D1 seed limit"}
+  ],
+  "conclusion":"10k failure is consistent with time/CPU/D1 execution pressure, but no single causal limit was proven by retained telemetry."
+}

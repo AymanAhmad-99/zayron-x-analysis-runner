@@ -1,0 +1,1 @@
+{"status":"SUCCESS","schema_initialized":true,"seeded_count":1,"latency_ms":508}

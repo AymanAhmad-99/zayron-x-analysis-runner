@@ -1,0 +1,1 @@
+{"plan":"one indexed control lookup plus chunk inserts","execute":"control lookup, claim update, seed update, 1500 batch statements, completion update","finalize":"one aggregate count plus seed update","full_pilot_chunks":60,"risk":"row reads/writes and index maintenance are material; exact billing requires remote meta observations"}

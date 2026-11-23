@@ -1,0 +1,13 @@
+{
+  "repository_root": "D:/Desktop/zayron-app",
+  "branch": "cleanup/forensic-production-simplification",
+  "head_commit": "67fc65a2d5fd367e44b20714bafa5d0e9e8b1721",
+  "working_tree": "DIRTY_BEFORE_THIS_READ_ONLY_TASK",
+  "package_manager": "bun",
+  "node": "v24.15.0",
+  "python": "3.13.13",
+  "wrangler": "4.124.0",
+  "bun": "1.3.13",
+  "production_mutation_this_task": false,
+  "relevant_current_files": ["workers/source-fabric/src/index.ts","workers/source-fabric/wrangler.toml","packages/intelligence/src/control_plane/contract.ts","db/migrations/0018_v3_control_plane.sql"]
+}

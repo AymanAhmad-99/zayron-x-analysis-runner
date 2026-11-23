@@ -1,0 +1,7 @@
+{
+  "source_fabric_config": {"queues_present": true,"queue_names":["zayron-x-source-collection","zayron-x-source-normalization","zayron-x-source-evidence","zayron-x-source-analysis","zayron-x-source-publication"]},
+  "seed_route_uses_queue": false,
+  "cron_seed_path": "not identified in seed route",
+  "offline_processing": "repository contains Python/Node corpus tooling",
+  "future_chunk_queue_shape": "architecturally possible from existing Cloudflare Queues, not implemented by this task"
+}

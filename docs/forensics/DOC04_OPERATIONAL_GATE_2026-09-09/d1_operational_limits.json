@@ -1,0 +1,6 @@
+{
+  "official_limits_reviewed": {"d1_max_sql_statement_bytes":100000,"d1_max_bound_parameters":100,"d1_max_query_duration_seconds":30,"workers_paid_default_cpu_seconds":30,"workers_request_body_plan_dependent":true,"vectorize_worker_upsert_batch":1000},
+  "source_urls": ["https://developers.cloudflare.com/d1/platform/limits/","https://developers.cloudflare.com/workers/platform/limits/","https://developers.cloudflare.com/vectorize/platform/limits/"],
+  "implementation_risk": "one request accumulates all object statements and body in memory; 10000 failed before object persistence",
+  "status": "RISK"
+}

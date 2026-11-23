@@ -1,0 +1,1 @@
+{"same_seed_different_key":"not explicitly rejected by endpoint semantics; control lookup requires the supplied key","same_chunk_different_key":"requires a separately registered seed/key","same_payload_different_identity":"not cryptographically rejected by Worker","status":"AMBIGUOUS"}

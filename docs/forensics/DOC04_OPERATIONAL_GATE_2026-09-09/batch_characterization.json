@@ -1,0 +1,7 @@
+{
+  "implementation": "single HTTP request; one D1 batch containing multiple prepared statements; not chunked",
+  "statement_pattern": "per object: V3 INSERT OR REPLACE, FTS DELETE, FTS INSERT; plus claim and completion updates",
+  "observed": "100, 1000, and 5000 succeed; 10000 fails",
+  "status": "RISK_AT_10000_PLUS",
+  "production_corpus_tested": false
+}

@@ -1,0 +1,16 @@
+{
+  "input_representation": "parsed JSON object array held in Worker memory",
+  "per_object_statements": ["INSERT OR REPLACE knowledge_objects_v3","DELETE knowledge_objects_v3_fts by object_id","INSERT knowledge_objects_v3_fts"],
+  "prepared_statements": true,
+  "object_execution": "all object statements accumulated, then one D1 batch",
+  "chunking": false,
+  "control_plane_in_same_batch": false,
+  "v3_parameters_per_object": 15,
+  "fts_delete_parameters_per_object": 1,
+  "fts_insert_parameters_per_object": 6,
+  "total_parameters_per_object": 22,
+  "sql_statements_per_object": 3,
+  "total_object_statements": {"100":300,"1000":3000,"5000":15000,"10000":30000},
+  "total_object_parameters": {"100":2200,"1000":22000,"5000":110000,"10000":220000},
+  "schema_init": "two separate DDL calls when init_schema=true"
+}

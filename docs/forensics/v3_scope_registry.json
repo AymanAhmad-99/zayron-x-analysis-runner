@@ -1,0 +1,10 @@
+{
+  "artifact_type": "v3-scope-registry",
+  "status": "FORWARD_LOOKING",
+  "scopes": ["PILOT", "STAGING", "PRODUCTION", "TRACK_B", "ARCHIVE", "QUARANTINED"],
+  "production_membership": "UNKNOWN_UNTIL_ATTESTED",
+  "pilot": {"path": ".zayron/knowledge/corpus-v3/pilot", "object_count": 29636, "promotion": "EXPLICIT_APPROVAL_REQUIRED"},
+  "track_b": {"path": ".zayron/knowledge/corpus-v3/track-b", "object_count": 1765, "promotion": "EXPLICIT_APPROVAL_REQUIRED"},
+  "production": {"database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53", "object_count": 371, "attestation": "UNVERIFIED"},
+  "identity_decisions": {"doc-02-nist-sp-800-150": "UNRESOLVED", "doc-03-nist-sp-800-150": "UNRESOLVED"}
+}

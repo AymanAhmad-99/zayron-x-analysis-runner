@@ -1,0 +1,7 @@
+{
+  "per_object": {"v3_insert":15,"fts_delete":1,"fts_insert":6,"total":22,"statements":3},
+  "per_batch": {"100":{"parameters":2200,"statements":300},"1000":{"parameters":22000,"statements":3000},"5000":{"parameters":110000,"statements":15000},"10000":{"parameters":220000,"statements":30000}},
+  "claim_parameters":2,
+  "success_parameters":2,
+  "calculation_basis":"current source after FTS cleanup remediation"
+}

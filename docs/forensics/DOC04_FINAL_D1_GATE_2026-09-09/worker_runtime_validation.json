@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "health": "PASS",
+  "d1_binding": "PASS",
+  "environment": "staging",
+  "seed_http_path": "PASS",
+  "vectorize_http_path": "PASS",
+  "raw_outputs": ["staging_health.txt", "staging_seed_final_valid.txt", "vector_query_retry_result.json"]
+}

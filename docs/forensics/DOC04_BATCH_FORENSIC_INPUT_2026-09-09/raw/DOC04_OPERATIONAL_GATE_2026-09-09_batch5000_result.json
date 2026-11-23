@@ -1,0 +1,7 @@
+{
+    "status":  200,
+    "request_bytes":  2403133,
+    "client_ms":  12082,
+    "count":  5000,
+    "response":  "{\"status\":\"SUCCESS\",\"schema_initialized\":false,\"seeded_count\":5000,\"latency_ms\":11472}"
+}

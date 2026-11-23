@@ -1,0 +1,5 @@
+{
+  "status": "UNVERIFIED",
+  "reason": "No concurrent seed requests were issued; Worker runtime was not deployed to isolated D1.",
+  "sequential_unique_idempotency_constraint": "PASS"
+}

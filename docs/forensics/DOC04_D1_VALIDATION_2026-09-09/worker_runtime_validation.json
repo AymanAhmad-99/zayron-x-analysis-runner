@@ -1,0 +1,7 @@
+{
+  "status": "UNVERIFIED",
+  "reason": "The source-fabric Worker configuration is production-bound and no staging Worker was deployed. Invoking the deployed seed route would target production and is prohibited.",
+  "source_inspection": "PASS",
+  "production_worker_invocation": false,
+  "staging_worker_deployment": false
+}

@@ -1,0 +1,6 @@
+{
+  "status": "PARTIAL",
+  "measurements": {"seed_100_worker_ms": 460, "seed_1000_worker_ms": 899, "vector_query_worker_ms": 1026, "fts_query_worker_ms": 71, "hybrid_query_worker_ms": 442},
+  "p50_p95": "not enough repeated samples",
+  "stress_test": false
+}

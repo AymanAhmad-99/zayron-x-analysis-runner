@@ -1,0 +1,7 @@
+{
+    "status":  502,
+    "request_bytes":  4838141,
+    "client_ms":  41069,
+    "count":  10000,
+    "response":  "failed"
+}

@@ -1,0 +1,1 @@
+{"same_chunk":"database conditional claim prevents second claim","different_chunks":"can execute concurrently subject to D1 limits","same_seed":"seed state update is conditional but plan uniqueness is database-backed","runtime_test":"not run; quota blocked","status":"PARTIAL"}

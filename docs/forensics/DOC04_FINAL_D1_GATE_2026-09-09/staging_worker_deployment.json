@@ -1,0 +1,10 @@
+{
+  "worker_name": "zayron-x-source-fabric-staging",
+  "environment": "staging",
+  "url": "https://zayron-x-source-fabric-staging.aabusabih.workers.dev",
+  "latest_version_id": "cf949b3a-e3a2-4407-b450-397e99d50572",
+  "d1_binding": "zayron-x-preview-db",
+  "vectorize_binding": "zayron-doc04-staging-index",
+  "source_commit": "UNKNOWN",
+  "production_deployed": false
+}

@@ -1,0 +1,270 @@
+﻿{
+    "artifact_type":  "DOC04-D1-validation-manifest",
+    "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+    "database_target":  "zayron-x-preview-db",
+    "production_excluded":  true,
+    "files":  [
+                  {
+                      "relative_path":  "concurrency_validation.json",
+                      "sha256":  "FE51670EBB1831050E7E2C7592ADC6A62386A16FC1971DB3C9AC99529C8F29AC",
+                      "size":  187,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "d1_idempotency_result.json",
+                      "sha256":  "74073774A3C2CE0A57518E54981BBAA29094FDF688512211861685736D5B6807",
+                      "size":  341,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "d1_operational_limits_review.json",
+                      "sha256":  "3425F11826A0D5AD7A778B0B576A9DB90785B2B6B89E6E3EA6809D95DC9D9867",
+                      "size":  445,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "d1_schema_after_migration.json",
+                      "sha256":  "E16D9BED05207075409190418C01705E8CE2C9FEEFAD4037D7011324E51D2CA3",
+                      "size":  844,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "copied-or-derived",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "d1_staging_reconciliation.json",
+                      "sha256":  "5B75C8EC1864B2534BA340858CF4716C2F1CF99036ED8D9C5A091E755653A8D1",
+                      "size":  361,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "DOC04_D1_VALIDATION_REPORT.md",
+                      "sha256":  "1AB36458DC57F218318F6D9B8371B0048F47DE2F45493AF4209A1C6030169639",
+                      "size":  1934,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "environment_inventory.json",
+                      "sha256":  "F394A63E2DA672EAB804F989FC3458AD8DB7468C87456FBB8E27859FA05E7678",
+                      "size":  642,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "final_production_readonly_verification.json",
+                      "sha256":  "9E410F50A475BCEC415CBD4BC6C7C3351F45E7C0C76B85CB3201F61215E4E8C2",
+                      "size":  407,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "copied-or-derived",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "final_result.json",
+                      "sha256":  "9D013DAF67782B689DB8E190B28D70C424422029233D183FC2DD910076FE8AC8",
+                      "size":  1020,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "migration_statement_inventory.json",
+                      "sha256":  "B09C748FCA331A843A13C64F4EFAAA969EA49C87024577CABFCADD5807383B37",
+                      "size":  1364,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "production_safety_gate.json",
+                      "sha256":  "C349285EF0EAF7AFB73E756E8209943B3B6A55BD9D74D18FF51203FEE8DD9101",
+                      "size":  459,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "safety_gate.md",
+                      "sha256":  "E1F64C47827426934AE8C19AEEFE410F12302E5E062DDB2307FCA1EE9AC1A348",
+                      "size":  455,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "seed_d1_validation.json",
+                      "sha256":  "CD911EB4E267418A554A50D8511FD9590DEA6925ABB1636ECE09FC51FCB793C5",
+                      "size":  349,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "sqlite_vs_d1_final_gap.json",
+                      "sha256":  "0E348DE0339D3ACFFDD3A6591EC97F154EB76BB142C1D163AF638BCE00D710B8",
+                      "size":  583,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "copied-or-derived",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "staging_database_identity.json",
+                      "sha256":  "A911947F06BBE43CBABEA876C1CEE52166197E3C9FB862DAC390DA3F02B0F660",
+                      "size":  385,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "staging_lifecycle.sql",
+                      "sha256":  "3BFC3DEAE522C18EE7237E33D399DC67187347CDC616447C08151AABE9D8726D",
+                      "size":  2152,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "worker_runtime_validation.json",
+                      "sha256":  "A96C88CB4B78E150204CF9017663C770558BE9911D3645D266B99747D2639907",
+                      "size":  325,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "evidence",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_constraints_after_first.txt",
+                      "sha256":  "D704ADA22C6358095B014BF302A3487C4DEA1E9F7D4F34CFC0AF25F65C7B243E",
+                      "size":  1978,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_lifecycle_counts.txt",
+                      "sha256":  "E352616F849D6C50158E9423A5C4DF08A3B50473E2DB2636B2E5DFD5E7C2F193",
+                      "size":  7934,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_lifecycle_valid.txt",
+                      "sha256":  "258EED550EDEC9E2CE4CAC8A4706651673FA5179788EA12C5EEFC017C5CEE41E",
+                      "size":  4090,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_migration_first_execution.txt",
+                      "sha256":  "B9FD02BBA5D1770B86F85C4FD2785EB6ED6290FF338945BE0D8C034B54DBB0A3",
+                      "size":  4314,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_migration_second_execution.txt",
+                      "sha256":  "55EB4CB843F2EFC77B9580F0DF63780B2FC412D5BDBFFF8620BB3DE4377D015F",
+                      "size":  4084,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_negative_duplicate_idempotency.txt",
+                      "sha256":  "08029E8A649997C73311AE600D92B120AA33839A1F4B9146F388D01C05DC764C",
+                      "size":  1443,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_negative_duplicate_identity.txt",
+                      "sha256":  "07D77787CD9B99FF1EDA90D0CD8B9F3B94D0DB3ACA2598B885BC4FF9CE086732",
+                      "size":  1365,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_negative_invalid_predicate.txt",
+                      "sha256":  "A9DFABB2F4B48CE1A8E1B943634C57449E9D5E5B26775F985CD65828D686AEE3",
+                      "size":  1409,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_negative_unknown_seed_corpus.txt",
+                      "sha256":  "E024D9880BD0DF1604FBF4BC5E7484DF47C075893A3051F7210CFF57C95840D3",
+                      "size":  1336,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_schema_after_first.txt",
+                      "sha256":  "35E98819F7135E63AEFFD9237FB5BDC83586561F75029EDC4DB0E83AF24D031F",
+                      "size":  8400,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/d1_schema_after_second.txt",
+                      "sha256":  "D35579A5F9A2806676BF44669CCEAA65F2BB4066D1D273823FE2C86F2E9789B7",
+                      "size":  8400,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/final_production_readonly_verification.txt",
+                      "sha256":  "8F6143D931D11AE400398D975796F2AB01B4327F2323B04FFCC9C81C2ADE3921",
+                      "size":  1266,
+                      "collection_timestamp":  "2026-09-09T15:34:59.8869967Z",
+                      "category":  "raw-output",
+                      "original_or_generated":  "generated",
+                      "redacted":  false
+                  }
+              ],
+    "integrity":  "SHA-256 recorded for each collected file"
+}

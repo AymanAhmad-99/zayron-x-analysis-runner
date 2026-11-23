@@ -1,0 +1,9 @@
+{
+  "database_name": "zayron-x-preview-db",
+  "database_id": "34962f8f-abd1-4b0b-8bd7-b4eab59bd902",
+  "first_execution": {"status": "PASS", "queries": 9, "rows_written": 28},
+  "second_execution": {"status": "PASS", "queries": 9, "rows_written": 0},
+  "schema_equivalent": true,
+  "duplicate_objects_created": false,
+  "idempotent": true
+}

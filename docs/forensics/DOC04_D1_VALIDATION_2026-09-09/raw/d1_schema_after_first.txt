@@ -1,0 +1,137 @@
+﻿
+ ⛅️ wrangler 4.124.0 (update available 4.130.0)
+───────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database zayron-x-preview-db (34962f8f-abd1-4b0b-8bd7-b4eab59bd902):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+🚣 Executed 1 command in 0.95ms
+[
+  {
+    "results": [
+      {
+        "type": "index",
+        "name": "idx_v3_seed_target_idempotency",
+        "sql": "CREATE UNIQUE INDEX idx_v3_seed_target_idempotency\n  ON v3_seed_revisions(target_environment, target_d1_database_id, idempotency_key)"
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_corpus_documents_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_corpus_revisions_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_deployment_revisions_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_document_identities_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_document_identities_2",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_document_identity_relations_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_document_identity_relations_2",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_ingestion_revisions_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_production_dataset_states_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_seed_revisions_1",
+        "sql": null
+      },
+      {
+        "type": "index",
+        "name": "sqlite_autoindex_v3_seed_revisions_2",
+        "sql": null
+      },
+      {
+        "type": "table",
+        "name": "_cf_KV",
+        "sql": "CREATE TABLE _cf_KV (\n        key TEXT PRIMARY KEY,\n        value BLOB\n      ) WITHOUT ROWID"
+      },
+      {
+        "type": "table",
+        "name": "v3_corpus_documents",
+        "sql": "CREATE TABLE v3_corpus_documents (\n  corpus_revision_id TEXT NOT NULL REFERENCES v3_corpus_revisions(corpus_revision_id),\n  document_identity_id TEXT NOT NULL REFERENCES v3_document_identities(document_identity_id),\n  source_digest TEXT NOT NULL,\n  ingestion_revision_id TEXT,\n  PRIMARY KEY (corpus_revision_id, document_identity_id)\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_corpus_revisions",
+        "sql": "CREATE TABLE v3_corpus_revisions (\n  corpus_revision_id TEXT PRIMARY KEY,\n  scope TEXT NOT NULL CHECK (scope IN ('PILOT','TRACK_B','STAGING','PRODUCTION','ARCHIVE')),\n  lifecycle TEXT NOT NULL CHECK (lifecycle IN ('DRAFT','PILOT','STAGED','APPROVED','PRODUCTION','SUPERSEDED','RETIRED')),\n  object_set_digest TEXT NOT NULL,\n  object_count INTEGER NOT NULL CHECK (object_count >= 0),\n  parser_version TEXT NOT NULL,\n  schema_version TEXT NOT NULL,\n  validation_state TEXT NOT NULL CHECK (validation_state IN ('UNKNOWN','PENDING','PASSED','FAILED')),\n  approval_state TEXT NOT NULL CHECK (approval_state IN ('NOT_REQUESTED','PENDING','APPROVED','REJECTED')),\n  created_at TEXT NOT NULL,\n  approved_at TEXT,\n  metadata_json TEXT NOT NULL DEFAULT '{}'\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_deployment_revisions",
+        "sql": "CREATE TABLE v3_deployment_revisions (\n  deployment_revision_id TEXT PRIMARY KEY,\n  git_commit TEXT,\n  build_digest TEXT,\n  worker_version TEXT,\n  environment TEXT NOT NULL CHECK (environment IN ('LOCAL','PREVIEW','STAGING','PRODUCTION')),\n  corpus_revision_id TEXT REFERENCES v3_corpus_revisions(corpus_revision_id),\n  actor_identity TEXT NOT NULL,\n  created_at TEXT NOT NULL,\n  provenance_state TEXT NOT NULL CHECK (provenance_state IN ('COMPLETE','PARTIAL','UNKNOWN'))\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_document_identities",
+        "sql": "CREATE TABLE v3_document_identities (\n  document_identity_id TEXT PRIMARY KEY,\n  document_id TEXT NOT NULL UNIQUE,\n  title TEXT NOT NULL,\n  publisher TEXT,\n  edition TEXT,\n  source_reference TEXT NOT NULL,\n  identity_status TEXT NOT NULL CHECK (identity_status IN ('CANONICAL','ALIAS','HISTORICAL','DEPRECATED','VERSIONED','UNRESOLVED')),\n  lifecycle TEXT NOT NULL CHECK (lifecycle IN ('ACTIVE','PROPOSED','RETIRED')),\n  created_at TEXT NOT NULL,\n  metadata_json TEXT NOT NULL DEFAULT '{}'\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_document_identity_relations",
+        "sql": "CREATE TABLE v3_document_identity_relations (\n  relation_id TEXT PRIMARY KEY,\n  subject_identity_id TEXT NOT NULL REFERENCES v3_document_identities(document_identity_id),\n  predicate TEXT NOT NULL CHECK (predicate IN ('ALIAS_OF','RENAMED_FROM','SUPERSEDES','SAME_CONTENT_UNCONFIRMED')),\n  object_identity_id TEXT NOT NULL REFERENCES v3_document_identities(document_identity_id),\n  evidence_digest TEXT,\n  created_at TEXT NOT NULL,\n  UNIQUE(subject_identity_id, predicate, object_identity_id)\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_ingestion_revisions",
+        "sql": "CREATE TABLE v3_ingestion_revisions (\n  ingestion_revision_id TEXT PRIMARY KEY,\n  source_identity TEXT NOT NULL,\n  source_digest TEXT NOT NULL,\n  parser_version TEXT NOT NULL,\n  schema_version TEXT NOT NULL,\n  run_identity TEXT NOT NULL,\n  execution_identity TEXT NOT NULL,\n  object_set_digest TEXT NOT NULL,\n  object_count INTEGER NOT NULL CHECK (object_count >= 0),\n  started_at TEXT NOT NULL,\n  finished_at TEXT,\n  status TEXT NOT NULL CHECK (status IN ('RUNNING','SUCCEEDED','FAILED'))\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_production_dataset_states",
+        "sql": "CREATE TABLE v3_production_dataset_states (\n  dataset_state_id TEXT PRIMARY KEY,\n  d1_database_id TEXT NOT NULL,\n  binding TEXT NOT NULL,\n  environment TEXT NOT NULL CHECK (environment IN ('STAGING','PRODUCTION')),\n  deployment_revision_id TEXT NOT NULL REFERENCES v3_deployment_revisions(deployment_revision_id),\n  corpus_revision_id TEXT NOT NULL REFERENCES v3_corpus_revisions(corpus_revision_id),\n  seed_revision_id TEXT NOT NULL REFERENCES v3_seed_revisions(seed_revision_id),\n  object_set_digest TEXT NOT NULL,\n  row_count INTEGER NOT NULL CHECK (row_count >= 0),\n  distinct_document_count INTEGER NOT NULL CHECK (distinct_document_count >= 0),\n  duplicate_count INTEGER NOT NULL CHECK (duplicate_count >= 0),\n  verification_timestamp TEXT NOT NULL,\n  verification_result TEXT NOT NULL CHECK (verification_result IN ('PENDING','PASSED','FAILED','QUARANTINED')),\n  verification_evidence_digest TEXT\n)"
+      },
+      {
+        "type": "table",
+        "name": "v3_seed_revisions",
+        "sql": "CREATE TABLE v3_seed_revisions (\n  seed_revision_id TEXT PRIMARY KEY,\n  corpus_revision_id TEXT NOT NULL REFERENCES v3_corpus_revisions(corpus_revision_id),\n  object_set_digest TEXT NOT NULL,\n  payload_digest TEXT NOT NULL,\n  target_environment TEXT NOT NULL CHECK (target_environment IN ('LOCAL','PREVIEW','STAGING','PRODUCTION')),\n  target_d1_database_id TEXT NOT NULL,\n  operator_identity TEXT NOT NULL,\n  idempotency_key TEXT NOT NULL UNIQUE,\n  approval_state TEXT NOT NULL CHECK (approval_state IN ('PENDING','APPROVED','REJECTED')),\n  execution_state TEXT NOT NULL CHECK (execution_state IN ('NOT_STARTED','RUNNING','SUCCEEDED','FAILED','QUARANTINED')),\n  created_at TEXT NOT NULL,\n  executed_at TEXT\n)"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "EEUR",
+      "served_by_colo": "MXP",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.9525
+      },
+      "duration": 0.9525,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 102400,
+      "rows_read": 42,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+    {
+        "body":  "",
+        "status":  409,
+        "case":  "target_mismatch"
+    },
+    {
+        "body":  "",
+        "status":  409,
+        "case":  "count_mismatch"
+    },
+    {
+        "body":  "",
+        "status":  502,
+        "case":  "malformed"
+    },
+    {
+        "body":  "",
+        "status":  409,
+        "case":  "digest_mismatch"
+    },
+    {
+        "body":  "",
+        "status":  409,
+        "case":  "duplicate_ids"
+    },
+    {
+        "body":  "",
+        "status":  409,
+        "case":  "unknown_revision"
+    }
+]

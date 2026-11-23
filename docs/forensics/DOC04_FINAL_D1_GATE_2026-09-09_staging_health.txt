@@ -1,0 +1,1 @@
+{"service":"zayron-x-source-fabric","status":"READY","source_count":40,"enabled_sources":0,"source_activation":"false","ingestion":"DISABLED"}

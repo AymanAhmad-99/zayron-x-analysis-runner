@@ -1,0 +1,17 @@
+{
+  "migration": "db/migrations/0018_v3_control_plane.sql",
+  "statements": [
+    {"ordinal": 1, "type": "CREATE TABLE", "target": "v3_document_identities", "additive": true, "idempotent": true},
+    {"ordinal": 2, "type": "CREATE TABLE", "target": "v3_document_identity_relations", "additive": true, "idempotent": true},
+    {"ordinal": 3, "type": "CREATE TABLE", "target": "v3_corpus_revisions", "additive": true, "idempotent": true},
+    {"ordinal": 4, "type": "CREATE TABLE", "target": "v3_corpus_documents", "additive": true, "idempotent": true},
+    {"ordinal": 5, "type": "CREATE TABLE", "target": "v3_ingestion_revisions", "additive": true, "idempotent": true},
+    {"ordinal": 6, "type": "CREATE TABLE", "target": "v3_seed_revisions", "additive": true, "idempotent": true},
+    {"ordinal": 7, "type": "CREATE TABLE", "target": "v3_deployment_revisions", "additive": true, "idempotent": true},
+    {"ordinal": 8, "type": "CREATE TABLE", "target": "v3_production_dataset_states", "additive": true, "idempotent": true},
+    {"ordinal": 9, "type": "CREATE UNIQUE INDEX", "target": "idx_v3_seed_target_idempotency", "additive": true, "idempotent": true}
+  ],
+  "destructive_statements": 0,
+  "data_write_statements": 0,
+  "d1_considerations": ["foreign-key enforcement must be observed on actual D1", "DDL execution/atomicity must be observed on actual D1"]
+}

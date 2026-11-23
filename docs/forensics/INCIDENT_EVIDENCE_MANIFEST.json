@@ -1,0 +1,44 @@
+﻿[
+    {
+        "file":  "docs/forensics/PRODUCTION_CHANGE_INCIDENT_2026-09-09.md",
+        "sha256":  "68ca861a86f1a1db0f5cf53a2e811a85da91f7d5488fc0deefa36b39fbd4de88",
+        "size_bytes":  7478,
+        "timestamp":  "2026-09-09T23:10:00+03:00",
+        "evidence_type":  "FORENSIC_DOCUMENT"
+    },
+    {
+        "file":  "docs/forensics/CREDENTIAL_EXPOSURE_2026-09-09.md",
+        "sha256":  "2309d6fe962244867d58bb2b2804bfbb79faa1aab75be4c37cc75027118678cf",
+        "size_bytes":  5332,
+        "timestamp":  "2026-09-09T23:10:00+03:00",
+        "evidence_type":  "FORENSIC_DOCUMENT"
+    },
+    {
+        "file":  "docs/forensics/PRODUCTION_CHAIN_OF_CUSTODY_2026-09-09.json",
+        "sha256":  "603ddd2fa13ba045229504c6acd427ccaad5b7430b1cabff4693392ab3beb335",
+        "size_bytes":  5590,
+        "timestamp":  "2026-09-09T23:10:00+03:00",
+        "evidence_type":  "FORENSIC_DOCUMENT"
+    },
+    {
+        "file":  "docs/engineering/PRODUCTION_CHANGE_POLICY.md",
+        "sha256":  "ba7fd90651d00f686e9d17f1178a18b9d89f7509a7224a9cdcdb499d318881c8",
+        "size_bytes":  3674,
+        "timestamp":  "2026-09-09T23:10:00+03:00",
+        "evidence_type":  "FORENSIC_DOCUMENT"
+    },
+    {
+        "file":  "docs/engineering/ZAYRON-X_MASTER_ENGINEERING_DOSSIER_2026-09-09/D1_AUTHORITY_MATRIX.md",
+        "sha256":  "4ea43013104443804939fe3f2f4830fff7cc24201dd96f877d167b5d676dd0d0",
+        "size_bytes":  6316,
+        "timestamp":  "2026-09-09T23:10:00+03:00",
+        "evidence_type":  "FORENSIC_DOCUMENT"
+    },
+    {
+        "file":  "docs/engineering/ZAYRON-X_MASTER_ENGINEERING_DOSSIER_2026-09-09/00_EXECUTIVE_SUMMARY.md",
+        "sha256":  "8e3dcd20dd5f249ea1146cff95a614f2d1341293059363f79e98778ad357d794",
+        "size_bytes":  5953,
+        "timestamp":  "2026-09-09T23:10:00+03:00",
+        "evidence_type":  "FORENSIC_DOCUMENT"
+    }
+]

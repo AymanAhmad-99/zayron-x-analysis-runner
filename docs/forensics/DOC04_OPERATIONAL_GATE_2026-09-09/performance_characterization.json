@@ -1,0 +1,6 @@
+{
+  "observations": [{"count":100,"worker_ms":460,"client_ms":815},{"count":1000,"worker_ms":899,"client_ms":1100},{"count":5000,"worker_ms":11472,"client_ms":12082},{"count":10000,"worker_ms":"unknown","client_ms":41069,"status":502}],
+  "trend": "nonlinear degradation between 1000 and 5000; 10000 failed",
+  "formal_benchmark": false,
+  "status": "PARTIAL"
+}

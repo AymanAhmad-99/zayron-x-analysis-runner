@@ -1,0 +1,1 @@
+{"model":"A/D","description":"The caller retains or deterministically rereads local chunk files and sends one chunk payload per request; the Worker does not persist payloads.","resumability":"PARTIAL","large_original_request_required":false,"worker_can_reconstruct_after_caller_loss":false}

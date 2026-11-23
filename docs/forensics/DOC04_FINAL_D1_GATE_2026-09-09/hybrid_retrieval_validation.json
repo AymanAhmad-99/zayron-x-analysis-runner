@@ -1,0 +1,8 @@
+{
+  "status": "PARTIAL",
+  "fts5": "PASS; staging query returned synthetic records",
+  "vectorize": "PASS; isolated vector query returned synthetic match",
+  "hybrid_route": "PASS; D1 connected and fused results returned",
+  "observed_issue": "pre-fix replay data produced duplicate lexical rows in staging; new FTS cleanup prevents future governed duplicate projections",
+  "legacy_knowledge_chunks": "not used by the tested V3 route"
+}

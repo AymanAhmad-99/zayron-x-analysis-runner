@@ -1,0 +1,162 @@
+﻿{
+    "artifact_type":  "DOC04-operational-gate-manifest",
+    "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+    "production_excluded":  true,
+    "files":  [
+                  {
+                      "relative_path":  "batch_characterization.json",
+                      "sha256":  "3B36C797EC3F8EA5D90ED6B70938B1AC3BCF6177C6CE4ECFC3BE7A22CC539431",
+                      "size":  360,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "concurrency_regression.json",
+                      "sha256":  "3834E169236B410C0DEBFBC0BB629EAA0F41DE37E02D3324C8C19D90D461637B",
+                      "size":  203,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "d1_operational_limits.json",
+                      "sha256":  "33546D010261FD509A584B4BD3C99E0C2C6DE9ACC0036F113B4F569F87C71B0A",
+                      "size":  608,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "DOC04_OPERATIONAL_GATE_REPORT.md",
+                      "sha256":  "A83A238F7C64EECD71A6BFE612EDAF92D8EA875D0295CE43E9B2BD586FA26FF1",
+                      "size":  2857,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "failure_recovery_assessment.json",
+                      "sha256":  "8B4A31BBC521BE0E8BD7D15A15F9C8C42AF9FB4F04A33D41210E01D2AF62B515",
+                      "size":  269,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "final_production_readonly_verification.json",
+                      "sha256":  "388D8D9395C62AA117EE42BC71B7A362A56A0556AAA1837F2E0CFB241285EFAB",
+                      "size":  358,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "final_reconciliation.json",
+                      "sha256":  "258E76E22EE3BFEE7C0D2E721B95C9D60E7E19B738A6726FEF32BDD6E794A2CB",
+                      "size":  303,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "fts_projection_regression.json",
+                      "sha256":  "4927292578A745439088A19D83BCAB7B41132FA0B908FB07EB9CB5997000396D",
+                      "size":  268,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "hybrid_retrieval_regression.json",
+                      "sha256":  "35D4F578DF6A27516D97CD90CB358DDB38708CD8C85414303921C6835CC5061D",
+                      "size":  215,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "idempotency_semantics.json",
+                      "sha256":  "608E08502858BC42CEAA4BC285FB41BAADEE069C8EFA1590D3D3F1F32904D2AE",
+                      "size":  527,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "large_batch_validation.json",
+                      "sha256":  "0D2B374CB5D728DF49A754683F40781FE875C3DD2AA7ED0C62D8993D331B1361",
+                      "size":  592,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "performance_characterization.json",
+                      "sha256":  "7FC2CCDBF66DF77BD4EE315CDB1CCC317A48BA4D854DB9675DDFB51F7C12392F",
+                      "size":  362,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "retry_timeout_validation.json",
+                      "sha256":  "F190A0FF2284A9418590CDCFB04EF1389A444F526CAEA490B86C7F1B2FB689CB",
+                      "size":  380,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "rollback_validation.json",
+                      "sha256":  "A25A3154E6713C13E5FEECB885B0690B48B3212244AB352FCAE6668D6475E432",
+                      "size":  415,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "seed_state_machine_assessment.json",
+                      "sha256":  "E7E8BEE1EF5758A2A2C7B18EA7FE70C97ADBFD7D1F117D8BF3A122DB321FCF39",
+                      "size":  275,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "vectorize_regression.json",
+                      "sha256":  "3D1C341A8E1FAEEF84E68173AF0E00451A483D5D3FD0376F6BA28E3DAEDFD864",
+                      "size":  276,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_batch10000_result.json",
+                      "sha256":  "58A15B433E08AA7AEBF8A2D04961F4946FCF8C331B263AACF2F5F5157506A754",
+                      "size":  134,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_batch10000_state.txt",
+                      "sha256":  "BA15C3F051BA27F2036E44FC732C286870F25018E9FB445B49CD672FF1F85A05",
+                      "size":  4990,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_batch5000_result.json",
+                      "sha256":  "4E39A43877DD7E4EB61A9A4C8BF2500F42931BED8E22ADEC180BDC342A5869DC",
+                      "size":  223,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_failure_response.txt",
+                      "sha256":  "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6",
+                      "size":  2,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/DOC04_OPERATIONAL_GATE_2026-09-09_failure_state.txt",
+                      "sha256":  "D59BCEB1D3C162F1E26DCA85FAC82E8B5289B312BC2914F17B67208060105C35",
+                      "size":  3920,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  },
+                  {
+                      "relative_path":  "raw/final_production_readonly_verification.txt",
+                      "sha256":  "62053673CB496CA92E4F4300DF804516B6B1026A74C9CC449667BDA9B544A511",
+                      "size":  1266,
+                      "collection_timestamp":  "2026-09-09T16:10:20.0083532Z",
+                      "redacted":  false
+                  }
+              ],
+    "integrity":  "SHA-256 recorded for every artifact"
+}

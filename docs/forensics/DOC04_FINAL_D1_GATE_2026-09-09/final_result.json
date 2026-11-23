@@ -1,0 +1,22 @@
+{
+  "validation_timestamp": "2026-09-09",
+  "architecture": "Cloudflare Workers + D1 + R2 + Vectorize + Queues",
+  "staging_database_id": "34962f8f-abd1-4b0b-8bd7-b4eab59bd902",
+  "staging_worker": "zayron-x-source-fabric-staging",
+  "staging_vectorize": "zayron-doc04-staging-index",
+  "production_touched": false,
+  "migration_status": "PASS",
+  "idempotency_status": "PASS",
+  "worker_runtime_status": "PASS",
+  "seed_endpoint_status": "PASS_WITH_LOCAL_FIX",
+  "concurrency_status": "PASS_FOR_TESTED_CLAIM",
+  "large_batch_status": "PARTIAL",
+  "transaction_status": "PARTIAL",
+  "vectorize_status": "PASS_STAGING_ONLY",
+  "hybrid_retrieval_status": "PARTIAL",
+  "performance_status": "PARTIAL",
+  "architecture_status": "ACCEPTED WITH CONTROLS",
+  "local_fixes": ["staging Worker environment", "target D1 validation", "conditional seed claim", "FTS projection cleanup"],
+  "unresolved_items": ["full corpus-scale behavior", "rollback semantics", "network retry behavior", "production Vectorize parity", "historical provenance"],
+  "production_authorization": "NOT AUTHORIZED"
+}

@@ -1,0 +1,1 @@
+{"planned_to_running":"conditional update","running_to_failed":"catch handler when claimedChunk set","failed_to_running":"conditional retry claim","attempt_count":"increments on claim","stale_running":"no recovery","crash_after_batch_before_completion":"remains RUNNING even though replay would be data-idempotent"}

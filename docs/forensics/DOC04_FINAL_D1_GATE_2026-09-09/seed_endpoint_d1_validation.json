@@ -1,0 +1,8 @@
+{
+  "status": "PASS_WITH_LOCAL_FIX",
+  "valid_request": "HTTP 200",
+  "replay_after_fix": "HTTP 409",
+  "concurrent_same_seed": "one HTTP 200, four HTTP 409",
+  "invalid_cases": {"unknown_revision": 409, "digest_mismatch": 409, "count_mismatch": 409, "target_mismatch": 409, "duplicate_ids": 409, "malformed_json": 502},
+  "local_fixes": ["atomic NOT_STARTED to RUNNING seed claim", "target D1 identity validation", "completed/concurrent seed rejection", "FTS projection cleanup before governed insert"]
+}

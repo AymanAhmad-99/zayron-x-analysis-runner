@@ -1,0 +1,10 @@
+{
+  "status": "PARTIAL",
+  "nodes": [
+    {"step":"corpus-to-plan","file":"workers/scripts/plan_v3_chunks.py","line":"9-24","state":"local artifact only"},
+    {"step":"plan","file":"workers/source-fabric/src/index.ts","line":"187-202","d1":"v3_seed_chunks INSERT OR IGNORE","state":"PLANNED"},
+    {"step":"execute","file":"workers/source-fabric/src/index.ts","line":"204-233","d1":"claim then batch V3/FTS then completion","state":"RUNNING->COMPLETED/FAILED"},
+    {"step":"finalize","file":"workers/source-fabric/src/index.ts","line":"235-246","d1":"chunk counts then seed update","state":"SUCCEEDED"}
+  ],
+  "missing": ["persisted payload", "digest recomputation", "lease recovery", "independent attestation"]
+}

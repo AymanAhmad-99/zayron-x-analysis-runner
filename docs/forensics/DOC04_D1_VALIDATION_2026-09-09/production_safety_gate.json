@@ -1,0 +1,12 @@
+{
+  "production_database_name": "zayron-x-intelligence-db",
+  "production_database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53",
+  "target_database_name": "zayron-x-preview-db",
+  "target_database_id": "34962f8f-abd1-4b0b-8bd7-b4eab59bd902",
+  "target_environment": "preview",
+  "target_id_distinct": true,
+  "target_name_distinct": true,
+  "target_environment_nonproduction": true,
+  "safe_to_mutate_target": true,
+  "production_mutation_authorized": false
+}

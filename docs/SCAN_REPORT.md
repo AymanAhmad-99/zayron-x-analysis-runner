@@ -1,0 +1,399 @@
+# ZAYRON-X Repository Scan Report
+
+## A. Dead code
+
+### Exported functions/classes/types in packages/** and workers/** with zero importers
+- `packages/intelligence/db/schema.ts:47`: Exported symbol 'paymentSessions' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:98`: Exported symbol 'sourceMessages' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:117`: Exported symbol 'intelligenceEvents' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:247`: Exported symbol 'ttpMappings' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:290`: Exported symbol 'reportRevisions' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:348`: Exported symbol 'socialAssets' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:365`: Exported symbol 'socialPublications' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:406`: Exported symbol 'auditEvents' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:420`: Exported symbol 'knowledgeDocuments' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:441`: Exported symbol 'knowledgeChunks' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:458`: Exported symbol 'aiRuns' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:483`: Exported symbol 'featureUsage' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:528`: Exported symbol 'rawFeeds' has zero importers/references anywhere in repo.
+- `packages/intelligence/db/schema.ts:560`: Exported symbol 'programmingLangs' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ai/adapter.ts:9`: Exported symbol 'CanonicalAIClaim' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ai/adapter.ts:16`: Exported symbol 'CanonicalAIResponse' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ai/adapter.ts:148`: Exported symbol 'GroundedCveAnalysisFields' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ai/adapter.ts:173`: Exported symbol 'GroundedCveAnalysisResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/confidence.ts:3`: Exported symbol 'ConfidenceCalculationInput' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/contract.ts:3`: Exported symbol 'EpistemicStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/contract.ts:5`: Exported symbol 'EventTaxonomy' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/contract.ts:24`: Exported symbol 'GroundedClaim' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/dossier.ts:62`: Exported symbol 'AppliedKnowledgeItem' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/dossier.ts:72`: Exported symbol 'DossierSection' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/engine.ts:6`: Exported symbol 'AnalystEngineEnv' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/engine.ts:13`: Exported symbol 'AnalyzeRequest' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/report_templates.ts:18`: Exported symbol 'ReportType' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/report_templates.ts:33`: Exported symbol 'AttackMappingItem' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/report_templates.ts:42`: Exported symbol 'EntityRelationshipItem' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/report_templates.ts:51`: Exported symbol 'StructuredReportSection' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/analyst/report_templates.ts:58`: Exported symbol 'StructuredIntelligenceReportObject' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/budget/index.ts:7`: Exported symbol 'BudgetState' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/budget/index.ts:9`: Exported symbol 'BudgetStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/budget/index.ts:23`: Exported symbol 'BudgetConfig' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/cache/index.ts:9`: Exported symbol 'CachedAiRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/cache/index.ts:22`: Exported symbol 'computeCacheKey' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/cache/index.ts:39`: Exported symbol 'getCachedAnalysis' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/campaigns/index.ts:8`: Exported symbol 'CampaignCandidate' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/aiGateway.ts:10`: Exported symbol 'PromptPackContext' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/consistency.ts:10`: Exported symbol 'SemanticConsistencyResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/detections.ts:8`: Exported symbol 'AttackTechnique' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/detections.ts:18`: Exported symbol 'GeneratedDetection' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/dossier.ts:8`: Exported symbol 'DimensionEntry' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/dossier.ts:41`: Exported symbol 'compileIntelligenceDossier' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/entityResolution.ts:3`: Exported symbol 'ResolutionStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/pipeline.ts:12`: Exported symbol 'PipelineExecutionResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/types.ts:73`: Exported symbol 'TemporalScope' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/types.ts:113`: Exported symbol 'CoreEvidenceItem' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/core/types.ts:153`: Exported symbol 'AnalysisProfileField' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/corroboration/index.ts:11`: Exported symbol 'ExtractedSignalEntities' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/corroboration/index.ts:50`: Exported symbol 'CorroborationAnalysis' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/dossier/engine.ts:16`: Exported symbol 'stableId' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/causality.ts:11`: Exported symbol 'ClaimAttributionEdge' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/causality.ts:21`: Exported symbol 'ClaimAttributionGraph' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/causality.ts:34`: Exported symbol 'CounterfactualCausalityRun' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/causality.ts:46`: Exported symbol 'CausalityEvaluationResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/claims.ts:20`: Exported symbol 'ClaimGenerationInput' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/enrichment.ts:33`: Exported symbol 'EpssEvidenceRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/enrichment.ts:47`: Exported symbol 'EMPTY_KEV_EVIDENCE_PORT' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/enrichment.ts:48`: Exported symbol 'EMPTY_EPSS_EVIDENCE_PORT' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/enrichment.ts:50`: Exported symbol 'EvidenceProvenance' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/index.ts:41`: Exported symbol 'DeepAnalysisRequestV2' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/knowledge_router.ts:12`: Exported symbol 'PreconditionCheckResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/quality_gate.ts:15`: Exported symbol 'StageResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:10`: Exported symbol 'CachedChunk' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:53`: Exported symbol 'VectorizeEnv' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:59`: Exported symbol 'ShadowRetrievalParams' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:72`: Exported symbol 'ProvenanceMetadata' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:98`: Exported symbol 'StateTransitionRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:135`: Exported symbol 'ShadowResolutionMetrics' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/engine_v2/shadow_vectorize.ts:148`: Exported symbol 'ShadowRetrievalResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/graph/index.ts:9`: Exported symbol 'ExtractedRelation' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/cisaKevAdapter.ts:14`: Exported symbol 'CisaKevVulnerabilityEntry' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/cisaKevAdapter.ts:28`: Exported symbol 'CisaKevFeedPayload' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/contracts.ts:17`: Exported symbol 'SnapshotStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/contracts.ts:25`: Exported symbol 'IngestionRunStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mispAdapter.ts:16`: Exported symbol 'MispTag' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mispAdapter.ts:22`: Exported symbol 'MispSighting' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mispAdapter.ts:47`: Exported symbol 'MispObjectReference' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mispAdapter.ts:56`: Exported symbol 'MispObject' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mispAdapter.ts:72`: Exported symbol 'MispGalaxyCluster' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mispAdapter.ts:85`: Exported symbol 'MispGalaxy' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/mitreAttackAdapter.ts:53`: Exported symbol 'MitreAttackMetadata' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/orchestrator.ts:20`: Exported symbol 'IngestionExecutionResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:18`: Exported symbol 'SupportedFormat' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:33`: Exported symbol 'RawSectionNode' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:45`: Exported symbol 'SourceTraceability' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:75`: Exported symbol 'ChunkQualityMetrics' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:113`: Exported symbol 'ExtractionResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:138`: Exported symbol 'detectFormat' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:209`: Exported symbol 'extractFromHtml' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:325`: Exported symbol 'extractFromMarkdown' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:611`: Exported symbol 'computeDocumentHash' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:621`: Exported symbol 'IdempotencyRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:629`: Exported symbol 'loadIdempotencyRegistry' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:640`: Exported symbol 'saveIdempotencyRegistry' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ingestion/universal_book_pipeline.ts:683`: Exported symbol 'generateVectorizePayloads' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/integrity/timestamps.ts:1`: Exported symbol 'TimestampClassification' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/integrity/timestamps.ts:8`: Exported symbol 'TimestampValidationResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/integrity/timestamps.ts:36`: Exported symbol 'systemTimestamp' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/citation.ts:1`: Exported symbol 'KnowledgeChunk' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/citation.ts:2`: Exported symbol 'KnowledgeApplication' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/citation.ts:3`: Exported symbol 'VerifiedKnowledgeCitation' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/citation.ts:7`: Exported symbol 'retrieveMitreT1203' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/citation.ts:14`: Exported symbol 'verifyCitation' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/citation.ts:19`: Exported symbol 'applyKnowledge' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/knowledge_routing.ts:17`: Exported symbol 'AnalyticalDomain' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/knowledge_routing.ts:35`: Exported symbol 'KnowledgeUsageStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/search.ts:8`: Exported symbol 'KnowledgeFilterOptions' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/search.ts:18`: Exported symbol 'KnowledgeSearchResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/sync.ts:6`: Exported symbol 'LiveSyncSourceRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/sync.ts:22`: Exported symbol 'KnowledgeDiffResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/sync.ts:118`: Exported symbol 'calculateKnowledgeDiff' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/v3/embedding.ts:1`: Exported symbol 'HEUER_EMBEDDING_MODEL' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/knowledge/v3/embedding.ts:4`: Exported symbol 'EmbeddingResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/canonical.ts:19`: Exported symbol 'INTELLIGENCE_CATEGORIES' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/canonical.ts:50`: Exported symbol 'IntelligenceCategory' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/canonical.ts:57`: Exported symbol 'ReportLifecycleStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/canonical.ts:69`: Exported symbol 'CanonicalPublicationStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/canonical.ts:71`: Exported symbol 'CanonicalEpistemicStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/canonical.ts:524`: Exported symbol 'generateDeduplicationKey' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/fusion.ts:30`: Exported symbol 'SourceConflictRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/pipeline/fusion.ts:40`: Exported symbol 'FusionResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/article.ts:8`: Exported symbol 'ArticleDepth' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/canonicalVulnerability.ts:8`: Exported symbol 'FieldConflict' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/canonicalVulnerability.ts:9`: Exported symbol 'mergeFieldProvenance' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/consistency.ts:3`: Exported symbol 'ConsistencyCheckResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/editorialDto.ts:23`: Exported symbol 'PublicReportMeta' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/editorialDto.ts:75`: Exported symbol 'GenericEditorialDto' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/editorialDto.ts:86`: Exported symbol 'GovernedVulnerabilityEditorialInput' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/editorialDto.ts:92`: Exported symbol 'GovernedEditorialResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/editorialDto.ts:98`: Exported symbol 'buildGovernedVulnerabilityEditorialDto' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/eligibility.ts:2`: Exported symbol 'PublicationEligibility' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/evidenceClaims.ts:41`: Exported symbol 'ClaimValidationResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/indexnow.ts:13`: Exported symbol 'IndexNowResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/outbound.ts:8`: Exported symbol 'DispatchResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/outbound.ts:17`: Exported symbol 'OutboundDispatchReport' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/publisher.ts:26`: Exported symbol 'PublishResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/publisher.ts:283`: Exported symbol 'CanonicalV2PublishResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/social.ts:8`: Exported symbol 'DistributionRoute' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/publishing/social.ts:9`: Exported symbol 'IntelligencePriority' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/rag/context_pack.ts:8`: Exported symbol 'AuditableRAGScore' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/rag/context_pack.ts:19`: Exported symbol 'BoundedContextPack' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/rag/retrieval.ts:12`: Exported symbol 'RetrievedChunk' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/rag/retrieval.ts:35`: Exported symbol 'StructuredD1EntityMatches' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:1`: Exported symbol 'SECTORS' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:2`: Exported symbol 'ASSET_CLASSES' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:4`: Exported symbol 'AssetClass' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:5`: Exported symbol 'OrganizationSize' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:6`: Exported symbol 'OrganizationProfile' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:7`: Exported symbol 'RelevanceSignals' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:9`: Exported symbol 'RelevanceInput' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:22`: Exported symbol 'EnterpriseRelevanceCategory' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/relevance/vulnerability.ts:34`: Exported symbol 'EnterpriseRelevanceResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/canonicalExploitBuilder.ts:16`: Exported symbol 'ExploitReportAssemblyOptions' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/canonicalMalwareBuilder.ts:13`: Exported symbol 'MalwareReportAssemblyOptions' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/compiler.ts:3`: Exported symbol 'compileChannels' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/evidenceMembership.ts:19`: Exported symbol 'CandidateEvidenceRef' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/evidenceMembership.ts:29`: Exported symbol 'EvidenceMembershipQuery' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/evidenceMembership.ts:38`: Exported symbol 'EvidenceMembershipDiagnostics' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/evidenceMembership.ts:48`: Exported symbol 'EvidenceMembershipResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/registry.ts:13`: Exported symbol 'DomainTemplateDefinition' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/schema.ts:4`: Exported symbol 'ReportState' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/schema.ts:5`: Exported symbol 'ExploitStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/schema.ts:6`: Exported symbol 'EpistemicClass' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/schema.ts:7`: Exported symbol 'LegacyReportCitation' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/schema.ts:8`: Exported symbol 'ConfidenceDimensions' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:40`: Exported symbol 'ClaimEpistemicStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:52`: Exported symbol 'ExploitationTemporalStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:59`: Exported symbol 'ExploitMaturity' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:68`: Exported symbol 'AttackMappingProvenance' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:73`: Exported symbol 'TlpLevel' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:80`: Exported symbol 'ConfidenceLevel' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:154`: Exported symbol 'CapabilityClaimLevel' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:161`: Exported symbol 'AttackMappingScope' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:168`: Exported symbol 'DefensiveActionScope' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:174`: Exported symbol 'SampleFindingStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:182`: Exported symbol 'SampleSpecificFindings' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:193`: Exported symbol 'CorroborationMetadata' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:202`: Exported symbol 'MitigationStatus' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/types.ts:261`: Exported symbol 'MalwareCapabilityItem' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/validation.ts:2`: Exported symbol 'ValidationIssue' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/reporting/validation.ts:3`: Exported symbol 'validateReport' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/resolution/index.ts:6`: Exported symbol 'CanonicalActor' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/resolution/index.ts:15`: Exported symbol 'CanonicalMalware' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/social/distribution.ts:12`: Exported symbol 'SocialDerivatives' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/live.ts:5`: Exported symbol 'CollectionPolicy' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/live.ts:6`: Exported symbol 'CollectionResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/live.ts:7`: Exported symbol 'CollectionEvent' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/live.ts:13`: Exported symbol 'collectLive' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/live.ts:29`: Exported symbol 'persistArtifact' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/radar.ts:3`: Exported symbol 'RadarObservation' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/source-fabric/radar.ts:5`: Exported symbol 'CloudflareRadarAdapter' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:35`: Exported symbol 'UnifiedEnrichmentRecord' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:262`: Exported symbol 'ProductVersionScope' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:483`: Exported symbol 'CveRelationshipType' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:500`: Exported symbol 'AuthoritativeAdvisoryEvidence' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:507`: Exported symbol 'AuthoritativeProductScope' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:609`: Exported symbol 'AuthoritativeCnaAdvisory' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:613`: Exported symbol 'ReconciledSourceState' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:1133`: Exported symbol 'AttackPathStage' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:1146`: Exported symbol 'BoundedAttackPath' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:1368`: Exported symbol 'PipelineQualityMetrics' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:1661`: Exported symbol 'PublicExploitEvidence' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:1727`: Exported symbol 'StructuredAttackMapping' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:1979`: Exported symbol 'KernelValidationReport' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/adapters.ts:2142`: Exported symbol 'ClaimsVerificationResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/cvss_classifier.ts:17`: Exported symbol 'QualitativeCvssSeverity' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/cwe_catalog.ts:1953`: Exported symbol 'ResolvedCweEntry' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/orchestration.ts:6`: Exported symbol 'ProviderId' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/orchestration.ts:7`: Exported symbol 'ProviderRequest' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/orchestration.ts:8`: Exported symbol 'IngestionMetrics' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/orchestration.ts:9`: Exported symbol 'OrchestrationResult' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/persistence.ts:13`: Exported symbol 'rawRecordKey' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/registry.ts:2`: Exported symbol 'AuthorityClass' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/sources/registry.ts:3`: Exported symbol 'SourceCapability' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/subscription/model.ts:1`: Exported symbol 'PlanId' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/subscription/model.ts:2`: Exported symbol 'Entitlement' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/subscription/model.ts:9`: Exported symbol 'EntitlementContext' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/subscription/model.ts:11`: Exported symbol 'PaymentProvider' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/telegram/collector.ts:6`: Exported symbol 'TelegramSourceSubmission' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/telegram/collector.ts:30`: Exported symbol 'IngestQueuePayload' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/telegram/collector.ts:51`: Exported symbol 'TelegramMessage' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/telegram/daemon.ts:9`: Exported symbol 'TelegramCollectorHealthState' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ttps/index.ts:5`: Exported symbol 'MitreTTP' has zero importers/references anywhere in repo.
+- `packages/intelligence/src/ttps/index.ts:12`: Exported symbol 'MITRE_TTP_CATALOG' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:52`: Exported symbol 'SourceTrustLevel' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:53`: Exported symbol 'EntityType' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:67`: Exported symbol 'IntelligenceEventModel' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:119`: Exported symbol 'ArticleRenderModel' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:137`: Exported symbol 'JobListingModel' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:156`: Exported symbol 'UIStateMachineState' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:212`: Exported symbol 'ProgrammingLanguage' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:226`: Exported symbol 'ProgrammingLang' has zero importers/references anywhere in repo.
+- `packages/types/src/index.ts:229`: Exported symbol 'RawFeed' has zero importers/references anywhere in repo.
+- `packages/types/src/marketing.ts:3`: Exported symbol 'HeroSectionProps' has zero importers/references anywhere in repo.
+- `packages/types/src/marketing.ts:17`: Exported symbol 'EvidenceRecord' has zero importers/references anywhere in repo.
+- `packages/types/src/marketing.ts:25`: Exported symbol 'ResearchReportPreview' has zero importers/references anywhere in repo.
+- `packages/types/src/marketing.ts:35`: Exported symbol 'PricingTier' has zero importers/references anywhere in repo.
+- `packages/types/src/marketing.ts:45`: Exported symbol 'JobPreview' has zero importers/references anywhere in repo.
+- `workers/telegram-collector-do/src/collector-do.ts:19`: Exported symbol 'CollectorState' has zero importers/references anywhere in repo.
+- `workers/telegram-collector-do/src/collector-do.ts:21`: Exported symbol 'CollectorTelemetry' has zero importers/references anywhere in repo.
+- `workers/telegram-collector-do/src/collector-do.ts:37`: Exported symbol 'TelegramSourceRecord' has zero importers/references anywhere in repo.
+- `workers/telegram-collector-do/src/collector-do.ts:82`: Exported symbol 'BANNED_MONITORED_CHANNELS' has zero importers/references anywhere in repo.
+- `workers/telegram-collector-do/src/collector-do.ts:239`: Exported symbol 'AdvisoryMetadata' has zero importers/references anywhere in repo.
+
+### Files never imported by any other file (entry points and test files excluded)
+- `packages/intelligence/db/client.ts:1`: File has zero imports or references across the codebase.
+- `packages/intelligence/scripts/generateWasmModule.js:1`: File has zero imports or references across the codebase.
+- `packages/intelligence/src/engine/index.ts:1`: File is not imported via ES/CJS module graph (only referenced loosely by name).
+- `workers/api/dist-preview/index.js:1`: File is not imported via ES/CJS module graph (only referenced loosely by name).
+- `workers/api/dist-prod-check/index.js:1`: File is not imported via ES/CJS module graph (only referenced loosely by name).
+- `workers/api/workers/api/dist-micro77d3/index.js:1`: File is not imported via ES/CJS module graph (only referenced loosely by name).
+- `workers/telegram-collector-do/inspect_zayronxai.ts:1`: File has zero imports or references across the codebase.
+
+### Code behind permanently-false or permanently-locked flags
+- `workers/source-fabric/wrangler.toml:62`: SOURCE_ACTIVATION_ENABLED is permanently set to 'false' in production and staging environments.
+- `workers/source-fabric/src/index.ts:605`: Ingestion pipeline permanently returns 'DISABLED' because env.SOURCE_ACTIVATION_ENABLED evaluates false.
+- `packages/intelligence/src/source-fabric/registry.ts:52`: Source fabric entries permanently hardcoded with 'enabled: false, healthStatus: UNVERIFIED'.
+- `workers/api/wrangler.toml:84`: LEGACY_FREEZE is permanently set to 'true' in production environment.
+- `workers/api/src/index.ts:424`: Early return blocks all mutations when env.LEGACY_FREEZE === 'true'.
+- `workers/api/src/index.ts:460`: Guards non-GET requests when env.LEGACY_FREEZE === 'true'.
+- `workers/api/src/index.ts:4835`: Mutation execution blocked when env.LEGACY_FREEZE === 'true'.
+- `workers/ingest/wrangler.toml:68`: LEGACY_FREEZE is permanently set to 'true' in production environment.
+- `workers/ingest/src/index.ts:136`: Ingest handler exits immediately when env.LEGACY_FREEZE === 'true'.
+- `workers/ingest/src/index.ts:1178`: Throws 'Legacy production mutation surface is frozen' when env.LEGACY_FREEZE === 'true'.
+- `workers/telegram-collector-do/wrangler.toml:22`: LEGACY_FREEZE is permanently set to 'true' in production environment.
+- `workers/telegram-collector-do/src/collector-do.ts:1168`: Collection processing exits immediately when env.LEGACY_FREEZE === 'true'.
+- `workers/telegram-collector-do/src/collector-do.ts:1897`: Blocks non-GET requests when env.LEGACY_FREEZE === 'true'.
+
+## B. Unused / orphaned tools & workers
+
+### Worker Isolation & Invocation Status (workers/*/wrangler.toml)
+- `workers/api/wrangler.toml:1`: CONNECTED — Bound to external HTTP routes 'zayron-x.co/api/*', receives service binding calls ('KNOWLEDGE_PROCESSOR') from workers/ingest, hosts Workflows triggered by workers/ingest, and consumes 'zayron-publish-queue'.
+- `workers/ingest/wrangler.toml:1`: CONNECTED — Receives service binding calls ('INGEST') from workers/api and consumes 'zayron-ingest-queue' (produced by workers/api and workers/telegram-collector-do).
+- `workers/telegram-collector-do/wrangler.toml:1`: CONNECTED — Bound as Durable Object service binding ('TELEGRAM_COLLECTOR_SERVICE') in both workers/api and workers/ingest, produces to 'zayron-ingest-queue'.
+- `workers/source-fabric/wrangler.toml:1`: ISOLATED — Has zero incoming service bindings, zero incoming queue consumers from other workers, and no crons. Operates in complete isolation with SOURCE_ACTIVATION_ENABLED='false'.
+
+### Unused npm/bun dependencies (zero import statements across repo)
+- `apps/web/package.json`: Dependency '@react-three/drei' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@react-three/fiber' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@tanstack/react-table' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@vinext/cloudflare' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@xyflow/react' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency 'react-dom' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency 'react-server-dom-webpack' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency 'three' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@types/three' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@vitejs/plugin-react' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency '@vitejs/plugin-rsc' has zero import or execution references across the repo.
+- `apps/web/package.json`: Dependency 'playwright' has zero import or execution references across the repo.
+- `packages/intelligence/package.json`: Dependency '@codeslick/security-knowledge' has zero import or execution references across the repo.
+- `packages/intelligence/package.json`: Dependency 'cwe-api-client' has zero import or execution references across the repo.
+
+### Unreferenced scripts in /scripts or /packages/*/scripts
+- `packages/intelligence/scripts/generateWasmModule.js:1`: Script file 'packages/intelligence/scripts/generateWasmModule.js' is never referenced by package.json, CI config, or another script.
+- `scripts/analyze_dfir_queries.ts:1`: Script file 'scripts/analyze_dfir_queries.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_chunk_resolution_honesty.ts:1`: Script file 'scripts/audit_chunk_resolution_honesty.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_existing_corpus_step4.ts:1`: Script file 'scripts/audit_existing_corpus_step4.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_live_backup.ts:1`: Script file 'scripts/audit_live_backup.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_production_all.ts:1`: Script file 'scripts/audit_production_all.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_published_inventory.ts:1`: Script file 'scripts/audit_published_inventory.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_published_zero_defect.ts:1`: Script file 'scripts/audit_published_zero_defect.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/audit_workstream_a1.ts:1`: Script file 'scripts/audit_workstream_a1.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/build_d1_replacement_sql.ts:1`: Script file 'scripts/build_d1_replacement_sql.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/build_full_corpus_reconciliation.ts:1`: Script file 'scripts/build_full_corpus_reconciliation.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/check_mutation.ts:1`: Script file 'scripts/check_mutation.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/check_vectorize_stats.py:1`: Script file 'scripts/check_vectorize_stats.py' is never referenced by package.json, CI config, or another script.
+- `scripts/crawl_production_links.ts:1`: Script file 'scripts/crawl_production_links.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/d1_query_profiler.ts:1`: Script file 'scripts/d1_query_profiler.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/debug_target_matches.ts:1`: Script file 'scripts/debug_target_matches.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/diag_audit.ts:1`: Script file 'scripts/diag_audit.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/dry_run_diff.ts:1`: Script file 'scripts/dry_run_diff.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/execute_reversible_unpublish_23.ts:1`: Script file 'scripts/execute_reversible_unpublish_23.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/extract_3_real_l9_examples.ts:1`: Script file 'scripts/extract_3_real_l9_examples.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/extract_real_assessment_examples.ts:1`: Script file 'scripts/extract_real_assessment_examples.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_135_sync_sql.ts:1`: Script file 'scripts/generate_135_sync_sql.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_5_live_publication_attempts.ts:1`: Script file 'scripts/generate_5_live_publication_attempts.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_corpus_reconciliation.ts:1`: Script file 'scripts/generate_corpus_reconciliation.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_gold_dataset.ts:1`: Script file 'scripts/generate_gold_dataset.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_owasp_replacement.ts:1`: Script file 'scripts/generate_owasp_replacement.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_pilot_v2_dossiers.ts:1`: Script file 'scripts/generate_pilot_v2_dossiers.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/generate_remaining_d1_sql.ts:1`: Script file 'scripts/generate_remaining_d1_sql.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/harvest_all_vectorize_ids.ts:1`: Script file 'scripts/harvest_all_vectorize_ids.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/inspect_boilerplate.ts:1`: Script file 'scripts/inspect_boilerplate.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/inspect_d1.ts:1`: Script file 'scripts/inspect_d1.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/inspect_live_api.ts:1`: Script file 'scripts/inspect_live_api.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/inspect_real_canonical_chunks.ts:1`: Script file 'scripts/inspect_real_canonical_chunks.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/list_manifest_docs.ts:1`: Script file 'scripts/list_manifest_docs.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/live_audit_phase2.ts:1`: Script file 'scripts/live_audit_phase2.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/live_publish_cycle.ts:1`: Script file 'scripts/live_publish_cycle.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/print_article_table.ts:1`: Script file 'scripts/print_article_table.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/print_corpus_audit.ts:1`: Script file 'scripts/print_corpus_audit.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/production-mutation-lock.ts:1`: Script file 'scripts/production-mutation-lock.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/prove_untouched_canonical.ts:1`: Script file 'scripts/prove_untouched_canonical.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/regression_sample_20.ts:1`: Script file 'scripts/regression_sample_20.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/remediate_135_intelligence_reports.ts:1`: Script file 'scripts/remediate_135_intelligence_reports.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reprocess_all_17_documents.ts:1`: Script file 'scripts/reprocess_all_17_documents.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reprocess_all_violators.ts:1`: Script file 'scripts/reprocess_all_violators.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reprocess_cvss_step5.ts:1`: Script file 'scripts/reprocess_cvss_step5.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reprocess_epss_step6.ts:1`: Script file 'scripts/reprocess_epss_step6.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reprocess_mitre_attack.ts:1`: Script file 'scripts/reprocess_mitre_attack.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reprocess_pilot_10.ts:1`: Script file 'scripts/reprocess_pilot_10.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/reproduce_1_4_empirical_proof.ts:1`: Script file 'scripts/reproduce_1_4_empirical_proof.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/run_dry_run_command.ts:1`: Script file 'scripts/run_dry_run_command.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/run_same_cve_experiment.ts:1`: Script file 'scripts/run_same_cve_experiment.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/scratch_check_ids.ts:1`: Script file 'scripts/scratch_check_ids.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/scratch_check_vectorize_ids.ts:1`: Script file 'scripts/scratch_check_vectorize_ids.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/scratch_inspect_b1.ts:1`: Script file 'scripts/scratch_inspect_b1.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/scratch_inspect_d1_vec.ts:1`: Script file 'scripts/scratch_inspect_d1_vec.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/scratch_inspect_p15.ts:1`: Script file 'scripts/scratch_inspect_p15.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/scratch_probe.ts:1`: Script file 'scripts/scratch_probe.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/submit_indexnow.ts:1`: Script file 'scripts/submit_indexnow.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_apis.ts:1`: Script file 'scripts/test_apis.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_batch_embed.ts:1`: Script file 'scripts/test_batch_embed.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_canonical_retrieval.ts:1`: Script file 'scripts/test_canonical_retrieval.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_d1_api_query.ts:1`: Script file 'scripts/test_d1_api_query.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_genericness_cases.ts:1`: Script file 'scripts/test_genericness_cases.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_synth_similarity.ts:1`: Script file 'scripts/test_synth_similarity.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_universal_book_pipeline.ts:1`: Script file 'scripts/test_universal_book_pipeline.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_upsert_debug.ts:1`: Script file 'scripts/test_upsert_debug.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/test_vectorize_upsert.ts:1`: Script file 'scripts/test_vectorize_upsert.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/trace_bad_publications.ts:1`: Script file 'scripts/trace_bad_publications.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/trace_missing_chunks_origin.ts:1`: Script file 'scripts/trace_missing_chunks_origin.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/upsert_cvss_and_owasp_vectors.ts:1`: Script file 'scripts/upsert_cvss_and_owasp_vectors.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify-live-deployment.ts:1`: Script file 'scripts/verify-live-deployment.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_all_239_live_ids.ts:1`: Script file 'scripts/verify_all_239_live_ids.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_all_routes.ts:1`: Script file 'scripts/verify_all_routes.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_backup_count.ts:1`: Script file 'scripts/verify_backup_count.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_deep_engine_truth.ts:1`: Script file 'scripts/verify_deep_engine_truth.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_live_editorial.ts:1`: Script file 'scripts/verify_live_editorial.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_live_non_can_breakdown.ts:1`: Script file 'scripts/verify_live_non_can_breakdown.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_live_parity.ts:1`: Script file 'scripts/verify_live_parity.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_mandate_live.ts:1`: Script file 'scripts/verify_mandate_live.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_production.ts:1`: Script file 'scripts/verify_production.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_quarantine.ts:1`: Script file 'scripts/verify_quarantine.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_real_corpus_only.ts:1`: Script file 'scripts/verify_real_corpus_only.ts' is never referenced by package.json, CI config, or another script.
+- `scripts/verify_step3_production_ingestion.ts:1`: Script file 'scripts/verify_step3_production_ingestion.ts' is never referenced by package.json, CI config, or another script.
+
+## C. Vendored / cloned open-source tools present but unused
+- `vendor/cisa-vulnrichment`: FOUND-USED — Call site: packages/intelligence/src/sources/adapters.ts:73, workers/api/src/index.ts:182
+- `vendor/github-advisory-database`: FOUND-UNUSED — Call site: None — zero Worker or pipeline files import or execute from this vendor tree.
+- `vendor/nvd-cpe`: FOUND-USED — Call site: packages/intelligence/src/sources/adapters.ts:36, workers/api/src/index.ts:184
+- `vendor/osv-schema`: FOUND-UNUSED — Call site: None — zero Worker or pipeline files import or execute from this vendor tree.
+
+## D. Missing open-source tooling relevant to vulnerability intelligence
+- **NVD API client**: PRESENT — packages/intelligence/src/sources/orchestration.ts:39 (HTTP fetch client) & packages/intelligence/src/sources/adapters.ts:27 (parseNvd adapter)
+- **CISA KEV client**: PRESENT — packages/intelligence/src/ingestion/cisaKevAdapter.ts:66 (CisaKevAdapter) & packages/intelligence/src/sources/adapters.ts:26 (parseCisaKev)
+- **OSV.dev client**: ABSENT — Only response parser exists in packages/intelligence/src/sources/adapters.ts:30. Working HTTP client / fetch integration is ABSENT.
+- **GitHub Security Advisory (GHSA) client**: ABSENT — Only response parser exists in packages/intelligence/src/sources/adapters.ts:29. Working GraphQL/REST client integration is ABSENT.
+- **EPSS client**: PRESENT — packages/intelligence/src/sources/orchestration.ts:41 (HTTP fetch client) & packages/intelligence/src/sources/adapters.ts:31 (parseEpss adapter)
+- **CWE taxonomy data**: PRESENT — packages/intelligence/src/sources/cwe_catalog.ts:9 (969 MITRE CWE entries)
+- **CAPEC taxonomy data**: ABSENT — Zero CAPEC taxonomy data files or client integrations exist in the repository.
+- **MITRE CVE (cve.org) API client**: PRESENT — packages/intelligence/src/sources/orchestration.ts:40 (cveawg.mitre.org client) & packages/intelligence/src/sources/adapters.ts:28 (parseCveRecord)

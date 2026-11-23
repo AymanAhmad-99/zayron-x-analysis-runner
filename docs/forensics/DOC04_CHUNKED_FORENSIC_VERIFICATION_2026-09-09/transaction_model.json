@@ -1,0 +1,1 @@
+{"claim":"separate D1 update","v3_fts":"single SOURCE_STATE.batch per chunk","completion":"separate D1 update","atomicity":"V3 and FTS batch are atomic together; claim/completion are outside that batch","crash_gap":"object/FTS batch can commit while completion update fails"}

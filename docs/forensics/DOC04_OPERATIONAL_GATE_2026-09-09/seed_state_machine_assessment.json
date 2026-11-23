@@ -1,0 +1,7 @@
+{
+  "observed_states": ["NOT_STARTED","RUNNING","SUCCEEDED","FAILED"],
+  "transition": "NOT_STARTED -> RUNNING -> SUCCEEDED or FAILED",
+  "claim_atomicity": "PASS under tested contention",
+  "attested_state": "not implemented by endpoint",
+  "status": "SAFE-WITH-CONTROLS"
+}

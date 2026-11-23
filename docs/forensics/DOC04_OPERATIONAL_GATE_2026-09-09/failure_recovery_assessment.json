@@ -1,0 +1,6 @@
+{
+  "successful_retry": "DETERMINISTIC-SAFE",
+  "mid_batch_failure": "SAFE-WITH-CONTROLS; zero object rows observed and FAILED state recorded after fix",
+  "10k_timeout": "REQUIRES-RECOVERY-PROTOCOL; pre-fix RUNNING state observed",
+  "overall": "SAFE-WITH-CONTROLS"
+}

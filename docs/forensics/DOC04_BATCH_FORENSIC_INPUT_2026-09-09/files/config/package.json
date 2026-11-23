@@ -1,0 +1,31 @@
+{
+  "name": "zayron-x-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter web dev",
+    "build": "bun --filter '*' build",
+    "lint": "bun --filter '*' lint",
+    "typecheck": "bun --filter '*' typecheck",
+    "test": "bun --filter '*' test",
+    "ingest": "bun run scripts/corpus_pipeline_ingest.ts",
+    "verify": "bun run scripts/corpus_pipeline_verify.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250815.0",
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "react": "^19.2.8",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.96.0"
+  }
+}

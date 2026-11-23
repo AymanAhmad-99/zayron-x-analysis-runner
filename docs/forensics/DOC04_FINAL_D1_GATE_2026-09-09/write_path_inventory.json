@@ -1,0 +1,8 @@
+{
+  "v3_write_routes_reviewed": ["/internal/v3-pilot-d1-seed", "/internal/controlled-embedding-batch"],
+  "governed_d1_v3_route": "/internal/v3-pilot-d1-seed",
+  "governance_checks": ["authorization", "approved corpus/seed lookup", "target D1 match", "execution state claim", "digest/count match", "unique object IDs"],
+  "legacy_write_routes": "fail-closed per prior DOC-04 evidence",
+  "bypass_found": false,
+  "note": "controlled-embedding-batch can write Vectorize when explicitly requested; it is not a D1 V3 write route."
+}

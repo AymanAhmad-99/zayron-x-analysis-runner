@@ -1,0 +1,257 @@
+﻿ M .agents/mcp_config.json
+ M .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson
+ M .zayron/knowledge/canonical-v1/sql_batches/batch_005.sql
+ D apps/web/app/_components/banner-cta.tsx
+ D apps/web/app/_components/dual-grid.tsx
+ D apps/web/app/_components/evidence-pricing.tsx
+ D apps/web/app/_components/footer.tsx
+ D apps/web/app/_components/hero.tsx
+ D apps/web/app/_components/intelligence-company.tsx
+ D apps/web/app/_components/intelligence-connected.tsx
+ D apps/web/app/_components/latest-evidence.tsx
+ D apps/web/app/_components/latest-research.tsx
+ D apps/web/app/_components/methodology.tsx
+ D apps/web/app/_components/navbar.tsx
+ D apps/web/app/_components/platform-preview.tsx
+ D apps/web/app/_components/pricing-section.tsx
+ D apps/web/app/_components/realtime-monitoring.tsx
+ D apps/web/app/_components/trust-strip.tsx
+ M apps/web/app/about/page.tsx
+ M apps/web/app/access/page.tsx
+ M apps/web/app/actors/[id]/page.tsx
+ M apps/web/app/actors/page.tsx
+ M apps/web/app/articles/[slug]/page.tsx
+ M apps/web/app/campaigns/[id]/page.tsx
+ M apps/web/app/campaigns/page.tsx
+ M apps/web/app/contact/page.tsx
+ M apps/web/app/globals.css
+ M apps/web/app/intelligence/page.tsx
+ M apps/web/app/iocs/[value]/page.tsx
+ M apps/web/app/iocs/page.tsx
+ M apps/web/app/knowledge/page.tsx
+ M apps/web/app/layout.tsx
+ M apps/web/app/login/page.tsx
+ M apps/web/app/malware/[id]/page.tsx
+ M apps/web/app/malware/page.tsx
+ M apps/web/app/methodology/page.tsx
+ M apps/web/app/page.tsx
+ M apps/web/app/pricing/page.tsx
+ M apps/web/app/reports/[id]/page.tsx
+ M apps/web/app/reports/page.tsx
+ M apps/web/app/responsible-disclosure/page.tsx
+ M apps/web/app/search/page.tsx
+ M apps/web/app/sitemap.ts
+ M apps/web/app/sources/page.tsx
+ M apps/web/app/threats/[slug]/page.tsx
+ M apps/web/app/threats/page.tsx
+ M apps/web/app/vulnerabilities/[id]/page.tsx
+ M apps/web/app/vulnerabilities/page.tsx
+ M apps/web/components/CorporatePage.tsx
+ M apps/web/components/EntityPill.tsx
+ M apps/web/components/EvidenceBlock.tsx
+ M apps/web/components/Footer.tsx
+ M apps/web/components/IntelligenceRow.tsx
+ D apps/web/components/SearchResult.tsx
+ M apps/web/components/Timeline.tsx
+ M apps/web/components/TrustMatrix.tsx
+ M apps/web/components/UnderstatedPricing.tsx
+ M apps/web/components/WhyItMatters.tsx
+ M apps/web/lib/api.ts
+ M apps/web/package.json
+ M apps/web/wrangler.jsonc
+ M bun.lock
+ M db/backups/production_d1_backup_20260825.sql
+ M package.json
+ M packages/intelligence/db/schema.ts
+ M packages/intelligence/src/ai/adapter.ts
+ M packages/intelligence/src/index.ts
+ M packages/intelligence/src/knowledge/corpus.ts
+ M packages/intelligence/src/knowledge/manifest.ts
+ M packages/intelligence/src/normalization/pipeline.ts
+ M packages/intelligence/src/publishing/article.ts
+ M packages/intelligence/src/publishing/publisher.ts
+ M packages/intelligence/src/publishing/social.ts
+ M packages/intelligence/src/rag/retrieval.ts
+ M packages/intelligence/src/resolution/index.ts
+ M packages/intelligence/src/sources/registry.ts
+ M tests/telegram_pipeline.test.ts
+ M workers/api/src/index.ts
+ M workers/api/wrangler.toml
+ M workers/ingest/src/index.ts
+ M workers/ingest/wrangler.toml
+ M workers/ready-candidate-trigger/wrangler.toml
+ M workers/scripts/backup_production_d1.py
+ M workers/scripts/reconcile-and-ingest-corpus.py
+ M workers/scripts/reset_production_d1.py
+ M workers/telegram-collector-do/src/collector-do.ts
+ M workers/telegram-collector-do/tsconfig.json
+ M workers/telegram-collector-do/wrangler.toml
+ M wrangler.toml
+?? .githooks/
+?? .github/
+?? .pilot-token.tmp
+?? .zayron/backups/2026-09-05-pre-cleanup-knowledge_chunks.sql
+?? .zayron/backups/live_non_canonical_ids.json
+?? .zayron/backups/target_239_ids.json
+?? .zayron/backups/temp_query.sql
+?? .zayron/backups/verified_239_target_ids.json
+?? .zayron/cisa-kev-proof.json
+?? .zayron/intelligence-remediation-log.md
+?? .zayron/knowledge/active_vectorize_ids.json
+?? .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788602417579
+?? .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788602613673
+?? .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788602680881
+?? .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788602697665
+?? .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788691786995
+?? .zayron/knowledge/canonical-v1/recovery_repair_checkpoint.json
+?? .zayron/knowledge/corpus-v3/
+?? .zayron/knowledge/ingestion_idempotency_registry.json
+?? ZAYRON_X_V6_VERIFIED_INTEGRITY_REPORT.md
+?? ZAYRON_X_V7_PRODUCTION_READINESS_REPORT.md
+?? apps/web/app/api/
+?? apps/web/app/articles/page.tsx
+?? apps/web/app/intelligence/IntelligenceFeedInteractive.tsx
+?? apps/web/app/intelligence/[id]/
+?? apps/web/app/research/
+?? apps/web/app/sources/SourceRegistryInteractive.tsx
+?? apps/web/components/Hero3DNetwork.tsx
+?? apps/web/components/Navbar.tsx
+?? apps/web/components/ThreatProfileCard.tsx
+?? apps/web/lib/sanitizer.ts
+?? apps/web/middleware.ts
+?? apps/web/public/9f3a1e2b4c5d6e7f8a9b0c1d2e3f4a5b.txt
+?? corpus_manifest.json
+?? db/backups/live_intelligence_backup_20260904.json
+?? db/backups/pre_correction_live_intelligence_backup_20260906.json
+?? db/backups/unpublish_backup_23_articles_20260906.json
+?? db/migrations/0002a_knowledge_documents_chunks.sql
+?? db/migrations/0009_dynamic_source_registry.sql
+?? db/migrations/0010_canonical_intelligence.sql
+?? db/migrations/0011_articles_canonical_event_index.sql
+?? db/migrations/0013_read_budget_hardening.sql
+?? db/migrations/0014_source_fabric_foundation.sql
+?? db/migrations/0015_canonical_dossier_gate.sql
+?? db/migrations/0016_knowledge_objects_v3_fts.sql
+?? db/migrations/0017_knowledge_objects_v3_foundation.sql
+?? db/migrations/0018_v3_control_plane.sql
+?? docs/KNOWLEDGE_ARCHIVE_RECOVERY_MANIFEST.md
+?? docs/KNOWLEDGE_CORPUS_V3_GAP_MATRIX.md
+?? docs/KNOWLEDGE_CORPUS_V3_MANIFEST.md
+?? docs/KNOWLEDGE_CORPUS_V3_TRACK_B_ACQUISITION_MANIFEST.md
+?? docs/MASTER_INTELLIGENCE_ENGINE.md
+?? docs/SOURCE_FABRIC_FOUNDATION.md
+?? docs/TELEGRAM_SOURCE_INVENTORY.md
+?? docs/ZAYRON-X_BACKEND_FORENSIC_AUDIT.md
+?? docs/ZAYRON-X_CONTENT_INTELLIGENCE_FORENSIC_AUDIT.md
+?? docs/ZAYRON-X_INTELLIGENCE_ANALYSIS_CORE.md
+?? docs/ZAYRON_X_11K_RECOVERY_REPORT.md
+?? docs/ZAYRON_X_12_BOOK_KNOWLEDGE_AUDIT.md
+?? docs/ZAYRON_X_191_PAGE_CLASSIFICATION.md
+?? docs/ZAYRON_X_AI_REPORTING_RULES_V2.md
+?? docs/ZAYRON_X_BENCHMARK_FORENSIC_AUDIT_V3.md
+?? docs/ZAYRON_X_CORPUS_COVERAGE_AUDIT.md
+?? docs/ZAYRON_X_CORPUS_COVERAGE_RECONCILIATION.md
+?? docs/ZAYRON_X_CORPUS_RECONCILIATION_FULL.md
+?? docs/ZAYRON_X_D1_RESOLUTION_AUDIT.md
+?? docs/ZAYRON_X_DEEP_ANALYSIS_ENGINE_V2.md
+?? docs/ZAYRON_X_DEEP_ENGINE_TRUTH_AUDIT.md
+?? docs/ZAYRON_X_DFIR_RETRIEVAL_AUDIT.md
+?? docs/ZAYRON_X_GROUND_TRUTH_INDEPENDENCE.md
+?? docs/ZAYRON_X_IMPLEMENTATION_PLAN.md
+?? docs/ZAYRON_X_INDEPENDENT_RETRIEVAL_VALIDATION_V2.md
+?? docs/ZAYRON_X_KNOWLEDGE_CLAIM_ATTRIBUTION.md
+?? docs/ZAYRON_X_KNOWLEDGE_GAP_ANALYSIS.md
+?? docs/ZAYRON_X_MASTER_AUDIT_AND_FINAL_DECISION.md
+?? docs/ZAYRON_X_METRIC_RECALCULATION.md
+?? docs/ZAYRON_X_P0_REMEDIATION_FINAL.md
+?? docs/ZAYRON_X_P0_REMEDIATION_REPORT.md
+?? docs/ZAYRON_X_PRINCIPAL_ENGINEERING_AUDIT.md
+?? docs/ZAYRON_X_REAL_KNOWLEDGE_RETRIEVAL_VALIDATION.md
+?? docs/ZAYRON_X_REAL_VECTORIZE_BENCHMARK_V4.md
+?? docs/ZAYRON_X_REMOVAL_PLAN.md
+?? docs/ZAYRON_X_REPORT_ERROR_REGISTER.md
+?? docs/ZAYRON_X_REPORT_FORENSIC_AUDIT.md
+?? docs/ZAYRON_X_REPORT_STANDARD_V2.md
+?? docs/ZAYRON_X_RETRIEVAL_FAILURE_ANALYSIS.md
+?? docs/ZAYRON_X_SHADOW_BENCHMARK.md
+?? docs/ZAYRON_X_SOURCE_AUTHORITY_MATRIX.md
+?? docs/ZAYRON_X_STEP1_CURRENT_STATE.md
+?? docs/ZAYRON_X_STEP2_BOOK_PIPELINE.md
+?? docs/ZAYRON_X_STEP3_BOOK_INGESTION_STANDARD.md
+?? docs/ZAYRON_X_STEP4_EXISTING_CORPUS_AUDIT.md
+?? docs/ZAYRON_X_STEP5_CVSS_REPROCESS.md
+?? docs/ZAYRON_X_STEP6_1_EPSS_LIVE_VECTORIZE.md
+?? docs/ZAYRON_X_STEP6_EPSS_REPROCESS.md
+?? docs/ZAYRON_X_V6_VERIFIED_INTEGRITY_REPORT.md
+?? docs/ZAYRON_X_V7_PRODUCTION_READINESS_REPORT.md
+?? docs/ZAYRON_X_VECTORIZE_D1_RECONCILIATION.md
+?? docs/ZAYRON_X_VECTORIZE_REMEDIATION_V5.md
+?? docs/forensics/
+?? packages/intelligence/src/analyst/dossier.ts
+?? packages/intelligence/src/analyst/report_templates.ts
+?? packages/intelligence/src/control_plane/
+?? packages/intelligence/src/corroboration/
+?? packages/intelligence/src/dossier/
+?? packages/intelligence/src/engine/
+?? packages/intelligence/src/engine_v2/
+?? packages/intelligence/src/ingestion/
+?? packages/intelligence/src/knowledge/citation.ts
+?? packages/intelligence/src/knowledge/knowledge_routing.ts
+?? packages/intelligence/src/knowledge/v3/
+?? packages/intelligence/src/pipeline/
+?? packages/intelligence/src/publishing/canonical_store.ts
+?? packages/intelligence/src/publishing/indexnow.ts
+?? packages/intelligence/src/publishing/pilot_v2_dossiers.ts
+?? packages/intelligence/src/reporting/
+?? packages/intelligence/src/source-fabric/
+?? packages/intelligence/src/subscription/
+?? production_mutation_inventory.md
+?? tests/benchmark_integrity.test.ts
+?? tests/citation_boundary_matrix.test.ts
+?? tests/citation_validation_gate.test.ts
+?? tests/control_plane_contract.test.ts
+?? tests/corpus_pipeline_integrity.test.ts
+?? tests/corpus_scale_test.test.ts
+?? tests/d1_resolution_integrity.test.ts
+?? tests/deep_intelligence_engine_v2.test.ts
+?? tests/dfir_retrieval_integrity.test.ts
+?? tests/dossier_gate_engine.test.ts
+?? tests/embedding_boundary.test.ts
+?? tests/epistemic_safeguards.test.ts
+?? tests/gemini_reasoner.test.ts
+?? tests/independent_retrieval_validation.test.ts
+?? tests/knowledge_integration_proof.test.ts
+?? tests/knowledge_v3_embedding.test.ts
+?? tests/knowledge_v3_fts_rrf.test.ts
+?? tests/knowledge_v3_unicode.test.ts
+?? tests/live_vectorize_benchmark_integrity.test.ts
+?? tests/operational_pipeline.test.ts
+?? tests/prove_real_intelligence_grounding.test.ts
+?? tests/public_delivery_invariant.test.ts
+?? tests/publication_gate_regression.test.ts
+?? tests/reference_visibility.test.ts
+?? tests/report_engine.test.ts
+?? tests/report_variation_specificity.test.ts
+?? tests/shadow_vectorize.test.ts
+?? tests/truthfulness_remediation.test.ts
+?? tests/universal_book_pipeline.test.ts
+?? tests/vectorize_reconciliation.test.ts
+?? tests/zero_defect_audit_persistence.test.ts
+?? tests/zero_defect_publication_gate.test.ts
+?? validation/
+?? workers/api/worker-configuration.d.ts
+?? workers/scripts/audit_structural_pilot.py
+?? workers/scripts/p0_p1_live_heuer_pipeline.py
+?? workers/scripts/p0_step11_preflight_validation.py
+?? workers/scripts/p0_step1_identify_failing_ko.py
+?? workers/scripts/p0_step2_byte311_forensics.py
+?? workers/scripts/p0_step3_live_controls.py
+?? workers/scripts/p0_step7_token_limit.py
+?? workers/scripts/p2_p3_fts5_hybrid_retrieval.py
+?? workers/scripts/production_mutation_lock.py
+?? workers/scripts/search_api.py
+?? workers/scripts/structural_knowledge_ingest.py
+?? workers/scripts/v3_reconcile_readonly.py
+?? workers/scripts/validate_control_plane_staging.py
+?? workers/source-fabric/
+?? workers/telegram-collector-do/inspect_zayronxai.ts

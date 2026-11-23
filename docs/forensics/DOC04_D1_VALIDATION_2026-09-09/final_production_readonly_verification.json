@@ -1,0 +1,14 @@
+{
+  "verification_timestamp": "2026-09-09",
+  "database_name": "zayron-x-intelligence-db",
+  "database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53",
+  "v3_rows": 371,
+  "fts_rows": 371,
+  "distinct_hashes": 286,
+  "d1_migrations_rows": 0,
+  "control_plane_tables": 0,
+  "rows_written": 0,
+  "production_migration_executed": false,
+  "production_seed_executed": false,
+  "production_vectorize_write": false
+}

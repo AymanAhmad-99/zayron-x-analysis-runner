@@ -1,0 +1,1 @@
+{"observed":"staging plan returned D1 free-tier daily row-read exhaustion before chunk rows were written","classification":"environment quota constraint","application_defect_proven":"false","official_free_rows_read_per_day":"5 million","next_test":"Workers Paid or quota reset with one small chunk contract"}

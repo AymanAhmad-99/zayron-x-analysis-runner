@@ -1,0 +1,9 @@
+{
+  "status": "PARTIAL",
+  "d1_control_plane": "PASS",
+  "d1_seeded_objects": "PASS for controlled batches",
+  "fts": "PASS for new governed object projection",
+  "vectorize": "PASS for one synthetic object",
+  "full_corpus_reconciliation": "NOT RUN",
+  "production_reconciliation": false
+}

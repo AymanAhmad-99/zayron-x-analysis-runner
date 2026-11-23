@@ -1,0 +1,32 @@
+{
+  "schema_version": "2.1.0",
+  "phase": "REM-04",
+  "note": "Authoritative temporal semantics per Golden Five CVE. cve_published_at is the CVE-record publication timestamp owned by the CVE/NVD authority. epss_observed_at is the EPSS snapshot date ONLY when FIRST.org supplies one; the legacy persisted ledger contains no EPSS observation timestamp, so the canonical value is null (UNRESOLVED from available authoritative evidence — never inferred). legacy_epss_claim_collapsed records whether the legacy claim ledger stamped the EPSS claim with the CVE publication timestamp (measured legacy debt, NOT silently repaired).",
+  "reports": {
+    "CVE-2022-23227": {
+      "cve_published_at": null,
+      "epss_observed_at": null,
+      "legacy_epss_claim_collapsed": false
+    },
+    "CVE-2024-20767": {
+      "cve_published_at": "2024-03-18T12:15:06.870",
+      "epss_observed_at": null,
+      "legacy_epss_claim_collapsed": true
+    },
+    "CVE-2024-45519": {
+      "cve_published_at": "2024-10-02T22:15:02.770",
+      "epss_observed_at": null,
+      "legacy_epss_claim_collapsed": true
+    },
+    "CVE-2024-38226": {
+      "cve_published_at": "2024-09-10T17:15:25.267",
+      "epss_observed_at": null,
+      "legacy_epss_claim_collapsed": true
+    },
+    "CVE-2024-43572": {
+      "cve_published_at": "2024-10-08T18:15:24.593",
+      "epss_observed_at": null,
+      "legacy_epss_claim_collapsed": true
+    }
+  }
+}

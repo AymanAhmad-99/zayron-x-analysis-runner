@@ -1,0 +1,53 @@
+{
+  "checkpoint_timestamp": "2026-09-09",
+  "repository_commit": "67fc65a2d5fd367e44b20714bafa5d0e9e8b1721",
+  "changed_files": [
+    "workers/source-fabric/src/index.ts",
+    "workers/scripts/v3_reconcile_readonly.py",
+    "docs/forensics/doc04_baseline_2026-09-09.json",
+    "docs/forensics/v3_scope_registry.json",
+    "docs/forensics/release-manifest.template.json",
+    "docs/forensics/v3_reconciliation_local_only_2026-09-09.json",
+    "docs/forensics/DOC04_STABILIZATION_CHECKPOINT_2026-09-09.md",
+    "docs/forensics/doc04_stabilization_checkpoint_2026-09-09.json"
+  ],
+  "verified_tests": {
+    "control_plane_contract": {"status": "PASS", "tests": 7},
+    "reconciliation_utility": "PASS_LOCAL_ONLY",
+    "python_syntax": "PASS",
+    "repository_typecheck": "PRE_EXISTING_FAILURES",
+    "repository_lint": "UNVERIFIED_TIMEOUT"
+  },
+  "production_verification": {
+    "read_only": true,
+    "d1_database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53",
+    "v3_rows": 371,
+    "fts_rows": 371,
+    "distinct_content_hashes": 286,
+    "d1_migration_rows": 0,
+    "control_plane_tables": 0,
+    "cloudflare_rows_written": 0,
+    "vectorize_sync": false,
+    "ingestion": false,
+    "corpus_promotion": false
+  },
+  "control_plane_status": "PREPARED_LOCAL_ONLY_NOT_APPLIED",
+  "corpus_status": {"production": "UNATTESTED", "pilot": 29636, "track_b": 1765},
+  "seed_status": "FAIL_CLOSED_UNTIL_APPROVED_REVISION_EXISTS",
+  "deployment_provenance_status": "UNKNOWN_HISTORICALLY",
+  "unresolved_decisions": [
+    "doc-02 versus doc-03 canonical identity",
+    "historical production seed provenance",
+    "historical deployment source/build parity",
+    "Vectorize inventory parity"
+  ],
+  "blocked_actions": [
+    "production migration",
+    "production reseed",
+    "production object modification",
+    "identity deletion or merge",
+    "Track-B import",
+    "pilot promotion",
+    "Vectorize synchronization"
+  ]
+}

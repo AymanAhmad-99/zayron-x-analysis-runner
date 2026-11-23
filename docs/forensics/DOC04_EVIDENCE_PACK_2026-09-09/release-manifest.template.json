@@ -1,0 +1,16 @@
+{
+  "artifact_type": "v3-release-manifest",
+  "status": "TEMPLATE",
+  "application": "zayron-x",
+  "worker": "",
+  "environment": "",
+  "git_commit": "UNKNOWN",
+  "build_digest": "UNKNOWN",
+  "deployment_version": "",
+  "deployment_timestamp": "",
+  "schema_revision": "",
+  "control_plane_revision": "",
+  "corpus_revision": "UNKNOWN",
+  "seed_revision": "UNKNOWN",
+  "object_set_digest": "UNKNOWN"
+}

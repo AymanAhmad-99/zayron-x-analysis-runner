@@ -1,0 +1,16 @@
+[
+    {
+        "status":  200,
+        "request_bytes":  47726,
+        "batch":  100,
+        "duration_ms":  815,
+        "response":  "{\"status\":\"SUCCESS\",\"schema_initialized\":false,\"seeded_count\":100,\"latency_ms\":460}"
+    },
+    {
+        "status":  200,
+        "request_bytes":  479133,
+        "batch":  1000,
+        "duration_ms":  1100,
+        "response":  "{\"status\":\"SUCCESS\",\"schema_initialized\":false,\"seeded_count\":1000,\"latency_ms\":899}"
+    }
+]

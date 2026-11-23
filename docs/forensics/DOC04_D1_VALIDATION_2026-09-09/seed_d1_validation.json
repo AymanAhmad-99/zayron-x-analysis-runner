@@ -1,0 +1,9 @@
+{
+  "status": "PARTIAL",
+  "control_plane_prerequisites_on_d1": "PASS",
+  "direct_d1_governance_checks": "PASS",
+  "seed_endpoint_against_d1": "UNVERIFIED",
+  "reason": "The only configured source-fabric Worker route is production-bound; no staging Worker was deployed.",
+  "fail_closed_source_review": "PASS",
+  "production_seed_executed": false
+}

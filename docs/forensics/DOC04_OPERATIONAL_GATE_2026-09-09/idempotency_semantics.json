@@ -1,0 +1,8 @@
+{
+  "identity": "corpus_revision_id + seed_revision_id + idempotency_key, with target D1 and object-set/count validation",
+  "same_request_replay": "409 after successful claim",
+  "same_key_different_payload": "not fully exercised after claim; schema key is unique and request must match revision linkage",
+  "different_key_identical_payload": "not prohibited by current endpoint; requires governance policy decision",
+  "same_seed_different_digest": "digest mismatch rejected while seed is claimable",
+  "status": "PARTIAL"
+}

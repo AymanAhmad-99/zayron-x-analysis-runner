@@ -1,0 +1,12 @@
+{
+  "database": "zayron-x-intelligence-db",
+  "database_id": "91ed8f95-95ad-4451-bb18-e0d1dbadbe53",
+  "v3_rows": 371,
+  "fts_rows": 371,
+  "distinct_hashes": 286,
+  "migration_rows": 0,
+  "control_plane_tables": 0,
+  "production_touched": false,
+  "production_worker_deployed": false,
+  "production_vectorize_write": false
+}

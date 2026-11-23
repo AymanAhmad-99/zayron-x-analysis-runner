@@ -1,0 +1,6 @@
+{
+  "proven_on_actual_d1": ["migration execution", "second execution", "table/index creation", "foreign-key rejection", "unique rejection", "check-constraint rejection", "synthetic lifecycle linkage"],
+  "proven_sqlite_only": ["in-memory harness repeatability", "Python sqlite3 behavior"],
+  "unverified": ["Worker runtime binding against isolated D1", "seed endpoint request execution against isolated D1", "D1 concurrency behavior", "D1 rollback/partial-failure guarantees", "large-batch operational limits", "Vectorize parity"],
+  "d1_is_not_claimed_equivalent_to_sqlite": true
+}

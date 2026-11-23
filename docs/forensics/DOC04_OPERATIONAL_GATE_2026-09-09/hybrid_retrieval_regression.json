@@ -1,0 +1,8 @@
+{
+  "fts": "PASS",
+  "vectorize": "PASS_STAGING",
+  "hybrid": "PASS_STAGING",
+  "legacy_knowledge_chunks": "not used by tested route",
+  "provenance": "synthetic staging metadata preserved",
+  "status": "PARTIAL"
+}

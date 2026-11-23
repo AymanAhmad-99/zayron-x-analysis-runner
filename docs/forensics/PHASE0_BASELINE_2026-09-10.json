@@ -1,0 +1,23 @@
+{
+  "baseline_id": "phase0-2026-09-10-67fc65a2",
+  "timestamp": "2026-09-10",
+  "head": "67fc65a2d5fd367e44b20714bafa5d0e9e8b1721",
+  "repository": "D:/Desktop/zayron-app",
+  "git_status_count_at_capture": 751,
+  "tracked_files_at_capture": 971,
+  "untracked_files_at_capture": 1,
+  "untracked_paths": ["ZAYRON-X_FRESH_FORENSIC_AUDIT_2026-09-10.md"],
+  "modified_paths": "Use git status --porcelain=v1 at the recorded HEAD; the working tree was already non-clean and is preserved.",
+  "diff_stat_command": "git diff --stat HEAD",
+  "full_status_command": "git status --porcelain=v1",
+  "discard_reset_clean_stash": false,
+  "existing_work_discarded": false,
+  "cloudflare_mutation": false,
+  "d1_mutation": false,
+  "r2_mutation": false,
+  "notes": [
+    "The status count includes staged additions/deletions/modifications already present before Phase 0 containment.",
+    "This manifest is additive evidence and does not replace the full command output.",
+    "The only Phase 0 code change after capture is the ingestion publication containment patch documented in the final report."
+  ]
+}

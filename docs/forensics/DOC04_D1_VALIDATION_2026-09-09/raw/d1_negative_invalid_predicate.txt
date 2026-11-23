@@ -1,0 +1,26 @@
+﻿
+ ⛅️ wrangler 4.124.0 (update available 4.130.0)
+───────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database zayron-x-preview-db (34962f8f-abd1-4b0b-8bd7-b4eab59bd902):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+
+node.exe : [31mX [41;31m[[41;97mERROR[41;31m][0m [1mA request to the Cloudflare API 
+(/accounts/56534d53775d8280011a325dcf36ed09/d1/database/34962f8f-abd1-4b0b-8bd7-b4eab59bd902/query) failed.[0m
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([31mX [41;31m...ry) failed.[0m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+  CHECK constraint failed: predicate IN ('ALIAS_OF','RENAMED_FROM','SUPERSEDES','SAME_CONTENT_UNCONFIRMED'): 
+SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_CHECK) [code: 7500]
+  
+  If you think this is a bug, please open an issue at: 
+[4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+
+
+🪵  Logs were written to 
+"C:\Users\aabus\AppData\Roaming\xdg.config\.wrangler\logs\wrangler-2026-09-09_15-33-10_108.log"

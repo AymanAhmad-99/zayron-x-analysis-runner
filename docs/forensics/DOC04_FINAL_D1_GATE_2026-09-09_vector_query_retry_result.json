@@ -1,0 +1,1 @@
+{"status":"QUERY_SUCCESS","query":"isolated vector test object","count":1,"matches":[{"id":"ko:vector:001","score":0.94859856,"metadata":{"content_hash":"vector-hash-001","document_id":"doc-01-heuer-psychology","epistemic_type":"PRINCIPLE","knowledge_domain":"intelligence_analysis","method_category":"staging","object_id":"ko:vector:001"}}],"latency_ms":1026}
