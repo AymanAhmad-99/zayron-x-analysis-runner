@@ -1,0 +1,4227 @@
+[
+  {
+    "case_id": "tc_vuln_01",
+    "category": "VULNERABILITY",
+    "title": "SonicWall SonicOS Buffer Overflow (CVE-2024-40766)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: SonicWall has released patches addressing CVE-2024-40766 affecting their product lines.\nDescription: SonicOS Buffer Overflow. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.3\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-40766",
+    "issuing_authority": "SonicWall",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-40766",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.3,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_0",
+        "chk_nist_sp800_0"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_02",
+    "category": "VULNERABILITY",
+    "title": "Microsoft Windows MSHTML Platform Spoofing (CVE-2024-38112)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2024-38112 affecting their product lines.\nDescription: Windows MSHTML Platform Spoofing. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 7.5\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-38112",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-38112",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 7.5,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_1",
+        "chk_nist_sp800_1"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_03",
+    "category": "VULNERABILITY",
+    "title": "Microsoft Outlook Moniker Link RCE (CVE-2024-21413)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2024-21413 affecting their product lines.\nDescription: Outlook Moniker Link RCE. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-21413",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-21413",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_2",
+        "chk_nist_sp800_2"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_04",
+    "category": "VULNERABILITY",
+    "title": "ConnectWise ScreenConnect Authentication Bypass (CVE-2024-1709)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: ConnectWise has released patches addressing CVE-2024-1709 affecting their product lines.\nDescription: ScreenConnect Authentication Bypass. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 10\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-1709",
+    "issuing_authority": "ConnectWise",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-1709",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 10,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_3",
+        "chk_nist_sp800_3"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_05",
+    "category": "VULNERABILITY",
+    "title": "Palo Alto Networks PAN-OS Command Injection (CVE-2024-3400)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Palo Alto Networks has released patches addressing CVE-2024-3400 affecting their product lines.\nDescription: PAN-OS Command Injection. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 10\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-3400",
+    "issuing_authority": "Palo Alto Networks",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-3400",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 10,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_4",
+        "chk_nist_sp800_4"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_06",
+    "category": "VULNERABILITY",
+    "title": "Jenkins Jenkins CLI Arbitrary File Read (CVE-2024-23897)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Jenkins has released patches addressing CVE-2024-23897 affecting their product lines.\nDescription: Jenkins CLI Arbitrary File Read. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-23897",
+    "issuing_authority": "Jenkins",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-23897",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_5",
+        "chk_nist_sp800_5"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_07",
+    "category": "VULNERABILITY",
+    "title": "JetBrains TeamCity Authentication Bypass (CVE-2024-27198)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: JetBrains has released patches addressing CVE-2024-27198 affecting their product lines.\nDescription: TeamCity Authentication Bypass. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-27198",
+    "issuing_authority": "JetBrains",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-27198",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_6",
+        "chk_nist_sp800_6"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_08",
+    "category": "VULNERABILITY",
+    "title": "OpenSSH regreSSHion Signal Handler Race Condition (CVE-2024-6387)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: OpenSSH has released patches addressing CVE-2024-6387 affecting their product lines.\nDescription: regreSSHion Signal Handler Race Condition. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 8.1\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-6387",
+    "issuing_authority": "OpenSSH",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-6387",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 8.1,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_7",
+        "chk_nist_sp800_7"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_09",
+    "category": "VULNERABILITY",
+    "title": "Ivanti Connect Secure Auth Bypass (CVE-2023-46805)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Ivanti has released patches addressing CVE-2023-46805 affecting their product lines.\nDescription: Connect Secure Auth Bypass. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 8.2\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-46805",
+    "issuing_authority": "Ivanti",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-46805",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 8.2,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_8",
+        "chk_nist_sp800_8"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_10",
+    "category": "VULNERABILITY",
+    "title": "Citrix Citrix Bleed Buffer Over-read (CVE-2023-4966)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Citrix has released patches addressing CVE-2023-4966 affecting their product lines.\nDescription: Citrix Bleed Buffer Over-read. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.4\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-4966",
+    "issuing_authority": "Citrix",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-4966",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.4,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_9",
+        "chk_nist_sp800_9"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_11",
+    "category": "VULNERABILITY",
+    "title": "Atlassian Confluence Broken Access Control (CVE-2023-22515)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Atlassian has released patches addressing CVE-2023-22515 affecting their product lines.\nDescription: Confluence Broken Access Control. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 10\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-22515",
+    "issuing_authority": "Atlassian",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-22515",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 10,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_10",
+        "chk_nist_sp800_10"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_12",
+    "category": "VULNERABILITY",
+    "title": "WinRAR WinRAR Extension Spoofing Execution (CVE-2023-38831)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: WinRAR has released patches addressing CVE-2023-38831 affecting their product lines.\nDescription: WinRAR Extension Spoofing Execution. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 7.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-38831",
+    "issuing_authority": "WinRAR",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-38831",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 7.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_11",
+        "chk_nist_sp800_11"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_13",
+    "category": "VULNERABILITY",
+    "title": "Microsoft Office and Windows HTML RCE (CVE-2023-36884)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2023-36884 affecting their product lines.\nDescription: Office and Windows HTML RCE. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 8.3\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-36884",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-36884",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 8.3,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_12",
+        "chk_nist_sp800_12"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_14",
+    "category": "VULNERABILITY",
+    "title": "Progress MOVEit Transfer SQL Injection (CVE-2023-34362)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Progress has released patches addressing CVE-2023-34362 affecting their product lines.\nDescription: MOVEit Transfer SQL Injection. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-34362",
+    "issuing_authority": "Progress",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-34362",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_13",
+        "chk_nist_sp800_13"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_15",
+    "category": "VULNERABILITY",
+    "title": "Fortinet FortiOS Heap-based Buffer Overflow (CVE-2023-27997)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Fortinet has released patches addressing CVE-2023-27997 affecting their product lines.\nDescription: FortiOS Heap-based Buffer Overflow. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-27997",
+    "issuing_authority": "Fortinet",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-27997",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_14",
+        "chk_nist_sp800_14"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_16",
+    "category": "VULNERABILITY",
+    "title": "Microsoft Outlook NTLM NetBIOS Hash Leakage (CVE-2023-23397)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2023-23397 affecting their product lines.\nDescription: Outlook NTLM NetBIOS Hash Leakage. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2023-23397",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2023-23397",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_15",
+        "chk_nist_sp800_15"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_17",
+    "category": "VULNERABILITY",
+    "title": "Microsoft Follina MSDT Remote Code Execution (CVE-2022-30190)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2022-30190 affecting their product lines.\nDescription: Follina MSDT Remote Code Execution. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 7.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2022-30190",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2022-30190",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 7.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_16",
+        "chk_nist_sp800_16"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_18",
+    "category": "VULNERABILITY",
+    "title": "Spring Spring4Shell DataBinder Class Loader RCE (CVE-2022-22965)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Spring has released patches addressing CVE-2022-22965 affecting their product lines.\nDescription: Spring4Shell DataBinder Class Loader RCE. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2022-22965",
+    "issuing_authority": "Spring",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2022-22965",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_17",
+        "chk_nist_sp800_17"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_19",
+    "category": "VULNERABILITY",
+    "title": "Apache Log4Shell JNDI Lookup Execution (CVE-2021-44228)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Apache has released patches addressing CVE-2021-44228 affecting their product lines.\nDescription: Log4Shell JNDI Lookup Execution. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 10\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2021-44228",
+    "issuing_authority": "Apache",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2021-44228",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 10,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_18",
+        "chk_nist_sp800_18"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_20",
+    "category": "VULNERABILITY",
+    "title": "Microsoft PrintNightmare Spooler Service RCE (CVE-2021-34527)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2021-34527 affecting their product lines.\nDescription: PrintNightmare Spooler Service RCE. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 8.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2021-34527",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2021-34527",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 8.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_19",
+        "chk_nist_sp800_19"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_21",
+    "category": "VULNERABILITY",
+    "title": "PHP Group PHP CGI Best-Fit Character Injection (CVE-2024-4577)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: PHP Group has released patches addressing CVE-2024-4577 affecting their product lines.\nDescription: PHP CGI Best-Fit Character Injection. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 9.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-4577",
+    "issuing_authority": "PHP Group",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-4577",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_20",
+        "chk_nist_sp800_20"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_22",
+    "category": "VULNERABILITY",
+    "title": "VMware ESXi Active Directory Admin Escalation (CVE-2024-37085)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: VMware has released patches addressing CVE-2024-37085 affecting their product lines.\nDescription: ESXi Active Directory Admin Escalation. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 6.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-37085",
+    "issuing_authority": "VMware",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-37085",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 6.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_21",
+        "chk_nist_sp800_21"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_23",
+    "category": "VULNERABILITY",
+    "title": "Check Point Quantum Gateway Information Disclosure (CVE-2024-24919)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Check Point has released patches addressing CVE-2024-24919 affecting their product lines.\nDescription: Quantum Gateway Information Disclosure. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 8.6\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-24919",
+    "issuing_authority": "Check Point",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-24919",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 8.6,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_22",
+        "chk_nist_sp800_22"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_24",
+    "category": "VULNERABILITY",
+    "title": "Cisco ASA Web Server Command Execution (CVE-2024-20359)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Cisco has released patches addressing CVE-2024-20359 affecting their product lines.\nDescription: ASA Web Server Command Execution. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 6\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-20359",
+    "issuing_authority": "Cisco",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-20359",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 6,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_23",
+        "chk_nist_sp800_23"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_vuln_25",
+    "category": "VULNERABILITY",
+    "title": "Microsoft Windows Error Reporting LPE (CVE-2024-26169)",
+    "is_synthetic": false,
+    "raw_text": "Security Advisory: Microsoft has released patches addressing CVE-2024-26169 affecting their product lines.\nDescription: Windows Error Reporting LPE. The flaw permits remote unauthenticated or privileged threat actors to execute arbitrary code or bypass security controls.\nCVSS v3.1 Base Score: 7.8\nReferences: https://nvd.nist.gov/vuln/detail/CVE-2024-26169",
+    "issuing_authority": "Microsoft",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-26169",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 7.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_hae_heap_24",
+        "chk_nist_sp800_24"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_vad_01",
+        "chk_pma_ghidra_decomp_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "VULNERABILITY_ANALYSIS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "MALWARE_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Vulnerability identifier",
+        "CVSS score",
+        "Remediation priority"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_01",
+    "category": "MALWARE",
+    "title": "Qakbot DLL Loader Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Qakbot DLL Loader.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b850.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b850"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_0",
+        "chk_attack_t1055_0"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_02",
+    "category": "MALWARE",
+    "title": "Emotet Macro Polyglot Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Emotet Macro Polyglot.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b851.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b851"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_1",
+        "chk_attack_t1055_1"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_03",
+    "category": "MALWARE",
+    "title": "RedLine Credential Stealer Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of RedLine Credential Stealer.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b852.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b852"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_2",
+        "chk_attack_t1055_2"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_04",
+    "category": "MALWARE",
+    "title": "LummaC2 Stealer Anti-Analysis Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of LummaC2 Stealer Anti-Analysis.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b853.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b853"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_3",
+        "chk_attack_t1055_3"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_05",
+    "category": "MALWARE",
+    "title": "Vidar Stealer C2 Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Vidar Stealer C2.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b854.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b854"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_4",
+        "chk_attack_t1055_4"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_06",
+    "category": "MALWARE",
+    "title": "AgentTesla Keylogger SMTP Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of AgentTesla Keylogger SMTP.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_5",
+        "chk_attack_t1055_5"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_07",
+    "category": "MALWARE",
+    "title": "Cobalt Strike Malleable Beacon Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Cobalt Strike Malleable Beacon.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b856.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b856"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_6",
+        "chk_attack_t1055_6"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_08",
+    "category": "MALWARE",
+    "title": "AsyncRAT Anti-VM Evasion Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of AsyncRAT Anti-VM Evasion.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b857.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b857"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_7",
+        "chk_attack_t1055_7"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_09",
+    "category": "MALWARE",
+    "title": "Remcos RAT Dynamic DNS Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Remcos RAT Dynamic DNS.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b858.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b858"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_8",
+        "chk_attack_t1055_8"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_10",
+    "category": "MALWARE",
+    "title": "DarkGate Loader AutoIt Injection Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of DarkGate Loader AutoIt Injection.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b859.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b859"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_9",
+        "chk_attack_t1055_9"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_11",
+    "category": "MALWARE",
+    "title": "IcedID Steganographic Delivery Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of IcedID Steganographic Delivery.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b850.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b850"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_10",
+        "chk_attack_t1055_10"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_12",
+    "category": "MALWARE",
+    "title": "LockBit 3.0 Ransomware Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of LockBit 3.0 Ransomware.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b851.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b851"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_11",
+        "chk_attack_t1055_11"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_13",
+    "category": "MALWARE",
+    "title": "BlackCat Rust Ransomware Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of BlackCat Rust Ransomware.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b852.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b852"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_12",
+        "chk_attack_t1055_12"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_14",
+    "category": "MALWARE",
+    "title": "Akira Ransomware Thread Pool Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Akira Ransomware Thread Pool.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b853.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b853"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_13",
+        "chk_attack_t1055_13"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_15",
+    "category": "MALWARE",
+    "title": "Rhyshida PsExec Lateral Movement Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Rhyshida PsExec Lateral Movement.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b854.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b854"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_14",
+        "chk_attack_t1055_14"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_16",
+    "category": "MALWARE",
+    "title": "Medusa Ransomware PowerShell Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Medusa Ransomware PowerShell.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_15",
+        "chk_attack_t1055_15"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_17",
+    "category": "MALWARE",
+    "title": "Danabot Modular Banking Trojan Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Danabot Modular Banking Trojan.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b856.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b856"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_16",
+        "chk_attack_t1055_16"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_18",
+    "category": "MALWARE",
+    "title": "Bumblebee Loader ISO Execution Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Bumblebee Loader ISO Execution.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b857.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b857"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_17",
+        "chk_attack_t1055_17"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_19",
+    "category": "MALWARE",
+    "title": "Pikabot rundll32 Shellcode Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Pikabot rundll32 Shellcode.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b858.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b858"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_18",
+        "chk_attack_t1055_18"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_20",
+    "category": "MALWARE",
+    "title": "GuLoader Encrypted Shellcode Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of GuLoader Encrypted Shellcode.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b859.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b859"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_19",
+        "chk_attack_t1055_19"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_21",
+    "category": "MALWARE",
+    "title": "SmokeLoader Injection Botnet Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of SmokeLoader Injection Botnet.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b850.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b850"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_20",
+        "chk_attack_t1055_20"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_22",
+    "category": "MALWARE",
+    "title": "Trickbot Anchor Engine Module Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Trickbot Anchor Engine Module.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b851.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b851"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_21",
+        "chk_attack_t1055_21"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_23",
+    "category": "MALWARE",
+    "title": "Formbook Anti-Debugging Hooking Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Formbook Anti-Debugging Hooking.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b852.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b852"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_22",
+        "chk_attack_t1055_22"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_24",
+    "category": "MALWARE",
+    "title": "Ursnif Gozi Memory Injection Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of Ursnif Gozi Memory Injection.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b853.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b853"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_23",
+        "chk_attack_t1055_23"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_malw_25",
+    "category": "MALWARE",
+    "title": "PikaBot Process Doppelganging Payload Analysis",
+    "is_synthetic": false,
+    "raw_text": "Threat telemetry identified active distribution of PikaBot Process Doppelganging.\nThe binary payload drops to %APPDATA% and establishes registry persistence under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.\nObserved SHA256 executable payload: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b854.\nTelemetry records process injection into legitimate Windows binaries.",
+    "issuing_authority": "Malware Research Lab",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "sha256",
+          "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b854"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_pma_disasm_24",
+        "chk_attack_t1055_24"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_bro_zeek_01",
+        "chk_amf_vad_tag_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MALWARE_ANALYSIS",
+        "REVERSE_ENGINEERING"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "MEMORY_FORENSICS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Binary payload observable",
+        "Execution persistence",
+        "Process injection behavior"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_01",
+    "category": "NETWORK_SECURITY",
+    "title": "DNS Tunneling Exfiltration via Base64 Subdomains",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: DNS Tunneling Exfiltration via Base64 Subdomains.\nSensor interface eth0 captured anomalous flow to remote destination IP 198.51.100.12.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "198.51.100.12"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_0",
+        "chk_anp_proto_0"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_02",
+    "category": "NETWORK_SECURITY",
+    "title": "Kerberoasting High-Volume RC4 TGS Requests",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Kerberoasting High-Volume RC4 TGS Requests.\nSensor interface eth0 captured anomalous flow to remote destination IP 10.0.4.15.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "10.0.4.15"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_1",
+        "chk_anp_proto_1"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_03",
+    "category": "NETWORK_SECURITY",
+    "title": "DCSync AD Replication Traffic Outside Domain Controllers",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: DCSync AD Replication Traffic Outside Domain Controllers.\nSensor interface eth0 captured anomalous flow to remote destination IP 10.0.1.99.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "10.0.1.99"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_2",
+        "chk_anp_proto_2"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_04",
+    "category": "NETWORK_SECURITY",
+    "title": "SMB Lateral Movement via PsExec Named Pipe svcctl",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: SMB Lateral Movement via PsExec Named Pipe svcctl.\nSensor interface eth0 captured anomalous flow to remote destination IP 192.168.1.45.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "192.168.1.45"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_3",
+        "chk_anp_proto_3"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_05",
+    "category": "NETWORK_SECURITY",
+    "title": "TLS JA3 Fingerprint Mismatch on C2 Beaconing Channel",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: TLS JA3 Fingerprint Mismatch on C2 Beaconing Channel.\nSensor interface eth0 captured anomalous flow to remote destination IP 203.0.113.88.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "203.0.113.88"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_4",
+        "chk_anp_proto_4"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_06",
+    "category": "NETWORK_SECURITY",
+    "title": "SYN Flood Sweep Across Internal Server Subnet",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: SYN Flood Sweep Across Internal Server Subnet.\nSensor interface eth0 captured anomalous flow to remote destination IP 10.200.1.5.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "10.200.1.5"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_5",
+        "chk_anp_proto_5"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_07",
+    "category": "NETWORK_SECURITY",
+    "title": "Cobalt Strike Malleable Profile GET /dpixel Pattern",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Cobalt Strike Malleable Profile GET /dpixel Pattern.\nSensor interface eth0 captured anomalous flow to remote destination IP 185.220.101.4.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "185.220.101.4"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_6",
+        "chk_anp_proto_6"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_08",
+    "category": "NETWORK_SECURITY",
+    "title": "Outbound Reverse Shell on Port 4444 to Bulletproof ASN",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Outbound Reverse Shell on Port 4444 to Bulletproof ASN.\nSensor interface eth0 captured anomalous flow to remote destination IP 45.154.255.10.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "45.154.255.10"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_7",
+        "chk_anp_proto_7"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_09",
+    "category": "NETWORK_SECURITY",
+    "title": "SSH Brute Force with 1000 Failed Auth Events Per Minute",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: SSH Brute Force with 1000 Failed Auth Events Per Minute.\nSensor interface eth0 captured anomalous flow to remote destination IP 194.26.29.112.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "194.26.29.112"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_8",
+        "chk_anp_proto_8"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_10",
+    "category": "NETWORK_SECURITY",
+    "title": "Anomalous RDP Session Logon Type 10 From Foreign Subnet",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Anomalous RDP Session Logon Type 10 From Foreign Subnet.\nSensor interface eth0 captured anomalous flow to remote destination IP 195.123.245.9.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "195.123.245.9"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_9",
+        "chk_anp_proto_9"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_11",
+    "category": "NETWORK_SECURITY",
+    "title": "ICMP Tunneling with Oversized 1400-Byte Payload Echo Packets",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: ICMP Tunneling with Oversized 1400-Byte Payload Echo Packets.\nSensor interface eth0 captured anomalous flow to remote destination IP 91.240.118.66.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "91.240.118.66"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_10",
+        "chk_anp_proto_10"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_12",
+    "category": "NETWORK_SECURITY",
+    "title": "BGP Route Hijacking Anomaly Redirecting Corporate Prefix",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: BGP Route Hijacking Anomaly Redirecting Corporate Prefix.\nSensor interface eth0 captured anomalous flow to remote destination IP 198.18.0.1.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "198.18.0.1"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_11",
+        "chk_anp_proto_11"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_13",
+    "category": "NETWORK_SECURITY",
+    "title": "DNS Amplification Reflection Flood Vector Targeting Ingress Gateway",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: DNS Amplification Reflection Flood Vector Targeting Ingress Gateway.\nSensor interface eth0 captured anomalous flow to remote destination IP 172.67.140.21.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "172.67.140.21"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_12",
+        "chk_anp_proto_12"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_14",
+    "category": "NETWORK_SECURITY",
+    "title": "NTLM Relay Attack Intercepted Across Unsigned SMB Session",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: NTLM Relay Attack Intercepted Across Unsigned SMB Session.\nSensor interface eth0 captured anomalous flow to remote destination IP 10.10.10.50.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "10.10.10.50"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_13",
+        "chk_anp_proto_13"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_15",
+    "category": "NETWORK_SECURITY",
+    "title": "UPnP SSDP Discovery Reflection and Amplification Traffic",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: UPnP SSDP Discovery Reflection and Amplification Traffic.\nSensor interface eth0 captured anomalous flow to remote destination IP 198.51.100.200.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "198.51.100.200"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_14",
+        "chk_anp_proto_14"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_16",
+    "category": "NETWORK_SECURITY",
+    "title": "Fast-Flux DNS Domain Cycling Over 50 Resolved IPs Hourly",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Fast-Flux DNS Domain Cycling Over 50 Resolved IPs Hourly.\nSensor interface eth0 captured anomalous flow to remote destination IP 104.21.55.2.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "104.21.55.2"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_15",
+        "chk_anp_proto_15"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_17",
+    "category": "NETWORK_SECURITY",
+    "title": "Cobalt Strike DNS Beaconing with TXT Encrypted Record Responses",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Cobalt Strike DNS Beaconing with TXT Encrypted Record Responses.\nSensor interface eth0 captured anomalous flow to remote destination IP 193.106.191.7.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "193.106.191.7"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_16",
+        "chk_anp_proto_16"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_18",
+    "category": "NETWORK_SECURITY",
+    "title": "Automated SQL Injection Query Scanning via Ingress Web Gateway",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Automated SQL Injection Query Scanning via Ingress Web Gateway.\nSensor interface eth0 captured anomalous flow to remote destination IP 45.133.1.80.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "45.133.1.80"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_17",
+        "chk_anp_proto_17"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_19",
+    "category": "NETWORK_SECURITY",
+    "title": "Unauthorized Modbus SCADA Function Code 0x05 Write Single Coil",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Unauthorized Modbus SCADA Function Code 0x05 Write Single Coil.\nSensor interface eth0 captured anomalous flow to remote destination IP 192.168.88.10.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "192.168.88.10"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_18",
+        "chk_anp_proto_18"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_net_20",
+    "category": "NETWORK_SECURITY",
+    "title": "Encrypted DNS over HTTPS (DoH) Bypassing Enterprise Resolver",
+    "is_synthetic": false,
+    "raw_text": "Network security monitoring sensor alert: Encrypted DNS over HTTPS (DoH) Bypassing Enterprise Resolver.\nSensor interface eth0 captured anomalous flow to remote destination IP 104.16.249.249.\nFull packet inspection and Zeek conn.log analysis indicate protocol anomaly and anomalous session duration.",
+    "issuing_authority": "SOC Telemetry Pipeline",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [
+        {
+          "type": "ipv4",
+          "value": "104.16.249.249"
+        }
+      ]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_nsm_zeek_flow_19",
+        "chk_anp_proto_19"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_volatility_pool_01",
+        "chk_hae_stack_smash_03"
+      ],
+      "acceptable_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Network observable IP",
+        "Protocol anomaly",
+        "Perimeter defense action"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_01",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory dump showing injected PE in svchost.exe VAD tree",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory dump showing injected PE in svchost.exe VAD tree.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_0",
+        "chk_amf_volatility_core_0"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_02",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory dump unbacked executable VAD allocation with PAGE_EXECUTE_READWRITE permissions",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory dump unbacked executable VAD allocation with PAGE_EXECUTE_READWRITE permissions.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_1",
+        "chk_amf_volatility_core_1"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_03",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory forensics pool tag allocation showing DKOM unlinked process",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory forensics pool tag allocation showing DKOM unlinked process.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_2",
+        "chk_amf_volatility_core_2"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_04",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Volatility 3 malfind identifying hollowed explorer.exe process memory",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Volatility 3 malfind identifying hollowed explorer.exe process memory.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_3",
+        "chk_amf_volatility_core_3"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_05",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory dump with unhooked SSDT function pointer modifications",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory dump with unhooked SSDT function pointer modifications.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_4",
+        "chk_amf_volatility_core_4"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_06",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Process memory dump containing extracted Cobalt Strike configuration block",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Process memory dump containing extracted Cobalt Strike configuration block.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_5",
+        "chk_amf_volatility_core_5"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_07",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory acquisition showing decrypted Mimikatz sekurlsa memory artifacts",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory acquisition showing decrypted Mimikatz sekurlsa memory artifacts.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_6",
+        "chk_amf_volatility_core_6"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_08",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory dump showing kernel driver malicious IRP dispatch hook table",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory dump showing kernel driver malicious IRP dispatch hook table.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_7",
+        "chk_amf_volatility_core_7"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_09",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Volatility pslist vs psscan discrepancy detecting hidden rootkit thread",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Volatility pslist vs psscan discrepancy detecting hidden rootkit thread.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_8",
+        "chk_amf_volatility_core_8"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_10",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory dump showing reflective DLL injection in lsass.exe process",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory dump showing reflective DLL injection in lsass.exe process.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_9",
+        "chk_amf_volatility_core_9"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_11",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory dump with modified IDT table pointers in x64 Windows kernel",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory dump with modified IDT table pointers in x64 Windows kernel.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_10",
+        "chk_amf_volatility_core_10"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_12",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory forensics dump of CR3 swap and kernel page table corruption",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory forensics dump of CR3 swap and kernel page table corruption.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_11",
+        "chk_amf_volatility_core_11"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_13",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: In-memory evasion with hollowed ntdll.dll .text section modifications",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: In-memory evasion with hollowed ntdll.dll .text section modifications.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_12",
+        "chk_amf_volatility_core_12"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_14",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Memory extraction of raw plaintext credentials from lsass mini-dump",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Memory extraction of raw plaintext credentials from lsass mini-dump.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_13",
+        "chk_amf_volatility_core_13"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_mem_15",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Process ghosting memory state with deleted file handle mapping",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY ARTIFACT:\nIncident response triage analysis performed on acquired physical memory dump MEMORY.DMP.\nForensic evaluation: Process ghosting memory state with deleted file handle mapping.\nMemory inspection confirms VAD allocation anomalies, unlinked process structures, and unbacked memory execution pointers.",
+    "issuing_authority": "DFIR Forensic Lab (Controlled Lab)",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_amf_vad_tree_14",
+        "chk_amf_volatility_core_14"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_nsm_zeek_dns_01",
+        "chk_nist_sp800_patch_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "MEMORY_FORENSICS"
+      ],
+      "forbidden_knowledge_domains": [
+        "NETWORK_SECURITY_MONITORING",
+        "VULNERABILITY_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Memory allocation anomaly",
+        "Physical memory dump triage",
+        "VAD structure"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_01",
+    "category": "THREAT_ACTOR",
+    "title": "APT29 (Cozy Bear): OAuth Token Abuse and Cloud Tenant Persistence",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to APT29 (Cozy Bear).\nTactical behavior: OAuth Token Abuse and Cloud Tenant Persistence.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_0",
+        "chk_attack_actor_0"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_02",
+    "category": "THREAT_ACTOR",
+    "title": "APT28 (Fancy Bear): Credential Harvesting and NTLM Relay Operations",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to APT28 (Fancy Bear).\nTactical behavior: Credential Harvesting and NTLM Relay Operations.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_1",
+        "chk_attack_actor_1"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_03",
+    "category": "THREAT_ACTOR",
+    "title": "Lazarus Group (APT38): Cross-Chain Crypto Bridge Exploitation and Trojanized Packages",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Lazarus Group (APT38).\nTactical behavior: Cross-Chain Crypto Bridge Exploitation and Trojanized Packages.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_2",
+        "chk_attack_actor_2"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_04",
+    "category": "THREAT_ACTOR",
+    "title": "Sandworm (Unit 74455): Destructive HermeticWiper Deployment in Critical Infrastructure",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Sandworm (Unit 74455).\nTactical behavior: Destructive HermeticWiper Deployment in Critical Infrastructure.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_3",
+        "chk_attack_actor_3"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_05",
+    "category": "THREAT_ACTOR",
+    "title": "Volt Typhoon: Living-off-the-Land Edge Router Stealth Proxy Network",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Volt Typhoon.\nTactical behavior: Living-off-the-Land Edge Router Stealth Proxy Network.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_4",
+        "chk_attack_actor_4"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_06",
+    "category": "THREAT_ACTOR",
+    "title": "FIN7: Weaponized E-commerce Payment Point-of-Sale Scrapers",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to FIN7.\nTactical behavior: Weaponized E-commerce Payment Point-of-Sale Scrapers.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_5",
+        "chk_attack_actor_5"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_07",
+    "category": "THREAT_ACTOR",
+    "title": "Scattered Spider (UNC3944): Okta Identity Provider Social Engineering and SIM Swap",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Scattered Spider (UNC3944).\nTactical behavior: Okta Identity Provider Social Engineering and SIM Swap.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_6",
+        "chk_attack_actor_6"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_08",
+    "category": "THREAT_ACTOR",
+    "title": "Midnight Blizzard: Residential Proxy Password Spraying Against Cloud Tenants",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Midnight Blizzard.\nTactical behavior: Residential Proxy Password Spraying Against Cloud Tenants.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_7",
+        "chk_attack_actor_7"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_09",
+    "category": "THREAT_ACTOR",
+    "title": "Kimsuky: Targeted Spear-phishing with Malicious CHM and OneNote Attachments",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Kimsuky.\nTactical behavior: Targeted Spear-phishing with Malicious CHM and OneNote Attachments.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_8",
+        "chk_attack_actor_8"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_10",
+    "category": "THREAT_ACTOR",
+    "title": "Turla: Satellite Link Communications Hijacking and Water-holing",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Turla.\nTactical behavior: Satellite Link Communications Hijacking and Water-holing.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_9",
+        "chk_attack_actor_9"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_11",
+    "category": "THREAT_ACTOR",
+    "title": "TA505: Mass Email Phishing Campaign Delivering Clop Ransomware",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to TA505.\nTactical behavior: Mass Email Phishing Campaign Delivering Clop Ransomware.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_10",
+        "chk_attack_actor_10"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_12",
+    "category": "THREAT_ACTOR",
+    "title": "Gamaredon (Shuckworm): Mass USB Dropper Propagation with Dynamic Telegram C2 Resolvers",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Gamaredon (Shuckworm).\nTactical behavior: Mass USB Dropper Propagation with Dynamic Telegram C2 Resolvers.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_11",
+        "chk_attack_actor_11"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_13",
+    "category": "THREAT_ACTOR",
+    "title": "Chimera APT: Semiconductor Intellectual Property Exfiltration via Custom DLLs",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Chimera APT.\nTactical behavior: Semiconductor Intellectual Property Exfiltration via Custom DLLs.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_12",
+        "chk_attack_actor_12"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_14",
+    "category": "THREAT_ACTOR",
+    "title": "Silence Group: Financial Network Penetration and Automated ATM Cash-out",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to Silence Group.\nTactical behavior: Financial Network Penetration and Automated ATM Cash-out.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_13",
+        "chk_attack_actor_13"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  },
+  {
+    "case_id": "tc_actor_15",
+    "category": "THREAT_ACTOR",
+    "title": "MuddyWater: ScreenConnect Remote Tool Misuse for Unauthorized Access",
+    "is_synthetic": false,
+    "raw_text": "Threat intelligence briefing: Telemetry corroborates campaign attributed to MuddyWater.\nTactical behavior: ScreenConnect Remote Tool Misuse for Unauthorized Access.\nAdversary utilizes custom tooling alongside native administrative utilities to maintain long-term footholds.",
+    "issuing_authority": "Threat Intelligence Research Consortium",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [
+        "chk_threat_intel_model_14",
+        "chk_attack_actor_14"
+      ],
+      "irrelevant_chunk_ids": [
+        "chk_amf_kernel_pool_01",
+        "chk_hae_format_str_02"
+      ],
+      "acceptable_knowledge_domains": [
+        "THREAT_INTELLIGENCE"
+      ],
+      "forbidden_knowledge_domains": [
+        "MEMORY_FORENSICS",
+        "EXPLOIT_ANALYSIS"
+      ],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": [
+        "Threat actor attribution",
+        "Tactical campaign behavior",
+        "Strategic threat context"
+      ]
+    }
+  }
+]

@@ -1,0 +1,9 @@
+name = "zayron-x-api"
+
+[env.preview]
+workers_dev = true
+routes = []
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+ALLOWED_ORIGINS = "https://zayron-x-web-preview.aabusabih.workers.dev"

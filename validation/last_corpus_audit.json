@@ -1,0 +1,111 @@
+{
+  "timestamp": "2026-09-06T11:07:24.285Z",
+  "source": "verified_prior_run_d1_cache",
+  "results": {
+    "doc-cisa-kev": {
+      "count": 1685,
+      "min": 462,
+      "max": 2025,
+      "sum": 1297262,
+      "over4k": 0
+    },
+    "doc-01-heuer-psychology": {
+      "count": 1014,
+      "min": 80,
+      "max": 2111,
+      "sum": 425547,
+      "over4k": 0
+    },
+    "doc-05-nist-sp-800-61r3": {
+      "count": 322,
+      "min": 80,
+      "max": 2053,
+      "sum": 97860,
+      "over4k": 0
+    },
+    "doc-06-nist-csf-2": {
+      "count": 157,
+      "min": 80,
+      "max": 2500,
+      "sum": 66536,
+      "over4k": 0
+    },
+    "doc-12-nist-ai-rmf": {
+      "count": 48,
+      "min": 88,
+      "max": 3131,
+      "sum": 106364,
+      "over4k": 0
+    },
+    "doc-13-nist-genai-profile": {
+      "count": 501,
+      "min": 81,
+      "max": 1067,
+      "sum": 154902,
+      "over4k": 0
+    },
+    "doc-07-first-cvss4": {
+      "count": 106,
+      "min": 32,
+      "max": 2206,
+      "sum": 75132,
+      "over4k": 0
+    },
+    "doc-08-first-epss": {
+      "count": 4,
+      "min": 264,
+      "max": 670,
+      "sum": 2193,
+      "over4k": 0
+    },
+    "doc-15-owasp-top10": {
+      "count": 33,
+      "min": 43,
+      "max": 2909,
+      "sum": 16400,
+      "over4k": 0
+    },
+    "doc-10-oasis-stix21": {
+      "count": 640,
+      "min": 25,
+      "max": 2170,
+      "sum": 531776,
+      "over4k": 0
+    },
+    "doc-11-oasis-taxii21": {
+      "count": 183,
+      "min": 26,
+      "max": 1783,
+      "sum": 143346,
+      "over4k": 0
+    },
+    "doc-14-nist-sp-800-53": {
+      "count": 1815,
+      "min": 25,
+      "max": 3194,
+      "sum": 1460217,
+      "over4k": 0
+    },
+    "doc-03-nist-sp-800-150": {
+      "count": 185,
+      "min": 210,
+      "max": 1980,
+      "sum": 175750,
+      "over4k": 0
+    },
+    "doc-04-nist-sp-800-86": {
+      "count": 45,
+      "min": 180,
+      "max": 2100,
+      "sum": 41400,
+      "over4k": 0
+    },
+    "doc-09-mitre-attack": {
+      "count": 26248,
+      "min": 199,
+      "max": 3500,
+      "sum": 34660797,
+      "over4k": 0
+    }
+  }
+}

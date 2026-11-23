@@ -7,6 +7,7 @@ import {
   extractMitreAttacks,
 } from '../normalization/pipeline';
 import { resolveActor, resolveMalware, resolveVulnerability } from '../resolution';
+import { KNOWLEDGE_CHUNKS_CORPUS } from '../knowledge/corpus';
 
 export interface RetrievedChunk {
   chunkId: string;
@@ -256,13 +257,82 @@ export async function executeHybridRetrieval(
         });
 
         if (vecMatches?.matches && vecMatches.matches.length > 0) {
+          // Resolve chunk text: fast-path from in-memory canonical corpus, fallback to D1
+          const chunkIds: string[] = vecMatches.matches.map((m: { id: string; metadata?: Record<string, unknown> }) => {
+            const metaChunkId = typeof m.metadata?.chunk_id === 'string' ? m.metadata.chunk_id : undefined;
+            return metaChunkId || m.id.replace(/^vec_/, '');
+          });
+          const d1TextMap = new Map<string, {
+            id: string;
+            text: string;
+            section: string;
+            page?: number;
+            authority_tier: number;
+            document_title: string;
+            document_id: string;
+            source_url?: string;
+            publisher?: string;
+            publication_date?: string;
+            license?: string;
+          }>();
+
+          for (const cid of chunkIds) {
+            const canon = KNOWLEDGE_CHUNKS_CORPUS.find(c => c.id === cid);
+            if (canon) {
+              d1TextMap.set(cid, {
+                id: canon.id,
+                text: canon.text,
+                section: canon.section,
+                page: canon.page,
+                authority_tier: canon.authorityTier,
+                document_title: canon.section,
+                document_id: canon.documentId,
+              });
+            }
+          }
+
+          // Fallback to D1 A knowledge_chunks for any IDs not present in-memory
+          const missingIds: string[] = chunkIds.filter((id: string) => !d1TextMap.has(id));
+          if (missingIds.length > 0 && env.DB) {
+            try {
+              const placeholders = missingIds.map(() => '?').join(',');
+              const records = (await env.DB.prepare(
+                `SELECT id, text, section, page, authority_tier, document_id FROM knowledge_chunks WHERE id IN (${placeholders})`
+              ).bind(...missingIds).all()) as {
+                results?: Array<{
+                  id: string;
+                  text: string;
+                  section: string;
+                  page: number;
+                  authority_tier: number;
+                  document_id: string;
+                }>;
+              };
+
+              for (const row of records.results || []) {
+                d1TextMap.set(row.id, {
+                  id: row.id,
+                  text: row.text,
+                  section: row.section,
+                  page: row.page,
+                  authority_tier: row.authority_tier,
+                  document_title: row.section || row.document_id,
+                  document_id: row.document_id,
+                });
+              }
+            } catch (d1FetchErr) {
+              console.warn('[RAG] Failed to fetch missing chunks from D1:', d1FetchErr);
+            }
+          }
+
           for (const match of vecMatches.matches) {
             const meta = match.metadata || {};
-            const chunkId = match.id || meta.chunk_id;
-            const docId = meta.document_id || '';
-            const section = meta.section || '';
-            const text = meta.text || '';
-            const authorityTier = Number(meta.authority_tier ?? 1);
+            const chunkId = meta.chunk_id || match.id.replace(/^vec_/, '');
+            const d1Data = d1TextMap.get(chunkId);
+            const docId = meta.document_id || d1Data?.document_id || '';
+            const section = meta.section || d1Data?.section || '';
+            const text = d1Data?.text || meta.text || '';
+            const authorityTier = Number(d1Data?.authority_tier ?? meta.authority_tier ?? 1);
             const similarity = match.score || 0;
 
             // Check if chunk text contains any of the extracted query entities
@@ -293,9 +363,9 @@ export async function executeHybridRetrieval(
             retrievedChunks.push({
               chunkId,
               documentId: docId,
-              documentTitle: meta.document_title || docId,
+              documentTitle: d1Data?.document_title || meta.document_title || docId,
               section,
-              page: meta.page ? Number(meta.page) : undefined,
+              page: d1Data?.page ? Number(d1Data.page) : (meta.page ? Number(meta.page) : undefined),
               text,
               authorityTier,
               score: Math.round(hybridScore * 1000) / 1000,
@@ -306,10 +376,10 @@ export async function executeHybridRetrieval(
                 version: meta.version || 'v1',
                 contentHash: meta.content_hash,
                 artifactType: meta.artifact_type || 'canonical-v1',
-                sourceUrl: meta.source_url,
-                publisher: meta.publisher,
-                publicationDate: meta.publication_date,
-                license: meta.license,
+                sourceUrl: d1Data?.source_url || meta.source_url,
+                publisher: d1Data?.publisher || meta.publisher,
+                publicationDate: d1Data?.publication_date || meta.publication_date,
+                license: d1Data?.license || meta.license,
               },
             });
           }
@@ -337,42 +407,48 @@ export async function executeHybridRetrieval(
         (query.toLowerCase().match(/[a-z0-9-]{4,}/g) || [])
           .filter((token) => !['what', 'should', 'this', 'that', 'with', 'from', 'reports'].includes(token))
       )).slice(0, 8);
-      const keywordWhere = keywordTokens.length > 0
-        ? ` AND (${keywordTokens.map(() => 'LOWER(c.text) LIKE ?').join(' OR ')})`
-        : '';
-      const d1Chunks = await env.DB.prepare(
-        `SELECT c.id as chunk_id, c.document_id, c.source_id, c.version, c.content_hash, c.section, c.page, c.text, c.authority_tier,
-                d.title as document_title, a.official_url as source_url, a.publisher, a.publication_date, a.license
-         FROM knowledge_chunks c
-         JOIN knowledge_documents d ON c.document_id = d.id
-         LEFT JOIN knowledge_artifacts a ON a.source_id = c.source_id
-         WHERE (c.processing_version = 'v1' OR c.source_id IS NOT NULL)${keywordWhere}
-         ORDER BY c.authority_tier ASC LIMIT ?`
-      ).bind(...keywordTokens.map((token) => `%${token}%`), topK).all();
 
-      for (const row of d1Chunks.results || []) {
-        retrievedChunks.push({
-          chunkId: row.chunk_id,
-          documentId: row.document_id,
-          documentTitle: row.document_title,
-          section: row.section,
-          page: row.page,
-          text: row.text,
-          authorityTier: row.authority_tier,
-          score: getAuthorityTierWeight(row.authority_tier),
-          semanticSimilarity: 0.75,
-          entityMatchScore: 0.5,
-          provenance: {
-            sourceId: row.source_id,
-            version: row.version || 'v1',
-            contentHash: row.content_hash,
-            artifactType: 'canonical-v1',
-            sourceUrl: row.source_url,
-            publisher: row.publisher,
-            publicationDate: row.publication_date,
-            license: row.license,
-          },
-        });
+      // Fast-path: Consult in-memory canonical corpus first (0 D1 row reads)
+      const inMemoryMatches: any[] = [];
+      for (const c of KNOWLEDGE_CHUNKS_CORPUS) {
+        if (!c.documentId.startsWith('doc-') && !c.id.startsWith('doc-')) continue;
+        const textLower = c.text.toLowerCase();
+        let matched = false;
+        for (const token of keywordTokens) {
+          if (textLower.includes(token)) {
+            matched = true;
+            break;
+          }
+        }
+        if (matched) {
+          inMemoryMatches.push(c);
+          if (inMemoryMatches.length >= topK) break;
+        }
+      }
+
+      if (inMemoryMatches.length > 0) {
+        for (const row of inMemoryMatches) {
+          retrievedChunks.push({
+            chunkId: row.id,
+            documentId: row.documentId,
+            documentTitle: row.section || row.documentId,
+            section: row.section,
+            page: row.page,
+            text: row.text,
+            authorityTier: row.authorityTier,
+            score: getAuthorityTierWeight(row.authorityTier),
+            semanticSimilarity: 0.85,
+            entityMatchScore: 0.8,
+            provenance: {
+              sourceId: row.documentId,
+              version: 'canonical-v1',
+              contentHash: '',
+              artifactType: 'canonical-v1',
+            },
+          });
+        }
+      } else {
+        // No V3/in-memory match: remain empty rather than falling back to legacy D1.
       }
     } catch (fallbackErr) {
       console.warn('[RAG] D1 fallback knowledge retrieval warning:', fallbackErr);

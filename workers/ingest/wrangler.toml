@@ -58,3 +58,74 @@ script_name = "zayron-x-api"
 ENVIRONMENT = "production"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 LEGACY_FREEZE = "true"
+
+[env.preview]
+name = "zayron-x-ingest-preview"
+workers_dev = true
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+
+[[env.preview.queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue-preview"
+
+[[env.preview.queues.consumers]]
+queue = "zayron-ingest-queue-preview"
+max_batch_size = 10
+max_batch_timeout = 30
+max_retries = 3
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+TELEGRAM_TARGET_CHANNEL = "zayronxai"
+LEGACY_FREEZE = "false"
+
+[[env.preview.vectorize]]
+binding = "VECTORIZE"
+index_name = "zayron-doc04-staging-index"
+
+[[env.preview.services]]
+binding = "TELEGRAM_COLLECTOR_SERVICE"
+service = "zayron-telegram-collector-do-preview"
+
+[[env.preview.services]]
+binding = "KNOWLEDGE_PROCESSOR"
+service = "zayron-x-api-preview"
+entrypoint = "KnowledgeProcessor"
+
+# Preview-only internal RPC to the EXISTING analyst-grade CVE pipeline.
+# Absent from the top-level (production) config by design, so continuous
+# ingestion AI dispatch is inert in production.
+[[env.preview.services]]
+binding = "VULNERABILITY_ANALYST"
+service = "zayron-x-api-preview"
+entrypoint = "VulnerabilityAnalyst"
+
+[env.preview.ai]
+binding = "AI"
+
+[env.preview.triggers]
+# Free-Tier Survival Mode: the preview loop is dormant, so its 144 daily runs
+# burned D1 row reads/writes for data nobody reads. Restore a cadence only if a
+# preview actually needs to ingest.
+crons = []
+
+# Production scheduling (ZX-08): the preview environment was the ONLY one
+# with a cron trigger, so the deployed production ingestion loop was inert.
+# The trigger is inert while LEGACY_FREEZE=true (production vars) — the freeze is
+# the deliberate kill-switch, not a missing schedule.
+#
+# ZX-33 Free-Tier Survival Mode: `*/10` meant 144 runs/day, each paying D1 reads
+# and writes against a 100k-write/day budget. Every 4 hours is 6 runs/day (96%
+# less burn) and still keeps the corpus fresh while the corpus is bootstrapping.
+[env.production.triggers]
+# Free-Tier Survival Mode (every 4h); restore */10 or */30 after Workers Paid upgrade.
+crons = ["0 */4 * * *"]
+
+# ZX-28: Workers Logs / traces for queue and cron invocations. CPU limits are
+# deliberately untouched: a cap would throttle AI/ingest workloads.
+[observability]
+enabled = true

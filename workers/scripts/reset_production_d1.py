@@ -1,6 +1,9 @@
 import subprocess
 import json
 import sys
+from production_mutation_lock import require_local_mutation_authorization
+
+require_local_mutation_authorization('reset_production_d1.py')
 
 sys.stdout.reconfigure(encoding='utf-8')
 

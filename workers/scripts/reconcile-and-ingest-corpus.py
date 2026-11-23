@@ -15,6 +15,9 @@ import time
 import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
+from production_mutation_lock import require_local_mutation_authorization
+
+require_local_mutation_authorization('reconcile-and-ingest-corpus.py')
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")

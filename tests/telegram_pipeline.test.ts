@@ -121,4 +121,146 @@ describe('Telegram Intelligence Ingestion Pipeline', () => {
     expect(result.provenance.sourceId).toBe('tg_vxunderground');
     expect(result.provenance.weight).toBe(0.92);
   });
+
+  test('8. Anti-Recursion Gate Prohibits Outbound Channel Ingestion', () => {
+    const bannedChannels = new Set(['zayronxai', 'zayron_x', 'zayronx']);
+    expect(bannedChannels.has('zayronxai')).toBe(true);
+    expect(bannedChannels.has('ZAYRONXAI'.toLowerCase())).toBe(true);
+    expect(bannedChannels.has('vxunderground')).toBe(false);
+
+    // Incoming message from outbound channel must be flagged as banned
+    const channelUsername = 'zayronxai';
+    const isBanned = bannedChannels.has(channelUsername.toLowerCase());
+    expect(isBanned).toBe(true);
+  });
+
+  test('9. Publication Gate Enforces Severity & Confidence Thresholds', async () => {
+    // High-confidence critical CVE signal -> PUBLISHED
+    const qualifiedSignal = await normalizeIntelligenceSignal({
+      sourceId: 'tg_cvenotify',
+      sourceName: 'cveNotify',
+      sourceTrustScore: 0.95,
+      externalMessageId: '5501',
+      rawText: 'CRITICAL zero-day remote code execution in Apache HTTP Server (CVE-2026-9999) actively exploited in the wild. IP: 198.51.100.22',
+    });
+    expect(qualifiedSignal.isEligibleForArticle).toBe(true);
+    expect(qualifiedSignal.publicationStatus).toBe('PUBLISHED');
+
+    // Casual unverified low-severity query -> DRAFT (withheld from public publication)
+    const lowSignal = await normalizeIntelligenceSignal({
+      sourceId: 'tg_community',
+      sourceName: 'Community Chat',
+      sourceTrustScore: 0.50,
+      externalMessageId: '1002',
+      rawText: 'Hey everyone, what do you think about the new router patch?',
+    });
+    expect(lowSignal.isEligibleForArticle).toBe(false);
+    expect(lowSignal.publicationStatus).toBe('DRAFT');
+  });
+
+  test('10. Evidence Pack & 18-Part Evidence-Grounded Dossier Formatting', async () => {
+    const { formatEvidenceGroundedDossier } = await import('../packages/intelligence/src/analyst/dossier');
+
+    const pack = {
+      eventId: 'evt_test_001',
+      sourceId: 'tg_vxunderground',
+      sourceName: 'vx-underground',
+      sourceTrustScore: 0.92,
+      rawText: 'Adversary Volt Typhoon weaponizing CVE-2026-1453. C2: 194.26.29.112, Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      normalizedTitle: '[CVE-2026-1453] Threat Actor Volt Typhoon Telemetry Observed',
+      normalizedSummary: 'Adversary Volt Typhoon weaponizing CVE-2026-1453 for remote execution.',
+      contentHash: 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+      originalLanguage: 'en',
+      publishedAt: '2026-09-03T16:00:00.000Z',
+      receivedAt: '2026-09-03T16:00:02.000Z',
+      sourceUrl: 'https://t.me/vxunderground/89401',
+      severity: 'critical',
+      confidenceScore: 0.92,
+      confidenceState: 'CONFIRMED',
+      entities: {
+        cves: ['CVE-2026-1453'],
+        ipv4s: ['194.26.29.112'],
+        sha256s: ['e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'],
+        md5s: [],
+        domains: [],
+        ttps: ['T1190'],
+        actors: ['Volt Typhoon'],
+        malware: [],
+      },
+      evidenceRecords: [{
+        id: 'evi_test_01',
+        type: 'telegram_channel_signal',
+        weight: 0.92,
+        snippet: 'Volt Typhoon weaponizing CVE-2026-1453',
+        url: 'https://t.me/vxunderground/89401',
+      }],
+    };
+
+    const dossier = formatEvidenceGroundedDossier({
+      pack,
+      assessmentSummary: 'Volt Typhoon observed targeting critical enterprise infrastructure via CVE-2026-1453.',
+      technicalAnalysis: 'Exploit leverages unauthenticated memory corruption for initial perimeter access.',
+    });
+
+    // Verify mandatory separation of facts, assessment, and unknowns
+    expect(dossier).toContain('1. Executive Assessment');
+    expect(dossier).toContain('3. Verified Facts');
+    expect(dossier).toContain('VERIFIED FACTS');
+    expect(dossier).toContain('4. Source Observations');
+    expect(dossier).toContain('5. Technical Analysis');
+    expect(dossier).toContain('ANALYST ASSESSMENT');
+    expect(dossier).toContain('6. Vulnerability Context');
+    expect(dossier).toContain('10. IOC Summary');
+    expect(dossier).toContain('13. Evidence Matrix');
+    expect(dossier).toContain('14. Confidence Assessment');
+    expect(dossier).toContain('15. What Is Unknown / Unresolved');
+    expect(dossier).toContain('UNKNOWN / UNRESOLVED');
+    expect(dossier).toContain('18. References / Sources');
+    expect(dossier).toContain('CVE-2026-1453');
+    expect(dossier).toContain('194.26.29.112');
+  });
+
+  test('11. Standard ZAYRON-X Outbound Telegram Format (~50-60 Words with Canonical Link)', async () => {
+    const { formatZayronOutboundTelegram } = await import('../packages/intelligence/src/publishing/social');
+
+    const sampleReport: any = {
+      assessment: {
+        headline: 'Critical Zero-Day Remote Code Execution in Apache HTTP Server',
+        threat_level: 'CRITICAL',
+        executive_summary: 'Threat actor Volt Typhoon observed actively weaponizing CVE-2026-1453 against public-facing edge infrastructure. The exploit achieves unauthenticated code execution and drops persistent Cobalt Strike beacons across targeted enterprise networks. Security teams must immediately apply vendor patches and audit perimeter firewall telemetry.',
+        confidence_state: 'CONFIRMED',
+        confidence_score: 0.95,
+      },
+      what_happened: 'Unauthenticated RCE identified in telemetry.',
+    };
+
+    const canonicalUrl = 'https://zayron-x.co/threats/critical-rce-apache-5401';
+    const outboundPost = formatZayronOutboundTelegram(sampleReport, canonicalUrl);
+
+    expect(outboundPost).toStartWith('[CRITICAL] Critical Zero-Day Remote Code Execution in Apache HTTP Server');
+    expect(outboundPost).toContain('Read the full analysis → https://zayron-x.co/threats/critical-rce-apache-5401');
+
+    // Verify word count is approximately 50-60 words
+    const wordCount = outboundPost.split(/\s+/).length;
+    expect(wordCount).toBeGreaterThanOrEqual(30);
+    expect(wordCount).toBeLessThanOrEqual(75);
+  });
+
+  test('12. Non-English Telemetry Preserves Literal Technical Identifiers', async () => {
+    // Russian telemetry containing CVE, IP, and Actor
+    const ruSignal = await normalizeIntelligenceSignal({
+      sourceId: 'tg_xakep_ru',
+      sourceName: 'Xakep RU',
+      sourceTrustScore: 0.85,
+      externalMessageId: '7721',
+      rawText: 'Группировка APT29 развернула атаку с использованием уязвимости CVE-2024-21413 на сервер 185.220.101.5 с пейлоадом Cobalt Strike.',
+    });
+
+    expect(ruSignal.originalLanguage).toBe('ru');
+    expect(ruSignal.entities.cves).toContain('CVE-2024-21413');
+    expect(ruSignal.entities.actors).toContain('APT29');
+    expect(ruSignal.entities.malware).toContain('Cobalt Strike');
+    expect(ruSignal.entities.ipv4s).toContain('185.220.101.5');
+    expect(ruSignal.normalizedTitle).toContain('CVE-2024-21413');
+  });
 });

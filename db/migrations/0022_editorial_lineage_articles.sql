@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS articles (
+  id TEXT PRIMARY KEY NOT NULL,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  dek TEXT,
+  content TEXT NOT NULL,
+  excerpt TEXT,
+  author TEXT NOT NULL DEFAULT 'ZAYRON-X Intelligence Crew',
+  category TEXT NOT NULL,
+  tags TEXT,
+  severity TEXT,
+  confidence REAL,
+  hero_media_url TEXT,
+  ai_summary TEXT,
+  fbr_score REAL,
+  read_time INTEGER,
+  views INTEGER NOT NULL DEFAULT 0,
+  is_published INTEGER NOT NULL DEFAULT 0,
+  is_featured INTEGER NOT NULL DEFAULT 0,
+  is_breaking INTEGER NOT NULL DEFAULT 0,
+  canonical_intel_event_id TEXT,
+  published_at TEXT,
+  version INTEGER NOT NULL DEFAULT 1,
+  revision_reason TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  canonical_evidence TEXT,
+  evidence_bound_claims TEXT,
+  governance_status TEXT,
+  governed_editorial_dto TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_articles_category_published ON articles(category, is_published);
+CREATE INDEX IF NOT EXISTS idx_articles_published_at ON articles(published_at);

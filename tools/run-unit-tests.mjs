@@ -1,0 +1,109 @@
+// ZAYRON-X — scoped local unit gate (Phase 12.27).
+// Runs ONLY the local-safe suites (no network, no live endpoints, no remote writes)
+// under `bun test`, which executes both `bun:test` and `vitest` imports without
+// converting runners. Fails if bun fails OR if zero tests ran (the old root
+// `bun --filter '*' test` succeeded while running nothing).
+// NOTE: lives in tools/ (not scripts/) because root scripts/ is gitignored.
+import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
+
+const SUITES = [
+  'tests/benchmark_integrity.test.ts',
+  'tests/canonical_cve_processor.test.ts',
+  'tests/citation_boundary_matrix.test.ts',
+  'tests/citation_validation_gate.test.ts',
+  'tests/control_plane_contract.test.ts',
+  'tests/d1_resolution_integrity.test.ts',
+  'tests/deep_intelligence_engine_v2.test.ts',
+  'tests/dfir_retrieval_integrity.test.ts',
+  'tests/dossier_gate_engine.test.ts',
+  'tests/embedding_boundary.test.ts',
+  'tests/epistemic_safeguards.test.ts',
+  'tests/gemini_reasoner.test.ts',
+  'tests/independent_retrieval_validation.test.ts',
+  'tests/knowledge_integration_proof.test.ts',
+  'tests/knowledge_v3_embedding.test.ts',
+  'tests/knowledge_v3_fts_rrf.test.ts',
+  'tests/knowledge_v3_unicode.test.ts',
+  'tests/live_vectorize_benchmark_integrity.test.ts',
+  'tests/operational_pipeline.test.ts',
+  'tests/prove_real_intelligence_grounding.test.ts',
+  'tests/publication_gate_regression.test.ts',
+  'tests/report_engine.test.ts',
+  'tests/report_variation_specificity.test.ts',
+  'tests/shadow_vectorize.test.ts',
+  'tests/taxonomy_contract.test.ts',
+  'tests/truthfulness_remediation.test.ts',
+  'tests/universal_book_pipeline.test.ts',
+  'tests/vectorize_reconciliation.test.ts',
+  'tests/vulnerability_ai_integration.test.ts',
+  'tests/zero_defect_audit_persistence.test.ts',
+  'tests/zero_defect_publication_gate.test.ts',
+  // Verified AI/provider unit suites (local, mocked fetch):
+  'tests/unit/ai_provider_router.test.ts',
+  'tests/unit/ai_provider_failover_state.test.ts',
+  'tests/unit/gemini_timeout_bound.test.ts',
+  'tests/unit/grounded_cve_analysis.test.ts',
+  'tests/unit/web_preview_target_guard.test.ts',
+  // Verified malware pipeline suites (Phase 12.27 Task 5: all green locally):
+  'tests/unit/m14_4_report_materialization.test.ts',
+  'tests/unit/m14_malware_production_pipeline.test.ts',
+  'tests/unit/m14_malware_report.test.ts',
+  'tests/unit/api_malware_report_read_gate.test.ts',
+  'tests/unit/m16_4_30_customer_report_e2e.test.ts',
+  'tests/unit/m16_3_7_validation_plane.test.ts',
+  'tests/unit/m16_2_gate0_write_read_parity.test.ts',
+  'tests/unit/m15_ingest_seam.test.ts',
+  // Wave 2A: explicit public-read allowlist, production origin policy,
+  // degraded durable limiter semantics, and baseline security headers.
+  'tests/unit/wave2a_security_contracts.test.ts',
+  // Wave 3: named admin principals + digest comparison, prompt-injection fencing,
+  // trusted client identity, 429 backoff contract, webhook replay expiry affinity.
+  'tests/unit/wave3_hardening.test.ts',
+  // Wave 4A audit gate: this suite (57 tests) was missing from the registry,
+  // which is the whole 530 -> 490 delta. It is pure local logic (no network,
+  // no live endpoints) and passes inside the combined gate run.
+  'tests/security_boundary.test.ts',
+  // Wave 4A: authenticated-response cache policy, /feed count + q bounds and
+  // search rate class, Telegram claim-before-send idempotency (no double post),
+  // 429/Retry-After propagation, and fail-closed production dispatch auth.
+  'tests/unit/wave4a_prelaunch_contracts.test.ts',
+  // Wave 4B: JSON-LD safety + zero fabrication, site/API URL resolution,
+  // sitemap XML/shard/robots contracts, API sitemap PUBLISHED gate + clamps,
+  // and the clean launch navigation surface.
+  'tests/unit/wave4b_seo_and_sitemap.test.ts',
+  // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
+  // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
+  // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).
+  'tests/unit/wave4c_free_tier_survival.test.ts',
+];
+// Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
+// corpus_pipeline_integrity, corpus_scale_test, deployment_guard,
+// p03_runtime_contracts, telegram_pipeline.
+// Also excluded until verified: remaining tests/unit/* and packages/**/__tests__/*.
+
+const missing = SUITES.filter((f) => {
+  try { fs.accessSync(f); return false; } catch { return true; }
+});
+if (missing.length > 0) {
+  console.error(`[test:unit] MISSING suite files (gate is stale):\n  ${missing.join('\n  ')}`);
+  process.exit(1);
+}
+
+const r = spawnSync('bun', ['test', ...SUITES], { encoding: 'utf-8', maxBuffer: 64 * 1024 * 1024 });
+process.stdout.write(r.stdout || '');
+process.stderr.write(r.stderr || '');
+// NOTE: `bun test` writes results and the summary line to STDERR, not stdout.
+const combined = `${r.stdout || ''}\n${r.stderr || ''}`;
+const m = /Ran (\d+) tests? across (\d+) files?/.exec(combined);
+const ran = m ? Number(m[1]) : 0;
+console.error(`[test:unit] bun exit=${r.status} tests_ran=${ran} files=${m ? m[2] : '?'}`);
+if (r.status !== 0) {
+  console.error('[test:unit] FAIL: bun test reported failures.');
+  process.exit(1);
+}
+if (ran === 0) {
+  console.error('[test:unit] FAIL: zero tests ran — gate refuses to pass silently.');
+  process.exit(1);
+}
+console.error(`[test:unit] PASS: ${ran} tests ran with no failures.`);

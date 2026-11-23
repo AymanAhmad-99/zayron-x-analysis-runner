@@ -1,0 +1,10 @@
+{
+  "data": [],
+  "meta": {
+    "limit": 20,
+    "offset": 0,
+    "total": 0,
+    "degraded": true,
+    "note": "D1_ERROR: Your account has exceeded D1's free tier daily row read limit. Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue. See https://developers.cloudflare.com/d1/platform/limits/ for more details."
+  }
+}

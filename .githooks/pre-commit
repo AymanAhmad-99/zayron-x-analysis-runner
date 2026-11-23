@@ -1,0 +1,8 @@
+#!/bin/sh
+# Pre-commit hook: Verify Corpus Parity before allowing commit
+echo "Running pre-commit corpus parity verification..."
+bun run verify --manifest corpus_manifest.json
+if [ $? -ne 0 ]; then
+  echo "Corpus parity check failed! Aborting commit."
+  exit 1
+fi

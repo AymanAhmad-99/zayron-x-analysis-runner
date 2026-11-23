@@ -1,0 +1,2 @@
+const domains=["VULNERABILITIES","MALWARE","EXPLOITS","THREAT ACTORS","CAMPAIGNS / ATTACKS"];
+export function Domains(){return <section className="section shell explore-precision" id="intelligence"><div className="section-kicker">02 / DOMAIN INDEX</div><h2>EXPLORE THE INTELLIGENCE.</h2><div className="explore-tabs">{domains.map((d,i)=><span className={i===0?"active":""} key={d}>{d}</span>)}</div></section>}

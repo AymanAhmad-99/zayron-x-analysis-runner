@@ -1,0 +1,10 @@
+{
+  "verified_at": "2026-09-04T17:33:34.455Z",
+  "canonical_chunks": 36963,
+  "vectorize_matching_chunks": 36963,
+  "missing_chunks": 0,
+  "duplicate_vectors": 3501,
+  "orphan_vectors": 3437,
+  "coverage_percentage": 100,
+  "status": "PASS_THRESHOLD_MET"
+}

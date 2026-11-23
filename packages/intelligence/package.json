@@ -7,6 +7,8 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@zayron/types": "workspace:*",
+    "@zip.js/zip.js": "2.7.53",
+    "cvss": "^1.0.5",
     "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {

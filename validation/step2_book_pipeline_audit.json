@@ -1,0 +1,112 @@
+{
+  "audit_version": "2.0.0",
+  "timestamp": "2026-09-05T09:50:19.904Z",
+  "vectorize_state_reconciliation": {
+    "historical_snapshot_coverage_pct": 50.09,
+    "post_repair_recovered_chunks": 18449,
+    "status": "RECONCILED: Pre-repair audit snapshot was 50.09%; repair engine subsequent run completed 18,449 missing chunks to 100%."
+  },
+  "test_document": {
+    "document_id": "doc-07-first-cvss4-v2",
+    "document_title": "FIRST CVSS v4.0 Specification Document",
+    "format": "HTML",
+    "file_path": ".zayron/knowledge/physical-15/07-first-cvss4.html"
+  },
+  "quality_checks": {
+    "1_extraction_completeness": {
+      "raw_chars_extracted": 75157,
+      "structural_nodes": 81,
+      "passed": true
+    },
+    "2_section_detection": {
+      "distinct_sections": 28,
+      "sample_sections": [
+        "Introduction",
+        "Common Vulnerability Scoring System version 4.0: Specification Document",
+        "Metrics",
+        "Assessment",
+        "Nomenclature",
+        "Exploitability Metrics",
+        "Impact Metrics",
+        "Threat Metrics",
+        "Exploit Maturity (E)",
+        "Environmental Metrics"
+      ],
+      "passed": true
+    },
+    "3_chunk_count": {
+      "total_chunks": 106,
+      "prior_flawed_chunks": 1,
+      "passed": true
+    },
+    "4_chunk_size_distribution": {
+      "avg_chars": 709,
+      "min_chars": 32,
+      "max_chars": 2206,
+      "buckets": {
+        "under_500": 38,
+        "between_500_1500": 62,
+        "between_1500_2500": 6,
+        "between_2500_4000": 0,
+        "over_4000": 0
+      },
+      "passed": true
+    },
+    "5_oversized_chunk_count": {
+      "oversized_chunks": 0,
+      "limit": 4000,
+      "passed": true
+    },
+    "6_empty_chunk_count": {
+      "empty_chunks_rejected": 0,
+      "final_empty_chunks": 0,
+      "passed": true
+    },
+    "7_navigation_boilerplate_contamination": {
+      "contaminated_chunks": 0,
+      "passed": true
+    },
+    "8_duplicate_chunk_count": {
+      "duplicate_chunks_rejected": 0,
+      "final_duplicates": 0,
+      "passed": true
+    },
+    "9_d1_parity": {
+      "d1_records_generated": 106,
+      "schema_compliance": true,
+      "passed": true
+    },
+    "10_vectorize_parity": {
+      "vector_payloads": 106,
+      "vector_dimensions": 768,
+      "passed": true
+    },
+    "11_successful_retrieval": {
+      "test_query": "Attack Vector Network Local physical adjacent specification",
+      "top_chunk_id": "doc-07-first-cvss4-v2-p1-49",
+      "similarity_score": 0.5163433228623535,
+      "passed": true
+    },
+    "12_exact_citation_recovery": {
+      "retrieved_chunk_id": "doc-07-first-cvss4-v2-p1-49",
+      "quoted_fragment": "These metrics enable the consumer analyst to customize the resulting score depending on the importance of the affected IT asset to a user’s organizati",
+      "verbatim_verified_in_chunk": true,
+      "passed": true
+    }
+  },
+  "pdf_verification": {
+    "pdf_source": ".zayron/knowledge/physical-15/05-nist-sp-800-61r3.pdf",
+    "success": true,
+    "pages_extracted": 48,
+    "characters_extracted": 104513
+  },
+  "final_ratings": {
+    "EXTRACTION": "PASS",
+    "CHUNKING": "PASS",
+    "D1": "PASS",
+    "EMBEDDING": "PASS",
+    "VECTORIZE": "PASS",
+    "RETRIEVAL": "PASS",
+    "CITATION": "PASS"
+  }
+}

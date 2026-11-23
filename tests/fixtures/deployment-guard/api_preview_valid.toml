@@ -1,0 +1,45 @@
+name = "zayron-x-api"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+routes = [
+  { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
+]
+
+[env.preview]
+name = "zayron-x-api-preview"
+workers_dev = true
+routes = []
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+
+[[env.preview.d1_databases]]
+binding = "ZX_DB"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+LEGACY_FREEZE = "false"
+ALLOWED_ORIGINS = "https://zayron-x.co,https://zayron-x-web-preview.aabusabih.workers.dev,http://localhost:8799"
+
+[[env.preview.services]]
+binding = "INGEST"
+service = "zayron-x-ingest-preview"
+
+[[env.preview.services]]
+binding = "TELEGRAM_COLLECTOR_SERVICE"
+service = "zayron-telegram-collector-do-preview"
+
+[[env.preview.queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue-preview"
+
+[[env.preview.vectorize]]
+binding = "VECTORIZE"
+index_name = "zayron-doc04-staging-index"

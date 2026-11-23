@@ -3,6 +3,9 @@ import json
 import os
 import sys
 import datetime
+from production_mutation_lock import require_local_mutation_authorization
+
+require_local_mutation_authorization('backup_production_d1.py')
 
 sys.stdout.reconfigure(encoding='utf-8')
 

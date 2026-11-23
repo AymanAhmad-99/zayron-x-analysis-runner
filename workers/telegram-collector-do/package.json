@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "deploy": "node -e \"console.error('[deploy] generic deploy is disabled. Production deploy is a separate, explicitly authorized process: deploy:production.'); process.exit(1)\"",
+    "deploy:production": "node ../../scripts/release/production-release-gate.mjs telegram-collector-production -- npx wrangler deploy",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

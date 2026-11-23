@@ -1,0 +1,8 @@
+{
+  "workers_dev": true,
+  "routes": [],
+  "vars": {
+    "ENVIRONMENT": "preview",
+    "NEXT_PUBLIC_SITE_URL": "https://zayron-x-web-preview.aabusabih.workers.dev"
+  }
+}

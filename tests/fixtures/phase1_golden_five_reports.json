@@ -1,0 +1,4443 @@
+{
+  "schema_version": "phase1-golden-five-fixtures/1.0",
+  "note": "Validator-relevant subset of the persisted Golden Five structured_report_json. Captured read-only; reports were NOT regenerated.",
+  "reports": {
+    "CVE-2022-23227": {
+      "schema_version": "2.1.0",
+      "status": "PUBLISHED",
+      "identity": {
+        "cve": "CVE-2022-23227",
+        "vendor": "NUUO",
+        "product": "NVRmini2 Devices",
+        "source_specific_cwes": {
+          "cisa_kev": [
+            "CWE-306"
+          ],
+          "cisa-kev": [
+            "CWE-306"
+          ],
+          "cisa_adp": [
+            "CWE-306 Missing Authentication for Critical Function"
+          ],
+          "cisa-adp": [
+            "CWE-306 Missing Authentication for Critical Function"
+          ],
+          "mitre_cve": [
+            "n/a"
+          ],
+          "mitre-cve": [
+            "n/a"
+          ]
+        },
+        "cwe_disagreement": false,
+        "technical_mechanism": "UNKNOWN"
+      },
+      "signals": {
+        "ransomware_campaign_use": "Unknown"
+      },
+      "exploitation": {
+        "ransomware_campaign_use": "Unknown",
+        "cisa_due_date": "2025-01-08"
+      },
+      "dates": {
+        "cisa_due_at": "2025-01-08"
+      },
+      "severity": {
+        "cvss": {
+          "score": "9.8",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+          "source": "CISA-ADP",
+          "conflict_detected": false
+        }
+      },
+      "technical": {
+        "technical_mechanism": "UNKNOWN",
+        "authentication_required": "No",
+        "attack_vector": "NETWORK",
+        "truth_states": {
+          "root_cause": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "attack_surface": "MODEL_INFERENCE",
+          "prerequisites": "MODEL_INFERENCE",
+          "authentication_required": "SOURCE_FACT",
+          "privileges_required": "MODEL_INFERENCE",
+          "user_interaction": "MODEL_INFERENCE",
+          "attack_vector": "MODEL_INFERENCE",
+          "attack_complexity": "UNKNOWN",
+          "source_stated_impact": "SOURCE_FACT",
+          "analytical_impact": "MODEL_INFERENCE",
+          "technical_impact": "SOURCE_FACT"
+        }
+      },
+      "affected_scope": {
+        "affected_versions": "UNKNOWN",
+        "fixed_versions": "UNKNOWN",
+        "products_affected": []
+      },
+      "remediation": {
+        "advisory_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+        "due_date": "2025-01-08",
+        "fixed_version_source": "NOT_AVAILABLE",
+        "canonical_advisory": {
+          "advisory_id": "ADV-CVE-2022-23227"
+        }
+      },
+      "threat_context": {
+        "attack_mappings": [
+          {
+            "technique_id": "T1190",
+            "technique_name": "Exploit Public-Facing Application",
+            "tactic": "Initial Access",
+            "relationship": "Derived taxonomic mapping: CISA KEV catalog confirms in-the-wild exploitation of network-facing NVRmini2 Devices.",
+            "rationale": "Derived taxonomic mapping: CISA KEV catalog confirms in-the-wild exploitation of network-facing NVRmini2 Devices.",
+            "confidence": 0.9,
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ],
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "status": "SUPPORTED",
+            "evidence_scope": "CVE",
+            "related_cve_ids": []
+          }
+        ]
+      },
+      "provenance": {
+        "claims": [
+          {
+            "id": "CLM-01",
+            "claim_id": "CLM-01",
+            "field": "identity",
+            "value": "CVE-2022-23227",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-18",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV baseline member",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-02",
+            "claim_id": "CLM-02",
+            "field": "vendor",
+            "value": "NUUO",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vendor definition",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-03",
+            "claim_id": "CLM-03",
+            "field": "product",
+            "value": "NVRmini2 Devices",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Affected product definition",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-04",
+            "claim_id": "CLM-04",
+            "field": "affected_versions",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "Product-Scoped Advisory",
+            "source_ids": [
+              "product-advisory"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vulnerable versions or UNKNOWN"
+          },
+          {
+            "id": "CLM-05",
+            "claim_id": "CLM-05",
+            "field": "fixed_versions",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "Product-Scoped Advisory",
+            "source_ids": [
+              "product-advisory"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative patched versions or UNKNOWN"
+          },
+          {
+            "id": "CLM-06",
+            "claim_id": "CLM-06",
+            "field": "cwe",
+            "value": "CWE-306 (Missing Authentication for Critical Function), N/A (Software Weakness)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "MITRE CWE / CISA",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://cwe.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Weakness taxonomy with official MITRE catalog name",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-07",
+            "claim_id": "CLM-07",
+            "field": "cvss",
+            "value": "9.8",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA-ADP",
+            "source_ids": [
+              "CISA-ADP"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Primary severity metric"
+          },
+          {
+            "id": "CLM-08",
+            "claim_id": "CLM-08",
+            "field": "cvss_vector",
+            "value": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA-ADP",
+            "source_ids": [
+              "CISA-ADP"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CVSS vector string"
+          },
+          {
+            "id": "CLM-09",
+            "claim_id": "CLM-09",
+            "field": "epss",
+            "value": "0.484970000",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "FIRST EPSS",
+            "source_ids": [
+              "first-epss"
+            ],
+            "source_url": "https://api.first.org/data/v1/epss",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "EPSS probability score"
+          },
+          {
+            "id": "CLM-10",
+            "claim_id": "CLM-10",
+            "field": "exploitation",
+            "value": "Active in-the-wild exploitation",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-18",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Active in-the-wild exploitation confirmed by CISA KEV",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-11",
+            "claim_id": "CLM-11",
+            "field": "ransomware",
+            "value": "Unknown",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-18",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative CISA KEV catalog ransomware campaign attribution",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-12",
+            "claim_id": "CLM-12",
+            "field": "ssvc",
+            "value": "{\"exploitation\":\"active\",\"automatable\":\"yes\",\"technical_impact\":\"total\",\"role\":\"CISA Coordinator\"}",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA Vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA SSVC decision tree"
+          },
+          {
+            "id": "CLM-13",
+            "claim_id": "CLM-13",
+            "field": "attack_vector",
+            "value": "NETWORK",
+            "truth_type": "MODEL_INFERENCE",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Entry point vector"
+          },
+          {
+            "id": "CLM-14",
+            "claim_id": "CLM-14",
+            "field": "attack_complexity",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack complexity"
+          },
+          {
+            "id": "CLM-15",
+            "claim_id": "CLM-15",
+            "field": "privileges",
+            "value": "none",
+            "truth_type": "MODEL_INFERENCE",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Privileges required for exploitation"
+          },
+          {
+            "id": "CLM-16",
+            "claim_id": "CLM-16",
+            "field": "authentication",
+            "value": "No",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authentication prerequisite strictly decoupled from privileges required",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-17",
+            "claim_id": "CLM-17",
+            "field": "user_interaction",
+            "value": "none",
+            "truth_type": "MODEL_INFERENCE",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "User interaction requirement"
+          },
+          {
+            "id": "CLM-18",
+            "claim_id": "CLM-18",
+            "field": "root_cause",
+            "value": "The NVRmini2 device lacks authentication controls on the endpoint that accepts encrypted TAR archives, allowing unauthenticated actors to trigger the user creation process.",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "MITRE CWE",
+            "source_ids": [
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Root cause analysis",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-19",
+            "claim_id": "CLM-19",
+            "field": "attack_surface",
+            "value": "Local access to NVRmini2 Devices process boundary",
+            "truth_type": "MODEL_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack surface exposure",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-20",
+            "claim_id": "CLM-20",
+            "field": "prerequisites",
+            "value": "Network connectivity to NVRmini2 Devices without prior authentication (Privileges: NONE)",
+            "truth_type": "MODEL_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Preconditions for exploitation",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-21",
+            "claim_id": "CLM-21",
+            "field": "attack_path",
+            "value": "Local access to NVRmini2 Devices process boundary -> Input validation or access control flaw (CWE-306: Missing Authentication for Critical Function) -> Bypass of identity and session verification boundaries",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "Evidence-Bounded Engine",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Evidence-bounded attack progression",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-22",
+            "claim_id": "CLM-22",
+            "field": "impact",
+            "value": "SSVC: total",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA SSVC",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Technical impact severity"
+          },
+          {
+            "id": "CLM-23",
+            "claim_id": "CLM-23",
+            "field": "remediation",
+            "value": "Vendor Advisory Bulletin",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV Notes",
+            "source_ids": [
+              "cisa-kev",
+              "vendor-advisory"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Remediation guidance",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev",
+              "evi_cve_2022_23227_advisory"
+            ]
+          },
+          {
+            "id": "CLM-24",
+            "claim_id": "CLM-24",
+            "field": "detection",
+            "value": "Monitor ingress perimeter gateways and edge authentication telemetry for NVRmini2 Devices anomalous traffic.",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.8,
+            "source": "CISA KEV / NVD",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Defensive telemetry and observable signals",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-25",
+            "claim_id": "CLM-25",
+            "field": "source_advisory",
+            "value": "ADV-CVE-2022-23227",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV Notes",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Advisory format: FALLBACK",
+            "evidence_ids": [
+              "evi_cve_2022_23227_advisory"
+            ]
+          },
+          {
+            "id": "CLM-26",
+            "claim_id": "CLM-26",
+            "field": "public_exploit",
+            "value": "NOT_FOUND",
+            "truth_type": "NOT_AVAILABLE",
+            "confidence": 0,
+            "source": "Exploit-DB",
+            "source_ids": [
+              "exploit-db"
+            ],
+            "source_url": "https://www.exploit-db.com",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Exploit-DB catalog status (Public exploit != active in-the-wild exploitation)"
+          },
+          {
+            "id": "CLM-27",
+            "claim_id": "CLM-27",
+            "field": "attack_technique",
+            "value": "T1190 (SUPPORTED)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.9,
+            "source": "MITRE ATT&CK",
+            "source_ids": [
+              "mitre-attack"
+            ],
+            "source_url": "https://attack.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Structured ATT&CK candidate mapping with strict attribution gate (campaign-only techniques excluded from CVE scope)"
+          },
+          {
+            "id": "CLM-28",
+            "claim_id": "CLM-28",
+            "field": "kernel_validation",
+            "value": "PASS",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Rust Kernel Deterministic Root",
+            "source_ids": [
+              "rust-kernel-root"
+            ],
+            "source_url": "internal://rust-kernel",
+            "evidence_scope": "KNOWLEDGE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Deterministic Kernel state: VALIDATED"
+          },
+          {
+            "id": "CLM-29",
+            "claim_id": "CLM-29",
+            "field": "cisa_due_date",
+            "value": "2025-01-08",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-18",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV BOD 22-01 remediation due date (binding for US FCEB agencies; scoped guidance for non-federal organizations)",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ]
+          },
+          {
+            "id": "CLM-30",
+            "claim_id": "CLM-30",
+            "field": "technical_mechanism",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NOT_AVAILABLE",
+            "source_ids": [],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative technical mechanism separated from CWE taxonomy classification"
+          },
+          {
+            "id": "CLM-31",
+            "claim_id": "CLM-31",
+            "field": "products_affected",
+            "value": "NVRmini2 Devices",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Product-Scoped NVD CPE / Advisory",
+            "source_ids": [],
+            "source_url": "https://nuuo.com/wp-content/uploads/2023/03/NUUO-EOL-letter＿NVRmini-2-and-NVRsolo-series.pdf",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Product-scoped affected version branches"
+          }
+        ]
+      },
+      "attack_path": {
+        "stages": [
+          {
+            "stage": "ENTRY_POINT",
+            "assertion": "Local access to NVRmini2 Devices process boundary",
+            "value": "Local access to NVRmini2 Devices process boundary",
+            "truth_type": "UNKNOWN",
+            "evidence_scope": "PRODUCT",
+            "confidence": 0.5,
+            "derivation": "Attack vector undefined in source metrics",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ],
+            "source_ids": [],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "PREREQUISITE",
+            "assertion": "Network connectivity to NVRmini2 Devices without prior authentication (Privileges: NONE)",
+            "value": "Network connectivity to NVRmini2 Devices without prior authentication (Privileges: NONE)",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 1,
+            "derivation": "Empirically verified unauthenticated network reachability from CVSS telemetry",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "VULNERABILITY_CONDITION",
+            "assertion": "Input validation or access control flaw (CWE-306: Missing Authentication for Critical Function)",
+            "value": "Input validation or access control flaw (CWE-306: Missing Authentication for Critical Function)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.85,
+            "derivation": "Inferred from MITRE CWE taxonomy classification",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "EXPLOITATION_EFFECT",
+            "assertion": "Bypass of identity and session verification boundaries",
+            "value": "Bypass of identity and session verification boundaries",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.9,
+            "derivation": "Derived from vulnerability condition mechanics and primary CWE classification",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe",
+              "cisa-kev"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "RESULTING_ACCESS",
+            "assertion": "Total technical impact on affected software component under SSVC decision framework",
+            "value": "Total technical impact on affected software component under SSVC decision framework",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "CVE",
+            "confidence": 1,
+            "derivation": "CISA SSVC decision tree technical_impact=total",
+            "evidence_ids": [
+              "evi_cve_2022_23227_kev"
+            ],
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "related_cve_ids": []
+          }
+        ]
+      }
+    },
+    "CVE-2024-20767": {
+      "schema_version": "2.1.0",
+      "status": "PUBLISHED",
+      "identity": {
+        "cve": "CVE-2024-20767",
+        "vendor": "Adobe",
+        "product": "ColdFusion",
+        "source_specific_cwes": {
+          "cisa_kev": [
+            "CWE-284"
+          ],
+          "cisa-kev": [
+            "CWE-284"
+          ],
+          "nvd": [
+            "CWE-284"
+          ],
+          "nvd-cpe": [
+            "CWE-284"
+          ],
+          "mitre_cve": [
+            "Improper Access Control (CWE-284)"
+          ],
+          "mitre-cve": [
+            "Improper Access Control (CWE-284)"
+          ]
+        },
+        "cwe_disagreement": false,
+        "technical_mechanism": "UNKNOWN"
+      },
+      "signals": {
+        "ransomware_campaign_use": "Unknown"
+      },
+      "exploitation": {
+        "ransomware_campaign_use": "Unknown",
+        "cisa_due_date": "2025-01-06"
+      },
+      "dates": {
+        "cisa_due_at": "2025-01-06"
+      },
+      "severity": {
+        "cvss": {
+          "score": "7.4",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+          "source": "psirt@adobe.com",
+          "conflict_detected": false
+        }
+      },
+      "technical": {
+        "technical_mechanism": "UNKNOWN",
+        "authentication_required": "UNKNOWN",
+        "attack_vector": "NETWORK",
+        "truth_states": {
+          "root_cause": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "attack_surface": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "prerequisites": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "authentication_required": "UNKNOWN",
+          "privileges_required": "SOURCE_FACT",
+          "user_interaction": "SOURCE_FACT",
+          "attack_vector": "SOURCE_FACT",
+          "attack_complexity": "SOURCE_FACT",
+          "source_stated_impact": "SOURCE_FACT",
+          "analytical_impact": "MODEL_INFERENCE",
+          "technical_impact": "SOURCE_FACT"
+        }
+      },
+      "affected_scope": {
+        "affected_versions": "2023.0, 2021.0",
+        "fixed_versions": "UNKNOWN",
+        "products_affected": [
+          {
+            "vendor": "adobe",
+            "product": "coldfusion",
+            "affected_versions": [
+              "2021",
+              "2023"
+            ]
+          }
+        ]
+      },
+      "remediation": {
+        "advisory_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+        "due_date": "2025-01-06",
+        "fixed_version_source": "NOT_AVAILABLE",
+        "canonical_advisory": {
+          "advisory_id": "ADV-CVE-2024-20767"
+        }
+      },
+      "threat_context": {
+        "attack_mappings": [
+          {
+            "technique_id": "T1190",
+            "technique_name": "Exploit Public-Facing Application",
+            "tactic": "Initial Access",
+            "relationship": "Derived taxonomic mapping: CISA KEV catalog confirms in-the-wild exploitation of network-facing ColdFusion.",
+            "rationale": "Derived taxonomic mapping: CISA KEV catalog confirms in-the-wild exploitation of network-facing ColdFusion.",
+            "confidence": 0.9,
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ],
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "status": "SUPPORTED",
+            "evidence_scope": "CVE",
+            "related_cve_ids": []
+          }
+        ]
+      },
+      "provenance": {
+        "claims": [
+          {
+            "id": "CLM-01",
+            "claim_id": "CLM-01",
+            "field": "identity",
+            "value": "CVE-2024-20767",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-16",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV baseline member",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-02",
+            "claim_id": "CLM-02",
+            "field": "vendor",
+            "value": "Adobe",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vendor definition",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-03",
+            "claim_id": "CLM-03",
+            "field": "product",
+            "value": "ColdFusion",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Affected product definition",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-04",
+            "claim_id": "CLM-04",
+            "field": "affected_versions",
+            "value": "2023.0, 2021.0",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "cisa-vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vulnerable versions or UNKNOWN"
+          },
+          {
+            "id": "CLM-05",
+            "claim_id": "CLM-05",
+            "field": "fixed_versions",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "cisa-vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative patched versions or UNKNOWN"
+          },
+          {
+            "id": "CLM-06",
+            "claim_id": "CLM-06",
+            "field": "cwe",
+            "value": "CWE-284 (Improper Access Control)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "MITRE CWE / CISA",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://cwe.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Weakness taxonomy with official MITRE catalog name",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-07",
+            "claim_id": "CLM-07",
+            "field": "cvss",
+            "value": "7.4",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "psirt@adobe.com",
+            "source_ids": [
+              "psirt@adobe.com"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Primary severity metric"
+          },
+          {
+            "id": "CLM-08",
+            "claim_id": "CLM-08",
+            "field": "cvss_vector",
+            "value": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "psirt@adobe.com",
+            "source_ids": [
+              "psirt@adobe.com"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CVSS vector string"
+          },
+          {
+            "id": "CLM-09",
+            "claim_id": "CLM-09",
+            "field": "epss",
+            "value": "0.985140000",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "FIRST EPSS",
+            "source_ids": [
+              "first-epss"
+            ],
+            "source_url": "https://api.first.org/data/v1/epss",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "EPSS probability score"
+          },
+          {
+            "id": "CLM-10",
+            "claim_id": "CLM-10",
+            "field": "exploitation",
+            "value": "Active in-the-wild exploitation",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-16",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Active in-the-wild exploitation confirmed by CISA KEV",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-11",
+            "claim_id": "CLM-11",
+            "field": "ransomware",
+            "value": "Unknown",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-16",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative CISA KEV catalog ransomware campaign attribution",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-12",
+            "claim_id": "CLM-12",
+            "field": "ssvc",
+            "value": "{\"exploitation\":\"active\",\"automatable\":\"yes\",\"technical_impact\":\"partial\",\"role\":\"CISA Coordinator\"}",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA Vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA SSVC decision tree"
+          },
+          {
+            "id": "CLM-13",
+            "claim_id": "CLM-13",
+            "field": "attack_vector",
+            "value": "NETWORK",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Entry point vector"
+          },
+          {
+            "id": "CLM-14",
+            "claim_id": "CLM-14",
+            "field": "attack_complexity",
+            "value": "HIGH",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack complexity"
+          },
+          {
+            "id": "CLM-15",
+            "claim_id": "CLM-15",
+            "field": "privileges",
+            "value": "NONE",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Privileges required for exploitation"
+          },
+          {
+            "id": "CLM-16",
+            "claim_id": "CLM-16",
+            "field": "authentication",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authentication prerequisite strictly decoupled from privileges required"
+          },
+          {
+            "id": "CLM-17",
+            "claim_id": "CLM-17",
+            "field": "user_interaction",
+            "value": "NONE",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "User interaction requirement"
+          },
+          {
+            "id": "CLM-18",
+            "claim_id": "CLM-18",
+            "field": "root_cause",
+            "value": "The vulnerability stems from an improper access control flaw in Adobe ColdFusion that fails to adequately restrict access to the admin panel, allowing unauthorized interaction with restricted files.",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "MITRE CWE",
+            "source_ids": [
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Root cause analysis",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-19",
+            "claim_id": "CLM-19",
+            "field": "attack_surface",
+            "value": "Network-exposed ColdFusion service interface",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack surface exposure",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-20",
+            "claim_id": "CLM-20",
+            "field": "prerequisites",
+            "value": "Network connectivity to ColdFusion service boundary (Privileges: NONE; Authentication requirement UNKNOWN)",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Preconditions for exploitation",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-21",
+            "claim_id": "CLM-21",
+            "field": "attack_path",
+            "value": "Network-exposed ColdFusion service interface -> Input validation or access control flaw (CWE-284: Improper Access Control) -> Exploitation of Improper Access Control flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "Evidence-Bounded Engine",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Evidence-bounded attack progression",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-22",
+            "claim_id": "CLM-22",
+            "field": "impact",
+            "value": "SSVC: partial",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA SSVC",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Technical impact severity"
+          },
+          {
+            "id": "CLM-23",
+            "claim_id": "CLM-23",
+            "field": "remediation",
+            "value": "Vendor Advisory Bulletin",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory (NVD Verified)",
+            "source_ids": [
+              "cisa-kev",
+              "vendor-advisory"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Remediation guidance",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev",
+              "evi_cve_2024_20767_advisory"
+            ]
+          },
+          {
+            "id": "CLM-24",
+            "claim_id": "CLM-24",
+            "field": "detection",
+            "value": "Monitor ingress perimeter gateways and edge authentication telemetry for ColdFusion anomalous traffic.",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.8,
+            "source": "CISA KEV / NVD",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Defensive telemetry and observable signals",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-25",
+            "claim_id": "CLM-25",
+            "field": "source_advisory",
+            "value": "ADV-CVE-2024-20767",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory (NVD Verified)",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Advisory format: FALLBACK",
+            "evidence_ids": [
+              "evi_cve_2024_20767_advisory"
+            ]
+          },
+          {
+            "id": "CLM-26",
+            "claim_id": "CLM-26",
+            "field": "public_exploit",
+            "value": "NOT_FOUND",
+            "truth_type": "NOT_AVAILABLE",
+            "confidence": 0,
+            "source": "Exploit-DB",
+            "source_ids": [
+              "exploit-db"
+            ],
+            "source_url": "https://www.exploit-db.com",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Exploit-DB catalog status (Public exploit != active in-the-wild exploitation)"
+          },
+          {
+            "id": "CLM-27",
+            "claim_id": "CLM-27",
+            "field": "attack_technique",
+            "value": "T1190 (SUPPORTED)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.9,
+            "source": "MITRE ATT&CK",
+            "source_ids": [
+              "mitre-attack"
+            ],
+            "source_url": "https://attack.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Structured ATT&CK candidate mapping with strict attribution gate (campaign-only techniques excluded from CVE scope)"
+          },
+          {
+            "id": "CLM-28",
+            "claim_id": "CLM-28",
+            "field": "kernel_validation",
+            "value": "PASS",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Rust Kernel Deterministic Root",
+            "source_ids": [
+              "rust-kernel-root"
+            ],
+            "source_url": "internal://rust-kernel",
+            "evidence_scope": "KNOWLEDGE",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Deterministic Kernel state: VALIDATED"
+          },
+          {
+            "id": "CLM-29",
+            "claim_id": "CLM-29",
+            "field": "cisa_due_date",
+            "value": "2025-01-06",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-12-16",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV BOD 22-01 remediation due date (binding for US FCEB agencies; scoped guidance for non-federal organizations)",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ]
+          },
+          {
+            "id": "CLM-30",
+            "claim_id": "CLM-30",
+            "field": "technical_mechanism",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NOT_AVAILABLE",
+            "source_ids": [],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative technical mechanism separated from CWE taxonomy classification"
+          },
+          {
+            "id": "CLM-31",
+            "claim_id": "CLM-31",
+            "field": "products_affected",
+            "value": "coldfusion: 2021, 2023",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Product-Scoped NVD CPE / Advisory",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://helpx.adobe.com/security/products/coldfusion/apsb24-14.html",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-03-18T12:15:06.870",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Product-scoped affected version branches"
+          }
+        ]
+      },
+      "attack_path": {
+        "stages": [
+          {
+            "stage": "ENTRY_POINT",
+            "assertion": "Network-exposed ColdFusion service interface",
+            "value": "Network-exposed ColdFusion service interface",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 1,
+            "derivation": "Directly established by CVSS attack vector metrics",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "PREREQUISITE",
+            "assertion": "Network connectivity to ColdFusion service boundary (Privileges: NONE; Authentication requirement UNKNOWN)",
+            "value": "Network connectivity to ColdFusion service boundary (Privileges: NONE; Authentication requirement UNKNOWN)",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 0.85,
+            "derivation": "Privileges documented in CVSS metrics; authentication prerequisite remains unconfirmed",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "VULNERABILITY_CONDITION",
+            "assertion": "Input validation or access control flaw (CWE-284: Improper Access Control)",
+            "value": "Input validation or access control flaw (CWE-284: Improper Access Control)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.85,
+            "derivation": "Inferred from MITRE CWE taxonomy classification",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "EXPLOITATION_EFFECT",
+            "assertion": "Exploitation of Improper Access Control flaw",
+            "value": "Exploitation of Improper Access Control flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.9,
+            "derivation": "Derived from vulnerability condition mechanics and primary CWE classification",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe",
+              "cisa-kev"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "RESULTING_ACCESS",
+            "assertion": "Unauthorized access to restricted data, state, or service capabilities",
+            "value": "Unauthorized access to restricted data, state, or service capabilities",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.8,
+            "derivation": "Derived from post-exploitation weakness impact analysis",
+            "evidence_ids": [
+              "evi_cve_2024_20767_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe"
+            ],
+            "related_cve_ids": []
+          }
+        ]
+      }
+    },
+    "CVE-2024-45519": {
+      "schema_version": "2.1.0",
+      "status": "PUBLISHED",
+      "identity": {
+        "cve": "CVE-2024-45519",
+        "vendor": "Synacor",
+        "product": "Zimbra Collaboration Suite (ZCS)",
+        "source_specific_cwes": {
+          "cisa_kev": [
+            "CWE-284"
+          ],
+          "cisa-kev": [
+            "CWE-284"
+          ],
+          "nvd": [
+            "CWE-78"
+          ],
+          "nvd-cpe": [
+            "CWE-78"
+          ],
+          "cisa_adp": [
+            "CWE-78 Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "cisa-adp": [
+            "CWE-78 Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+          ],
+          "mitre_cve": [
+            "n/a"
+          ],
+          "mitre-cve": [
+            "n/a"
+          ]
+        },
+        "cwe_disagreement": true,
+        "technical_mechanism": "UNKNOWN"
+      },
+      "signals": {
+        "ransomware_campaign_use": "Unknown"
+      },
+      "exploitation": {
+        "ransomware_campaign_use": "Unknown",
+        "cisa_due_date": "2024-10-24"
+      },
+      "dates": {
+        "cisa_due_at": "2024-10-24"
+      },
+      "severity": {
+        "cvss": {
+          "score": "10",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+          "source": "cve@mitre.org",
+          "conflict_detected": true
+        }
+      },
+      "technical": {
+        "technical_mechanism": "UNKNOWN",
+        "authentication_required": "No",
+        "attack_vector": "NETWORK",
+        "truth_states": {
+          "root_cause": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "attack_surface": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "prerequisites": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "authentication_required": "SOURCE_FACT",
+          "privileges_required": "SOURCE_FACT",
+          "user_interaction": "SOURCE_FACT",
+          "attack_vector": "SOURCE_FACT",
+          "attack_complexity": "SOURCE_FACT",
+          "source_stated_impact": "SOURCE_FACT",
+          "analytical_impact": "UNKNOWN",
+          "technical_impact": "SOURCE_FACT"
+        }
+      },
+      "affected_scope": {
+        "affected_versions": "< 8.8.15, >= 10.0.0 < 10.0.9, 10.1.0, 8.8.15-NA, 8.8.15-p1, 8.8.15-p20, 8.8.15-p26, 8.8.15-p3, 8.8.15-p30, 8.8.15-p31, 8.8.15-p32, 8.8.15-p33, 8.8.15-p34, 8.8.15-p35, 8.8.15-p40, 8.8.15-p43, 8.8.15-p44, 8.8.15-p45, 8.8.15-p5, 9.0.0-NA, 9.0.0-p1, 9.0.0-p20, 9.0.0-p23, 9.0.0-p25, 9.0.0-p26, 9.0.0-p27, 9.0.0-p28, 9.0.0-p33, 9.0.0-p36, 9.0.0-p37, 9.0.0-p38, 9.0.0-p4, 9.0.0-p7, 10.0.6, 10.0.5, 10.0.4, 10.0.1, 10.0.0-GA, introduced:0, introduced:b68c7b31a1d94f94903a79c53f1bd316b792de1d, introduced:ac6081fa002b1511e926aba37740d2b6c20f3f43, last_affected:52b539ef205db233bfd8116e8130e27735b4153c, 8.8.15-p10, 8.8.15-p11, 8.8.15-p12, 8.8.15-p13, 8.8.15-p14, 8.8.15-p15, 8.8.15-p16, 8.8.15-p17, 8.8.15-p18, 8.8.15-p2, 8.8.15-p23, 8.8.15-p24, 8.8.15-p25, 8.8.15-p27, 8.8.15-p29, 8.8.15-p31\\.1, 8.8.15-p36, 8.8.15-p37, 8.8.15-p39, 8.8.15-p4, 8.8.15-p41, 8.8.15-p6, 8.8.15-p7, 8.8.15-p8, 8.8.15-p9, 9.0.0-p10, 9.0.0-p11, 9.0.0-p13, 9.0.0-p16, 9.0.0-p17, 9.0.0-p18, 9.0.0-p19, 9.0.0-p2, 9.0.0-p22, 9.0.0-p24, 9.0.0-p24\\.1, 9.0.0-p29, 9.0.0-p3, 9.0.0-p30, 9.0.0-p32, 9.0.0-p34, 9.0.0-p39, 9.0.0-p40, 9.0.0-p5, 9.0.0-p6, 9.0.0-p8, 9.0.0-p9, 10.0.8, 10.0.7, 10.0.2, 8.8.8, 8.8.12, 8.8.10, 8.8.11, 8.8.9, 8.8.7, 8.8.6, 8.8.5, 8.8.4, 8.8.3, 8.8.2, introduced:8033bd1ec9d7211c2eb5fa71aeb3b4073a8dc160, introduced:d30e647f21ecef5490f21facf2e06e228b44a36e, last_affected:de2f187263204c5edbcd64ab4aad155367f27eef, 10.1.0.beta, 10.0.0, 9.0.0, 8.8.15, 8.7.11, 8.8.0beta2, 8.8.0.beta1, 8.7.10, 8.7.9, 8.7.7, 8.7.6, introduced:6c72db05e6f1b89c511ba5c08ec4b6399bec7bb6, last_affected:5a574c4741e2713147c61524e30057679ece2ec6, 8.8.15-p21, 9.0.0-p14, introduced:e94be3228495cb215d7bb70d6ae24bc8a42cc01f, introduced:41db44a222b547dcc89ab50273cb8684195c09c2, last_affected:0da199c818c28750b27aec8c2aa1fa8420086d4e",
+        "fixed_versions": "2c67cbdfaebf6a71928749b7146f4852876b63ff, 41db44a222b547dcc89ab50273cb8684195c09c2, 6c72db05e6f1b89c511ba5c08ec4b6399bec7bb6, 74ca4ff049d001731d7e1a22f667e32ad9a672e1, a28371d6e77de652833e208a1c9d074f94ce36b4, ac6081fa002b1511e926aba37740d2b6c20f3f43, d30e647f21ecef5490f21facf2e06e228b44a36e, 8.8.15, 9.0.0, 10.0.9, 10.1.1",
+        "products_affected": [
+          {
+            "vendor": "synacor",
+            "product": "zimbra collaboration suite",
+            "affected_versions": [
+              "< 8.8.15",
+              ">= 10.0.0 < 10.0.9"
+            ],
+            "fixed_versions": [
+              "2c67cbdfaebf6a71928749b7146f4852876b63ff",
+              "41db44a222b547dcc89ab50273cb8684195c09c2",
+              "6c72db05e6f1b89c511ba5c08ec4b6399bec7bb6",
+              "74ca4ff049d001731d7e1a22f667e32ad9a672e1",
+              "a28371d6e77de652833e208a1c9d074f94ce36b4",
+              "ac6081fa002b1511e926aba37740d2b6c20f3f43",
+              "d30e647f21ecef5490f21facf2e06e228b44a36e",
+              "8.8.15",
+              "9.0.0",
+              "10.0.9",
+              "10.1.1"
+            ]
+          }
+        ]
+      },
+      "remediation": {
+        "advisory_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+        "due_date": "2024-10-24",
+        "fixed_version_source": "Vendor Advisory Bulletin",
+        "canonical_advisory": {
+          "advisory_id": "ADV-CVE-2024-45519"
+        }
+      },
+      "threat_context": {
+        "attack_mappings": [
+          {
+            "technique_id": "T1190",
+            "technique_name": "Exploit Public-Facing Application",
+            "tactic": "Initial Access",
+            "relationship": "Authoritative advisory records external exploitation directly facilitating access to public-facing Zimbra Collaboration Suite (ZCS).",
+            "rationale": "Authoritative advisory records external exploitation directly facilitating access to public-facing Zimbra Collaboration Suite (ZCS).",
+            "confidence": 0.9,
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "status": "CONFIRMED",
+            "evidence_scope": "CVE",
+            "related_cve_ids": []
+          },
+          {
+            "technique_id": "T1059",
+            "technique_name": "Command and Scripting Interpreter",
+            "tactic": "Execution",
+            "relationship": "Authoritative advisory and telemetry establish direct OS command execution in target context for CVE-2024-45519.",
+            "rationale": "Authoritative advisory and telemetry establish direct OS command execution in target context for CVE-2024-45519.",
+            "confidence": 0.95,
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "status": "CONFIRMED",
+            "evidence_scope": "CVE",
+            "related_cve_ids": []
+          }
+        ]
+      },
+      "provenance": {
+        "claims": [
+          {
+            "id": "CLM-01",
+            "claim_id": "CLM-01",
+            "field": "identity",
+            "value": "CVE-2024-45519",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-03",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV baseline member",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-02",
+            "claim_id": "CLM-02",
+            "field": "vendor",
+            "value": "Synacor",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vendor definition",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-03",
+            "claim_id": "CLM-03",
+            "field": "product",
+            "value": "Zimbra Collaboration Suite (ZCS)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Affected product definition",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-04",
+            "claim_id": "CLM-04",
+            "field": "affected_versions",
+            "value": "< 8.8.15, >= 10.0.0 < 10.0.9, 10.1.0, 8.8.15-NA, 8.8.15-p1, 8.8.15-p20, 8.8.15-p26, 8.8.15-p3, 8.8.15-p30, 8.8.15-p31, 8.8.15-p32, 8.8.15-p33, 8.8.15-p34, 8.8.15-p35, 8.8.15-p40, 8.8.15-p43, 8.8.15-p44, 8.8.15-p45, 8.8.15-p5, 9.0.0-NA, 9.0.0-p1, 9.0.0-p20, 9.0.0-p23, 9.0.0-p25, 9.0.0-p26, 9.0.0-p27, 9.0.0-p28, 9.0.0-p33, 9.0.0-p36, 9.0.0-p37, 9.0.0-p38, 9.0.0-p4, 9.0.0-p7, 10.0.6, 10.0.5, 10.0.4, 10.0.1, 10.0.0-GA, introduced:0, introduced:b68c7b31a1d94f94903a79c53f1bd316b792de1d, introduced:ac6081fa002b1511e926aba37740d2b6c20f3f43, last_affected:52b539ef205db233bfd8116e8130e27735b4153c, 8.8.15-p10, 8.8.15-p11, 8.8.15-p12, 8.8.15-p13, 8.8.15-p14, 8.8.15-p15, 8.8.15-p16, 8.8.15-p17, 8.8.15-p18, 8.8.15-p2, 8.8.15-p23, 8.8.15-p24, 8.8.15-p25, 8.8.15-p27, 8.8.15-p29, 8.8.15-p31\\.1, 8.8.15-p36, 8.8.15-p37, 8.8.15-p39, 8.8.15-p4, 8.8.15-p41, 8.8.15-p6, 8.8.15-p7, 8.8.15-p8, 8.8.15-p9, 9.0.0-p10, 9.0.0-p11, 9.0.0-p13, 9.0.0-p16, 9.0.0-p17, 9.0.0-p18, 9.0.0-p19, 9.0.0-p2, 9.0.0-p22, 9.0.0-p24, 9.0.0-p24\\.1, 9.0.0-p29, 9.0.0-p3, 9.0.0-p30, 9.0.0-p32, 9.0.0-p34, 9.0.0-p39, 9.0.0-p40, 9.0.0-p5, 9.0.0-p6, 9.0.0-p8, 9.0.0-p9, 10.0.8, 10.0.7, 10.0.2, 8.8.8, 8.8.12, 8.8.10, 8.8.11, 8.8.9, 8.8.7, 8.8.6, 8.8.5, 8.8.4, 8.8.3, 8.8.2, introduced:8033bd1ec9d7211c2eb5fa71aeb3b4073a8dc160, introduced:d30e647f21ecef5490f21facf2e06e228b44a36e, last_affected:de2f187263204c5edbcd64ab4aad155367f27eef, 10.1.0.beta, 10.0.0, 9.0.0, 8.8.15, 8.7.11, 8.8.0beta2, 8.8.0.beta1, 8.7.10, 8.7.9, 8.7.7, 8.7.6, introduced:6c72db05e6f1b89c511ba5c08ec4b6399bec7bb6, last_affected:5a574c4741e2713147c61524e30057679ece2ec6, 8.8.15-p21, 9.0.0-p14, introduced:e94be3228495cb215d7bb70d6ae24bc8a42cc01f, introduced:41db44a222b547dcc89ab50273cb8684195c09c2, last_affected:0da199c818c28750b27aec8c2aa1fa8420086d4e",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "nvd-cpe",
+            "source_ids": [
+              "nvd-cpe",
+              "osv",
+              "vendor-advisory",
+              "CISA KEV Notes"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vulnerable versions or UNKNOWN",
+            "evidence_ids": [
+              "evi_cve_2024_45519_advisory"
+            ]
+          },
+          {
+            "id": "CLM-05",
+            "claim_id": "CLM-05",
+            "field": "fixed_versions",
+            "value": "2c67cbdfaebf6a71928749b7146f4852876b63ff, 41db44a222b547dcc89ab50273cb8684195c09c2, 6c72db05e6f1b89c511ba5c08ec4b6399bec7bb6, 74ca4ff049d001731d7e1a22f667e32ad9a672e1, a28371d6e77de652833e208a1c9d074f94ce36b4, ac6081fa002b1511e926aba37740d2b6c20f3f43, d30e647f21ecef5490f21facf2e06e228b44a36e, 8.8.15, 9.0.0, 10.0.9, 10.1.1",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory Bulletin",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative patched versions or UNKNOWN",
+            "evidence_ids": [
+              "evi_cve_2024_45519_advisory"
+            ]
+          },
+          {
+            "id": "CLM-06",
+            "claim_id": "CLM-06",
+            "field": "cwe",
+            "value": "CWE-284 (Improper Access Control), CWE-78 (Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')), N/A (Software Weakness)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "MITRE CWE / CISA",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://cwe.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Weakness taxonomy with official MITRE catalog name",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-07",
+            "claim_id": "CLM-07",
+            "field": "cvss",
+            "value": "10",
+            "truth_type": "CONFLICT",
+            "confidence": 1,
+            "source": "cve@mitre.org",
+            "source_ids": [
+              "cve@mitre.org"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Conflict: [{\"source\":\"cve@mitre.org\",\"source_type\":\"CNA\",\"type\":\"Secondary\",\"score\":\"10\",\"vector\":\"CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H\",\"version\":\"3.1\",\"severity\":\"CRITICAL\"},{\"source\":\"nvd@nist.gov\",\"source_type\":\"NVD\",\"type\":\"Primary\",\"score\":\"9.8\",\"vector\":\"CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H\",\"version\":\"3.1\",\"severity\":\"CRITICAL\"},{\"source\":\"mitre\",\"source_type\":\"CNA\",\"score\":\"10\",\"vector\":\"CVSS:3.1/AC:L/AV:N/A:H/C:H/I:H/PR:N/S:C/UI:N\",\"version\":\"3.1\"}]"
+          },
+          {
+            "id": "CLM-08",
+            "claim_id": "CLM-08",
+            "field": "cvss_vector",
+            "value": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "cve@mitre.org",
+            "source_ids": [
+              "cve@mitre.org"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CVSS vector string"
+          },
+          {
+            "id": "CLM-09",
+            "claim_id": "CLM-09",
+            "field": "epss",
+            "value": "0.999070000",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "FIRST EPSS",
+            "source_ids": [
+              "first-epss"
+            ],
+            "source_url": "https://api.first.org/data/v1/epss",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "EPSS probability score"
+          },
+          {
+            "id": "CLM-10",
+            "claim_id": "CLM-10",
+            "field": "exploitation",
+            "value": "Active in-the-wild exploitation",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-03",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Active in-the-wild exploitation confirmed by CISA KEV",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-11",
+            "claim_id": "CLM-11",
+            "field": "ransomware",
+            "value": "Unknown",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-03",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative CISA KEV catalog ransomware campaign attribution",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-12",
+            "claim_id": "CLM-12",
+            "field": "ssvc",
+            "value": "{\"exploitation\":\"active\",\"automatable\":\"yes\",\"technical_impact\":\"total\",\"role\":\"CISA Coordinator\"}",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA Vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA SSVC decision tree"
+          },
+          {
+            "id": "CLM-13",
+            "claim_id": "CLM-13",
+            "field": "attack_vector",
+            "value": "NETWORK",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Entry point vector"
+          },
+          {
+            "id": "CLM-14",
+            "claim_id": "CLM-14",
+            "field": "attack_complexity",
+            "value": "LOW",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack complexity"
+          },
+          {
+            "id": "CLM-15",
+            "claim_id": "CLM-15",
+            "field": "privileges",
+            "value": "NONE",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Privileges required for exploitation"
+          },
+          {
+            "id": "CLM-16",
+            "claim_id": "CLM-16",
+            "field": "authentication",
+            "value": "No",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authentication prerequisite strictly decoupled from privileges required",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-17",
+            "claim_id": "CLM-17",
+            "field": "user_interaction",
+            "value": "NONE",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "User interaction requirement"
+          },
+          {
+            "id": "CLM-18",
+            "claim_id": "CLM-18",
+            "field": "root_cause",
+            "value": "Improper Access Control (CWE-284)",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "MITRE CWE",
+            "source_ids": [
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Root cause analysis",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-19",
+            "claim_id": "CLM-19",
+            "field": "attack_surface",
+            "value": "Network-exposed Zimbra Collaboration Suite (ZCS) service interface",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack surface exposure",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-20",
+            "claim_id": "CLM-20",
+            "field": "prerequisites",
+            "value": "Network connectivity to Zimbra Collaboration Suite (ZCS) without prior authentication (Privileges: NONE)",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Preconditions for exploitation",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-21",
+            "claim_id": "CLM-21",
+            "field": "attack_path",
+            "value": "Network-exposed Zimbra Collaboration Suite (ZCS) service interface -> Input validation or access control flaw (CWE-284: Improper Access Control) -> Exploitation of Improper Access Control flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "Evidence-Bounded Engine",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Evidence-bounded attack progression",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-22",
+            "claim_id": "CLM-22",
+            "field": "impact",
+            "value": "SSVC: total",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA SSVC",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Technical impact severity"
+          },
+          {
+            "id": "CLM-23",
+            "claim_id": "CLM-23",
+            "field": "remediation",
+            "value": "Vendor Advisory Bulletin",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV Notes",
+            "source_ids": [
+              "cisa-kev",
+              "vendor-advisory"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Remediation guidance",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev",
+              "evi_cve_2024_45519_advisory"
+            ]
+          },
+          {
+            "id": "CLM-24",
+            "claim_id": "CLM-24",
+            "field": "detection",
+            "value": "Monitor ingress perimeter gateways and edge authentication telemetry for Zimbra Collaboration Suite (ZCS) anomalous traffic.",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.8,
+            "source": "CISA KEV / NVD",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Defensive telemetry and observable signals",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-25",
+            "claim_id": "CLM-25",
+            "field": "source_advisory",
+            "value": "ADV-CVE-2024-45519",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV Notes",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Advisory format: FALLBACK",
+            "evidence_ids": [
+              "evi_cve_2024_45519_advisory"
+            ]
+          },
+          {
+            "id": "CLM-26",
+            "claim_id": "CLM-26",
+            "field": "public_exploit",
+            "value": "NOT_FOUND",
+            "truth_type": "NOT_AVAILABLE",
+            "confidence": 0,
+            "source": "Exploit-DB",
+            "source_ids": [
+              "exploit-db"
+            ],
+            "source_url": "https://www.exploit-db.com",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Exploit-DB catalog status (Public exploit != active in-the-wild exploitation)"
+          },
+          {
+            "id": "CLM-27",
+            "claim_id": "CLM-27",
+            "field": "attack_technique",
+            "value": "T1190 (CONFIRMED), T1059 (CONFIRMED)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 0.9,
+            "source": "MITRE ATT&CK",
+            "source_ids": [
+              "mitre-attack"
+            ],
+            "source_url": "https://attack.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Structured ATT&CK candidate mapping with strict attribution gate (campaign-only techniques excluded from CVE scope)"
+          },
+          {
+            "id": "CLM-28",
+            "claim_id": "CLM-28",
+            "field": "kernel_validation",
+            "value": "PASS",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Rust Kernel Deterministic Root",
+            "source_ids": [
+              "rust-kernel-root"
+            ],
+            "source_url": "internal://rust-kernel",
+            "evidence_scope": "KNOWLEDGE",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Deterministic Kernel state: VALIDATED"
+          },
+          {
+            "id": "CLM-29",
+            "claim_id": "CLM-29",
+            "field": "cisa_due_date",
+            "value": "2024-10-24",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-03",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV BOD 22-01 remediation due date (binding for US FCEB agencies; scoped guidance for non-federal organizations)",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ]
+          },
+          {
+            "id": "CLM-30",
+            "claim_id": "CLM-30",
+            "field": "technical_mechanism",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NOT_AVAILABLE",
+            "source_ids": [],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative technical mechanism separated from CWE taxonomy classification"
+          },
+          {
+            "id": "CLM-31",
+            "claim_id": "CLM-31",
+            "field": "products_affected",
+            "value": "zimbra collaboration suite: < 8.8.15, >= 10.0.0 < 10.0.9",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Product-Scoped NVD CPE / Advisory",
+            "source_ids": [
+              "nvd-cpe",
+              "osv",
+              "vendor-advisory",
+              "CISA KEV Notes"
+            ],
+            "source_url": "https://wiki.zimbra.com/wiki/Zimbra_Security_Advisories",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-02T22:15:02.770",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Product-scoped affected version branches",
+            "evidence_ids": [
+              "evi_cve_2024_45519_advisory"
+            ]
+          }
+        ]
+      },
+      "attack_path": {
+        "stages": [
+          {
+            "stage": "ENTRY_POINT",
+            "assertion": "Network-exposed Zimbra Collaboration Suite (ZCS) service interface",
+            "value": "Network-exposed Zimbra Collaboration Suite (ZCS) service interface",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 1,
+            "derivation": "Directly established by CVSS attack vector metrics",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "PREREQUISITE",
+            "assertion": "Network connectivity to Zimbra Collaboration Suite (ZCS) without prior authentication (Privileges: NONE)",
+            "value": "Network connectivity to Zimbra Collaboration Suite (ZCS) without prior authentication (Privileges: NONE)",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 1,
+            "derivation": "Empirically verified unauthenticated network reachability from CVSS telemetry",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "VULNERABILITY_CONDITION",
+            "assertion": "Input validation or access control flaw (CWE-284: Improper Access Control)",
+            "value": "Input validation or access control flaw (CWE-284: Improper Access Control)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.85,
+            "derivation": "Inferred from MITRE CWE taxonomy classification",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "EXPLOITATION_EFFECT",
+            "assertion": "Exploitation of Improper Access Control flaw",
+            "value": "Exploitation of Improper Access Control flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.9,
+            "derivation": "Derived from vulnerability condition mechanics and primary CWE classification",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe",
+              "cisa-kev"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "RESULTING_ACCESS",
+            "assertion": "Total technical impact on affected software component under SSVC decision framework",
+            "value": "Total technical impact on affected software component under SSVC decision framework",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "CVE",
+            "confidence": 1,
+            "derivation": "CISA SSVC decision tree technical_impact=total",
+            "evidence_ids": [
+              "evi_cve_2024_45519_kev"
+            ],
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "related_cve_ids": []
+          }
+        ]
+      }
+    },
+    "CVE-2024-38226": {
+      "schema_version": "2.1.0",
+      "status": "PUBLISHED",
+      "identity": {
+        "cve": "CVE-2024-38226",
+        "vendor": "Microsoft",
+        "product": "Publisher",
+        "source_specific_cwes": {
+          "cisa_kev": [
+            "CWE-693"
+          ],
+          "cisa-kev": [
+            "CWE-693"
+          ],
+          "nvd": [
+            "CWE-693"
+          ],
+          "nvd-cpe": [
+            "CWE-693"
+          ],
+          "mitre_cve": [
+            "CWE-693: Protection Mechanism Failure"
+          ],
+          "mitre-cve": [
+            "CWE-693: Protection Mechanism Failure"
+          ]
+        },
+        "cwe_disagreement": false,
+        "technical_mechanism": "UNKNOWN"
+      },
+      "signals": {
+        "ransomware_campaign_use": "Unknown"
+      },
+      "exploitation": {
+        "ransomware_campaign_use": "Unknown",
+        "cisa_due_date": "2024-10-01"
+      },
+      "dates": {
+        "cisa_due_at": "2024-10-01"
+      },
+      "severity": {
+        "cvss": {
+          "score": "7.3",
+          "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+          "source": "secure@microsoft.com",
+          "conflict_detected": true
+        }
+      },
+      "technical": {
+        "technical_mechanism": "UNKNOWN",
+        "authentication_required": "UNKNOWN",
+        "attack_vector": "LOCAL",
+        "truth_states": {
+          "root_cause": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "attack_surface": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "prerequisites": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "authentication_required": "UNKNOWN",
+          "privileges_required": "SOURCE_FACT",
+          "user_interaction": "SOURCE_FACT",
+          "attack_vector": "SOURCE_FACT",
+          "attack_complexity": "SOURCE_FACT",
+          "source_stated_impact": "SOURCE_FACT",
+          "analytical_impact": "UNKNOWN",
+          "technical_impact": "SOURCE_FACT"
+        }
+      },
+      "affected_scope": {
+        "affected_versions": "UNKNOWN",
+        "fixed_versions": "16.0.5465.1001",
+        "products_affected": [
+          {
+            "vendor": "microsoft",
+            "product": "office long term servicing channel",
+            "affected_versions": [
+              "2021"
+            ],
+            "fixed_versions": [
+              "16.0.5465.1001"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "publisher",
+            "affected_versions": [
+              "2016"
+            ],
+            "fixed_versions": [
+              "16.0.5465.1001"
+            ]
+          }
+        ]
+      },
+      "remediation": {
+        "advisory_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+        "due_date": "2024-10-01",
+        "fixed_version_source": "Authoritative Package Feed",
+        "canonical_advisory": {
+          "advisory_id": "ADV-CVE-2024-38226"
+        }
+      },
+      "threat_context": {
+        "attack_mappings": []
+      },
+      "provenance": {
+        "claims": [
+          {
+            "id": "CLM-01",
+            "claim_id": "CLM-01",
+            "field": "identity",
+            "value": "CVE-2024-38226",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV baseline member",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-02",
+            "claim_id": "CLM-02",
+            "field": "vendor",
+            "value": "Microsoft",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vendor definition",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-03",
+            "claim_id": "CLM-03",
+            "field": "product",
+            "value": "Publisher",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Affected product definition",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-04",
+            "claim_id": "CLM-04",
+            "field": "affected_versions",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "vendor-advisory",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vulnerable versions or UNKNOWN",
+            "evidence_ids": [
+              "evi_cve_2024_38226_advisory"
+            ]
+          },
+          {
+            "id": "CLM-05",
+            "claim_id": "CLM-05",
+            "field": "fixed_versions",
+            "value": "16.0.5465.1001",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "vendor-advisory",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative patched versions or UNKNOWN",
+            "evidence_ids": [
+              "evi_cve_2024_38226_advisory"
+            ]
+          },
+          {
+            "id": "CLM-06",
+            "claim_id": "CLM-06",
+            "field": "cwe",
+            "value": "CWE-693 (Protection Mechanism Failure)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "MITRE CWE / CISA",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://cwe.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Weakness taxonomy with official MITRE catalog name",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-07",
+            "claim_id": "CLM-07",
+            "field": "cvss",
+            "value": "7.3",
+            "truth_type": "CONFLICT",
+            "confidence": 1,
+            "source": "secure@microsoft.com",
+            "source_ids": [
+              "secure@microsoft.com"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Conflict: [{\"source\":\"secure@microsoft.com\",\"source_type\":\"CNA\",\"type\":\"Secondary\",\"score\":\"7.3\",\"vector\":\"CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H\",\"version\":\"3.1\",\"severity\":\"HIGH\"},{\"source\":\"microsoft\",\"source_type\":\"CNA\",\"score\":\"7.3\",\"vector\":\"CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H/E:F/RL:O/RC:C\",\"version\":\"3.1\"}]"
+          },
+          {
+            "id": "CLM-08",
+            "claim_id": "CLM-08",
+            "field": "cvss_vector",
+            "value": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "secure@microsoft.com",
+            "source_ids": [
+              "secure@microsoft.com"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CVSS vector string"
+          },
+          {
+            "id": "CLM-09",
+            "claim_id": "CLM-09",
+            "field": "epss",
+            "value": "0.026670000",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "FIRST EPSS",
+            "source_ids": [
+              "first-epss"
+            ],
+            "source_url": "https://api.first.org/data/v1/epss",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "EPSS probability score"
+          },
+          {
+            "id": "CLM-10",
+            "claim_id": "CLM-10",
+            "field": "exploitation",
+            "value": "Active in-the-wild exploitation",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Active in-the-wild exploitation confirmed by CISA KEV",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-11",
+            "claim_id": "CLM-11",
+            "field": "ransomware",
+            "value": "Unknown",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative CISA KEV catalog ransomware campaign attribution",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-12",
+            "claim_id": "CLM-12",
+            "field": "ssvc",
+            "value": "{\"exploitation\":\"active\",\"automatable\":\"no\",\"technical_impact\":\"total\",\"role\":\"CISA Coordinator\"}",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA Vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA SSVC decision tree"
+          },
+          {
+            "id": "CLM-13",
+            "claim_id": "CLM-13",
+            "field": "attack_vector",
+            "value": "LOCAL",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Entry point vector"
+          },
+          {
+            "id": "CLM-14",
+            "claim_id": "CLM-14",
+            "field": "attack_complexity",
+            "value": "LOW",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack complexity"
+          },
+          {
+            "id": "CLM-15",
+            "claim_id": "CLM-15",
+            "field": "privileges",
+            "value": "LOW",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Privileges required for exploitation"
+          },
+          {
+            "id": "CLM-16",
+            "claim_id": "CLM-16",
+            "field": "authentication",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authentication prerequisite strictly decoupled from privileges required"
+          },
+          {
+            "id": "CLM-17",
+            "claim_id": "CLM-17",
+            "field": "user_interaction",
+            "value": "REQUIRED",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "User interaction requirement"
+          },
+          {
+            "id": "CLM-18",
+            "claim_id": "CLM-18",
+            "field": "root_cause",
+            "value": "Protection Mechanism Failure (CWE-693)",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "MITRE CWE",
+            "source_ids": [
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Root cause analysis",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-19",
+            "claim_id": "CLM-19",
+            "field": "attack_surface",
+            "value": "Local access to Publisher process boundary",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack surface exposure",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-20",
+            "claim_id": "CLM-20",
+            "field": "prerequisites",
+            "value": "Local console or shell access to Publisher host environment",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Preconditions for exploitation",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-21",
+            "claim_id": "CLM-21",
+            "field": "attack_path",
+            "value": "Local access to Publisher process boundary -> Input validation or access control flaw (CWE-693: Protection Mechanism Failure) -> Exploitation of Protection Mechanism Failure flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "Evidence-Bounded Engine",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Evidence-bounded attack progression",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-22",
+            "claim_id": "CLM-22",
+            "field": "impact",
+            "value": "SSVC: total",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA SSVC",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Technical impact severity"
+          },
+          {
+            "id": "CLM-23",
+            "claim_id": "CLM-23",
+            "field": "remediation",
+            "value": "Vendor Advisory Bulletin",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory (NVD Verified)",
+            "source_ids": [
+              "cisa-kev",
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Remediation guidance",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev",
+              "evi_cve_2024_38226_advisory"
+            ]
+          },
+          {
+            "id": "CLM-24",
+            "claim_id": "CLM-24",
+            "field": "detection",
+            "value": "Monitor host execution and privileged process invocations on systems running Publisher.",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.8,
+            "source": "CISA KEV / NVD",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Defensive telemetry and observable signals",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-25",
+            "claim_id": "CLM-25",
+            "field": "source_advisory",
+            "value": "ADV-CVE-2024-38226",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory (NVD Verified)",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Advisory format: FALLBACK",
+            "evidence_ids": [
+              "evi_cve_2024_38226_advisory"
+            ]
+          },
+          {
+            "id": "CLM-26",
+            "claim_id": "CLM-26",
+            "field": "public_exploit",
+            "value": "NOT_FOUND",
+            "truth_type": "NOT_AVAILABLE",
+            "confidence": 0,
+            "source": "Exploit-DB",
+            "source_ids": [
+              "exploit-db"
+            ],
+            "source_url": "https://www.exploit-db.com",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Exploit-DB catalog status (Public exploit != active in-the-wild exploitation)"
+          },
+          {
+            "id": "CLM-27",
+            "claim_id": "CLM-27",
+            "field": "attack_technique",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "MITRE ATT&CK",
+            "source_ids": [
+              "mitre-attack"
+            ],
+            "source_url": "https://attack.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Structured ATT&CK candidate mapping with strict attribution gate (campaign-only techniques excluded from CVE scope)"
+          },
+          {
+            "id": "CLM-28",
+            "claim_id": "CLM-28",
+            "field": "kernel_validation",
+            "value": "PASS",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Rust Kernel Deterministic Root",
+            "source_ids": [
+              "rust-kernel-root"
+            ],
+            "source_url": "internal://rust-kernel",
+            "evidence_scope": "KNOWLEDGE",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Deterministic Kernel state: VALIDATED"
+          },
+          {
+            "id": "CLM-29",
+            "claim_id": "CLM-29",
+            "field": "cisa_due_date",
+            "value": "2024-10-01",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-09-10",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV BOD 22-01 remediation due date (binding for US FCEB agencies; scoped guidance for non-federal organizations)",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ]
+          },
+          {
+            "id": "CLM-30",
+            "claim_id": "CLM-30",
+            "field": "technical_mechanism",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NOT_AVAILABLE",
+            "source_ids": [],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative technical mechanism separated from CWE taxonomy classification"
+          },
+          {
+            "id": "CLM-31",
+            "claim_id": "CLM-31",
+            "field": "products_affected",
+            "value": "office long term servicing channel: 2021; publisher: 2016",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Product-Scoped NVD CPE / Advisory",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-38226",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-09-10T17:15:25.267",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Product-scoped affected version branches",
+            "evidence_ids": [
+              "evi_cve_2024_38226_advisory"
+            ]
+          }
+        ]
+      },
+      "attack_path": {
+        "stages": [
+          {
+            "stage": "ENTRY_POINT",
+            "assertion": "Local access to Publisher process boundary",
+            "value": "Local access to Publisher process boundary",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 1,
+            "derivation": "Directly established by CVSS attack vector metrics",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "PREREQUISITE",
+            "assertion": "Local console or shell access to Publisher host environment",
+            "value": "Local console or shell access to Publisher host environment",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 0.85,
+            "derivation": "Privileges documented in CVSS metrics; authentication prerequisite remains unconfirmed",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "VULNERABILITY_CONDITION",
+            "assertion": "Input validation or access control flaw (CWE-693: Protection Mechanism Failure)",
+            "value": "Input validation or access control flaw (CWE-693: Protection Mechanism Failure)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.85,
+            "derivation": "Inferred from MITRE CWE taxonomy classification",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "EXPLOITATION_EFFECT",
+            "assertion": "Exploitation of Protection Mechanism Failure flaw",
+            "value": "Exploitation of Protection Mechanism Failure flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.9,
+            "derivation": "Derived from vulnerability condition mechanics and primary CWE classification",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe",
+              "cisa-kev"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "RESULTING_ACCESS",
+            "assertion": "Total technical impact on affected software component under SSVC decision framework",
+            "value": "Total technical impact on affected software component under SSVC decision framework",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "CVE",
+            "confidence": 1,
+            "derivation": "CISA SSVC decision tree technical_impact=total",
+            "evidence_ids": [
+              "evi_cve_2024_38226_kev"
+            ],
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "related_cve_ids": []
+          }
+        ]
+      }
+    },
+    "CVE-2024-43572": {
+      "schema_version": "2.1.0",
+      "status": "PUBLISHED",
+      "identity": {
+        "cve": "CVE-2024-43572",
+        "vendor": "Microsoft",
+        "product": "Windows",
+        "source_specific_cwes": {
+          "cisa_kev": [
+            "CWE-707"
+          ],
+          "cisa-kev": [
+            "CWE-707"
+          ],
+          "nvd": [
+            "CWE-707"
+          ],
+          "nvd-cpe": [
+            "CWE-707"
+          ],
+          "mitre_cve": [
+            "CWE-707: Improper Neutralization"
+          ],
+          "mitre-cve": [
+            "CWE-707: Improper Neutralization"
+          ]
+        },
+        "cwe_disagreement": false,
+        "technical_mechanism": "UNKNOWN"
+      },
+      "signals": {
+        "ransomware_campaign_use": "Unknown"
+      },
+      "exploitation": {
+        "ransomware_campaign_use": "Unknown",
+        "cisa_due_date": "2024-10-29"
+      },
+      "dates": {
+        "cisa_due_at": "2024-10-29"
+      },
+      "severity": {
+        "cvss": {
+          "score": "7.8",
+          "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "source": "secure@microsoft.com",
+          "conflict_detected": true
+        }
+      },
+      "technical": {
+        "technical_mechanism": "UNKNOWN",
+        "authentication_required": "UNKNOWN",
+        "attack_vector": "LOCAL",
+        "truth_states": {
+          "root_cause": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "attack_surface": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "prerequisites": "KNOWLEDGE_SUPPORTED_INFERENCE",
+          "authentication_required": "UNKNOWN",
+          "privileges_required": "SOURCE_FACT",
+          "user_interaction": "SOURCE_FACT",
+          "attack_vector": "SOURCE_FACT",
+          "attack_complexity": "SOURCE_FACT",
+          "source_stated_impact": "SOURCE_FACT",
+          "analytical_impact": "UNKNOWN",
+          "technical_impact": "SOURCE_FACT"
+        }
+      },
+      "affected_scope": {
+        "affected_versions": "< 10.0.10240.20796",
+        "fixed_versions": "6.0.6003.22918, 6.1.7601.27366, 6.2.9200.25118, 6.3.9600.22221, 10.0.10240.20796, 10.0.14393.7428, 10.0.17763.6414, 10.0.19044.5011, 10.0.19045.5011, 10.0.20348.2762, 10.0.22000.3260, 10.0.22621.4317, 10.0.22631.4317, 10.0.25398.1189, 10.0.26100.2033",
+        "products_affected": [
+          {
+            "vendor": "microsoft",
+            "product": "windows 10 1507",
+            "affected_versions": [
+              "< 10.0.10240.20796"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 10 1607",
+            "affected_versions": [
+              "< 10.0.14393.7428"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 10 1809",
+            "affected_versions": [
+              "< 10.0.17763.6414"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 10 21h2",
+            "affected_versions": [
+              "< 10.0.19044.5011"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 10 22h2",
+            "affected_versions": [
+              "< 10.0.19045.5011"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 11 21h2",
+            "affected_versions": [
+              "< 10.0.22000.3260"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 11 22h2",
+            "affected_versions": [
+              "< 10.0.22621.4317"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 11 23h2",
+            "affected_versions": [
+              "< 10.0.22631.4317"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows 11 24h2",
+            "affected_versions": [
+              "< 10.0.26100.2033"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows server 2008",
+            "affected_versions": [
+              "r2"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows server 2012",
+            "affected_versions": [
+              "r2"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows server 2016",
+            "affected_versions": [
+              "< 10.0.14393.7428"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows server 2019",
+            "affected_versions": [
+              "< 10.0.17763.6414"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows server 2022",
+            "affected_versions": [
+              "< 10.0.20348.2762"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          },
+          {
+            "vendor": "microsoft",
+            "product": "windows server 2022 23h2",
+            "affected_versions": [
+              "< 10.0.25398.1189"
+            ],
+            "fixed_versions": [
+              "6.0.6003.22918",
+              "6.1.7601.27366",
+              "6.2.9200.25118",
+              "6.3.9600.22221",
+              "10.0.10240.20796",
+              "10.0.14393.7428",
+              "10.0.17763.6414",
+              "10.0.19044.5011",
+              "10.0.19045.5011",
+              "10.0.20348.2762",
+              "10.0.22000.3260",
+              "10.0.22621.4317",
+              "10.0.22631.4317",
+              "10.0.25398.1189",
+              "10.0.26100.2033"
+            ]
+          }
+        ]
+      },
+      "remediation": {
+        "advisory_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+        "due_date": "2024-10-29",
+        "fixed_version_source": "Authoritative Package Feed",
+        "canonical_advisory": {
+          "advisory_id": "ADV-CVE-2024-43572"
+        }
+      },
+      "threat_context": {
+        "attack_mappings": []
+      },
+      "provenance": {
+        "claims": [
+          {
+            "id": "CLM-01",
+            "claim_id": "CLM-01",
+            "field": "identity",
+            "value": "CVE-2024-43572",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV baseline member",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-02",
+            "claim_id": "CLM-02",
+            "field": "vendor",
+            "value": "Microsoft",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vendor definition",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-03",
+            "claim_id": "CLM-03",
+            "field": "product",
+            "value": "Windows",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Authoritative CNA / NVD",
+            "source_ids": [
+              "cisa-kev",
+              "nvd-cpe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Affected product definition",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-04",
+            "claim_id": "CLM-04",
+            "field": "affected_versions",
+            "value": "< 10.0.10240.20796",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "nvd-cpe",
+            "source_ids": [
+              "nvd-cpe",
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative vulnerable versions or UNKNOWN",
+            "evidence_ids": [
+              "evi_cve_2024_43572_advisory"
+            ]
+          },
+          {
+            "id": "CLM-05",
+            "claim_id": "CLM-05",
+            "field": "fixed_versions",
+            "value": "6.0.6003.22918, 6.1.7601.27366, 6.2.9200.25118, 6.3.9600.22221, 10.0.10240.20796, 10.0.14393.7428, 10.0.17763.6414, 10.0.19044.5011, 10.0.19045.5011, 10.0.20348.2762, 10.0.22000.3260, 10.0.22621.4317, 10.0.22631.4317, 10.0.25398.1189, 10.0.26100.2033",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "nvd-cpe",
+            "source_ids": [
+              "nvd-cpe",
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative patched versions or UNKNOWN",
+            "evidence_ids": [
+              "evi_cve_2024_43572_advisory"
+            ]
+          },
+          {
+            "id": "CLM-06",
+            "claim_id": "CLM-06",
+            "field": "cwe",
+            "value": "CWE-707 (Improper Neutralization)",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "MITRE CWE / CISA",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://cwe.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Weakness taxonomy with official MITRE catalog name",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-07",
+            "claim_id": "CLM-07",
+            "field": "cvss",
+            "value": "7.8",
+            "truth_type": "CONFLICT",
+            "confidence": 1,
+            "source": "secure@microsoft.com",
+            "source_ids": [
+              "secure@microsoft.com"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Conflict: [{\"source\":\"secure@microsoft.com\",\"source_type\":\"CNA\",\"type\":\"Secondary\",\"score\":\"7.8\",\"vector\":\"CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H\",\"version\":\"3.1\",\"severity\":\"HIGH\"},{\"source\":\"microsoft\",\"source_type\":\"CNA\",\"score\":\"7.8\",\"vector\":\"CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H/E:F/RL:O/RC:C\",\"version\":\"3.1\"}]"
+          },
+          {
+            "id": "CLM-08",
+            "claim_id": "CLM-08",
+            "field": "cvss_vector",
+            "value": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "secure@microsoft.com",
+            "source_ids": [
+              "secure@microsoft.com"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CVSS vector string"
+          },
+          {
+            "id": "CLM-09",
+            "claim_id": "CLM-09",
+            "field": "epss",
+            "value": "0.666950000",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "FIRST EPSS",
+            "source_ids": [
+              "first-epss"
+            ],
+            "source_url": "https://api.first.org/data/v1/epss",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "EPSS probability score"
+          },
+          {
+            "id": "CLM-10",
+            "claim_id": "CLM-10",
+            "field": "exploitation",
+            "value": "Active in-the-wild exploitation",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev",
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Active in-the-wild exploitation confirmed by CISA KEV",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-11",
+            "claim_id": "CLM-11",
+            "field": "ransomware",
+            "value": "Unknown",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative CISA KEV catalog ransomware campaign attribution",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-12",
+            "claim_id": "CLM-12",
+            "field": "ssvc",
+            "value": "{\"exploitation\":\"active\",\"automatable\":\"no\",\"technical_impact\":\"total\",\"role\":\"CISA Coordinator\"}",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA Vulnrichment",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA SSVC decision tree"
+          },
+          {
+            "id": "CLM-13",
+            "claim_id": "CLM-13",
+            "field": "attack_vector",
+            "value": "LOCAL",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Entry point vector"
+          },
+          {
+            "id": "CLM-14",
+            "claim_id": "CLM-14",
+            "field": "attack_complexity",
+            "value": "LOW",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack complexity"
+          },
+          {
+            "id": "CLM-15",
+            "claim_id": "CLM-15",
+            "field": "privileges",
+            "value": "NONE",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Privileges required for exploitation"
+          },
+          {
+            "id": "CLM-16",
+            "claim_id": "CLM-16",
+            "field": "authentication",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authentication prerequisite strictly decoupled from privileges required"
+          },
+          {
+            "id": "CLM-17",
+            "claim_id": "CLM-17",
+            "field": "user_interaction",
+            "value": "REQUIRED",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "User interaction requirement"
+          },
+          {
+            "id": "CLM-18",
+            "claim_id": "CLM-18",
+            "field": "root_cause",
+            "value": "Improper Neutralization (CWE-707)",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "MITRE CWE",
+            "source_ids": [
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Root cause analysis",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-19",
+            "claim_id": "CLM-19",
+            "field": "attack_surface",
+            "value": "Local access to Windows process boundary",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Attack surface exposure",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-20",
+            "claim_id": "CLM-20",
+            "field": "prerequisites",
+            "value": "Local console or shell access to Windows host environment",
+            "truth_type": "KNOWLEDGE_SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "NVD CVSS",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://nvd.nist.gov",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Preconditions for exploitation",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-21",
+            "claim_id": "CLM-21",
+            "field": "attack_path",
+            "value": "Local access to Windows process boundary -> Input validation or access control flaw (CWE-707: Improper Neutralization) -> Exploitation of Improper Neutralization flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.85,
+            "source": "Evidence-Bounded Engine",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev",
+              "mitre-cwe"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Evidence-bounded attack progression",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-22",
+            "claim_id": "CLM-22",
+            "field": "impact",
+            "value": "SSVC: total",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA SSVC",
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "source_url": "https://www.cisa.gov",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Technical impact severity"
+          },
+          {
+            "id": "CLM-23",
+            "claim_id": "CLM-23",
+            "field": "remediation",
+            "value": "Vendor Advisory Bulletin",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory (NVD Verified)",
+            "source_ids": [
+              "cisa-kev",
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Remediation guidance",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev",
+              "evi_cve_2024_43572_advisory"
+            ]
+          },
+          {
+            "id": "CLM-24",
+            "claim_id": "CLM-24",
+            "field": "detection",
+            "value": "Monitor host execution and privileged process invocations on systems running Windows.",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "confidence": 0.8,
+            "source": "CISA KEV / NVD",
+            "source_ids": [
+              "nvd-cpe",
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Defensive telemetry and observable signals",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-25",
+            "claim_id": "CLM-25",
+            "field": "source_advisory",
+            "value": "ADV-CVE-2024-43572",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Vendor Advisory (NVD Verified)",
+            "source_ids": [
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Advisory format: FALLBACK",
+            "evidence_ids": [
+              "evi_cve_2024_43572_advisory"
+            ]
+          },
+          {
+            "id": "CLM-26",
+            "claim_id": "CLM-26",
+            "field": "public_exploit",
+            "value": "NOT_FOUND",
+            "truth_type": "NOT_AVAILABLE",
+            "confidence": 0,
+            "source": "Exploit-DB",
+            "source_ids": [
+              "exploit-db"
+            ],
+            "source_url": "https://www.exploit-db.com",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Exploit-DB catalog status (Public exploit != active in-the-wild exploitation)"
+          },
+          {
+            "id": "CLM-27",
+            "claim_id": "CLM-27",
+            "field": "attack_technique",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "MITRE ATT&CK",
+            "source_ids": [
+              "mitre-attack"
+            ],
+            "source_url": "https://attack.mitre.org",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Structured ATT&CK candidate mapping with strict attribution gate (campaign-only techniques excluded from CVE scope)"
+          },
+          {
+            "id": "CLM-28",
+            "claim_id": "CLM-28",
+            "field": "kernel_validation",
+            "value": "PASS",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Rust Kernel Deterministic Root",
+            "source_ids": [
+              "rust-kernel-root"
+            ],
+            "source_url": "internal://rust-kernel",
+            "evidence_scope": "KNOWLEDGE",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Deterministic Kernel state: VALIDATED"
+          },
+          {
+            "id": "CLM-29",
+            "claim_id": "CLM-29",
+            "field": "cisa_due_date",
+            "value": "2024-10-29",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "CISA KEV",
+            "source_ids": [
+              "cisa-kev"
+            ],
+            "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+            "evidence_scope": "CVE",
+            "source_timestamp": "2024-10-08",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "CISA KEV BOD 22-01 remediation due date (binding for US FCEB agencies; scoped guidance for non-federal organizations)",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ]
+          },
+          {
+            "id": "CLM-30",
+            "claim_id": "CLM-30",
+            "field": "technical_mechanism",
+            "value": "UNKNOWN",
+            "truth_type": "UNKNOWN",
+            "confidence": 0,
+            "source": "NOT_AVAILABLE",
+            "source_ids": [],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "CVE",
+            "source_timestamp": "UNKNOWN",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Authoritative technical mechanism separated from CWE taxonomy classification"
+          },
+          {
+            "id": "CLM-31",
+            "claim_id": "CLM-31",
+            "field": "products_affected",
+            "value": "windows 10 1507: < 10.0.10240.20796; windows 10 1607: < 10.0.14393.7428; windows 10 1809: < 10.0.17763.6414; windows 10 21h2: < 10.0.19044.5011; windows 10 22h2: < 10.0.19045.5011; windows 11 21h2: < 10.0.22000.3260; windows 11 22h2: < 10.0.22621.4317; windows 11 23h2: < 10.0.22631.4317; windows 11 24h2: < 10.0.26100.2033; windows server 2008: r2; windows server 2012: r2; windows server 2016: < 10.0.14393.7428; windows server 2019: < 10.0.17763.6414; windows server 2022: < 10.0.20348.2762; windows server 2022 23h2: < 10.0.25398.1189",
+            "truth_type": "SOURCE_FACT",
+            "confidence": 1,
+            "source": "Product-Scoped NVD CPE / Advisory",
+            "source_ids": [
+              "nvd-cpe",
+              "vendor-advisory"
+            ],
+            "source_url": "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2024-43572",
+            "evidence_scope": "PRODUCT",
+            "source_timestamp": "2024-10-08T18:15:24.593",
+            "verification_status": "VERIFIED",
+            "related_cve_ids": [],
+            "notes": "Product-scoped affected version branches",
+            "evidence_ids": [
+              "evi_cve_2024_43572_advisory"
+            ]
+          }
+        ]
+      },
+      "attack_path": {
+        "stages": [
+          {
+            "stage": "ENTRY_POINT",
+            "assertion": "Local access to Windows process boundary",
+            "value": "Local access to Windows process boundary",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 1,
+            "derivation": "Directly established by CVSS attack vector metrics",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "PREREQUISITE",
+            "assertion": "Local console or shell access to Windows host environment",
+            "value": "Local console or shell access to Windows host environment",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "PRODUCT",
+            "confidence": 0.85,
+            "derivation": "Privileges documented in CVSS metrics; authentication prerequisite remains unconfirmed",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ],
+            "source_ids": [
+              "nvd-cpe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "VULNERABILITY_CONDITION",
+            "assertion": "Input validation or access control flaw (CWE-707: Improper Neutralization)",
+            "value": "Input validation or access control flaw (CWE-707: Improper Neutralization)",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.85,
+            "derivation": "Inferred from MITRE CWE taxonomy classification",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "EXPLOITATION_EFFECT",
+            "assertion": "Exploitation of Improper Neutralization flaw",
+            "value": "Exploitation of Improper Neutralization flaw",
+            "truth_type": "SUPPORTED_INFERENCE",
+            "evidence_scope": "CVE",
+            "confidence": 0.9,
+            "derivation": "Derived from vulnerability condition mechanics and primary CWE classification",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ],
+            "source_ids": [
+              "mitre-cwe",
+              "cisa-kev"
+            ],
+            "related_cve_ids": []
+          },
+          {
+            "stage": "RESULTING_ACCESS",
+            "assertion": "Total technical impact on affected software component under SSVC decision framework",
+            "value": "Total technical impact on affected software component under SSVC decision framework",
+            "truth_type": "SOURCE_FACT",
+            "evidence_scope": "CVE",
+            "confidence": 1,
+            "derivation": "CISA SSVC decision tree technical_impact=total",
+            "evidence_ids": [
+              "evi_cve_2024_43572_kev"
+            ],
+            "source_ids": [
+              "cisa-vulnrichment"
+            ],
+            "related_cve_ids": []
+          }
+        ]
+      }
+    }
+  }
+}

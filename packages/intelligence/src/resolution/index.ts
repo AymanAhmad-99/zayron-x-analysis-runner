@@ -110,6 +110,14 @@ export const CANONICAL_ACTORS: CanonicalActor[] = [
     country: 'Iran',
     motivation: 'Regional espionage / Critical infrastructure',
   },
+  {
+    id: 'act_fin7',
+    name: 'FIN7',
+    slug: 'fin7',
+    aliases: ['Carbanak', 'Navigator Group', 'ELBRUS'],
+    country: 'Eastern Europe / Global',
+    motivation: 'Financial cybercrime / Ransomware syndication',
+  },
 ];
 
 // ── CANONICAL MALWARE REGISTRY ───────────────────────────────────
@@ -183,6 +191,13 @@ export const CANONICAL_MALWARE: CanonicalMalware[] = [
     slug: 'lockbit-3-0',
     aliases: ['LockBit Black payload'],
     family: 'Ransomware Encryptor',
+  },
+  {
+    id: 'mw_kv_botnet',
+    name: 'KV-Botnet',
+    slug: 'kv-botnet',
+    aliases: ['KV botnet', 'KV-bot'],
+    family: 'SOHO Router Botnet / Covert Proxy Network',
   },
 ];
 

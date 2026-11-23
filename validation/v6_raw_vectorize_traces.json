@@ -1,0 +1,2167 @@
+[
+  {
+    "query_id": "gq_vuln_01",
+    "query_text": "SonicWall SonicOS post-authentication buffer overflow remote code execution patch",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "kb-doc-cisa-kev-record-1182",
+      "vec_chk_hae_01"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-07-first-cvss4",
+      "doc-08-first-epss"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:11.902Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_02",
+    "query_text": "CVSS v4.0 Attack Vector network vs local metric definition and scoring calculation",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "chk_cvss4_metric_av",
+      "doc-07-first-cvss4"
+    ],
+    "gold_relevant_documents": [
+      "doc-07-first-cvss4",
+      "doc-08-first-epss"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:12.205Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_03",
+    "query_text": "FIRST EPSS model 30-day exploit prediction probability threshold percentile",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "chk_first_epss_01",
+      "doc-08-first-epss"
+    ],
+    "gold_relevant_documents": [
+      "doc-08-first-epss",
+      "doc-cisa-kev"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:12.409Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_04",
+    "query_text": "CISA KEV Binding Operational Directive BOD 22-01 remediation timelines for federal agencies",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "chk_cisa_kev_01",
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:12.614Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_05",
+    "query_text": "Windows MSHTML platform spoofing zero-day vulnerability CVE-2024-38112 exploit in the wild",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "kb-doc-cisa-kev-record-521",
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:12.826Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_06",
+    "query_text": "OpenSSH regreSSHion signal handler race condition CVE-2024-6387 glibc vulnerability",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "kb-doc-cisa-kev-record-858",
+      "vec_chk_hae_01"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:13.025Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_07",
+    "query_text": "Palo Alto Networks PAN-OS GlobalProtect command injection CVE-2024-3400 root shell",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "kb-doc-cisa-kev-record-1182",
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:13.187Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_08",
+    "query_text": "ConnectWise ScreenConnect authentication bypass CVE-2024-1709 administrative setup wizard",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:13.337Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_09",
+    "query_text": "Ivanti Connect Secure authentication bypass and command injection CVE-2023-46805 CVE-2024-21887",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:13.539Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_10",
+    "query_text": "Citrix Bleed NetScaler ADC session token memory disclosure vulnerability CVE-2023-4966",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:13.741Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_11",
+    "query_text": "Atlassian Confluence broken access control setup administrator account creation CVE-2023-22515",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:13.948Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_12",
+    "query_text": "Fortinet FortiOS SSL-VPN heap-based buffer overflow remote code execution CVE-2023-27997",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev",
+      "vec_chk_hae_01"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:14.151Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_13",
+    "query_text": "MOVEit Transfer SQL injection zero-day data exfiltration vulnerability CVE-2023-34362",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:14.320Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_14",
+    "query_text": "Microsoft Outlook NTLM credential relay NetBIOS hash theft CVE-2023-23397",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:14.560Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_15",
+    "query_text": "Log4j JNDI LDAP lookup remote code execution vulnerability Log4Shell CVE-2021-44228",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:14.783Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_16",
+    "query_text": "Follina MSDT Microsoft Support Diagnostic Tool URL protocol handler RCE CVE-2022-30190",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:14.985Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_17",
+    "query_text": "PrintNightmare Windows Print Spooler remote code execution CVE-2021-34527",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:15.160Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_18",
+    "query_text": "PHP CGI argument injection Windows best-fit character mapping bypass CVE-2024-4577",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:15.385Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_19",
+    "query_text": "VMware ESXi Active Directory integration authentication bypass privilege escalation CVE-2024-37085",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:15.528Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_20",
+    "query_text": "Check Point Quantum Security Gateway arbitrary file read CVE-2024-24919 VPN appliance",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:15.677Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_21",
+    "query_text": "Jenkins CLI arbitrary file read vulnerability via args4j parser CVE-2024-23897",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:15.822Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_22",
+    "query_text": "JetBrains TeamCity authentication bypass administrator account creation CVE-2024-27198",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:15.977Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_23",
+    "query_text": "Cisco ASA and FTD persistent local code execution line-in-the-sand CVE-2024-20359",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:16.127Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_24",
+    "query_text": "Windows Error Reporting Service local privilege escalation zero-day CVE-2024-26169",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:16.283Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_vuln_25",
+    "query_text": "Spring4Shell Spring Framework DataBinder remote code execution CVE-2022-22965 classLoader",
+    "domain": "VULNERABILITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "doc-cisa-kev"
+    ],
+    "gold_relevant_documents": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:16.424Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_01",
+    "query_text": "Process injection techniques CreateRemoteThread VirtualAllocEx memory injection T1055",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1055"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:16.572Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_02",
+    "query_text": "Process hollowing unmapping executable image replacing PE header memory evasion T1055.012",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1055-012"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:16.726Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_03",
+    "query_text": "Reflective DLL loading memory execution without touching disk Windows API evasion T1620",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1620"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:16.874Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_04",
+    "query_text": "Dynamic-link library search order hijacking DLL side-loading persistence T1574.002",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1574-002"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:17.022Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_05",
+    "query_text": "Obfuscated files or information software packing entropy analysis packing detection T1027.002",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1027-002"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:17.223Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_06",
+    "query_text": "Credential dumping LSASS memory minidump sekurlsa password extraction T1003.001",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1003-001"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:17.427Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_07",
+    "query_text": "Living off the land binaries LOLBAS Rundll32 proxy execution defense evasion T1218.011",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1218-011"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:17.631Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_08",
+    "query_text": "Regsvr32 squiblydoo scriptlet execution AppLocker bypass T1218.010",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1218-010"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:17.846Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_09",
+    "query_text": "Scheduled task job persistence creation schtasks administrative utility T1053.005",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1053-005"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:18.045Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_10",
+    "query_text": "Registry run keys startup folder persistence autostart execution T1547.001",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1547-001"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:18.246Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_11",
+    "query_text": "Cobalt Strike malleable C2 profile HTTP beaconing user-agent customization T1071.001",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1071-001"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:18.450Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_12",
+    "query_text": "Asynchronous Remote Access Trojan AsyncRAT dynamic DNS client evasion T1219",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1219"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:18.672Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_13",
+    "query_text": "RedLine Stealer web browser credential sqlite database cookie harvesting T1555.003",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1555-003"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:18.821Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_14",
+    "query_text": "LummaC2 information stealer encrypted strings anti-debugging PE structure T1027",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1027"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:19.063Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_15",
+    "query_text": "LockBit ransomware multithreaded file encryption shadow copy deletion vssadmin T1486",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1486"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:19.269Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_16",
+    "query_text": "BlackCat ALPHV Rust-based modular ransomware cross-platform execution T1486",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1486"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:19.475Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_17",
+    "query_text": "Wiper malware master boot record MBR destruction HermeticWiper data destruction T1561.002",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1561-002"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:19.679Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_18",
+    "query_text": "Endpoint evasion Bring Your Own Vulnerable Driver BYOVD kernel driver exploit T1068",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1068"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:19.886Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_19",
+    "query_text": "PowerShell encoded command execution bypass execution policy AMSI memory bypass T1059.001",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1059-001"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:20.088Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_malw_20",
+    "query_text": "Impair defenses disabling Windows Defender antivirus tampering service stoppage T1562.001",
+    "domain": "MALWARE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [
+      "attack-t1562-001"
+    ],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:20.296Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_01",
+    "query_text": "DNS tunneling data exfiltration encoded subdomains TXT record inspection T1071.004",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:20.457Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_02",
+    "query_text": "Kerberoasting Active Directory service principal name SPN RC4 ticket extraction T1558.003",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:20.703Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_03",
+    "query_text": "DCSync attack Directory Replication Service DRS GetNCChanges account replication T1003.006",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:20.911Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_04",
+    "query_text": "SMB lateral movement named pipe execution svcctl PsExec remote service creation T1021.002",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:21.107Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_05",
+    "query_text": "Remote Desktop Protocol RDP remote services lateral movement network logon Type 10 T1021.001",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:21.317Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_06",
+    "query_text": "TLS JA3 JA4 client fingerprint anomaly SSL handshake client hello ciphersuite T1573",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:21.488Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_07",
+    "query_text": "Network service port scanning TCP SYN sweep host discovery subnet reconnaissance T1046",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:21.701Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_08",
+    "query_text": "Automated SQL injection web application scanning ingress HTTP payload inspection T1190",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:21.878Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_09",
+    "query_text": "Fast flux DNS bulletproof hosting short TTL IP address cycling C2 domain evasion T1568.001",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:22.137Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_10",
+    "query_text": "Domain Name System over HTTPS DoH enterprise resolver bypass encrypted exfiltration T1572",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:22.341Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_11",
+    "query_text": "Protocol tunneling SSH port forwarding SOCKS proxy internal pivot network evasion T1572",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:22.546Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_12",
+    "query_text": "Command and control multi-hop proxy traffic redirection network beaconing T1090.003",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:22.750Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_13",
+    "query_text": "Data transfer size limits exfiltration over C2 channel bandwidth throttling T1030",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:22.961Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_14",
+    "query_text": "Network boundary protection ingress packet filtering firewall security controls AC-4",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:23.151Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_15",
+    "query_text": "NIST SP 800-53 SC-7 boundary protection demilitarized zone DMZ traffic inspection",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:23.297Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_16",
+    "query_text": "NIST SP 800-53 SI-4 information system monitoring network intrusion detection IDS",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:23.446Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_17",
+    "query_text": "Network Security Monitoring NSM full packet capture session flow analysis zeek conn log",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:23.623Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_18",
+    "query_text": "SYN flood distributed denial of service DDoS state exhaustion boundary filtering T1498",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:23.778Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_19",
+    "query_text": "NTLM relay cross-protocol reflection attack SMB signing requirement enforcement T1557.001",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:23.975Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_net_20",
+    "query_text": "Network denial of service UDP amplification DNS reflection NTP monlist flood T1498.002",
+    "domain": "NETWORK_SECURITY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:24.125Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_01",
+    "query_text": "NIST SP 800-86 guide to integrating forensic techniques into incident response evidence collection",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:24.278Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_02",
+    "query_text": "Physical memory acquisition order of volatility volatile data preservation live triage",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:24.432Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_03",
+    "query_text": "Virtual Address Descriptor VAD tree traversal unbacked executable memory allocation PAGE_EXECUTE_READWRITE",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:24.574Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_04",
+    "query_text": "System Service Descriptor Table SSDT hooking kernel driver function pointer integrity",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:24.766Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_05",
+    "query_text": "Direct Kernel Object Manipulation DKOM process unlinking EPROCESS active process list",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:24.909Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_06",
+    "query_text": "Volatility 3 framework malfind plugin identifying injected PE headers in process address space",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:25.062Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_07",
+    "query_text": "LSASS memory mini-dump offline extraction plaintext credential artifact parsing",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:25.241Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_08",
+    "query_text": "Process ghosting deleted file handle mapping anti-forensic execution evasion",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:25.390Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_09",
+    "query_text": "Process doppelganging NTFS transactional memory section hollowing",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:25.538Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_10",
+    "query_text": "Memory pool tag allocation analysis detecting hidden kernel drivers and rootkit root threads",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:25.687Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_11",
+    "query_text": "NIST SP 800-86 forensic disk imaging cryptographic hash integrity SHA-256 chain of custody",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:25.840Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_12",
+    "query_text": "Windows Event Log analysis Event ID 4624 logon types logon type 3 network vs logon type 10 RDP",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:26.063Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_13",
+    "query_text": "Windows Prefetch file parsing execution timestamp evidence application run frequency",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:26.205Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_14",
+    "query_text": "ShimCache AppCompatCache application execution artifact forensic timeline reconstruction",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:26.356Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_dfir_15",
+    "query_text": "Volume Shadow Copy VSS forensic analysis retrieving deleted files and historical registry hives",
+    "domain": "DFIR_MEMORY",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:26.506Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_01",
+    "query_text": "APT29 Cozy Bear Nobelium OAuth application abuse cloud tenant persistence token theft",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:26.659Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_02",
+    "query_text": "APT28 Fancy Bear credential harvesting password spraying NTLM authentication relay",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:26.804Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_03",
+    "query_text": "Lazarus Group APT38 cryptocurrency cross-chain bridge heist trojanized decentralized finance tooling",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:27.019Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_04",
+    "query_text": "Volt Typhoon living off the land router mesh stealth proxy network critical infrastructure reconnaissance",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:27.219Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_05",
+    "query_text": "Sandworm Unit 74455 industrial control system ICS OT substations destructive wiper deployment",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:27.380Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_06",
+    "query_text": "Scattered Spider UNC3944 identity provider Okta social engineering helpdesk SIM swap",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:27.539Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_07",
+    "query_text": "Midnight Blizzard cloud identity residential proxy password spray Exchange Web Services access",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:27.768Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_08",
+    "query_text": "FIN7 Carbanak financial payment point-of-sale card skimming weaponized macro delivery",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:27.975Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_09",
+    "query_text": "Kimsuky spear-phishing malicious OneNote attachments CHM compiled HTML help file execution",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:28.127Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_actor_10",
+    "query_text": "Turla Snake Uroburos satellite communication link hijacking custom covert C2 protocol",
+    "domain": "THREAT_ACTOR",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:28.325Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_01",
+    "query_text": "NIST SP 800-61 Rev. 3 incident handling lifecycle preparation detection analysis containment eradication recovery",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:28.486Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_02",
+    "query_text": "NIST SP 800-61 incident coordination communication information sharing stakeholders CSIRT",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:28.689Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_03",
+    "query_text": "NIST SP 800-150 cyber threat information sharing operational trust communities STIX TAXII exchange",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:28.840Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_04",
+    "query_text": "OASIS STIX v2.1 structured threat information expression indicator observed data sdo relationship",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:29.106Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_05",
+    "query_text": "OASIS TAXII v2.1 trusted automated exchange of intelligence information collection api root channel",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:29.254Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_06",
+    "query_text": "NIST Cybersecurity Framework CSF 2.0 Govern Identify Protect Detect Respond Recover functions",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:29.426Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_07",
+    "query_text": "NIST SP 800-53 IR-4 incident handling containment eradication recovery automated response procedures",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:29.563Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_08",
+    "query_text": "Psychology of intelligence analysis Heuer cognitive biases confirmation bias analysis of competing hypotheses ACH",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:29.717Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_09",
+    "query_text": "Analysis of Competing Hypotheses ACH matrix evidence evaluation alternative diagnostic explanations",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:29.877Z",
+    "execution_mode": "UNAVAILABLE"
+  },
+  {
+    "query_id": "gq_ir_10",
+    "query_text": "NIST AI Risk Management Framework 1.0 AI RMF trustworthiness validity reliability safety governance",
+    "domain": "INCIDENT_RESPONSE",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "embedding_dimensions": 768,
+    "pooling_method": "mean",
+    "embedding_hash": "unknown",
+    "vectorize_index": "zayron-knowledge-index",
+    "top_5": [],
+    "top_10": [],
+    "top_20": [],
+    "gold_relevant_chunks": [],
+    "gold_relevant_documents": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "execution_timestamp": "2026-09-05T08:36:30.037Z",
+    "execution_mode": "UNAVAILABLE"
+  }
+]

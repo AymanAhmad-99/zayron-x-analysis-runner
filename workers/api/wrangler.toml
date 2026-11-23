@@ -2,9 +2,37 @@ name = "zayron-x-api"
 main = "src/index.ts"
 compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+routes = [
+  { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
+  { pattern = "www.zayron-x.co/api/*", zone_name = "zayron-x.co" },
+  # Wave 4B.2 — dedicated API hostname: the web worker reaches the API over a
+  # DISTINCT origin, so a server-side fetch is never a same-zone subrequest to
+  # its own hostname (Cloudflare Error 1042). Browser calls stay on
+  # https://zayron-x.co/api/v1 (same-origin, no CORS preflight).
+  { pattern = "api.zayron-x.co", custom_domain = true }
+]
+
+[[rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]
+fallthrough = false
 
 [[d1_databases]]
 binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+# Gate 1 fix: migrations live at the repo root, so wrangler must be pointed at
+# them explicitly. Without this the CLI resolved the nonexistent
+# `workers/api/migrations/` and always reported "no migrations to apply".
+migrations_dir = "../../db/migrations"
+
+# Canonical malware report store (zayron-x-db.malware_reports) — the EXACT table
+# the ZAYRON-X pipeline materializes canonical reports into. Read-only surface
+# for the workspace Malware Intelligence view.
+[[d1_databases]]
+binding = "ZX_DB"
 database_name = "zayron-x-db"
 database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
 
@@ -43,6 +71,78 @@ class_name = "KnowledgeCorpusWorkflow"
 [ai]
 binding = "AI"
 
+[env.preview]
+name = "zayron-x-api-preview"
+workers_dev = true
+routes = []
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+migrations_dir = "../../db/migrations"
+
+# Preview: the canonical malware-report store is the DEDICATED PREVIEW database.
+#
+# CONTAINMENT (2026-10-10): this binding previously pointed at the PRODUCTION
+# report store, which made the public preview host serve production report
+# metadata and full production report bodies. The dedicated preview database
+# named below was independently verified to carry the same canonical
+# `malware_reports` schema, so the two preview read routes are supported with no
+# migration and no change to any route, secret, or application behaviour.
+# No production identity appears in this section, by construction.
+#
+# `scripts/preview-target-guard.mjs` fails closed on the production identity
+# here: this binding may only be absent or the approved preview database.
+[[env.preview.d1_databases]]
+binding = "ZX_DB"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+
+# Required secrets (set out-of-band, never committed):
+#   ADMIN_API_TOKEN          - operator/admin bearer token (required for /admin/* and operator mutations)
+#   KNOWLEDGE_INTERNAL_TOKEN - internal service token (already required by /rag/*)
+#   TELEGRAM_WEBHOOK_SECRET  - Telegram webhook secret; endpoint fails closed (503) when unset
+#   GEMINI_API_KEY           - Gemini API fallback key (Preview secret only)
+[env.preview.vars]
+ENVIRONMENT = "preview"
+LEGACY_FREEZE = "false"
+ALLOWED_ORIGINS = "https://zayron-x.co,https://www.zayron-x.co,https://zayron-x-web-preview.aabusabih.workers.dev,http://localhost:8799,http://127.0.0.1:8799,http://localhost:8801,http://127.0.0.1:8801"
+TELEGRAM_TARGET_CHANNEL = "zayronxai"
+
+# Effective Preview INTELLIGENCE-SUPPLY destination, declared as configuration
+# ("<database_name>:<database_id>") rather than inferred from the environment
+# name. The Preview supply path resolves this value at runtime and fails closed
+# on missing/malformed/conflicting input, and
+# `scripts/preview-target-guard.mjs` refuses any deploy where it disagrees with
+# the `[env.preview].DB` binding or names the production database.
+PREVIEW_SUPPLY_DB_IDENTITY = "zayron-x-preview-db:34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+
+[env.preview.ai]
+binding = "AI"
+
+[[env.preview.services]]
+binding = "INGEST"
+service = "zayron-x-ingest-preview"
+
+[[env.preview.services]]
+binding = "TELEGRAM_COLLECTOR_SERVICE"
+service = "zayron-telegram-collector-do-preview"
+
+# ═══════════════════════════════════════════════════════════════
+# PREVIEW QUEUE PRODUCER BINDING
+# Required for env.INGEST_QUEUE.metrics() to resolve realtime
+# queue telemetry in the health endpoint.
+# PREVIEW ONLY — does NOT touch the production queue.
+# ═══════════════════════════════════════════════════════════════
+[[env.preview.queues.producers]]
+binding = "INGEST_QUEUE"
+queue = "zayron-ingest-queue-preview"
+
+[[env.preview.vectorize]]
+binding = "VECTORIZE"
+index_name = "zayron-doc04-staging-index"
+
 [[vectorize]]
 binding = "VECTORIZE"
 index_name = "zayron-knowledge-index"
@@ -51,11 +151,46 @@ index_name = "zayron-knowledge-index"
 binding = "KNOWLEDGE_BUCKET"
 bucket_name = "zayron-x-knowledge"
 
+# Wave 4A — the outbound Telegram channel was previously resolved only by
+# the hardcoded 'zayronxai' fallback in publishApprovedIntelligence(), because
+# this variable was never declared for this worker. Declared here so the
+# channel is configuration, not a literal buried in code.
 [vars]
 ENVIRONMENT = "production"
+TELEGRAM_TARGET_CHANNEL = "zayronxai"
 LEGACY_FREEZE = "true"
+ALLOWED_ORIGINS = "https://zayron-x.co,https://www.zayron-x.co"
+# Free-Tier Survival Mode (4h); reduce after Workers Paid upgrade.
+# Public public-read GETs are served from the edge cache for this many seconds
+# before a D1 read is paid again. Overridable per environment without a code
+# change; absent/invalid falls back to the same 14400s default in edgeCache.ts.
+PUBLIC_EDGE_CACHE_TTL_SECONDS = "14400"
 
-routes = [
-  { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
-  { pattern = "www.zayron-x.co/api/*", zone_name = "zayron-x.co" }
-]
+# ─────────────────────────────────────────────────────────────────────────────
+# OPTIONAL DEAD-LETTER QUEUE (env.DLQ)
+#
+# The queue consumer already guards the forward with `if (env.DLQ)` and records
+# a DISCARDED tombstone in `event_trace`, so no binding is required to deploy.
+# To actually park exhausted messages, CREATE the queue first and THEN add the
+# binding below (binding an unprovisioned queue fails `wrangler deploy`):
+#
+#   npx wrangler queues create zayron-publish-dlq
+#   npx wrangler queues create zayron-publish-dlq-preview
+#
+# then uncomment:
+#
+# [[queues.producers]]
+# binding = "DLQ"
+# queue = "zayron-publish-dlq"
+#
+# and inside [env.preview]:
+#
+# [[env.preview.queues.producers]]
+# binding = "DLQ"
+# queue = "zayron-publish-dlq-preview"
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ZX-28: Workers Logs / traces. Enables structured invocation logs and error
+# traces without touching CPU limits (a 200ms cap would throttle AI analysis).
+[observability]
+enabled = true

@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS canonical_dossiers (dossier_id TEXT PRIMARY KEY, entity_id TEXT NOT NULL REFERENCES entities(entity_id), status TEXT NOT NULL, publication_readiness TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, UNIQUE(entity_id, dossier_id));
+ALTER TABLE analysis_claims ADD COLUMN evidence_refs_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE analysis_claims ADD COLUMN knowledge_refs_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE analysis_claims ADD COLUMN reasoning_basis TEXT NOT NULL DEFAULT '';
+ALTER TABLE analysis_claims ADD COLUMN confidence_method TEXT;
+ALTER TABLE analysis_claims ADD COLUMN overall_confidence REAL;
+ALTER TABLE analysis_claims ADD COLUMN confidence_band TEXT;
+ALTER TABLE analysis_claims ADD COLUMN confidence_dimensions_json TEXT;
+ALTER TABLE analysis_claims ADD COLUMN created_at TEXT;
+ALTER TABLE analysis_claims ADD COLUMN updated_at TEXT;
+CREATE TABLE IF NOT EXISTS dossier_revisions (revision_id TEXT PRIMARY KEY, dossier_id TEXT NOT NULL REFERENCES canonical_dossiers(dossier_id), revision_number INTEGER NOT NULL, input_fingerprint TEXT NOT NULL, analytical_framework_version TEXT NOT NULL, model_policy TEXT NOT NULL, confidence_method TEXT NOT NULL, validation_state TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(dossier_id, revision_number));
+CREATE TABLE IF NOT EXISTS dossier_confidence (revision_id TEXT PRIMARY KEY REFERENCES dossier_revisions(revision_id), overall_confidence REAL, confidence_band TEXT NOT NULL, factors_json TEXT NOT NULL, dimension_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS dossier_unknowns (unknown_id TEXT PRIMARY KEY, revision_id TEXT NOT NULL REFERENCES dossier_revisions(revision_id), proposition TEXT NOT NULL, status TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS dossier_conflicts (conflict_id TEXT PRIMARY KEY, revision_id TEXT NOT NULL REFERENCES dossier_revisions(revision_id), claim_ids_json TEXT NOT NULL, source_ids_json TEXT NOT NULL, conflict_type TEXT NOT NULL, resolution_state TEXT NOT NULL, resolution_basis TEXT);
+CREATE TABLE IF NOT EXISTS dossier_validations (validation_id TEXT PRIMARY KEY, dossier_id TEXT NOT NULL REFERENCES canonical_dossiers(dossier_id), overall_valid INTEGER NOT NULL, failure_reasons TEXT NOT NULL, validation_details TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS dossier_previews (preview_id TEXT PRIMARY KEY, dossier_id TEXT NOT NULL REFERENCES canonical_dossiers(dossier_id), revision_id TEXT NOT NULL REFERENCES dossier_revisions(revision_id), preview_type TEXT NOT NULL, content TEXT NOT NULL, UNIQUE(revision_id, preview_type));

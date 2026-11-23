@@ -1,96 +1,97 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
-import { Footer } from "@/components/Footer";
+import "./design-tokens.css";
+import "./v4.css";
+import "./search.css";
+import "./intelligence-shell.css";
+import "./vulnerability-list.css";
+import "./vulnerability-overrides.css";
+import "./vulnerability-detail.css";
+import "./hero-rebuild.css";
+import "./malware-report.css";
+import "./legal.css";
+import { getSiteUrl, isPreviewDeployment } from "./lib/siteConfig";
+import { organizationJsonLd, serializeJsonLd, webSiteJsonLd } from "./lib/jsonLd";
 
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
+const SITE_NAME = "ZAYRON-X";
+const SITE_DESCRIPTION = "See the threat. Understand the evidence. Act with confidence.";
+const DEFAULT_TITLE = "ZAYRON-X — Evidence-driven cyber threat intelligence";
 
-const fraunces = Fraunces({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  display: "swap",
-  axes: ["opsz", "SOFT", "WONK"],
-});
+/**
+ * Wave 4B — root metadata. `metadataBase` makes every relative canonical/OG URL
+ * absolute, and the title template keeps page titles consistent without each
+ * page repeating the brand.
+ *
+ * Preview deployments are globally non-indexable: a preview host must never
+ * compete with (or outrank) the production origin.
+ */
+/**
+ * Wave 4B audit — `generateMetadata()` instead of a frozen `metadata` const.
+ *
+ * The preview `noindex` decision and `metadataBase` depend on the environment
+ * AND the request host. A module-level export is evaluated once per isolate,
+ * so it could not react to a host/env signal. Evaluating per render keeps the
+ * decision correct for every request.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = getSiteUrl();
+  const isPreview = isPreviewDeployment();
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: DEFAULT_TITLE, template: `%s | ${SITE_NAME}` },
+    description: SITE_DESCRIPTION,
+    applicationName: SITE_NAME,
+    alternates: { canonical: "/" },
+    robots: isPreview
+      ? { index: false, follow: false, nocache: true }
+      : { index: true, follow: true },
+    icons: {
+      icon: [
+        { url: "/favicon.ico", type: "image/x-icon" },
+        { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+        { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      ],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    },
+    manifest: "/site.webmanifest",
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      url: siteUrl,
+      title: DEFAULT_TITLE,
+      description: SITE_DESCRIPTION,
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: DEFAULT_TITLE }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: DEFAULT_TITLE,
+      description: SITE_DESCRIPTION,
+      images: ["/og-image.png"],
+    },
+  };
+}
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://zayron-x.co'),
-  title: "ZAYRON-X — Evidence-Driven Cyber Threat Intelligence",
-  description: "Understand what changed. Know why it matters. Evidence-driven cyber intelligence analyzing vulnerabilities, adversaries, malware, and infrastructure.",
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'ZAYRON-X — Evidence-Driven Cyber Threat Intelligence',
-    description: 'Understand what changed. Know why it matters. Evidence-driven cyber intelligence analyzing vulnerabilities, adversaries, malware, and infrastructure.',
-    url: 'https://zayron-x.co',
-    siteName: 'ZAYRON-X',
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'ZAYRON-X — Evidence-Driven Cyber Threat Intelligence',
-    description: 'Understand what changed. Know why it matters. Evidence-driven cyber intelligence.',
-  }
+export const viewport = {
+  themeColor: "#050505",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable} antialiased h-full`}>
-      <body className="min-h-full flex flex-col bg-[#F7F7F5] text-[#111111] font-sans selection:bg-[#FF6A00] selection:text-white">
+    <html lang="en">
+      <body>
+        {children}
+        {/* Site-wide entity graph. Inline JSON-LD is permitted by the CSP
+            (`script-src 'self' 'unsafe-inline'`) and serialized so a `<` can
+            never terminate the script element. */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "ZAYRON-X",
-              "alternateName": ["ZAYRON", "ZERONX", "zayron-x.co"],
-              "url": "https://zayron-x.co",
-              "description": "Evidence-driven cyber threat intelligence and vulnerability radar.",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": "https://zayron-x.co/search?q={search_term_string}"
-                },
-                "query-input": "required name=search_term_string"
-              }
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd(getSiteUrl())) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "ZAYRON-X",
-              "alternateName": ["ZAYRON", "ZERONX", "ZAYRON-X Intelligence"],
-              "url": "https://zayron-x.co",
-              "logo": "https://zayron-x.co/favicon.ico",
-              "description": "Evidence-driven cyber threat intelligence and technical research.",
-              "sameAs": [
-                "https://t.me/zayronxai",
-                "https://twitter.com/zayronx"
-              ]
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(webSiteJsonLd(getSiteUrl())) }}
         />
-        {/* Main Content Area */}
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
-
-        <Footer />
       </body>
     </html>
   );

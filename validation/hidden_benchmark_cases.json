@@ -1,0 +1,150 @@
+[
+  {
+    "case_id": "hid_case_01",
+    "category": "VULNERABILITY",
+    "title": "Windows Remote Desktop Licensing Service RCE (CVE-2024-38077)",
+    "is_synthetic": false,
+    "raw_text": "Critical Security Advisory: Microsoft disclosed CVE-2024-38077 (MadLicense), a critical remote code execution vulnerability in the Windows Remote Desktop Licensing Service. Any unauthenticated remote threat actor can trigger heap buffer overflow by sending malformed RDL network packets to TCP port 135/RPC. CVSS v3.1 Base Score: 9.8 (CRITICAL). CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H.",
+    "issuing_authority": "Microsoft MSRC",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-38077",
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 9.8,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": ["chk_nvd_cvss_01", "chk_hae_01"],
+      "irrelevant_chunk_ids": ["chk_amf_01", "chk_pma_01"],
+      "acceptable_knowledge_domains": ["VULNERABILITY_ANALYSIS", "EXPLOIT_ANALYSIS"],
+      "forbidden_knowledge_domains": ["MEMORY_FORENSICS", "MALWARE_ANALYSIS"],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": ["CVE-2024-38077", "CVSS Base Score 9.8", "Heap buffer overflow"]
+    }
+  },
+  {
+    "case_id": "hid_case_02",
+    "category": "MALWARE",
+    "title": "XZ Utils liblzma Backdoor Supply Chain Payload (CVE-2024-3094)",
+    "is_synthetic": false,
+    "raw_text": "Advisory: Malicious multi-stage backdoor discovered in upstream xz-utils tarballs (CVE-2024-3094). Compromised build script modifies IFUNC resolution in liblzma to intercept RSA_public_decrypt in OpenSSH sshd process. SHA256 tarball payload: 457a469796013a2168903c73449339e80a0a55255ee5300cf9d268d06b50e241.",
+    "issuing_authority": "OpenSSF / Red Hat Security",
+    "telemetry_features": {
+      "has_cve": true,
+      "cve_id": "CVE-2024-3094",
+      "has_binary": true,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "cvss_score": 10.0,
+      "indicators": [{ "type": "sha256", "value": "457a469796013a2168903c73449339e80a0a55255ee5300cf9d268d06b50e241" }]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": ["chk_pma_01", "chk_attack_t1055_01"],
+      "irrelevant_chunk_ids": ["chk_nsm_01", "chk_amf_01"],
+      "acceptable_knowledge_domains": ["MALWARE_ANALYSIS", "REVERSE_ENGINEERING"],
+      "forbidden_knowledge_domains": ["NETWORK_SECURITY_MONITORING", "MEMORY_FORENSICS"],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": ["CVE-2024-3094", "Binary observable", "IFUNC hooking"]
+    }
+  },
+  {
+    "case_id": "hid_case_03",
+    "category": "NETWORK_SECURITY",
+    "title": "Sliver C2 JA4 TLS Fingerprint Anomaly over Port 443",
+    "is_synthetic": false,
+    "raw_text": "Network Security Sensor NSM-12 recorded repeated TLS connections from host 10.2.14.88 to external server 194.26.29.40 on port 443. JA4 TLS client fingerprint matches Sliver C2 framework. Session duration: 1800 seconds with uniform 60s jittered heartbeat beaconing.",
+    "issuing_authority": "Enterprise SOC Telemetry",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": true,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": [{ "type": "ipv4", "value": "194.26.29.40" }]
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": ["chk_nsm_01", "chk_anp_01"],
+      "irrelevant_chunk_ids": ["chk_amf_01", "chk_hae_01"],
+      "acceptable_knowledge_domains": ["NETWORK_SECURITY_MONITORING"],
+      "forbidden_knowledge_domains": ["MEMORY_FORENSICS", "EXPLOIT_ANALYSIS"],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": ["IP observable 194.26.29.40", "JA4 TLS beaconing", "Perimeter containment"]
+    }
+  },
+  {
+    "case_id": "hid_case_04",
+    "category": "MEMORY_FORENSICS",
+    "title": "SYNTHETIC CONTROLLED TEST: Kernel SSDT Hooking in Acquired Physical Memory",
+    "is_synthetic": true,
+    "raw_text": "SYNTHETIC CONTROLLED TEST — VOLATILITY CRASH DUMP ANALYSIS: Forensic triage performed on physical memory image MEMORY_WIN11.DMP. Volatility ssdt inspection identifies 3 swapped function pointers in KiServiceTable pointing to unbacked non-paged kernel pool addresses. Evidence of rootkit kernel-mode hook.",
+    "issuing_authority": "DFIR Controlled Laboratory",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": true,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": ["chk_amf_01"],
+      "irrelevant_chunk_ids": ["chk_nsm_01", "chk_first_epss_01"],
+      "acceptable_knowledge_domains": ["MEMORY_FORENSICS"],
+      "forbidden_knowledge_domains": ["NETWORK_SECURITY_MONITORING", "VULNERABILITY_ANALYSIS"],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": ["SSDT function pointer", "Physical memory dump", "Kernel rootkit hook"]
+    }
+  },
+  {
+    "case_id": "hid_case_05",
+    "category": "THREAT_ACTOR",
+    "title": "Lazarus Group (APT38) BYOVD Driver Attack using FssFltr.sys",
+    "is_synthetic": false,
+    "raw_text": "Threat Intel Briefing: Telemetry attributes intrusion campaign to DPRK-nexus threat actor Lazarus Group. Adversary deployed signed but vulnerable Avast anti-rootkit driver aswArPot.sys / FssFltr.sys to disable Windows Defender endpoint protection (Bring Your Own Vulnerable Driver technique).",
+    "issuing_authority": "CISA / FBI Cybersecurity Advisory",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": true,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": ["chk_threat_intel_01", "chk_attack_actor_01"],
+      "irrelevant_chunk_ids": ["chk_amf_01", "chk_nsm_01"],
+      "acceptable_knowledge_domains": ["THREAT_INTELLIGENCE"],
+      "forbidden_knowledge_domains": ["MEMORY_FORENSICS", "NETWORK_SECURITY_MONITORING"],
+      "expected_preconditions_met": true,
+      "expected_claim_topics": ["Lazarus Group", "BYOVD technique", "Endpoint driver misuse"]
+    }
+  },
+  {
+    "case_id": "hid_case_06",
+    "category": "VULNERABILITY",
+    "title": "ADVERSARIAL NEGATIVE: Host Registry Event without Memory or Binary Evidence",
+    "is_synthetic": false,
+    "raw_text": "System Event Log: Registry value modified under HKLM\\Software\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU. Host workstation registry key modified by local user administrative script.",
+    "issuing_authority": "Endpoint Event Collector",
+    "telemetry_features": {
+      "has_cve": false,
+      "has_binary": false,
+      "has_pcap": false,
+      "has_memory_dump": false,
+      "has_attribution": false,
+      "indicators": []
+    },
+    "ground_truth": {
+      "relevant_chunk_ids": [],
+      "irrelevant_chunk_ids": ["chk_amf_01", "chk_pma_01", "chk_nsm_01"],
+      "acceptable_knowledge_domains": ["GENERAL_CTI"],
+      "forbidden_knowledge_domains": ["MEMORY_FORENSICS", "MALWARE_ANALYSIS", "NETWORK_SECURITY_MONITORING"],
+      "expected_preconditions_met": false,
+      "expected_claim_topics": ["Registry modification", "Absence of deep telemetry", "Baseline monitoring"]
+    }
+  }
+]

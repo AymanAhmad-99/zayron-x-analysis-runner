@@ -1,0 +1,14 @@
+{
+  "name": "zayron-x-web-preview",
+  "workers_dev": true,
+  "routes": [],
+  "env": {
+    "production": { "name": "zayron-x-web" },
+    "preview": { "name": "zayron-x-web-preview" }
+  },
+  "vars": {
+    "ENVIRONMENT": "preview",
+    "NEXT_PUBLIC_SITE_URL": "https://zayron-x-web-preview.aabusabih.workers.dev",
+    "NEXT_PUBLIC_API_BASE_URL": "https://zayron-x-api-preview.aabusabih.workers.dev/api/v1"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "step": "6.1",
+  "task": "EPSS LIVE VECTORIZE COMPLETION",
+  "status": "PROVEN",
+  "timestamp": "2026-09-05T13:15:20+03:00",
+  "authentication": {
+    "status": "PASS",
+    "method": "OAuth token auto-refresh via wrangler whoami with stored refresh_token",
+    "account_id": "56534d53775d8280011a325dcf36ed09",
+    "http_401_resolved": true
+  },
+  "epss_old_vectors": {
+    "candidate_ids_checked": [
+      "kb-doc-08-first-epss-p0-1",
+      "vec_doc-08-first-epss-p0-1",
+      "vec_chk_first_epss_01"
+    ],
+    "discovered_live_legacy_id": "vec_chk_first_epss_01",
+    "action": "DELETED",
+    "deletion_mutation_id": "0d24540c-4666-4559-a4e8-9d22257dd1ac",
+    "live_verified_absent": true
+  },
+  "epss_new_vectors": {
+    "action": "UPSERTED",
+    "upsert_mutation_id": "dcafc114-69d5-4774-87ee-d054c742041a",
+    "count": 4,
+    "vectors": [
+      {
+        "id": "vec_doc-08-first-epss-p1-1",
+        "live_status": "CONFIRMED_PRESENT",
+        "dimensions": 768,
+        "section": "Introduction"
+      },
+      {
+        "id": "vec_doc-08-first-epss-p1-2",
+        "live_status": "CONFIRMED_PRESENT",
+        "dimensions": 768,
+        "section": "Where to go from here"
+      },
+      {
+        "id": "vec_doc-08-first-epss-p1-3",
+        "live_status": "CONFIRMED_PRESENT",
+        "dimensions": 768,
+        "section": "Get involved"
+      },
+      {
+        "id": "vec_doc-08-first-epss-p1-4",
+        "live_status": "CONFIRMED_PRESENT",
+        "dimensions": 768,
+        "section": "Special Thanks"
+      }
+    ]
+  },
+  "parity": {
+    "canonical_epss_chunks": 4,
+    "d1_epss_chunks": 4,
+    "vectorize_epss_chunks": 4,
+    "duplicates_count": 0,
+    "legacy_d1_rows_deleted": [
+      "chk_first_epss_01",
+      "doc-08-first-epss-p0-1"
+    ],
+    "parity_proven": true
+  },
+  "live_retrieval_proof": {
+    "endpoint": "https://api.cloudflare.com/client/v4/accounts/56534d53775d8280011a325dcf36ed09/vectorize/v2/indexes/zayron-knowledge-index/query",
+    "http_status": 200,
+    "top_hit": {
+      "vector_id": "vec_doc-08-first-epss-p1-1",
+      "document_id": "doc-08-first-epss",
+      "similarity_score": 0.82646936,
+      "section": "Introduction",
+      "section_path": "Specification > Introduction",
+      "resolved_chunk_id": "doc-08-first-epss-p1-1",
+      "verbatim_evidence": "Exploit Prediction Scoring System (EPSS) The Exploit Prediction Scoring System (EPSS) is a data-driven machine-learning model that estimates the probability that a published CVE will be exploited in the wild in the next 30 days. It offsets subjective judgments with empirical signals from observed exploitation and ongoing activity, helping you focus limited remediation effort where attacks are most likely. EPSS publishes a 0–1 probability (with ranking percentiles) every day for every CVE and makes the data freely and openly accessible via CSV and API as well as a github repo , so it slots easily into workflows and dashboards."
+    }
+  }
+}

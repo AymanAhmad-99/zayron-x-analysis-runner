@@ -235,6 +235,29 @@ function buildEventUncertainties(report: IntelligenceAssessmentReport): string {
 }
 
 /**
+ * Standard ZAYRON-X Outbound Telegram Format (~50–60 words)
+ * Structure:
+ * [SEVERITY] Intelligence Headline
+ * Short 1–3 sentence analytical summary (~50–60 words).
+ * Read the full analysis → https://zayron-x.co/...
+ */
+export function formatZayronOutboundTelegram(
+  report: IntelligenceAssessmentReport,
+  canonicalUrl: string
+): string {
+  const assessment = report.assessment;
+  const headline = assessment.headline || 'Cyber Threat Intelligence Alert';
+  const threatLevel = assessment.threat_level || 'HIGH';
+  const rawSummary = (assessment.executive_summary || report.what_happened || 'Threat telemetry observed.').replace(/[\r\n]+/g, ' ').trim();
+  
+  // Calibrate word count to strictly ~50-60 words
+  const words = rawSummary.split(/\s+/);
+  const calibratedSummary = words.length > 55 ? words.slice(0, 55).join(' ') + '...' : rawSummary;
+  
+  return `[${threatLevel.toUpperCase()}] ${headline}\n\n${calibratedSummary}\n\nRead the full analysis → ${canonicalUrl}`;
+}
+
+/**
  * Deterministically generates all 6 platform derivatives from ONE canonical intelligence report.
  */
 export function generatePlatformDerivatives(
@@ -324,7 +347,7 @@ export function generatePlatformDerivatives(
     `${tgTags}`,
   ].filter((line) => line !== null).join('\n');
 
-  const telegram = report.depth === 'DEEP' || report.depth === 'SPECIAL_REPORT' ? telegramDeep : telegramAlert;
+  const telegram = formatZayronOutboundTelegram(report, canonicalUrl);
 
   // 2. X / TWITTER (High-density, <= 280 chars)
   const xTags = generateDeterministicHashtags(report, 'twitter').join(' ');

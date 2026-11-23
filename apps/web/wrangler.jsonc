@@ -4,60 +4,40 @@
   "main": "vinext/server/fetch-handler",
   "compatibility_date": "2025-09-23",
   "compatibility_flags": ["nodejs_compat"],
-  "workers_dev": false,
-  "assets": {
-    "directory": "dist/client",
-    "not_found_handling": "none",
-    "binding": "ASSETS"
-  },
-  "services": [
-    {
-      "binding": "API_WORKER",
-      "service": "zayron-x-api"
-    }
-  ],
-  "routes": [
-    { "pattern": "zayron-x.co", "custom_domain": true },
-    { "pattern": "www.zayron-x.co", "custom_domain": true }
-  ],
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "zayron-x-db",
-      "database_id": "c19c8f45-801b-4034-bd76-402e5e5389b5"
-    }
-  ],
+  "observability": { "enabled": true },
+  "workers_dev": true,
+  "assets": { "directory": "dist/client", "not_found_handling": "none", "binding": "ASSETS" },
   "vars": {
-    "ENVIRONMENT": "production",
-    "NEXT_PUBLIC_SITE_NAME": "ZAYRON-X",
-    "NEXT_PUBLIC_SITE_URL": "https://zayron-x.co"
+    "ENVIRONMENT": "preview",
+    "NEXT_PUBLIC_SITE_URL": "https://zayron-x-web-preview.aabusabih.workers.dev",
+    "NEXT_PUBLIC_API_BASE_URL": "https://zayron-x-api-preview.aabusabih.workers.dev/api/v1",
+    "API_BASE_URL": "https://zayron-x-api-preview.aabusabih.workers.dev/api/v1"
   },
-  "observability": {
-    "enabled": true,
-    "head_sampling_rate": 0.1
-  },
-  "cache": { "enabled": true },
   "env": {
-    "preview": {
-      "name": "zayron-x-web-preview",
-      "main": "vinext/server/fetch-handler",
-      "workers_dev": true,
-      "assets": {
-        "directory": "dist/client",
-        "not_found_handling": "none",
-        "binding": "ASSETS"
-      },
-      "d1_databases": [
-        {
-          "binding": "DB",
-          "database_name": "zayron-x-db",
-          "database_id": "c19c8f45-801b-4034-bd76-402e5e5389b5"
-        }
+    "production": {
+      "name": "zayron-x-web",
+      "workers_dev": false,
+      "routes": [
+        { "pattern": "zayron-x.co/*", "zone_name": "zayron-x.co" },
+        { "pattern": "www.zayron-x.co/*", "zone_name": "zayron-x.co" }
       ],
       "vars": {
+        "ENVIRONMENT": "production",
+        "NEXT_PUBLIC_SITE_URL": "https://zayron-x.co",
+        "NEXT_PUBLIC_API_BASE_URL": "https://zayron-x.co/api/v1",
+        "API_BASE_URL": "https://api.zayron-x.co/api/v1",
+        "SITEMAP_MAX_SHARDS": "1"
+      }
+    },
+    "preview": {
+      "name": "zayron-x-web-preview",
+      "workers_dev": true,
+      "routes": [],
+      "vars": {
         "ENVIRONMENT": "preview",
-        "NEXT_PUBLIC_SITE_NAME": "ZAYRON-X [PREVIEW]",
-        "NEXT_PUBLIC_SITE_URL": "https://zayron-x-web-preview.aabusabih.workers.dev"
+        "NEXT_PUBLIC_SITE_URL": "https://zayron-x-web-preview.aabusabih.workers.dev",
+        "NEXT_PUBLIC_API_BASE_URL": "https://zayron-x-api-preview.aabusabih.workers.dev/api/v1",
+        "API_BASE_URL": "https://zayron-x-api-preview.aabusabih.workers.dev/api/v1"
       }
     }
   }

@@ -1,0 +1,1 @@
+UPDATE articles SET is_published = 0, updated_at = datetime('now') WHERE id IN (,,,,,,,,,,,,,,,,,,,,,,) OR slug IN (,,,,,,,,,,,,,,,,,,,,,,);

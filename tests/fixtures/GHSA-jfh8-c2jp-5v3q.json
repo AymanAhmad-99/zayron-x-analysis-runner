@@ -1,0 +1,24 @@
+[
+  {
+    "ghsa_id": "GHSA-jfh8-c2jp-5v3q",
+    "cve_id": "CVE-2021-44228",
+    "summary": "Remote code injection in Log4j",
+    "cvss": {
+      "score": 10.0,
+      "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
+    },
+    "vulnerabilities": [
+      {
+        "package": {
+          "name": "org.apache.logging.log4j:log4j-core",
+          "ecosystem": "maven"
+        },
+        "vulnerable_version_range": "< 2.15.0",
+        "first_patched_version": "2.15.0"
+      }
+    ],
+    "references": [
+      { "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228" }
+    ]
+  }
+]

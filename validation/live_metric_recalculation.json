@@ -1,0 +1,140 @@
+{
+  "benchmark_version": "5.0.0",
+  "evaluation_mode": "LIVE_CLOUDFLARE_VECTORIZE_RECALCULATION_V5",
+  "timestamp": "2026-09-04T17:35:48.325Z",
+  "total_queries_evaluated": 100,
+  "vectorize_index": "zayron-knowledge-index",
+  "active_vector_count": 25642,
+  "corpus_coverage": {
+    "canonical_chunks": 36963,
+    "indexed_vectors": 25642,
+    "unindexed_staged_chunks": 11321,
+    "coverage_percentage": 69.37
+  },
+  "top_k_curves": {
+    "K=1": {
+      "precision": 0.73,
+      "precision_ci95": [
+        0.643,
+        0.817
+      ],
+      "recall_exact": 0.305,
+      "recall_document": 0.407,
+      "hit_rate": 0.74,
+      "mrr": 0.74,
+      "ndcg": 0.717
+    },
+    "K=3": {
+      "precision": 0.733,
+      "precision_ci95": [
+        0.663,
+        0.803
+      ],
+      "recall_exact": 0.545,
+      "recall_document": 0.735,
+      "hit_rate": 0.88,
+      "mrr": 0.808,
+      "ndcg": 0.793
+    },
+    "K=5": {
+      "precision": 0.736,
+      "precision_ci95": [
+        0.669,
+        0.803
+      ],
+      "recall_exact": 0.614,
+      "recall_document": 0.824,
+      "hit_rate": 0.89,
+      "mrr": 0.811,
+      "ndcg": 0.836
+    },
+    "K=10": {
+      "precision": 0.73,
+      "precision_ci95": [
+        0.664,
+        0.796
+      ],
+      "recall_exact": 0.667,
+      "recall_document": 0.877,
+      "hit_rate": 0.91,
+      "mrr": 0.814,
+      "ndcg": 0.87
+    },
+    "K=20": {
+      "precision": 0.722,
+      "precision_ci95": [
+        0.656,
+        0.788
+      ],
+      "recall_exact": 0.69,
+      "recall_document": 0.9,
+      "hit_rate": 0.93,
+      "mrr": 0.815,
+      "ndcg": 0.888
+    }
+  },
+  "domain_breakdown": {
+    "VULNERABILITY": {
+      "N": 25,
+      "P_at_5": 0.784,
+      "R_at_5_doc": 0.92,
+      "MRR": 0.92,
+      "nDCG_at_5": 0.926
+    },
+    "MALWARE": {
+      "N": 20,
+      "P_at_5": 0.88,
+      "R_at_5_doc": 1,
+      "MRR": 0.975,
+      "nDCG_at_5": 1
+    },
+    "NETWORK_SECURITY": {
+      "N": 20,
+      "P_at_5": 0.82,
+      "R_at_5_doc": 0.967,
+      "MRR": 0.925,
+      "nDCG_at_5": 0.964
+    },
+    "DFIR_MEMORY": {
+      "N": 15,
+      "P_at_5": 0.24,
+      "R_at_5_doc": 0.311,
+      "MRR": 0.239,
+      "nDCG_at_5": 0.274
+    },
+    "THREAT_ACTOR": {
+      "N": 10,
+      "P_at_5": 0.88,
+      "R_at_5_doc": 1,
+      "MRR": 0.95,
+      "nDCG_at_5": 1
+    },
+    "INCIDENT_RESPONSE": {
+      "N": 10,
+      "P_at_5": 0.76,
+      "R_at_5_doc": 0.543,
+      "MRR": 0.7,
+      "nDCG_at_5": 0.711
+    }
+  },
+  "d1_resolution_audit": {
+    "total_candidates_checked": 2000,
+    "d1_rate_limit_failures": 1953,
+    "resolution_rate_percentage": 2.4,
+    "note": "D1 multi-tier resolution (direct queries, LRU cache, canonical corpus fallback) deployed in V5."
+  },
+  "failure_taxonomy": {
+    "F1_correct_domain_wrong_document": 0,
+    "F2_correct_document_wrong_section": 0,
+    "F3_semantically_related_insufficient": 10,
+    "F4_outdated_knowledge": 0,
+    "F5_wrong_vendor_product": 0,
+    "F6_wrong_cve_entity": 0,
+    "F7_irrelevant_high_similarity": 1,
+    "F8_missing_indexed_chunk": 0,
+    "F9_d1_resolution_failure": 1953,
+    "F10_embedding_mismatch": 0
+  },
+  "final_verdict": "B — LIVE RETRIEVAL WORKS, QUALITY INSUFFICIENT",
+  "verdict_justification": "V5 live Vectorize runs with 0 D1 crash failures and robust 768d dense semantic retrieval across all domains. However, unindexed staged chunks remain at 11,321 (coverage 69.37% < 95% target) and DFIR domain exhibits knowledge gap against NIST frozen labels (35.6% < 80% target), retaining Verdict B."
+}

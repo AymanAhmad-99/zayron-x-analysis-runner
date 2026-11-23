@@ -1,0 +1,79 @@
+{
+  "result": {
+    "count": 5,
+    "matches": [
+      {
+        "id": "vec_doc-08-first-epss-p1-1",
+        "score": 0.82646936,
+        "metadata": {
+          "chunk_id": "doc-08-first-epss-p1-1",
+          "content_hash": "3d738ffbac216fe096b583c5df979054ca64b65742311fe981bbf73e50f9dcc9",
+          "document_id": "doc-08-first-epss",
+          "document_title": "FIRST EPSS v3 User Guide & Specification",
+          "domain": "VULNERABILITY",
+          "page": null,
+          "section": "Introduction",
+          "section_path": "Specification > Introduction",
+          "subsection": "UNKNOWN",
+          "table_id": null
+        }
+      },
+      {
+        "id": "vec_doc-08-first-epss-p1-4",
+        "score": 0.24885243,
+        "metadata": {
+          "chunk_id": "doc-08-first-epss-p1-4",
+          "content_hash": "3955f0a3ef1bdabda45b029d195ea768e1a1100e293260777b60994b1703e964",
+          "document_id": "doc-08-first-epss",
+          "document_title": "FIRST EPSS v3 User Guide & Specification",
+          "domain": "VULNERABILITY",
+          "page": null,
+          "section": "Special Thanks",
+          "section_path": "Specification > Special Thanks",
+          "subsection": "UNKNOWN",
+          "table_id": null
+        }
+      },
+      {
+        "id": "kb-doc-scale-test-02-p1-1",
+        "score": 0.15521194,
+        "metadata": {
+          "chunk_id": "doc-scale-test-02-p1-1",
+          "document_id": "doc-scale-test-02",
+          "page": 1,
+          "section": ""
+        }
+      },
+      {
+        "id": "kb-doc-scale-test-02-p1-2",
+        "score": 0.115090504,
+        "metadata": {
+          "chunk_id": "doc-scale-test-02-p1-2",
+          "document_id": "doc-scale-test-02",
+          "page": 1,
+          "section": ""
+        }
+      },
+      {
+        "id": "vec_doc-08-first-epss-p1-3",
+        "score": 0.087241806,
+        "metadata": {
+          "chunk_id": "doc-08-first-epss-p1-3",
+          "content_hash": "0929c0278612f2310fa18f2d1e068a7e13816400b67804684c91ae2f219ee14d",
+          "document_id": "doc-08-first-epss",
+          "document_title": "FIRST EPSS v3 User Guide & Specification",
+          "domain": "VULNERABILITY",
+          "page": null,
+          "section": "Get involved",
+          "section_path": "Specification > Get involved",
+          "subsection": "UNKNOWN",
+          "table_id": null
+        }
+      }
+    ]
+  },
+  "result_info": null,
+  "success": true,
+  "errors": [],
+  "messages": []
+}

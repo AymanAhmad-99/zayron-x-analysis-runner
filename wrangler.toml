@@ -32,10 +32,14 @@ bucket_name = "zayron-x-storage"
 binding = "INGEST_QUEUE"
 queue = "zayron-ingest-queue"
 
-[[queues.consumers]]
-queue = "zayron-ingest-queue"
-max_batch_size = 10
-max_batch_timeout = 5
+# Wave 4A: the consumer block is removed. This file has no `main` and is
+# not a deployable worker (migrations + local tooling only), so a consumer
+# declaration here was dead configuration that implied an ingestion loop that
+# never existed. The real consumer lives in workers/ingest/wrangler.toml.
+# [[queues.consumers]]
+# queue = "zayron-ingest-queue"
+# max_batch_size = 10
+# max_batch_timeout = 5
 
 [[queues.producers]]
 binding = "PUBLISH_QUEUE"
@@ -57,8 +61,8 @@ name = "zayron-x-preview"
 
 [[env.preview.d1_databases]]
 binding = "DB"
-database_name = "zayron-x-db"
-database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
 migrations_dir = "db/migrations"
 
 [[env.preview.r2_buckets]]

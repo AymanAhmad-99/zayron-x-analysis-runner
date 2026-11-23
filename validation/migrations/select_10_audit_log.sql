@@ -1,0 +1,1 @@
+SELECT id, report_id, timestamp, overall_status, citation_gate_passed, unsupported_claims_check_passed, relevance_sanity_passed, non_generic_check_passed, rejection_reason FROM zero_defect_audit_log ORDER BY id DESC LIMIT 10;

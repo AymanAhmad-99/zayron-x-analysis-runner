@@ -1,0 +1,15 @@
+name = "zayron-x-api"
+
+[env.preview]
+name = "zayron-x-api-preview"
+workers_dev = true
+routes = []
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+ALLOWED_ORIGINS = "https://zayron-x-web-preview.aabusabih.workers.dev"

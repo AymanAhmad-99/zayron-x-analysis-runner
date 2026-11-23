@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "zayron-x-web",
+  "main": "src/holdingWorker.ts",
+  "compatibility_date": "2025-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "zayron-x.co/*", "zone_name": "zayron-x.co" },
+    { "pattern": "www.zayron-x.co/*", "zone_name": "zayron-x.co" }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production-holding",
+    "PUBLIC_ACCESS": "RESTRICTED",
+    "NEXT_PUBLIC_SITE_URL": "https://zayron-x.co"
+  }
+}

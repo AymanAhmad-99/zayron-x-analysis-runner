@@ -1,0 +1,35 @@
+{
+  "source": "authoritative screenshot + visual reverse-engineering handoff",
+  "page_width_reference": 1440,
+  "nav_height": 72,
+  "content_max_width": 1280,
+  "outer_margin": 80,
+  "grid_columns": 12,
+  "grid_gutter": 24,
+  "hero_columns": "45% 55%",
+  "hero_min_height": 680,
+  "hero_copy_width": 620,
+  "hero_product_width": 680,
+  "headline_size": "clamp(56px, 6.4vw, 96px)",
+  "headline_line_height": 0.92,
+  "button_height": 44,
+  "dashboard_radius": 4,
+  "dashboard_border": "1px solid rgba(255,255,255,0.12)",
+  "ecosystem_gap": 32,
+  "ecosystem_logo_height": 26,
+  "section_spacing": 120,
+  "colors": {
+    "background": "#0A0908",
+    "surface": "#16130F",
+    "text": "#F5EFE6",
+    "muted": "#8A8378",
+    "accent": "#E8622C",
+    "border": "#2E2620"
+  },
+  "responsive": {
+    "desktop": "1440px primary fidelity target",
+    "tablet": "1024px controlled two-column reflow",
+    "mobile": "390px single-column stack"
+  },
+  "priorities": ["headline scale and line breaks", "workspace proportions", "orange atmosphere", "ecosystem optical spacing", "editorial vertical rhythm"]
+}

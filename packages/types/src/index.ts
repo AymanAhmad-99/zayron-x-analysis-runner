@@ -1,4 +1,41 @@
-// ── CANONICAL TYPES FOR ZAYRON-X ──────────────────────────────
+export type ContentType =
+  | 'vulnerability'
+  | 'malware'
+  | 'threat-intelligence'
+  | 'threat-actor'
+  | 'campaign'
+  | 'ioc'
+  | 'news'
+  | 'research'
+  | 'brief'
+  | 'standards';
+
+export type ExploitationStatus =
+  | 'NO_EVIDENCE'
+  | 'SUSPECTED'
+  | 'REPORTED'
+  | 'KNOWN_EXPLOITED_EXTERNAL'
+  | 'INDEPENDENTLY_OBSERVED'
+  | 'ACTIVE_CAMPAIGN_CONFIRMED'
+  | 'UNKNOWN';
+
+export type ClaimType =
+  | 'FACT'
+  | 'ASSESSMENT'
+  | 'INFERENCE'
+  | 'UNCONFIRMED'
+  | 'UNKNOWN';
+
+export type PublicTimelineEventType =
+  | 'DISCLOSURE'
+  | 'PATCH'
+  | 'KEV'
+  | 'EXPLOITATION'
+  | 'OBSERVATION'
+  | 'CAMPAIGN'
+  | 'ATTRIBUTION'
+  | 'DEVELOPMENT'
+  | 'UPDATE';
 
 export type SeverityLevel = 'critical' | 'high' | 'medium' | 'low' | 'unknown';
 

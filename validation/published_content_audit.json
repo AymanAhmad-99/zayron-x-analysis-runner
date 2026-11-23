@@ -1,0 +1,2110 @@
+[
+  {
+    "item_id": "art_00d8ffe5-e67",
+    "title": "CRITICAL ADVISORY: Threat actor APT29 observed weaponizing CVE-2026-1453 for remote execution delivering Cobalt Strike a",
+    "publish_date": "2025-08-21T17:17:10.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_59270894-1f6",
+    "title": "🚨 [CVE-2026-74583](https://git.kernel.org/stable/c/0e7a8cf8895b06d07c7311f028eba16ad742b9bc)",
+    "publish_date": "2026-08-21T17:24:12.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_a71d2823-6c9",
+    "title": "Microsoft Confirms CVSS 10.0 Remote Code Execution Vulnerability in Entra ID (CVE-2026-69836)",
+    "publish_date": "2026-08-21T15:42:12.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_20633dd6-b08",
+    "title": "Reverse-engineering Find My People to stalk  ̶m̶y̶ ̶e̶x̶  a friend, cause I can",
+    "publish_date": "2026-08-21T17:17:28.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Spam / informal social banter ingested as security advisory without intel substance"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Spam / informal social banter ingested as security advisory without intel substance"
+  },
+  {
+    "item_id": "art_3eee6226-bbb",
+    "title": "ParsedReport ChatGPT Translated",
+    "publish_date": "2026-08-21T17:27:16.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Spam / informal social banter ingested as security advisory without intel substance"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Spam / informal social banter ingested as security advisory without intel substance"
+  },
+  {
+    "item_id": "art_b9675c80-1c8",
+    "title": "Утечка кадров GTA VI используется для раскрутки криптотокена",
+    "publish_date": "2026-08-21T16:33:58.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_c20b2b16-4f7",
+    "title": "> How can you tell it was vibe coded?",
+    "publish_date": "2026-08-21T06:24:14.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Spam / informal social banter ingested as security advisory without intel substance"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Spam / informal social banter ingested as security advisory without intel substance"
+  },
+  {
+    "item_id": "art_3bc448a7-8a8",
+    "title": "I have lots of stuff cooking, but when I will have the opportunity to do more is difficult to determine",
+    "publish_date": "2026-08-21T00:25:41.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Spam / informal social banter ingested as security advisory without intel substance"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Spam / informal social banter ingested as security advisory without intel substance"
+  },
+  {
+    "item_id": "art_79296cd1-04a",
+    "title": "‼️ Attackers can weaponize Defender’s own signed driver to delete security software at boot.",
+    "publish_date": "2026-08-21T16:04:14.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_3bfd020f-f62",
+    "title": "⚠️ Android car head units are getting malware through built-in updaters.",
+    "publish_date": "2026-08-21T15:43:23.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_0510c11a-5b3",
+    "title": "🚨 [CVE-2026-74582](https://git.kernel.org/stable/c/03390aa32e669cc4ecd7d34108e2e1afc13d689d)",
+    "publish_date": "2026-08-21T17:24:07.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_054c23ac-853",
+    "title": "[ ](https://thecyberexpress.com/weekly-roundup-tax-breach-ai-gitlab-flaw/)The Cyber Express Weekly Roundup: Tax Data Bre",
+    "publish_date": "2026-08-21T14:47:27.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_dc19de4f-30b",
+    "title": "FTP Banners: The New Dead Drop Resolver Delivering Novel RATs",
+    "publish_date": "2026-08-21T15:17:02.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_f3294a41-a2c",
+    "title": "ParsedReport ChatGPT Translated",
+    "publish_date": "2026-08-21T17:29:04.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Spam / informal social banter ingested as security advisory without intel substance"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Spam / informal social banter ingested as security advisory without intel substance"
+  },
+  {
+    "item_id": "art_b152acd0-647",
+    "title": "ParsedReport GeneratedSchema",
+    "publish_date": "2026-08-21T17:29:02.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_a91d6aa5-bd3",
+    "title": "https://medium.com/@jizoskasa/i-reverse-engineered-plants-vs-zombies-to-answer-one-very-specific-question-557637a68a3e",
+    "publish_date": "2026-08-21T16:39:54.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_eb7a3566-b06",
+    "title": "CNCMachineRMS C2 Protocol",
+    "publish_date": "2026-08-21T16:39:20.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_22118cc6-9ae",
+    "title": "AI Is Learning to Write Genetic Code",
+    "publish_date": "2026-08-21T16:54:37.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_6ce864b8-996",
+    "title": "Former NSA Director Paul Nakasone Launches National Security Advisory Firm",
+    "publish_date": "2026-08-21T16:34:36.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_ff449568-add",
+    "title": "Популярный пакет arrayref в Crates[.]io заразили инфостилером",
+    "publish_date": "2026-08-21T17:35:24.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_22cb5d4a-cb0",
+    "title": "⚡️ Telegram удалил канал хакера Cyberleek — это он сливает GTA VI",
+    "publish_date": "2026-08-21T17:21:18.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_8fb36ee0-b03",
+    "title": "📂 pyWhat - Швейцарский нож для анализа любых данных",
+    "publish_date": "2026-08-21T17:25:02.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_15a7bf73-374",
+    "title": "📸 Хакеры взломали 14 500 камер Dahua всего за 35 дней",
+    "publish_date": "2026-08-20T19:00:01.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_ad67124d-0a3",
+    "title": "Linux притворился устройством Apple и получил доступ к Find My",
+    "publish_date": "2026-08-21T15:04:12.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_9b27a595-cf9",
+    "title": "В Москве пройдет фестиваль о кибербезопасности и технологических рисках",
+    "publish_date": "2026-08-21T13:02:12.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_3f71aaa6-040",
+    "title": "⚡️ФИНАЛЬНАЯ СЕРИЯ! Сериал-эксперимент про фишинг",
+    "publish_date": "2026-08-21T17:01:41.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_ec24f13d-daa",
+    "title": "[Супер-ИИ для взлома пока не появился, но атаки уже поставили на конвейер](https://www.anti-malware.ru/news/2026-08-21-1",
+    "publish_date": "2026-08-21T14:22:40.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_6c857a8e-27c",
+    "title": "🖥 Репозиторий: GhostTrack — инструмент для OSINT-разведки, геолокации и сбора информации об IP-адресах и номерах телефо",
+    "publish_date": "2026-08-21T16:09:32.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_044d6c9b-b41",
+    "title": "📖 Книга: «Linux в действии» — Дэвид Клинтон",
+    "publish_date": "2026-08-20T15:47:35.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_22f2dd07-f18",
+    "title": "Саморазвивающимся AI-агентам нужны отдельные правила кибербезопасности — эксперты Сбера [сформулировали](https://www.gaz",
+    "publish_date": "2026-08-21T16:26:48.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_63d19297-1f3",
+    "title": "Реклама. АО АКБ «НОВИКОМБАНК»",
+    "publish_date": "2026-08-20T13:15:40.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_987fd885-b1f",
+    "title": "@haxor link below:",
+    "publish_date": "2025-11-30T19:04:47.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_b037670e-51a",
+    "title": "😈😈 __КАНАЛ С ИСКЛЮЧИТЕЛЬНО ОРИГИНАЛЬНЫМ КОНТЕНТОМ __😈😈",
+    "publish_date": "2024-01-09T09:59:33.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_aceab125-773",
+    "title": "Olá A.​y, seja bem-vindo a CyberSecurity Hub! Tudo bem com você?",
+    "publish_date": "2026-08-21T17:35:09.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_dd1ac999-519",
+    "title": "An individual is responsible for the procurement, management, and full life cycle of network infrastructure devices with",
+    "publish_date": "2026-08-20T19:40:34.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_f49d59ef-105",
+    "title": "قلعة التقنية-أندرويد&حاسبات",
+    "publish_date": "2016-06-20T02:00:17.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_304b32ca-32a",
+    "title": "روانشناسی سایبری چیست",
+    "publish_date": "2026-08-20T19:19:47.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_667c8b1c-23c",
+    "title": "🔥  فیلم آموزشی کار و نصب  افزونه فایرفاکس Abdal Reverse Type در یوتیوب ما منتشر شد .",
+    "publish_date": "2026-08-18T23:22:50.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_a1d19300-9c4",
+    "title": "Kobo can run apps now",
+    "publish_date": "2026-08-21T17:20:27.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_22e60b9a-e22",
+    "title": "I Just Want to Search",
+    "publish_date": "2026-08-21T16:54:27.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_b55e40cf-c2a",
+    "title": "🕵️‍♂️ Calling on Cyber Pros to Help Defend City Hall 🕵️‍♂️",
+    "publish_date": "2026-08-21T17:01:19.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_d8ed413a-61d",
+    "title": "Lawmakers seek watchdog review of federal hacking of Americans",
+    "publish_date": "2026-08-21T17:47:43.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "art_d029b030-99a",
+    "title": "Пожизненное в дурке за сливы GTA VI — такой срок получил прошлый хакер в 2023 году.",
+    "publish_date": "2026-08-21T17:42:11.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+    ],
+    "recommended_action": "UNPUBLISH",
+    "reasoning": "Public headline contains foreign/non-English script (Russian/Cyrillic)"
+  },
+  {
+    "item_id": "art_ca8bd39b-55a",
+    "title": "?? CRITICAL: New ransomware group 'DarkSide' targeting Windows servers. CVE-2023-12345 actively exploited. IPs involved:",
+    "publish_date": "2023-07-22T04:26:40.000Z",
+    "surface": "WEBSITE_ARTICLE",
+    "passes_current_gate": "YES",
+    "violations": [],
+    "recommended_action": "KEEP",
+    "reasoning": "Valid threat telemetry with verified CVE and source attribution."
+  },
+  {
+    "item_id": "intel_0000000025c98a4d",
+    "title": "CVE-2026-27347: 🚨 CVE-2026-27347",
+    "publish_date": "2026-09-04T11:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005ac14069",
+    "title": "CVE-2026-84428: 🚨 CVE-2026-84428",
+    "publish_date": "2026-09-04T10:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005908d3e5",
+    "title": "August 2026 Patch Tuesday fixed 398 CVEs, one of the largest updates on record. SharePoint, Exchange",
+    "publish_date": "2026-09-04T10:45:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001041de64",
+    "title": "CVE-2026-85534: 🚨 CVE-2026-85534",
+    "publish_date": "2026-09-04T10:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000004795e41c",
+    "title": "CVE-2026-85512: 🚨 CVE-2026-85512",
+    "publish_date": "2026-09-04T10:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005e817ec9",
+    "title": "CVE-2026-79707: 🚨 CVE-2026-79707",
+    "publish_date": "2026-09-04T10:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000026df1b95",
+    "title": "CVE-2026-84045: 🚨 CVE-2026-84045",
+    "publish_date": "2026-09-04T10:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000063682c39",
+    "title": "CVE-2026-4644: 🚨 CVE-2026-4644",
+    "publish_date": "2026-09-04T10:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000002994d2b",
+    "title": "CVE-2026-82923: 🚨 CVE-2026-82923",
+    "publish_date": "2026-09-04T10:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000002d946f77",
+    "title": "CVE-2026-84043: 🚨 CVE-2026-84043",
+    "publish_date": "2026-09-04T10:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000006f0993ed",
+    "title": "CVE-2026-84469: 🚨 CVE-2026-84469",
+    "publish_date": "2026-09-04T10:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000004d2710",
+    "title": "CVE-2026-84044: 🚨 CVE-2026-84044",
+    "publish_date": "2026-09-04T10:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005328eb95",
+    "title": "CVE-2026-81666: 🚨 CVE-2026-81666",
+    "publish_date": "2026-09-04T10:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000695b1073",
+    "title": "CVE-2026-76169: 🚨 CVE-2026-76169",
+    "publish_date": "2026-09-04T10:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000025b8e472",
+    "title": "CVE-2026-13148: 🚨 CVE-2026-13148",
+    "publish_date": "2026-09-04T10:00:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000025205468",
+    "title": "CVE-2026-85541: 🚨 CVE-2026-85541",
+    "publish_date": "2026-09-04T09:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000007aa9a32a",
+    "title": "CVE-2026-85547: 🚨 CVE-2026-85547",
+    "publish_date": "2026-09-04T09:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000028ffc120",
+    "title": "CVE-2026-85540: 🚨 CVE-2026-85540",
+    "publish_date": "2026-09-04T09:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000558996db",
+    "title": "CVE-2026-84504: 🚨 CVE-2026-84504",
+    "publish_date": "2026-09-04T09:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000080b47aa",
+    "title": "CVE-2026-85546: 🚨 CVE-2026-85546",
+    "publish_date": "2026-09-04T09:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000372dddda",
+    "title": "CVE-2026-27086: 🚨 CVE-2026-27086",
+    "publish_date": "2026-09-04T09:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000285737d5",
+    "title": "CVE-2026-85184: 🚨 CVE-2026-85184",
+    "publish_date": "2026-09-04T09:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000c18b21b",
+    "title": "CVE-2026-81302: 🚨 CVE-2026-81302",
+    "publish_date": "2026-09-04T09:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005f438f1c",
+    "title": "CVE-2026-81665: 🚨 CVE-2026-81665",
+    "publish_date": "2026-09-04T09:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000164cafe7",
+    "title": "CVE-2026-85538: 🚨 CVE-2026-85538",
+    "publish_date": "2026-09-04T09:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000019c49abc",
+    "title": "CVE-2026-85533: 🚨 CVE-2026-85533",
+    "publish_date": "2026-09-04T09:00:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001b376dfc",
+    "title": "CVE-2026-27432: 🚨 CVE-2026-27432",
+    "publish_date": "2026-09-04T09:00:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000121bd99a",
+    "title": "CVE-2026-85528: 🚨 CVE-2026-85528",
+    "publish_date": "2026-09-04T08:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000006c0cd801",
+    "title": "CVE-2026-75604: 🔺 **Критическая RCE в Next.js на Windows-хостинге — CVE-2026-75604**",
+    "publish_date": "2026-09-04T08:37:13.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)",
+      "Title contains foreign/non-English script"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*); Title contains foreign/non-English script"
+  },
+  {
+    "item_id": "intel_0000000004f849a8",
+    "title": "CVE-2026-57777: 🚨 CVE-2026-57777",
+    "publish_date": "2026-09-04T08:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000039b06fa4",
+    "title": "CVE-2026-85311: 🚨 CVE-2026-85311",
+    "publish_date": "2026-09-04T08:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000002529e499",
+    "title": "CVE-2026-85525: 🚨 CVE-2026-85525",
+    "publish_date": "2026-09-04T08:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000022770cf7",
+    "title": "CVE-2026-32480: 🚨 CVE-2026-32480",
+    "publish_date": "2026-09-04T08:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000006eb88e31",
+    "title": "CVE-2026-85197: 🚨 CVE-2026-85197",
+    "publish_date": "2026-09-04T07:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000332610d4",
+    "title": "CVE-2026-6217: 🚨 CVE-2026-6217",
+    "publish_date": "2026-09-04T07:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000326a9aa2",
+    "title": "CVE-2026-80190: 🚨 CVE-2026-80190",
+    "publish_date": "2026-09-04T07:30:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000004e9e2c04",
+    "title": "CVE-2026-85229: 🚨 CVE-2026-85229",
+    "publish_date": "2026-09-04T07:30:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003d7c0d2d",
+    "title": "CVE-2026-80181: 🚨 CVE-2026-80181",
+    "publish_date": "2026-09-04T07:15:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000006ca1767a",
+    "title": "CVE-2026-81270: 🚨 CVE-2026-81270",
+    "publish_date": "2026-09-04T07:15:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003c93be71",
+    "title": "CVE-2026-71216: 🚨 CVE-2026-71216",
+    "publish_date": "2026-09-04T07:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000011e6dac2",
+    "title": "CVE-2026-80180: 🚨 CVE-2026-80180",
+    "publish_date": "2026-09-04T07:00:08.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000053933f16",
+    "title": "CVE-2026-62928: 🚨 CVE-2026-62928",
+    "publish_date": "2026-09-04T07:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000e235d4f",
+    "title": "CVE-2026-66840: 🚨 CVE-2026-66840",
+    "publish_date": "2026-09-04T07:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000b40c538",
+    "title": "CVE-2026-69657: 🚨 CVE-2026-69657",
+    "publish_date": "2026-09-04T07:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000058da2b2e",
+    "title": "CVE-2026-70403: 🚨 CVE-2026-70403",
+    "publish_date": "2026-09-04T07:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000afa4b2f",
+    "title": "CVE-2026-15354: 🚨 CVE-2026-15354",
+    "publish_date": "2026-09-04T07:00:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000004cddc236",
+    "title": "Старший эксперт по анализу уязвимостей кибербезопасности.",
+    "publish_date": "2026-09-04T06:50:46.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)",
+      "Title contains foreign/non-English script"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*); Title contains foreign/non-English script"
+  },
+  {
+    "item_id": "intel_0000000057f00e54",
+    "title": "CVE-2026-85094: 🚨 CVE-2026-85094",
+    "publish_date": "2026-09-04T06:30:23.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003944972e",
+    "title": "CVE-2026-85085: 🚨 CVE-2026-85085",
+    "publish_date": "2026-09-04T06:30:23.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000004ea1b524",
+    "title": "CVE-2026-82193: 🚨 CVE-2026-82193",
+    "publish_date": "2026-09-04T06:30:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000002ef91c06",
+    "title": "CVE-2026-82194: 🚨 CVE-2026-82194",
+    "publish_date": "2026-09-04T06:30:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000045ef43c6",
+    "title": "CVE-2026-84066: 🚨 CVE-2026-84066",
+    "publish_date": "2026-09-04T06:30:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000040f3a996",
+    "title": "CVE-2026-84146: 🚨 CVE-2026-84146",
+    "publish_date": "2026-09-04T06:30:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001f6f231f",
+    "title": "CVE-2026-82186: 🚨 CVE-2026-82186",
+    "publish_date": "2026-09-04T06:30:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000062340cd1",
+    "title": "CVE-2026-81347: 🚨 CVE-2026-81347",
+    "publish_date": "2026-09-04T06:30:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003dcd2ef1",
+    "title": "CVE-2026-80438: 🚨 CVE-2026-80438",
+    "publish_date": "2026-09-04T06:30:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005c2da398",
+    "title": "CVE-2026-79632: 🚨 CVE-2026-79632",
+    "publish_date": "2026-09-04T06:30:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000006ff04dff",
+    "title": "CVE-2026-79631: 🚨 CVE-2026-79631",
+    "publish_date": "2026-09-04T06:30:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000033c3041b",
+    "title": "CVE-2026-79630: 🚨 CVE-2026-79630",
+    "publish_date": "2026-09-04T06:30:11.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005968a123",
+    "title": "CVE-2026-19224: 🚨 CVE-2026-19224",
+    "publish_date": "2026-09-04T06:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000031299393",
+    "title": "CVE-2026-16281: 🚨 CVE-2026-16281",
+    "publish_date": "2026-09-04T06:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000175eedfd",
+    "title": "CVE-2026-74853: 🚨 CVE-2026-74853",
+    "publish_date": "2026-09-04T06:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000506efd6c",
+    "title": "CVE-2026-17517: 🚨 CVE-2026-17517",
+    "publish_date": "2026-09-04T06:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003c5dd372",
+    "title": "CVE-2025-15691: 🚨 CVE-2025-15691",
+    "publish_date": "2026-09-04T06:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000089aebb8",
+    "title": "CVE-2026-85508: 🚨 CVE-2026-85508",
+    "publish_date": "2026-09-04T04:45:09.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000062da3bff",
+    "title": "CVE-2026-85509: 🚨 CVE-2026-85509",
+    "publish_date": "2026-09-04T04:45:09.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005400fc57",
+    "title": "CVE-2026-85507: 🚨 CVE-2026-85507",
+    "publish_date": "2026-09-04T04:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003b0a534a",
+    "title": "CVE-2026-85505: 🚨 CVE-2026-85505",
+    "publish_date": "2026-09-04T04:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000cfe7f9c",
+    "title": "CVE-2026-85409: 🚨 CVE-2026-85409",
+    "publish_date": "2026-09-04T04:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000047dcf26a",
+    "title": "CVE-2026-85506: 🚨 CVE-2026-85506",
+    "publish_date": "2026-09-04T04:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000682a5097",
+    "title": "CVE-2026-11613: 🚨 CVE-2026-11613",
+    "publish_date": "2026-09-04T04:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003fc4c95f",
+    "title": "CVE-2026-85504: 🚨 CVE-2026-85504",
+    "publish_date": "2026-09-04T04:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000061443c1c",
+    "title": "Cobalt Strike: Attackers are reviving Node.js abuse, using trusted node.exe for persistence and execution in campai",
+    "publish_date": "2026-09-04T04:30:06.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000008ded67c",
+    "title": "CVE-2026-85406: 🚨 CVE-2026-85406",
+    "publish_date": "2026-09-04T04:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000007b37e953",
+    "title": "CVE-2026-85405: 🚨 CVE-2026-85405",
+    "publish_date": "2026-09-04T03:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000317cc503",
+    "title": "CVE-2026-85403: 🚨 CVE-2026-85403",
+    "publish_date": "2026-09-04T03:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005289b4e5",
+    "title": "CVE-2026-85402: 🚨 CVE-2026-85402",
+    "publish_date": "2026-09-04T03:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005f7fa750",
+    "title": "CVE-2026-85401: 🚨 CVE-2026-85401",
+    "publish_date": "2026-09-04T03:00:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001781121c",
+    "title": "CVE-2026-85399: 🚨 CVE-2026-85399",
+    "publish_date": "2026-09-04T02:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000048dcd87",
+    "title": "CVE-2026-85149: 🚨 CVE-2026-85149",
+    "publish_date": "2026-09-04T02:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000218302b3",
+    "title": "CVE-2026-85147: 🚨 CVE-2026-85147",
+    "publish_date": "2026-09-04T02:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005745c1a2",
+    "title": "CVE-2026-85146: 🚨 CVE-2026-85146",
+    "publish_date": "2026-09-04T02:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000a50e2c3",
+    "title": "CVE-2026-85148: 🚨 CVE-2026-85148",
+    "publish_date": "2026-09-04T02:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000448a9727",
+    "title": "SonicWall patched two actively exploited zero-days in SMA 1000 appliances, with flaws chainable to u",
+    "publish_date": "2026-09-04T02:45:06.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000034a7c82a",
+    "title": "CVE-2026-85398: 🚨 CVE-2026-85398",
+    "publish_date": "2026-09-04T02:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000287ff432",
+    "title": "CVE-2026-75754: 🚨 CVE-2026-75754",
+    "publish_date": "2026-09-04T02:30:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001ddb7aff",
+    "title": "CVE-2026-85397: 🚨 CVE-2026-85397",
+    "publish_date": "2026-09-04T02:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000271adbf3",
+    "title": "CVE-2026-85383: 🚨 CVE-2026-85383",
+    "publish_date": "2026-09-04T02:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000702d7fa4",
+    "title": "CVE-2026-45197: 🚨 CVE-2026-45197",
+    "publish_date": "2026-09-04T02:00:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005aef5492",
+    "title": "CVE-2026-45200: 🚨 CVE-2026-45200",
+    "publish_date": "2026-09-04T02:00:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000020e4069a",
+    "title": "CVE-2026-85382: 🚨 CVE-2026-85382",
+    "publish_date": "2026-09-04T01:45:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000074d1cf57",
+    "title": "Headline: AI-powered Chinese-speaking operator uses multiple AI agents to target government and educ",
+    "publish_date": "2026-09-04T01:17:33.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000034707715",
+    "title": "CVE-2026-85380: 🚨 CVE-2026-85380",
+    "publish_date": "2026-09-04T01:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000078315a9",
+    "title": "CVE-2026-85381: 🚨 CVE-2026-85381",
+    "publish_date": "2026-09-04T01:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000006a61c409",
+    "title": "Cobalt Strike: Headline: AI-enabled and tool-abuse–driven malware and vulnerability trends define H1 2026, emphasiz",
+    "publish_date": "2026-09-04T01:07:29.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001a8a4985",
+    "title": "CVE-2026-85379: 🚨 CVE-2026-85379",
+    "publish_date": "2026-09-04T00:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000036335a0c",
+    "title": "CVE-2026-67398: 🚨 CVE-2026-67398",
+    "publish_date": "2026-09-04T00:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000004a836aa",
+    "title": "CVE-2026-67402: 🚨 CVE-2026-67402",
+    "publish_date": "2026-09-04T00:00:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003393c160",
+    "title": "CVE-2026-67397: 🚨 CVE-2026-67397",
+    "publish_date": "2026-09-04T00:00:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003f148d5e",
+    "title": "CVE-2026-49509: 🚨 CVE-2026-49509",
+    "publish_date": "2026-09-03T23:30:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000005b4cdd1",
+    "title": "CVE-2026-85378: 🚨 CVE-2026-85378",
+    "publish_date": "2026-09-03T23:15:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001cb026f1",
+    "title": "CVE-2026-83711: 🚨 CVE-2026-83711",
+    "publish_date": "2026-09-03T23:15:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000002263445b",
+    "title": "CVE-2026-80098: 🚨 CVE-2026-80098",
+    "publish_date": "2026-09-03T23:15:12.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000c7c2539",
+    "title": "CVE-2026-70352: 🚨 CVE-2026-70352",
+    "publish_date": "2026-09-03T23:15:11.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000085e571f",
+    "title": "CVE-2026-62916: 🚨 CVE-2026-62916",
+    "publish_date": "2026-09-03T23:15:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000007f7ecb38",
+    "title": "CVE-2026-65818: 🚨 CVE-2026-65818",
+    "publish_date": "2026-09-03T23:15:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000071b5f9ae",
+    "title": "CVE-2026-70178: 🚨 CVE-2026-70178",
+    "publish_date": "2026-09-03T23:15:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000004b318cf3",
+    "title": "CVE-2026-69857: 🚨 CVE-2026-69857",
+    "publish_date": "2026-09-03T23:15:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000079a63991",
+    "title": "CVE-2026-62906: 🚨 CVE-2026-62906",
+    "publish_date": "2026-09-03T23:15:03.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000002f3fae6c",
+    "title": "CVE-2024-3400: Palo Alto Networks PAN-OS Vulnerability Advisory",
+    "publish_date": "2026-09-03T22:55:49.747Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000464d08a7",
+    "title": "Palo Alto Networks: Command Injection Vulnerability in PAN-OS GlobalProtect",
+    "publish_date": "2026-09-03T22:55:49.283Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000059f1d105",
+    "title": "CVE-2026-85439: 🚨 CVE-2026-85439",
+    "publish_date": "2026-09-03T22:45:22.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000a1708c2",
+    "title": "CVE-2026-85441: 🚨 CVE-2026-85441",
+    "publish_date": "2026-09-03T22:45:23.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000005663c8a0",
+    "title": "CVE-2026-85440: 🚨 CVE-2026-85440",
+    "publish_date": "2026-09-03T22:45:23.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000308da8b1",
+    "title": "CVE-2026-85438: 🚨 CVE-2026-85438",
+    "publish_date": "2026-09-03T22:45:22.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000006e9e363",
+    "title": "CVE-2026-85435: 🚨 CVE-2026-85435",
+    "publish_date": "2026-09-03T22:45:18.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001f9bcb80",
+    "title": "CVE-2026-85436: 🚨 CVE-2026-85436",
+    "publish_date": "2026-09-03T22:45:18.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000061f6e9ee",
+    "title": "CVE-2026-85437: 🚨 CVE-2026-85437",
+    "publish_date": "2026-09-03T22:45:18.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000004443b1dd",
+    "title": "CVE-2026-85433: 🚨 CVE-2026-85433",
+    "publish_date": "2026-09-03T22:45:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000064261106",
+    "title": "CVE-2026-85434: 🚨 CVE-2026-85434",
+    "publish_date": "2026-09-03T22:45:17.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000065ac52d0",
+    "title": "CVE-2026-85431: 🚨 CVE-2026-85431",
+    "publish_date": "2026-09-03T22:45:10.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000112f8baa",
+    "title": "CVE-2026-85432: 🚨 CVE-2026-85432",
+    "publish_date": "2026-09-03T22:45:10.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000077232af6",
+    "title": "CVE-2026-85429: 🚨 CVE-2026-85429",
+    "publish_date": "2026-09-03T22:45:09.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000673a5660",
+    "title": "CVE-2026-85428: 🚨 CVE-2026-85428",
+    "publish_date": "2026-09-03T22:45:09.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000049b4f834",
+    "title": "CVE-2026-85430: 🚨 CVE-2026-85430",
+    "publish_date": "2026-09-03T22:45:09.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001f717b5f",
+    "title": "CVE-2026-85442: 🚨 CVE-2026-85442",
+    "publish_date": "2026-09-03T22:45:23.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000001e1d9f3e",
+    "title": "CVE-2026-85427: 🚨 CVE-2026-85427",
+    "publish_date": "2026-09-03T22:45:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000003d7de6a0",
+    "title": "CVE-2026-85426: 🚨 CVE-2026-85426",
+    "publish_date": "2026-09-03T22:45:05.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000335179d0",
+    "title": "CVE-2026-85425: 🚨 CVE-2026-85425",
+    "publish_date": "2026-09-03T22:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000062e6d9ab",
+    "title": "CVE-2026-85424: 🚨 CVE-2026-85424",
+    "publish_date": "2026-09-03T22:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_0000000052e7d68e",
+    "title": "CVE-2026-85241: 🚨 CVE-2026-85241",
+    "publish_date": "2026-09-03T22:45:04.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000007c821138",
+    "title": "CVE-2026-20212: 🚨 A critical Cisco Nexus 9000 flaw lets unauthenticated remote attackers run code as root.",
+    "publish_date": "2026-09-03T16:31:53.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_000000000454ef45",
+    "title": "CVE-2026-85224: 🚨 CVE-2026-85224",
+    "publish_date": "2026-09-03T22:20:57.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000187b859c",
+    "title": "CVE-2026-85223: 🚨 CVE-2026-85223",
+    "publish_date": "2026-09-03T22:20:57.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  },
+  {
+    "item_id": "intel_00000000640a40e6",
+    "title": "CVE-2026-64200: 🚨 CVE-2026-64200",
+    "publish_date": "2026-09-03T22:20:57.000Z",
+    "surface": "INTELLIGENCE_REPORT",
+    "passes_current_gate": "NO",
+    "violations": [
+      "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+    ],
+    "recommended_action": "CORRECT",
+    "reasoning": "Knowledge trace contains obsolete synthetic chunk IDs (doc_ref_*/chk_*)"
+  }
+]

@@ -1,0 +1,67 @@
+import type { ReactNode } from "react";
+import { IntelligenceShellFrame } from "./IntelligenceShellFrame";
+
+const DEFAULT_NOTICE =
+  "Intelligence may be incomplete, conflicting, stale, or revised. Capability is not execution; classification is not attribution.";
+
+export function RouteShell({
+  title,
+  eyebrow,
+  description,
+  identifier,
+  statusLabel,
+  activeHref,
+  contextNotice,
+  children,
+}: {
+  title: string;
+  eyebrow: string;
+  description: string;
+  identifier?: string;
+  statusLabel?: string;
+  activeHref?: string;
+  contextNotice?: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <IntelligenceShellFrame eyebrow={eyebrow} statusLabel={statusLabel} activeHref={activeHref}>
+      <div className="workspace-heading">
+        <div>
+          <span className="eyebrow">{eyebrow}</span>
+          {identifier && (
+            <span
+              style={{
+                fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                color: "var(--color-accent)",
+                fontSize: "14px",
+                letterSpacing: ".05em",
+              }}
+            >
+              {identifier}
+            </span>
+          )}
+          <h1 id="route-heading">{title}</h1>
+          <p>{description}</p>
+        </div>
+        <span className="workspace-status">
+          <i />
+          {statusLabel ?? "PREVIEW WORKSPACE"}
+        </span>
+      </div>
+      {children ?? (
+        <div className="workspace-state">
+          <strong>{title.toUpperCase()}</strong>
+          <span>This workspace is being connected to the live intelligence layer.</span>
+        </div>
+      )}
+      <div className="legal-inline-notice" role="note">
+        <p>{contextNotice ?? DEFAULT_NOTICE}</p>
+        <nav aria-label="Related policies">
+          <a href="/legal/intelligence-disclaimer">Intelligence disclaimer</a>
+          <a href="/legal/malware-research">Malware handling</a>
+          <a href="/legal/ai">AI policy</a>
+        </nav>
+      </div>
+    </IntelligenceShellFrame>
+  );
+}

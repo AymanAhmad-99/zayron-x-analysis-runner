@@ -1,0 +1,93 @@
+{
+  "audit_version": "3.0.0",
+  "pipeline_version": "v2.1.0",
+  "timestamp": "2026-09-05T09:54:28.044Z",
+  "pipeline_properties": {
+    "deterministic": true,
+    "idempotent": true,
+    "resumable": true,
+    "retry_safe": true,
+    "hash_based": true,
+    "duplicate_safe": true,
+    "observable": true
+  },
+  "documents_tested": {
+    "html_source": {
+      "input": {
+        "filePath": ".zayron/knowledge/physical-15/07-first-cvss4.html",
+        "documentId": "doc-07-first-cvss4-v2",
+        "documentTitle": "FIRST CVSS v4.0 Specification Document",
+        "domain": "VULNERABILITY",
+        "authorityTier": 0,
+        "format": "HTML"
+      },
+      "evaluation": {
+        "extracted_characters": 75157,
+        "pages_or_nodes": 81,
+        "sections_detected": 28,
+        "total_chunks": 106,
+        "min_chunk_size": 32,
+        "avg_chunk_size": 709,
+        "max_chunk_size": 2206,
+        "p95_chunk_size": 1654,
+        "oversized_chunks": 0,
+        "empty_chunks_rejected": 0,
+        "duplicate_chunks_rejected": 0,
+        "boilerplate_contamination": 0,
+        "traceability_pct": "100.0%",
+        "d1_parity": true,
+        "vectorize_parity": true,
+        "retrieval_success": true,
+        "top_chunk_id": "doc-07-first-cvss4-v2-p1-49",
+        "top_section_path": "Specification > Environmental Metrics",
+        "retrieval_similarity": 0.5163,
+        "exact_evidence_recovery": true,
+        "quoted_evidence": "These metrics enable the consumer analyst to customize the resulting score depending on the importance of the affected IT asset to a user’s "
+      },
+      "idempotency_pass_2_skipped": true
+    },
+    "pdf_source": {
+      "input": {
+        "filePath": ".zayron/knowledge/physical-15/05-nist-sp-800-61r3.pdf",
+        "documentId": "doc-05-nist-sp-800-61r3-v2",
+        "documentTitle": "NIST SP 800-61 Rev. 3: Incident Handling Guide",
+        "domain": "INCIDENT_RESPONSE",
+        "authorityTier": 0,
+        "format": "PDF"
+      },
+      "evaluation": {
+        "extracted_characters": 104513,
+        "pages_or_nodes": 53,
+        "sections_detected": 5,
+        "total_chunks": 135,
+        "min_chunk_size": 80,
+        "avg_chunk_size": 774,
+        "max_chunk_size": 1717,
+        "p95_chunk_size": 996,
+        "oversized_chunks": 0,
+        "empty_chunks_rejected": 0,
+        "duplicate_chunks_rejected": 0,
+        "boilerplate_contamination": 0,
+        "traceability_pct": "100.0%",
+        "d1_parity": true,
+        "vectorize_parity": true,
+        "retrieval_success": true,
+        "top_chunk_id": "doc-05-nist-sp-800-61r3-v2-p38-111",
+        "top_section_path": "3. CSF 2.0 Community Profile for Cyber Incident Risk Management",
+        "retrieval_similarity": 0.3939,
+        "exact_evidence_recovery": true,
+        "quoted_evidence": "R2: Follow established procedures concerning incident coordination that include what must be reported to whom and at what times (e.g., initi"
+      },
+      "idempotency_pass_2_skipped": true
+    }
+  },
+  "scorecard": {
+    "ENGINE": "PASS",
+    "HTML_BOOK": "PASS",
+    "PDF_BOOK": "PASS",
+    "D1": "PASS",
+    "VECTORIZE": "PASS",
+    "RETRIEVAL": "PASS",
+    "EVIDENCE": "PASS"
+  }
+}

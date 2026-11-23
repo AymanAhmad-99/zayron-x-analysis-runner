@@ -1,0 +1,12 @@
+name = "zayron-x-api"
+
+[env.preview]
+name = "zayron-x-api-preview"
+workers_dev = true
+routes = [
+  { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
+]
+
+[env.preview.vars]
+ENVIRONMENT = "preview"
+ALLOWED_ORIGINS = "https://zayron-x-web-preview.aabusabih.workers.dev"

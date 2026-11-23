@@ -45,9 +45,24 @@ export * from './rag/context_pack';
 export * from './knowledge/sync';
 export * from './integrity/timestamps';
 export * from './telegram/daemon';
-export * from './publishing/outbound';
+export * from './publishing/sanitizer';
+export * from './publishing/governance';
+export * from './publishing/editorialDto';
+export * from './publishing/publicationGate';
+export * from './publishing/consistency';
+export * from './publishing/evidenceClaims';
+export * from './publishing/canonicalVulnerability';
+export * from './sources/registry';
+export * from './sources/adapters';
+export * from './sources/persistence';
+export * from './sources/orchestration';
+export * from './sources/sourceClients';
+export * from './relevance/vulnerability';
+export * from './publishing/eligibility';
 export * from './analyst/dossier';
 export * from './ai/adapter';
+export * from './ai/providerState';
+export * from './ai/failoverHarness';
 export * from './sources/registry';
 export * from './corroboration';
 export * from './pipeline/canonical';
@@ -61,6 +76,8 @@ export {
   computeEventContentHash,
   TelegramSourceAdapter,
   CVESourceAdapter,
+  mapCisaKevRecord,
+  validateStructuredCVERecord,
   VendorAdvisorySourceAdapter,
   SecurityResearchSourceAdapter,
 } from './pipeline/adapters';
@@ -68,7 +85,6 @@ export * from './pipeline/fusion';
 export * from './knowledge/knowledge_routing';
 export * from './analyst/report_templates';
 export * from './engine_v2';
-export * from './publishing/canonical_store';
 export * from './publishing/indexnow';
 export type {
   SourceCategory,
@@ -103,6 +119,18 @@ export type {
 } from './engine/types';
 export * from './source-fabric/live';
 export * from './reporting/schema';
+// Explicit re-exports resolve names that multiple `export *` layers contribute.
+export type { ContradictionRecord } from './analyst/contract';
+export type { QualityGateResult } from './publishing/publisher';
+export * from './reporting/types';
+export * from './reporting/registry';
+export * from './reporting/qualityGate';
+export * from './reporting/audience';
+export * from './reporting/engine';
+export * from './reporting/cve20243400Fixture';
+export * from './reporting/redlineMalwareFixture';
+export * from './reporting/realMalwareData';
+export * from './reporting/productionReports';
 export * from './reporting/validation';
 export * from './reporting/compiler';
 export * from './subscription/model';
@@ -123,3 +151,39 @@ export type {
 export * from './knowledge/v3/embedding';
 export * from './knowledge/v3/retrieval';
 export * from './knowledge/v3/unicode';
+export * from './core/types';
+export type { IntelligenceDomain } from './reporting/schema';
+export type { SourceDefinition } from './sources/registry';
+export * from './core/sources';
+export * from './core/profiles';
+export * from './core/membership';
+export * from './core/consistency';
+export * from './core/aiGateway';
+export * from './core/pipeline';
+export * from './core/dossier';
+export * from './core/detections';
+export * from './core/entityResolution';
+export * from './core/rustKernelAdapter';
+export * from './ingestion/contracts';
+export type { AuthorityTier } from './core/types';
+export * from './ingestion/cisaKevAdapter';
+export * from './ingestion/mitreAttackAdapter';
+export * from './ingestion/orchestrator';
+export * from './ingestion/threatFoxAdapter';
+export * from './ingestion/mispAdapter';
+export * from './ingestion/malwareBazaarAdapter';
+// Canonical stored-report invariant gate (shared by the malware report read path).
+export { validateStoredMalwareReport } from './malware/canonical/storedReportValidation';
+export type { StoredMalwareReportInput } from './malware/canonical/storedReportValidation';
+export * from './ingestion/canonicalStore';
+export * from './ingestion/rawMalwarePayload';
+export * from './reporting/canonicalMalwareBuilder';
+export * from './ingestion/rawExploitPayload';
+export * from './ingestion/exploitDbAdapter';
+export * from './reporting/canonicalExploitBuilder';
+export * from './reporting/evidenceMembership';
+export * from './sources/cvss_classifier';
+export * from './vulnerability/analysisAuthority';
+export * from './vulnerability/recentNvdCve';
+export * from './vulnerability/nonKevAuthorityProjection';
+export * from './sources/cwe_catalog';

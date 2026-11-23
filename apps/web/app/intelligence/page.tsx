@@ -1,4 +1,12 @@
-import Link from "next/link";
-export const metadata = { title: "Cyber Threat Intelligence | ZAYRON-X", description: "Explore ZAYRON-X intelligence across vulnerabilities, threats, actors, malware, campaigns, IOCs, reports, and daily activity.", alternates: { canonical: "/intelligence" } };
-const areas = [["Threat Intelligence", "/threats"], ["Vulnerability Intelligence", "/vulnerabilities"], ["Threat Actor Intelligence", "/actors"], ["Malware Intelligence", "/malware"], ["Campaign Intelligence", "/campaigns"], ["IOC Intelligence", "/iocs"], ["Reports & Research", "/reports"], ["Daily Operational Intelligence", "/intelligence/today"]];
-export default function IntelligencePage() { return <main className="min-h-screen bg-[#F7F7F4] text-[#050505]"><div className="mx-auto max-w-[1280px] px-6 py-14 lg:py-20"><p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-[.16em] text-[#C94F00]">ZAYRON-X / INTELLIGENCE</p><h1 className="max-w-4xl font-editorial text-5xl font-bold uppercase leading-[.94] tracking-[-.04em] md:text-7xl">Cyber threat intelligence, organized by entity.</h1><p className="mt-7 max-w-2xl text-lg leading-relaxed text-[#56606B]">A public umbrella for the intelligence surfaces currently supported by the product. Each destination preserves its own source, evidence, relationship, and uncertainty boundaries.</p><div className="mt-12 grid gap-px border border-[#D9D7D0] bg-[#D9D7D0] sm:grid-cols-2 lg:grid-cols-4">{areas.map(([label, href]) => <Link key={href} href={href} className="bg-white p-6 transition-colors hover:bg-[#050505] hover:text-white"><span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#C94F00]">OPEN SURFACE →</span><h2 className="mt-5 font-editorial text-xl font-bold uppercase">{label}</h2><p className="mt-3 text-xs leading-5 text-[#56606B]">Verified product route; unsupported fields remain UNKNOWN.</p></Link>)}</div></div></main> }
+import type { Metadata } from "next";
+import { IntelligenceShell } from "../components/IntelligenceShell";
+
+export const metadata: Metadata = {
+  title: "Threat intelligence",
+  description:
+    "Evidence-grounded vulnerability, malware, exploit, actor and campaign intelligence with explicit truth states for every claim.",
+  alternates: { canonical: "/intelligence" },
+  openGraph: { title: "Threat intelligence | ZAYRON-X", url: "/intelligence" },
+};
+
+export default function IntelligencePage() { return <IntelligenceShell />; }

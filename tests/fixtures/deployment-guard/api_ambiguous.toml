@@ -1,0 +1,10 @@
+name = "zayron-x-api"
+main = "src/index.ts"
+workers_dev = true
+
+routes = [
+  { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
+]
+
+[vars]
+ENVIRONMENT = "production"

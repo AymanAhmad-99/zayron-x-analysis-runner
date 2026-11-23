@@ -15,7 +15,17 @@ import {
   evaluateCorroboration,
   ExistingCanonicalEvent,
   IncomingSignalObservation,
+  CVESourceAdapter,
+  mapCisaKevRecord,
+  validateStructuredCVERecord,
 } from '@zayron/intelligence';
+import {
+  dispatchVulnerabilityAnalysis as dispatchAnalysis,
+  isVulnerabilityAnalysisEligible,
+  reportIsValid,
+} from './analysisDispatch';
+import { checkAIAvailability } from './aiAvailability';
+import { assessExploitationEvidence } from './exploitationEvidence';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -32,10 +42,33 @@ export interface Env {
   KNOWLEDGE_PROCESSOR?: any;
   KNOWLEDGE_BUCKET?: R2Bucket;
   KNOWLEDGE_CORPUS_WORKFLOW?: any;
+  /** Preview-only internal RPC to the existing analyst-grade CVE pipeline (API worker).
+   *  Bound via a service binding to zayron-x-api-preview entrypoint VulnerabilityAnalyst.
+   *  Absent in production, so continuous ingestion dispatch is inert there. */
+  VULNERABILITY_ANALYST?: {
+    analyzeVulnerability(input: { cveId: string }): Promise<{
+      status: number;
+      ok: boolean;
+      cveId: string;
+      reportPresent?: boolean;
+      /** What the analysis boundary actually decided — transport success says nothing. */
+      publication?: string | null;
+      analysis_status?: string | null;
+      failure_class?: string | null;
+      error_code?: string | null;
+      publication_write?: string | null;
+      error?: string;
+      latency_ms?: number;
+    }>;
+  };
   ENVIRONMENT: string;
 }
 
 interface IngestionMessagePayload {
+  job_type?: 'CVE_PROCESS' | string;
+  cve_id?: string;
+  source_reference?: string;
+  pipeline_version?: string;
   eventId?: string;
   sourceId: string;
   sourceName?: string;
@@ -49,6 +82,7 @@ interface IngestionMessagePayload {
   receivedAt?: string;
   mediaFileId?: string;
   metadata?: Record<string, unknown>;
+  testRun?: boolean;
 }
 
 async function sha256Hex(value: string): Promise<string> {
@@ -64,10 +98,72 @@ function validSourceTimestamp(value: string | undefined): string | undefined {
   return date.toISOString();
 }
 
+function feedSourceType(sourceId: string): string {
+  if (sourceId === 'nvd-api') return 'api';
+  if (sourceId === 'msrc-advisory') return 'vendor';
+  if (sourceId === 'cisa-rss' || sourceId === 'cisa-kev') return 'rss';
+  return 'telegram';
+}
+
+async function ensureFeedSource(env: Env, sourceId: string, sourceName?: string): Promise<void> {
+  await env.DB.prepare(
+    `INSERT INTO sources (
+      id, display_name, source_type, language, region, trust_score, priority, status, enabled, created_at, updated_at
+    ) VALUES (?, ?, ?, 'en', 'global', 0.5, 'B', 'ENABLED', 1, datetime('now'), datetime('now'))
+    ON CONFLICT(id) DO UPDATE SET
+      source_type = excluded.source_type,
+      display_name = excluded.display_name,
+      updated_at = datetime('now')`
+  )
+    .bind(sourceId, sourceName || sourceId, feedSourceType(sourceId))
+    .run();
+}
+
 async function enqueueExternalSignal(env: Env, payload: Omit<IngestionMessagePayload, 'contentHash'> & { contentHash?: string }) {
   if (!env.INGEST_QUEUE) throw new Error('INGEST_QUEUE is not configured');
+  await ensureFeedSource(env, payload.sourceId, payload.sourceName);
   const contentHash = payload.contentHash || await sha256Hex(payload.rawText);
   await env.INGEST_QUEUE.send({ ...payload, contentHash });
+}
+
+/** Idempotency guard: a valid structured report already exists for this CVE.
+ *  Reuses the existing report identity (intelligence_id / deduplication_key). */
+async function hasValidStructuredReport(env: Env, cveId: string): Promise<boolean> {
+  const row = await env.DB.prepare(
+    `SELECT status, publication_status, structured_report_json
+     FROM intelligence_reports
+     WHERE intelligence_id = ? OR UPPER(intelligence_id) = ?
+        OR deduplication_key = ? OR deduplication_key = ?
+     ORDER BY updated_at DESC LIMIT 1`
+  )
+    .bind(cveId, cveId, `cisa-kev:${cveId}`, `nvd-api:${cveId}`)
+    .first<any>();
+  return reportIsValid(row);
+}
+
+/**
+ * Dispatch one canonical vulnerability to the EXISTING analyst-grade AI pipeline.
+ *
+ * Failure isolation + idempotency are enforced by the shared dispatch contract
+ * (see analysisDispatch.ts). This adapter only wires it to D1 + the service binding.
+ */
+function dispatchVulnerabilityAnalysis(env: Env, cveId: string, traceId: string, eligible: boolean) {
+  return dispatchAnalysis({
+    cveId,
+    eligible,
+    analyst: env.VULNERABILITY_ANALYST,
+    hasValidReport: (id) => hasValidStructuredReport(env, id),
+    onTrace: async (stage, status) => {
+      await recordTrace(env, traceId, `analysis_${cveId}`, stage, status, 1, Date.now(), cveId);
+    },
+    onError: (error) => console.error('[INGEST] Vulnerability AI analysis dispatch failed (non-fatal):', error),
+    // A dispatch that did not publish is now a NAMED outcome rather than a silent
+    // `COMPLETED` trace: withheld, provider failure, circuit rejection and gate-blocked
+    // content are distinguishable at the dispatch layer for the first time.
+    onUnpublished: (outcome) => {
+      console.warn(JSON.stringify({ type: 'AI_ANALYSIS_NOT_PUBLISHED', cve_id: cveId, outcome }));
+    },
+  });
 }
 
 async function recordTrace(env: Env, traceId: string, eventId: string, stage: string, status: string, attempt: number, startedAt: number, resourceId?: string, error?: unknown) {
@@ -82,17 +178,43 @@ async function recordKnowledgeMarker(env: Env, traceId: string, requestId: strin
   await recordTrace(env, traceId, requestId, stage, error ? 'FAILED' : 'COMPLETED', 1, startedAt, requestId, error);
 }
 
+async function persistEvidence(env: Env, input: {
+  id: string; eventId: string; sourceId: string; sourceMessageId: string; type: string;
+  url?: string; weight: number; snippet?: string;
+}): Promise<string> {
+  await env.DB.prepare(
+    `INSERT OR IGNORE INTO evidence (
+      id, event_id, source_id, source_message_id, type, url, weight, snippet, reviewer_state, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
+  ).bind(input.id, input.eventId, input.sourceId, input.sourceMessageId, input.type, input.url || null, input.weight, input.snippet || null).run();
+  const row = await env.DB.prepare(
+    `SELECT id FROM evidence
+     WHERE event_id = ? AND source_message_id = ? AND type = ?
+       AND COALESCE(url, '') = COALESCE(?, '') AND COALESCE(snippet, '') = COALESCE(?, '')
+     ORDER BY created_at ASC LIMIT 1`
+  ).bind(input.eventId, input.sourceMessageId, input.type, input.url || null, input.snippet || null).first<{ id: string }>();
+  if (!row?.id) throw new Error('Evidence persistence returned no canonical row');
+  return row.id;
+}
+
 const ingestHandlers = {
   async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
     if (env.LEGACY_FREEZE === 'true') return;
-    if (env.KNOWLEDGE_PROCESSOR) {
-      try {
-        const smoke = await env.KNOWLEDGE_PROCESSOR.smokeTest();
-        console.log(JSON.stringify({ type: 'KNOWLEDGE_AI_SMOKE_TEST', ...smoke }));
-      } catch (error) {
-        console.error(JSON.stringify({ type: 'KNOWLEDGE_AI_SMOKE_TEST_FAILED', error: String(error) }));
-        return;
-      }
+    const smokeTraceId = `trace_${crypto.randomUUID().slice(0, 12)}`;
+    const smokeTelemetry = await checkAIAvailability(
+      env.KNOWLEDGE_PROCESSOR ? () => env.KNOWLEDGE_PROCESSOR!.smokeTest({ trace_id: smokeTraceId }) : undefined,
+      async (telemetry) => {
+        if (telemetry.ok) {
+          console.log(JSON.stringify({ type: 'KNOWLEDGE_AI_SMOKE_TEST', trace_id: smokeTraceId, ...telemetry }));
+          await recordTrace(env, smokeTraceId, 'scheduled_ai_smoke_test', 'AI_SMOKE_TEST', 'COMPLETED', 1, Date.now() - telemetry.duration_ms);
+        } else {
+          console.error(JSON.stringify({ type: 'KNOWLEDGE_AI_SMOKE_TEST_FAILED', trace_id: smokeTraceId, error: telemetry.error }));
+          await recordTrace(env, smokeTraceId, 'scheduled_ai_smoke_test', 'AI_SMOKE_TEST', 'FAILED', 1, Date.now() - telemetry.duration_ms, undefined, telemetry.error);
+        }
+      },
+    );
+    if (!smokeTelemetry.ok) {
+      console.warn(JSON.stringify({ type: 'SOURCE_INGESTION_CONTINUES_WITH_AI_UNAVAILABLE', trace_id: smokeTraceId }));
     }
     const rssResponse = await fetch('https://www.cisa.gov/cybersecurity-advisories/all.xml', { headers: { accept: 'application/rss+xml, application/xml' } });
     if (rssResponse.ok) {
@@ -123,19 +245,31 @@ const ingestHandlers = {
     }
 
     // Batch A: CISA KEV and one official vendor feed use the same queue contract.
-    const kevResponse = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', { headers: { accept: 'application/json' } });
-    if (kevResponse.ok) {
-      const kev = await kevResponse.json() as any;
-      const item = kev.vulnerabilities?.[0];
-      if (item?.cveID) {
-        await enqueueExternalSignal(env, {
-          sourceId: 'cisa-kev', sourceName: 'CISA Known Exploited Vulnerabilities',
-          externalMessageId: item.cveID, rawText: `${item.cveID}: ${item.vulnerabilityName || ''}. ${item.shortDescription || ''}`.slice(0, 12000),
-          sourceUrl: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
-          publishedAt: validSourceTimestamp(item.dateAdded), receivedAt: new Date().toISOString(),
-          metadata: { authoritative: true, authority_tier: 1, catalog: 'CISA KEV', version: kev.dateReleased },
-        });
+    try {
+      const kevResponse = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', { headers: { accept: 'application/json' } });
+      if (kevResponse.ok) {
+        const kev = await kevResponse.json() as any;
+        const persistedRows = await env.DB.prepare('SELECT cve_id FROM vulnerabilities').all<{ cve_id: string }>().catch(() => ({ results: [] }));
+        const persistedSet = new Set((persistedRows.results || []).map(r => r.cve_id));
+        const unpersisted = (kev.vulnerabilities || []).filter((item: any) => item?.cveID && !persistedSet.has(item.cveID));
+        for (const item of unpersisted.slice(0, 50)) {
+          if (!item?.cveID) continue;
+          const cveHash = await sha256Hex(`CISA_KEV:${item.cveID}:${kev.dateReleased || 'unknown'}`);
+          await enqueueExternalSignal(env, {
+            sourceId: 'cisa-kev', sourceName: 'CISA Known Exploited Vulnerabilities',
+            externalMessageId: item.cveID, contentHash: cveHash,
+            job_type: 'CVE_PROCESS', cve_id: item.cveID,
+            source_reference: 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
+            pipeline_version: 'cve-core-v1',
+            rawText: `${item.cveID}: ${item.vulnerabilityName || ''}. ${item.shortDescription || ''}`.slice(0, 12000),
+            sourceUrl: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
+            publishedAt: validSourceTimestamp(item.dateAdded), receivedAt: new Date().toISOString(),
+            metadata: { authoritative: true, authority_tier: 1, catalog: 'CISA KEV', version: kev.dateReleased, cve_item: item },
+          });
+        }
       }
+    } catch (kevErr) {
+      console.warn('[INGEST] CISA KEV scheduled feed check error:', kevErr);
     }
 
     const msrcResponse = await fetch('https://api.msrc.microsoft.com/update-guide/rss', { headers: { accept: 'application/rss+xml, application/xml' } });
@@ -154,9 +288,26 @@ const ingestHandlers = {
       }
     }
   },
-  async queue(batch: MessageBatch<IngestionMessagePayload>, env: Env): Promise<void> {
-    if (env.LEGACY_FREEZE === 'true') return;
+  async queue(batch: MessageBatch<IngestionMessagePayload>, env: Env, ctx?: ExecutionContext): Promise<void> {
+    const isFrozen = env.LEGACY_FREEZE === 'true';
     const messages = batch.messages.slice(0, 20);
+    const activeMessages = isFrozen
+      ? messages.filter((msg) => {
+          const rawBody = msg.body as any;
+          const payload = rawBody?.body && typeof rawBody.body === 'object' ? rawBody.body : rawBody;
+          return payload?.testRun === true;
+        })
+      : messages;
+
+    if (isFrozen) {
+      for (const msg of messages) {
+        if (!activeMessages.includes(msg)) {
+          msg.ack();
+        }
+      }
+    }
+
+    if (activeMessages.length === 0) return;
     // Batch-level memoized recent events lookup (avoids N+1 full scans across messages)
     let batchRecentEventsCache: ExistingCanonicalEvent[] | null = null;
     const getRecentEvents = async (): Promise<ExistingCanonicalEvent[]> => {
@@ -180,7 +331,7 @@ const ingestHandlers = {
       return batchRecentEventsCache;
     };
 
-    for (const msg of messages) {
+    for (const msg of activeMessages) {
       const rawBody = msg.body as any;
       const payload = rawBody?.body && typeof rawBody.body === 'object' ? rawBody.body : rawBody;
       if ((payload as any)?.operation === 'SMOKE_TEST') {
@@ -213,13 +364,13 @@ const ingestHandlers = {
         continue;
       }
       const traceId = String(payload?.metadata?.trace_id || `trace_${crypto.randomUUID().slice(0, 12)}`);
-      const traceEventId = payload.eventId || `ingest_${msg.id}`;
+      const traceEventId = String(payload?.metadata?.lifecycle_event_id || payload.eventId || `ingest_${msg.id}`);
       const consumerStarted = Date.now();
       await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'STARTED', msg.attempts || 1, consumerStarted, msg.id);
 
       try {
         // ── 0. Anti-Recursion Gate: Prohibit Ingesting Outbound ZAYRON-X Channel ──
-        const isFromOutbound = 
+        const isFromOutbound =
           payload.sourceId === 'tg_zayronxai' ||
           payload.sourceId === 'tg_zayron_x' ||
           payload.sourceUrl?.includes('t.me/zayronxai') ||
@@ -232,18 +383,88 @@ const ingestHandlers = {
           continue;
         }
 
+        // Canonical CVE boundary for scheduled KEV jobs. The authoritative
+        // source is resolved by identity; raw source JSON never enters the
+        // generic normalizer directly.
+        if (payload.job_type === 'CVE_PROCESS' && payload.sourceId === 'cisa-kev' && payload.cve_id) {
+          let sourceItem = (payload.metadata as any)?.cve_item;
+          if (!sourceItem) {
+            try {
+              const sourceResponse = await fetch(payload.source_reference || 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', { headers: { accept: 'application/json' } });
+              if (sourceResponse.ok) {
+                const sourceData = await sourceResponse.json() as any;
+                sourceItem = (sourceData.vulnerabilities || []).find((item: any) => item.cveID === payload.cve_id);
+              } else {
+                console.warn(`[INGEST] Upstream CISA KEV fetch HTTP ${sourceResponse.status}, falling back to payload data`);
+              }
+            } catch (fetchErr) {
+              console.warn('[INGEST] Upstream CISA KEV fetch failed:', fetchErr);
+            }
+          }
+          if (sourceItem) {
+            const canonical = mapCisaKevRecord(sourceItem);
+            const schema = validateStructuredCVERecord(canonical);
+            if (schema.valid) {
+              const canonicalEvent = new CVESourceAdapter('cisa-kev', 'CISA Known Exploited Vulnerabilities').normalize(canonical);
+              payload.rawText = canonicalEvent.content;
+              payload.sourceUrl = canonicalEvent.external_url;
+              payload.publishedAt = canonicalEvent.published_at;
+              payload.externalMessageId = canonical.cve_id;
+              payload.contentHash = canonicalEvent.content_hash;
+              payload.metadata = { ...(payload.metadata || {}), cve_data: canonical, canonical_mapping: 'CISA_KEV_TO_STRUCTURED_CVE' };
+              await recordTrace(env, traceId, traceEventId, 'CANONICAL_MAPPING', 'COMPLETED', msg.attempts || 1, consumerStarted, 'cisa-kev');
+            }
+          }
+        }
+
         // ── 1. Idempotency Check: (source_id + external_message_id) OR content_hash ──
         const existing = await env.DB.prepare(
           'SELECT id FROM source_messages WHERE (source_id = ? AND external_message_id = ?) OR content_hash = ? LIMIT 1'
         )
           .bind(payload.sourceId, payload.externalMessageId, payload.contentHash)
-          .first();
+          .first<{ id: string }>();
 
-        if (existing) {
-          console.log(`[INGEST] Skipping duplicate message: source=${payload.sourceId}, id=${payload.externalMessageId}`);
-          await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'COMPLETED', msg.attempts || 1, consumerStarted, msg.id);
-          msg.ack();
-          continue;
+        let existingEvidence: { id: string; event_id: string } | null = null;
+        let existingEvent: { id: string } | null = null;
+
+        if (existing && !payload.testRun) {
+          existingEvidence = await env.DB.prepare(
+            'SELECT id, event_id FROM evidence WHERE source_message_id = ? LIMIT 1'
+          ).bind(existing.id).first<{ id: string; event_id: string }>();
+
+          if (existingEvidence?.event_id) {
+            existingEvent = await env.DB.prepare(
+              'SELECT id FROM intelligence_events WHERE id = ? LIMIT 1'
+            ).bind(existingEvidence.event_id).first<{ id: string }>();
+          } else {
+            existingEvent = await env.DB.prepare(
+              'SELECT id FROM intelligence_events WHERE content_hash = ? OR title LIKE ? LIMIT 1'
+            ).bind(payload.contentHash, `%${payload.externalMessageId}%`).first<{ id: string }>();
+          }
+
+          const isCveMessage = payload.sourceId === 'cisa-kev' ||
+                               payload.job_type === 'CVE_PROCESS' ||
+                               /^CVE-\d{4}-\d{4,}$/i.test(payload.externalMessageId) ||
+                               (payload.cve_id && /^CVE-\d{4}-\d{4,}$/i.test(payload.cve_id));
+
+          let existingVuln: { id: string } | null = null;
+          if (isCveMessage) {
+            const targetCveId = (payload.cve_id || payload.externalMessageId).toUpperCase();
+            existingVuln = await env.DB.prepare(
+              'SELECT id FROM vulnerabilities WHERE cve_id = ? LIMIT 1'
+            ).bind(targetCveId).first<{ id: string }>();
+          }
+
+          const isFullyProcessed = existingEvidence && existingEvent && (!isCveMessage || existingVuln);
+
+          if (isFullyProcessed) {
+            console.log(`[INGEST] Skipping fully processed message: source=${payload.sourceId}, id=${payload.externalMessageId}`);
+            await recordTrace(env, traceId, traceEventId, 'CONSUMER', 'COMPLETED', msg.attempts || 1, consumerStarted, msg.id);
+            msg.ack();
+            continue;
+          }
+
+          console.warn(`[INGEST] Message partially processed (evidence=${!!existingEvidence}, event=${!!existingEvent}, vuln=${!isCveMessage || !!existingVuln}): continuing downstream persistence for source=${payload.sourceId}, id=${payload.externalMessageId}`);
         }
 
         // ── 2. Source Metadata Lookup & Auto-Registration ─────────────────────
@@ -288,13 +509,13 @@ const ingestHandlers = {
           publishedAt: payload.publishedAt,
         });
 
-        const messageId = `msg_${crypto.randomUUID().slice(0, 12)}`;
+        const messageId = (existing?.id as string) || `msg_${crypto.randomUUID().slice(0, 12)}`;
 
         // Quarantine spam / low-value signals
         if (result.isSpam) {
           await env.DB.prepare(
             `INSERT INTO source_messages (
-              id, source_id, external_message_id, content_hash, raw_content, 
+              id, source_id, external_message_id, content_hash, raw_content,
               original_language, status, published_at, created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, 'QUARANTINED', ?, datetime('now'), datetime('now'))`
           )
@@ -373,10 +594,15 @@ CRITICAL RULES:
         // ── 5. Insert Verified Source Message (Raw Foreign Text Preserved) ─────
         await env.DB.prepare(
           `INSERT INTO source_messages (
-            id, source_id, external_message_id, content_hash, raw_content, 
-            normalized_content, original_language, parsed_entities, status, 
+            id, source_id, external_message_id, content_hash, raw_content,
+            normalized_content, original_language, parsed_entities, status,
             published_at, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+          ON CONFLICT(source_id, external_message_id) DO UPDATE SET
+            normalized_content = excluded.normalized_content,
+            parsed_entities = excluded.parsed_entities,
+            status = excluded.status,
+            updated_at = datetime('now')`
         )
           .bind(
             messageId,
@@ -421,7 +647,15 @@ CRITICAL RULES:
         let evidenceId: string;
         let isExistingCorroboration = false;
 
-        if (matchResult.matchedEvent) {
+        if (existingEvent?.id) {
+          eventId = existingEvent.id;
+          evidenceId = existingEvidence?.id || `evi_${crypto.randomUUID().slice(0, 12)}`;
+          evidenceId = await persistEvidence(env, {
+            id: evidenceId, eventId, sourceId: payload.sourceId, sourceMessageId: messageId,
+            type: payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
+            url: result.provenance.sourceUrl, weight: result.provenance.weight, snippet: finalSummary.slice(0, 250),
+          });
+        } else if (matchResult.matchedEvent) {
           // CORROBORATION CASE: Multiple sources reporting on the same event
           isExistingCorroboration = true;
           const matched = matchResult.matchedEvent;
@@ -431,17 +665,17 @@ CRITICAL RULES:
 
           // Fetch prior source tiers
           const priorSources = await env.DB.prepare(
-            "SELECT DISTINCT s.authority_tier FROM evidence e LEFT JOIN sources s ON e.source_id = s.id WHERE e.event_id = ?"
+            "SELECT DISTINCT s.priority FROM evidence e LEFT JOIN sources s ON e.source_id = s.id WHERE e.event_id = ?"
           ).bind(eventId).all();
-          const priorTiers = (priorSources.results || []).map((r: any) => r.authority_tier ?? 3);
+          const priorTiers = (priorSources.results || []).map((r: any) => (r.priority === 'A' ? 1 : r.priority === 'B' ? 2 : 3));
 
           const corroboration = evaluateCorroboration(matched, incomingObservation, priorTiers);
 
           // Update canonical event with elevated confidence and updated timeline
           await env.DB.prepare(
-            `UPDATE intelligence_events SET 
-               confidence = ?, 
-               status = ?, 
+            `UPDATE intelligence_events SET
+               confidence = ?,
+               status = ?,
                severity = ?,
                last_updated_at = datetime('now'),
                updated_at = datetime('now')
@@ -456,78 +690,50 @@ CRITICAL RULES:
             .run();
 
           // Attach new Evidence Record linked to existing canonical event
-          await env.DB.prepare(
-            `INSERT INTO evidence (
-              id, event_id, source_id, source_message_id, type, url, weight, snippet, reviewer_state, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
-          )
-            .bind(
-              evidenceId,
-              eventId,
-              payload.sourceId,
-              messageId,
-              payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
-              result.provenance.sourceUrl,
-              result.provenance.weight,
-              finalSummary.slice(0, 250)
-            )
-            .run();
+          evidenceId = await persistEvidence(env, {
+            id: evidenceId, eventId, sourceId: payload.sourceId, sourceMessageId: messageId,
+            type: payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
+            url: result.provenance.sourceUrl, weight: result.provenance.weight, snippet: finalSummary.slice(0, 250),
+          });
 
-          // Check if article exists to bump version
+          // Check if article exists to update confidence
           const existingArticle = await env.DB.prepare(
-            'SELECT id, version, title, content FROM articles WHERE canonical_intel_event_id = ? LIMIT 1'
-          ).bind(eventId).first<{ id: string; version: number; title: string; content: string }>();
+            'SELECT id, title, content FROM articles WHERE canonical_intel_event_id = ? LIMIT 1'
+          ).bind(eventId).first<{ id: string; title: string; content: string }>();
 
           if (existingArticle) {
-            const newVersion = (existingArticle.version || 1) + 1;
             await env.DB.prepare(
-              `INSERT INTO report_revisions (
-                id, article_id, event_id, version, previous_confidence, new_confidence,
-                evidence_added_count, reason, content_snapshot, created_at
-              ) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, datetime('now'))`
-            )
-              .bind(
-                `rev_${crypto.randomUUID().slice(0, 12)}`,
-                existingArticle.id,
-                eventId,
-                newVersion,
-                matched.confidence,
-                corroboration.newConfidenceScore,
-                corroboration.revisionReason || 'Corroborating telemetry received',
-                existingArticle.content.slice(0, 1000)
-              )
-              .run();
-
-            await env.DB.prepare(
-              `UPDATE articles SET 
-                 version = ?, 
-                 confidence = ?, 
-                 revision_reason = ?,
+              `UPDATE articles SET
+                 confidence = ?,
                  updated_at = datetime('now')
                WHERE id = ?`
             )
-              .bind(newVersion, corroboration.newConfidenceScore, corroboration.revisionReason, existingArticle.id)
+              .bind(corroboration.newConfidenceScore, existingArticle.id)
               .run();
 
-            console.log(`[INGEST] Updated existing article ${existingArticle.id} to version ${newVersion} with corroborating evidence.`);
+            console.log(`[INGEST] Updated existing article ${existingArticle.id} with corroborating evidence.`);
           }
         } else {
           // NEW CANONICAL EVENT CASE
           eventId = payload.eventId || `evt_${crypto.randomUUID().slice(0, 16)}`;
           evidenceId = `evi_${crypto.randomUUID().slice(0, 12)}`;
-          const eventType = result.entities.cves.length > 0 
-            ? 'vulnerability_exploitation' 
-            : result.entities.malware.length > 0 
-            ? 'malware_campaign' 
-            : result.entities.actors.length > 0 
-            ? 'threat_actor_activity' 
+          const eventType = result.entities.cves.length > 0
+            ? 'vulnerability_exploitation'
+            : result.entities.malware.length > 0
+            ? 'malware_campaign'
+            : result.entities.actors.length > 0
+            ? 'threat_actor_activity'
             : 'threat_intelligence';
 
           await env.DB.prepare(
             `INSERT INTO intelligence_events (
               id, type, title, summary, severity, confidence, status, content_hash,
               first_seen_at, last_updated_at, entities_json, mitre_matrix, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+            ON CONFLICT(id) DO UPDATE SET
+              summary = excluded.summary,
+              entities_json = excluded.entities_json,
+              updated_at = datetime('now')`
           )
             .bind(
               eventId,
@@ -546,22 +752,11 @@ CRITICAL RULES:
             .run();
 
           // Attach initial Evidence Record
-          await env.DB.prepare(
-            `INSERT INTO evidence (
-              id, event_id, source_id, source_message_id, type, url, weight, snippet, reviewer_state, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
-          )
-            .bind(
-              evidenceId,
-              eventId,
-              payload.sourceId,
-              messageId,
-              payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
-              result.provenance.sourceUrl,
-              result.provenance.weight,
-              finalSummary.slice(0, 250)
-            )
-            .run();
+          evidenceId = await persistEvidence(env, {
+            id: evidenceId, eventId, sourceId: payload.sourceId, sourceMessageId: messageId,
+            type: payload.sourceId === 'nvd-api' ? 'authoritative_nvd' : result.provenance.evidenceType,
+            url: result.provenance.sourceUrl, weight: result.provenance.weight, snippet: finalSummary.slice(0, 250),
+          });
         }
 
         if (payload.eventId && env.RESEARCH_WORKFLOW) {
@@ -573,15 +768,36 @@ CRITICAL RULES:
           }
         }
 
+        await recordTrace(env, traceId, traceEventId, 'EVENT_PERSISTENCE', 'COMPLETED', msg.attempts || 1, consumerStarted, eventId);
+
         // ── 8. Persist Extracted CVEs into vulnerabilities table ───────────────
-        for (const cve of result.entities.cves) {
+        const targetCves = new Set<string>(result.entities.cves);
+        if (payload.cve_id && /^CVE-\d{4}-\d{4,}$/i.test(payload.cve_id)) {
+          targetCves.add(payload.cve_id.toUpperCase());
+        }
+        if (payload.externalMessageId && /^CVE-\d{4}-\d{4,}$/i.test(payload.externalMessageId)) {
+          targetCves.add(payload.externalMessageId.toUpperCase());
+        }
+
+        for (const cve of targetCves) {
           const resolvedCve = resolveVulnerability(cve) || cve;
           const cveDbId = `vuln_${resolvedCve.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+          // Exploitation EVIDENCE, not severity. `severity === 'critical'` used
+          // to set this flag for any critical advisory; see exploitationEvidence.ts.
+          const exploitation = assessExploitationEvidence({
+            sourceId: payload.sourceId,
+            catalog: payload.metadata?.catalog as string | undefined,
+            kevCatalogItem: payload.metadata?.cve_item as { cveID?: string; dateAdded?: string } | undefined,
+            assertedExploitationStatus: (payload.metadata as Record<string, unknown> | undefined)?.exploitation_status as string | undefined,
+          });
           await env.DB.prepare(
             `INSERT INTO vulnerabilities (
               id, cve_id, title, description, severity, is_exploited_in_wild, published_at, created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-            ON CONFLICT(cve_id) DO UPDATE SET updated_at = datetime('now')`
+            ON CONFLICT(cve_id) DO UPDATE SET
+              is_exploited_in_wild = CASE WHEN ? = -1 THEN vulnerabilities.is_exploited_in_wild ELSE ? END,
+              severity = CASE WHEN excluded.severity = 'CRITICAL' THEN 'CRITICAL' ELSE vulnerabilities.severity END,
+              updated_at = datetime('now')`
           )
             .bind(
               cveDbId,
@@ -589,10 +805,34 @@ CRITICAL RULES:
               `${resolvedCve} Security Advisory`,
               finalSummary,
               result.severity.toUpperCase(),
-              result.severity === 'critical' ? 1 : 0,
+              exploitation.flag,
+              exploitation.signal,
+              exploitation.signal,
               payload.publishedAt || new Date().toISOString()
             )
             .run();
+        }
+
+        // ── 8B. Dispatch Vulnerability AI Analysis (existing analyst-grade pipeline) ──
+        // Runs AFTER canonical vulnerability persistence succeeds. Asynchronous and
+        // failure-isolated: the vulnerability above is already durable, so a dispatch
+        // or analysis failure must never roll it back or block ingestion.
+        if (targetCves.size > 0 && env.VULNERABILITY_ANALYST) {
+          for (const cve of targetCves) {
+            const eligible = isVulnerabilityAnalysisEligible({
+              sourceId: payload.sourceId,
+              catalog: payload.metadata?.catalog as string | undefined,
+              severity: result.severity,
+            });
+            if (!eligible) continue;
+            const resolvedCve = resolveVulnerability(cve) || cve;
+            const dispatch = dispatchVulnerabilityAnalysis(env, resolvedCve, traceId, eligible);
+            if (ctx && typeof ctx.waitUntil === 'function') {
+              ctx.waitUntil(dispatch);
+            } else {
+              await dispatch;
+            }
+          }
         }
 
         // ── 9. Persist Extracted IOCs (IPs & Hashes) ───────────────────────────
@@ -781,7 +1021,7 @@ CRITICAL RULES:
               const todayRuns = await env.DB.prepare(
                 "SELECT count(*) as count FROM ai_runs WHERE created_at >= date('now') AND created_at < date('now', '+1 day')"
               ).first<{ count: number }>();
-              
+
               if ((todayRuns?.count || 0) < 150) {
                 const aiPrompt = `You are the ZAYRON-X Principal Intelligence Analyst.
 Analyze this cyber threat event and output a structured JSON report.
@@ -796,7 +1036,7 @@ CRITICAL RULES:
   "defensive_implications": "1-2 actionable defensive recommendations"
 }`;
                 const userContent = `Event: ${finalTitle}\nSummary: ${finalSummary}\nEntities: ${JSON.stringify(result.entities)}`;
-                
+
                 const startTime = Date.now();
                 const aiResp = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
                   messages: [
@@ -807,7 +1047,7 @@ CRITICAL RULES:
                   max_tokens: 800,
                 });
                 const duration = Date.now() - startTime;
-                
+
                 // Track AI run for budget guard
                 await env.DB.prepare(
                   `INSERT INTO ai_runs (id, workflow, model_id, duration_ms, status, created_at)
@@ -818,10 +1058,10 @@ CRITICAL RULES:
 
                 const textResp = aiResp?.response || '';
                 const match = textResp.match(/\{[\s\S]*\}/);
-                
+
                 if (match) {
                   const parsed = JSON.parse(match[0]);
-                  
+
                   if (parsed.executive_assessment && parsed.what_happened && parsed.why_it_matters && parsed.defensive_implications) {
                     articleDek = parsed.executive_assessment;
                     articleExcerpt = parsed.executive_assessment;
@@ -838,12 +1078,12 @@ CRITICAL RULES:
           }
 
           // ── Assemble Comprehensive Evidence Pack ────────────────────────────
-          const eventType = result.entities.cves.length > 0 
-            ? 'vulnerability_exploitation' 
-            : result.entities.malware.length > 0 
-            ? 'malware_campaign' 
-            : result.entities.actors.length > 0 
-            ? 'threat_actor_activity' 
+          const eventType = result.entities.cves.length > 0
+            ? 'vulnerability_exploitation'
+            : result.entities.malware.length > 0
+            ? 'malware_campaign'
+            : result.entities.actors.length > 0
+            ? 'threat_actor_activity'
             : 'threat_intelligence';
 
           const evidencePack: EvidencePack = {
@@ -930,7 +1170,7 @@ CRITICAL RULES:
               assessment: { headline: finalTitle, executive_summary: articleDek, threat_level: result.severity.toUpperCase(), confidence_state: result.confidenceState, confidence_score: result.confidenceScore },
               what_happened: articleAiSummary || finalSummary,
               why_it_matters: articleExcerpt || finalSummary,
-              vulnerabilities: result.entities.cves.map(c => ({ cveId: c, isExploitedInWild: result.severity === 'critical', severity: result.severity.toUpperCase() })),
+              vulnerabilities: result.entities.cves.map(c => ({ cveId: c, isExploitedInWild: assessExploitationEvidence({ sourceId: payload.sourceId, catalog: payload.metadata?.catalog as string | undefined }).flag === 1, severity: result.severity.toUpperCase() })),
               actors: result.entities.actors.map(a => ({ name: a })), malware: result.entities.malware.map(a => ({ name: a })),
               iocs: [...result.entities.ipv4s.map(ip => ({ type: 'ipv4' as const, value: ip, confidence: result.confidenceScore })), ...result.entities.sha256s.map(h => ({ type: 'sha256' as const, value: h, confidence: result.confidenceScore }))], depth: 'STANDARD' as const,
             };
@@ -974,9 +1214,193 @@ CRITICAL RULES:
 
 /** Capability-scoped internal API exposed only through a Worker service binding. */
 export default class IngestWorker extends WorkerEntrypoint<Env> {
+  async replaySourceMessage(input: { sourceMessageId: string }): Promise<any> {
+    if (this.env.ENVIRONMENT !== 'preview') throw new Error('Replay is available only in Preview');
+    const sourceMessageId = String(input?.sourceMessageId || '').trim();
+    if (!/^msg_[A-Za-z0-9-]+$/.test(sourceMessageId)) throw new Error('Invalid source message identifier');
+
+    const sourceMessage = await this.env.DB.prepare(
+      'SELECT id, source_id, external_message_id, raw_content, normalized_content, content_hash, published_at FROM source_messages WHERE id = ? LIMIT 1'
+    ).bind(sourceMessageId).first<any>();
+    if (!sourceMessage) throw new Error('Source message not found');
+
+    let event = await this.env.DB.prepare(
+      `SELECT id, type, title, summary, severity, confidence, entities_json
+       FROM intelligence_events
+       WHERE content_hash = ? OR title LIKE ?
+       ORDER BY created_at ASC LIMIT 1`
+    ).bind(sourceMessage.content_hash, `%${sourceMessage.external_message_id}%`).first<any>();
+
+    if (!event) {
+      const eventId = `evt_${crypto.randomUUID().slice(0, 16)}`;
+      const title = `Vulnerability Identifier: ${sourceMessage.external_message_id}`;
+      const summary = sourceMessage.normalized_content || sourceMessage.raw_content || `${sourceMessage.external_message_id} Security Advisory`;
+      const entities = {
+        cves: [sourceMessage.external_message_id],
+        ipv4s: [], sha256s: [], md5s: [], domains: [], ttps: [], actors: [], malware: []
+      };
+      await this.env.DB.prepare(
+        `INSERT INTO intelligence_events (
+          id, type, title, summary, severity, confidence, status, content_hash,
+          first_seen_at, last_updated_at, entities_json, mitre_matrix, created_at, updated_at
+        ) VALUES (?, 'vulnerability_exploitation', ?, ?, 'CRITICAL', 0.9, 'VERIFIED', ?, ?, ?, ?, '[]', datetime('now'), datetime('now'))
+        ON CONFLICT(id) DO NOTHING`
+      ).bind(
+        eventId, title, summary, sourceMessage.content_hash,
+        sourceMessage.published_at || new Date().toISOString(),
+        new Date().toISOString(),
+        JSON.stringify(entities)
+      ).run();
+
+      event = {
+        id: eventId,
+        type: 'vulnerability_exploitation',
+        title,
+        summary,
+        severity: 'CRITICAL',
+        confidence: 0.9,
+        entities_json: JSON.stringify(entities)
+      };
+    }
+
+    let evidence = await this.env.DB.prepare(
+      'SELECT id FROM evidence WHERE event_id = ? AND source_message_id = ? ORDER BY created_at ASC LIMIT 1'
+    ).bind(event.id, sourceMessageId).first<{ id: string }>();
+
+    if (!evidence) {
+      const evidenceId = `evi_${crypto.randomUUID().slice(0, 12)}`;
+      await this.env.DB.prepare(
+        `INSERT OR IGNORE INTO evidence (
+          id, event_id, source_id, source_message_id, type, snippet, reviewer_state, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, 'cisa_kev', ?, 'UNREVIEWED', datetime('now'), datetime('now'))`
+      ).bind(evidenceId, event.id, sourceMessage.source_id, sourceMessageId, (event.summary || '').slice(0, 250)).run();
+      evidence = { id: evidenceId };
+    }
+
+    const traceId = `trace_${crypto.randomUUID().slice(0, 12)}`;
+    const traceEventId = `replay_${crypto.randomUUID().slice(0, 16)}`;
+    const startedAt = Date.now();
+    const previousAttempts = await this.env.DB.prepare(
+      "SELECT COUNT(*) AS attempts FROM event_trace WHERE stage = 'REPLAY' AND resource_id = ? AND status = 'COMPLETED'"
+    ).bind(sourceMessageId).first<{ attempts: number }>();
+    const attempt = Number(previousAttempts?.attempts || 0) + 1;
+    if (attempt > 6) throw new Error('Replay attempt limit exhausted');
+    await recordTrace(this.env, traceId, traceEventId, 'REPLAY', 'STARTED', attempt, startedAt, sourceMessageId);
+
+    try {
+      const entities = JSON.parse(event.entities_json || '{}') as {
+        cves?: string[]; ipv4s?: string[]; sha256s?: string[]; ttps?: string[]; actors?: string[]; malware?: string[];
+      };
+      const cvesSet = new Set<string>(Array.isArray(entities.cves) ? entities.cves : []);
+      if (/^CVE-\d{4}-\d{4,}$/i.test(sourceMessage.external_message_id)) {
+        cvesSet.add(sourceMessage.external_message_id.toUpperCase());
+      }
+      const cves = Array.from(cvesSet);
+      const actors = Array.isArray(entities.actors) ? entities.actors : [];
+      const malware = Array.isArray(entities.malware) ? entities.malware : [];
+      const ipv4s = Array.isArray(entities.ipv4s) ? entities.ipv4s : [];
+      const sha256s = Array.isArray(entities.sha256s) ? entities.sha256s : [];
+      const ttps = Array.isArray(entities.ttps) ? entities.ttps : [];
+
+      for (const cve of cves) {
+        const resolvedCve = resolveVulnerability(cve) || cve;
+        const cveDbId = `vuln_${resolvedCve.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+        // A replayed canonical event carries an exploitation NARRATIVE, not
+        // exploitation EVIDENCE, so this path may never raise the flag: it derives
+        // the same assessment contract as every other write and PRESERVES an
+        // existing value instead of overwriting it. Previously this statement
+        // hardcoded `1` for every CVE associated with the event.
+        const replayExploitation = assessExploitationEvidence({ sourceId: sourceMessage.source_id });
+        await this.env.DB.prepare(
+          `INSERT INTO vulnerabilities (id, cve_id, title, description, severity, is_exploited_in_wild, published_at, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+           ON CONFLICT(cve_id) DO UPDATE SET is_exploited_in_wild = CASE WHEN ? = -1 THEN vulnerabilities.is_exploited_in_wild ELSE ? END, updated_at = datetime('now')`
+        ).bind(cveDbId, resolvedCve, `${resolvedCve} Security Advisory`, event.summary, event.severity.toUpperCase(), replayExploitation.flag, sourceMessage.published_at || new Date().toISOString(), replayExploitation.signal, replayExploitation.signal).run();
+      }
+
+      const relations = extractGraphRelations({ eventId: event.id, evidenceId: evidence.id, actors, malware, cves, ipv4s, sha256s, ttps, confidence: Number(event.confidence || 0.5) });
+      let persisted = 0;
+      for (const rel of relations) {
+        const existing = await this.env.DB.prepare(
+          `SELECT id FROM relations WHERE source_entity_type = ? AND source_entity_id = ? AND target_entity_type = ? AND target_entity_id = ? AND relation_type = ? LIMIT 1`
+        ).bind(rel.source_entity_type, rel.source_entity_id, rel.target_entity_type, rel.target_entity_id, rel.relation_type).first<{ id: string }>();
+        if (existing) continue;
+        await this.env.DB.prepare(
+          `INSERT INTO relations (id, source_entity_type, source_entity_id, target_entity_type, target_entity_id, relation_type, confidence, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+        ).bind(rel.id, rel.source_entity_type, rel.source_entity_id, rel.target_entity_type, rel.target_entity_id, rel.relation_type, rel.confidence).run();
+        persisted += 1;
+      }
+      await recordTrace(this.env, traceId, traceEventId, 'REPLAY', 'COMPLETED', attempt, startedAt, sourceMessageId);
+      return { replayed: true, sourceMessageId, eventId: event.id, evidenceId: evidence.id, vulnerabilityRecords: cves.length, relationsGenerated: relations.length, relationsPersisted: persisted, traceId };
+    } catch (error) {
+      await recordTrace(this.env, traceId, traceEventId, 'REPLAY', 'FAILED', attempt, startedAt, sourceMessageId, error);
+      throw error;
+    }
+  }
+
   async processKnowledgeBatch(input: { chunks: any[] }): Promise<any> {
     if (!this.env.KNOWLEDGE_PROCESSOR) throw new Error('Knowledge processor binding unavailable');
     return this.env.KNOWLEDGE_PROCESSOR.processBatch(input);
+  }
+
+  async triggerControlledKevTest(limit?: number): Promise<{ success: boolean; cveId: string; vulnerabilityName: string; enqueued: boolean }> {
+    const traceId = `trace_${crypto.randomUUID().slice(0, 12)}`;
+    const lifecycleEventId = `ingest_${crypto.randomUUID().replace(/-/g, '').slice(0, 32)}`;
+    const fetchStartedAt = Date.now();
+    const kevResponse = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', {
+      headers: { accept: 'application/json' },
+    });
+    if (!kevResponse.ok) {
+      throw new Error(`Failed to fetch CISA KEV catalog: HTTP ${kevResponse.status}`);
+    }
+    const kev = (await kevResponse.json()) as {
+      dateReleased?: string;
+      vulnerabilities?: Array<{
+        cveID: string;
+        vulnerabilityName?: string;
+        shortDescription?: string;
+        dateAdded?: string;
+      }>;
+    };
+    await recordTrace(this.env, traceId, lifecycleEventId, 'SOURCE_FETCH', 'COMPLETED', 1, fetchStartedAt, 'cisa-kev');
+    const item = kev.vulnerabilities?.[0];
+    if (!item?.cveID) {
+      throw new Error('No vulnerabilities found in CISA KEV catalog');
+    }
+
+    const sourceId = 'cisa-kev';
+    const sourceName = 'CISA Known Exploited Vulnerabilities';
+    await ensureFeedSource(this.env, sourceId, sourceName);
+
+    const rawText = `${item.cveID}: ${item.vulnerabilityName || ''}. ${item.shortDescription || ''}`.slice(0, 12000);
+    const contentHash = await sha256Hex(rawText);
+
+    if (!this.env.INGEST_QUEUE) {
+      throw new Error('INGEST_QUEUE is not configured');
+    }
+
+    const enqueueStartedAt = Date.now();
+    await this.env.INGEST_QUEUE.send({
+      sourceId,
+      sourceName,
+      externalMessageId: item.cveID,
+      rawText,
+      contentHash,
+      sourceUrl: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
+      publishedAt: validSourceTimestamp(item.dateAdded),
+      receivedAt: new Date().toISOString(),
+      metadata: { authoritative: true, authority_tier: 1, catalog: 'CISA KEV', version: kev.dateReleased, trace_id: traceId, lifecycle_event_id: lifecycleEventId },
+      testRun: true,
+    });
+    await recordTrace(this.env, traceId, lifecycleEventId, 'ENQUEUE', 'COMPLETED', 1, enqueueStartedAt, 'zayron-ingest-queue-preview');
+
+    return {
+      success: true,
+      cveId: item.cveID,
+      vulnerabilityName: item.vulnerabilityName || 'Unknown',
+      enqueued: true,
+    };
   }
 
   async submitNvdCanary(input: { cve_id: string; source: string; raw_record: unknown }): Promise<{ event_id: string; status: string }> {
@@ -1034,7 +1458,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     return ingestHandlers.scheduled(controller, this.env);
   }
 
-  async queue(batch: MessageBatch<IngestionMessagePayload>): Promise<void> {
-    return ingestHandlers.queue(batch, this.env);
+  async queue(batch: MessageBatch<IngestionMessagePayload>, _env?: Env, ctx?: ExecutionContext): Promise<void> {
+    return ingestHandlers.queue(batch, this.env, ctx);
   }
 }
+
+export { ingestHandlers };

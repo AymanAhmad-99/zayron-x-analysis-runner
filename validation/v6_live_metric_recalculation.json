@@ -1,0 +1,120 @@
+{
+  "benchmark_version": "6.0.0",
+  "evaluation_mode": "GENUINE_LIVE_CLOUDFLARE_VECTORIZE_V6",
+  "timestamp": "2026-09-05T08:36:30.227Z",
+  "gold_dataset_sha256": "6546a99f7cb8d452799c1bd30f23e2a502fa3eb313e59d63c75169c587739a43",
+  "v6_traces_sha256": "2733cb4378c32e5cb0f5cbc156682dc1672fd62dd397f5a6a0594295d4d013b4",
+  "total_queries_evaluated": 100,
+  "vectorize_index": "zayron-knowledge-index",
+  "corpus_coverage": {
+    "canonical_chunks": 36963,
+    "vectorize_matching_chunks": 36963,
+    "coverage_percentage": 100
+  },
+  "top_k_curves": {
+    "K=1": {
+      "precision": 0,
+      "precision_ci95": [
+        0,
+        0
+      ],
+      "recall_exact": 0,
+      "recall_document": 0,
+      "hit_rate": 0,
+      "mrr": 0,
+      "ndcg": 0
+    },
+    "K=3": {
+      "precision": 0,
+      "precision_ci95": [
+        0,
+        0
+      ],
+      "recall_exact": 0,
+      "recall_document": 0,
+      "hit_rate": 0,
+      "mrr": 0,
+      "ndcg": 0
+    },
+    "K=5": {
+      "precision": 0,
+      "precision_ci95": [
+        0,
+        0
+      ],
+      "recall_exact": 0,
+      "recall_document": 0,
+      "hit_rate": 0,
+      "mrr": 0,
+      "ndcg": 0
+    },
+    "K=10": {
+      "precision": 0,
+      "precision_ci95": [
+        0,
+        0
+      ],
+      "recall_exact": 0,
+      "recall_document": 0,
+      "hit_rate": 0,
+      "mrr": 0,
+      "ndcg": 0
+    },
+    "K=20": {
+      "precision": 0,
+      "precision_ci95": [
+        0,
+        0
+      ],
+      "recall_exact": 0,
+      "recall_document": 0,
+      "hit_rate": 0,
+      "mrr": 0,
+      "ndcg": 0
+    }
+  },
+  "domain_breakdown": {
+    "VULNERABILITY": {
+      "N": 25,
+      "P_at_5": 0,
+      "R_at_5_doc": 0,
+      "MRR": 0,
+      "nDCG_at_5": 0
+    },
+    "MALWARE": {
+      "N": 20,
+      "P_at_5": 0,
+      "R_at_5_doc": 0,
+      "MRR": 0,
+      "nDCG_at_5": 0
+    },
+    "NETWORK_SECURITY": {
+      "N": 20,
+      "P_at_5": 0,
+      "R_at_5_doc": 0,
+      "MRR": 0,
+      "nDCG_at_5": 0
+    },
+    "DFIR_MEMORY": {
+      "N": 15,
+      "P_at_5": 0,
+      "R_at_5_doc": 0,
+      "MRR": 0,
+      "nDCG_at_5": 0
+    },
+    "THREAT_ACTOR": {
+      "N": 10,
+      "P_at_5": 0,
+      "R_at_5_doc": 0,
+      "MRR": 0,
+      "nDCG_at_5": 0
+    },
+    "INCIDENT_RESPONSE": {
+      "N": 10,
+      "P_at_5": 0,
+      "R_at_5_doc": 0,
+      "MRR": 0,
+      "nDCG_at_5": 0
+    }
+  }
+}

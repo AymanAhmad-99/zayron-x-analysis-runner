@@ -10,15 +10,17 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "jsx": "react-jsx",
-    "types": ["@cloudflare/workers-types"],
+    "types": ["@cloudflare/workers-types", "node"],
     "baseUrl": ".",
     "paths": {
       "@zayron/types": ["packages/types/src/index.ts"],
-      "@zayron/ui": ["packages/ui/src/index.ts"],
-      "@zayron/intelligence": ["packages/intelligence/src/index.ts"]
+      "@zayron/types/*": ["packages/types/src/*"],
+      "@zayron/intelligence": ["packages/intelligence/src/index.ts"],
+      "@zayron/intelligence/*": ["packages/intelligence/src/*"]
     }
   },
   "include": [
+    "types/**/*.d.ts",
     "packages/*/src/**/*",
     "packages/*/db/**/*",
     "workers/*/src/**/*"

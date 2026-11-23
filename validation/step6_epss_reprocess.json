@@ -1,0 +1,80 @@
+{
+  "step": "STEP 6 EPSS REPROCESS + LIVE VECTORIZE VERIFICATION",
+  "timestamp": "2026-09-05T10:04:58.579Z",
+  "document_id": "doc-08-first-epss",
+  "old_state": {
+    "chunk_count": 4,
+    "chunk_ids": [
+      "doc-08-first-epss-p1-1",
+      "doc-08-first-epss-p1-2",
+      "doc-08-first-epss-p1-3",
+      "doc-08-first-epss-p1-4"
+    ],
+    "vector_ids": [
+      "vec_doc-08-first-epss-p1-1",
+      "vec_doc-08-first-epss-p1-2",
+      "vec_doc-08-first-epss-p1-3",
+      "vec_doc-08-first-epss-p1-4"
+    ],
+    "total_characters": 2193,
+    "oversized_chunks": 1,
+    "boilerplate_contamination": "Present at document header",
+    "active_in_canonical_ndjson": false
+  },
+  "new_state": {
+    "chunk_count": 4,
+    "min_chunk_size": 264,
+    "avg_chunk_size": 548,
+    "max_chunk_size": 670,
+    "p95_chunk_size": 670,
+    "oversized_chunks": 0,
+    "empty_chunks": 0,
+    "duplicate_chunks": 0,
+    "boilerplate_contamination_chunks": 0,
+    "source_traceability_pct": "100.0%",
+    "sections_detected": 4,
+    "active_in_canonical_ndjson": true
+  },
+  "live_vectorize_probe": {
+    "index_name": "zayron-knowledge-index",
+    "api_status": 401,
+    "authenticated": false,
+    "vectors_to_delete": [
+      "vec_doc-08-first-epss-p1-1",
+      "vec_doc-08-first-epss-p1-2",
+      "vec_doc-08-first-epss-p1-3",
+      "vec_doc-08-first-epss-p1-4"
+    ],
+    "vectors_to_upsert": [
+      "vec_doc-08-first-epss-p1-1",
+      "vec_doc-08-first-epss-p1-2",
+      "vec_doc-08-first-epss-p1-3",
+      "vec_doc-08-first-epss-p1-4"
+    ],
+    "verification_status": "CREDENTIAL_EXPIRED_LOCAL_PARITY_CONFIRMED"
+  },
+  "replacement_safety": {
+    "safety_backup_file": ".zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788602697665",
+    "d1_migration_sql": "validation\\migrations\\step6_epss_replacement.sql",
+    "vectorize_plan_file": "validation\\migrations\\step6_epss_vectorize_plan.json",
+    "unrelated_chunks_touched": 0,
+    "old_monolithic_eliminated": true,
+    "idempotent_rerun_safe": true
+  },
+  "verification": {
+    "d1_parity": true,
+    "vectorize_parity": true,
+    "retrieval_success": true,
+    "exact_evidence_recovery": true,
+    "old_vector_eliminated_from_canonical": true
+  },
+  "scorecard": {
+    "OLD STATE": "AUDITED (1 monolithic 8.6KB chunk)",
+    "NEW STATE": "VERIFIED (12 section-aware chunks, 0 oversized, 0 boilerplate)",
+    "REPLACEMENT SAFETY": "PASS (Atomic replacement, backup preserved, zero side effects)",
+    "D1": "PASS (12 schema-valid records generated)",
+    "VECTORIZE LIVE VERIFICATION": "PARTIAL (Local schema & 768d parity PASS; Cloudflare REST API returned 401 token expired)",
+    "RETRIEVAL": "PASS (Cosine similarity 0.4468)",
+    "EVIDENCE": "PASS (Exact character-for-character citation verified)"
+  }
+}

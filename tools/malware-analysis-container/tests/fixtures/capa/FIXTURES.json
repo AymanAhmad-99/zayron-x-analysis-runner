@@ -1,0 +1,69 @@
+{
+  "fixture_set": "capa-9.4.0-real",
+  "note": "REAL capa 9.4.0 stdout/stderr captured from the pinned installed binary against the digest-matched vendored ruleset. These files are NOT hand-authored: capa_success.json / capa_zero_match.json are byte-exact tool stdout, and the *.stderr.txt files are byte-exact tool stderr. No rule, match, address, capability, or ATT&CK field was invented.",
+  "tool": "capa",
+  "tool_version": "9.4.0",
+  "rules_version": "9.4.0",
+  "rules_source_digest": "c93149e1ed23f1d2c5fca7f2e55c4801e28285fb30430dc124004b3495575b83",
+  "rules_file_count": 1057,
+  "rules_yml_count": 1045,
+  "rules_digest_provenance": "Captured by the runner diagnostic step (ZXDIAG|rules|source_digest=...) from /opt/zx-tools/capa-rules in the real analysis image; the local ruleset used for capture recomputes to the identical digest, so these fixtures are produced by the exact capa version and ruleset the container ships.",
+  "fixtures": [
+    {
+      "file": "capa_success.json",
+      "kind": "success-with-matches",
+      "sha256": "d3e9d690e9395cc3458aaa218383473040c6d5ff92cfb2459845d965679dd21c",
+      "bytes": 33029,
+      "exit_code": 0,
+      "duration_s": 2.651,
+      "stdout_sha256": "d3e9d690e9395cc3458aaa218383473040c6d5ff92cfb2459845d965679dd21c",
+      "stderr_file": "capa_success.stderr.txt",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "input_sha256": "77fe49bdaa31a57a71ec543b54e4a8624e906a85b51c4e748231ad542785851a",
+      "input_path": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/AddInProcess.exe",
+      "argv": ["capa", "--quiet", "--json", "--rules", "<capa-rules>", "<sample>"],
+      "rules_loaded": 6,
+      "matches_total": 6,
+      "rules_with_attack": 2,
+      "rules_with_mbc": 2
+    },
+    {
+      "file": "capa_zero_match.json",
+      "kind": "zero-match-success",
+      "sha256": "ca28ede1e08dd7e9dc9051b7c101b1ef3954a0af7bbd25ffd9b22de6e477171b",
+      "bytes": 1757,
+      "exit_code": 0,
+      "stdout_sha256": "ca28ede1e08dd7e9dc9051b7c101b1ef3954a0af7bbd25ffd9b22de6e477171b",
+      "input_sha256": "24810d7b6b1f76cbe54305fc2ed5d5dd46bd729af486f9b63de82e453dcf14ed",
+      "input_path": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/InstallUtil.exe",
+      "argv": ["capa", "--quiet", "--json", "--tag", "T1490", "--rules", "<capa-rules>", "<sample>"],
+      "rules_loaded": 0,
+      "matches_total": 0,
+      "note": "A genuine successful scan of a supported .NET PE with the real ruleset filtered to the T1490 subset (a valid, non-matching subset). capa exits 0 and emits {\"rules\": {}} — the real zero-match serialization. It is NOT an error path."
+    },
+    {
+      "file": "capa_unsupported_exit16.stderr.txt",
+      "kind": "unsupported-input",
+      "sha256": "6e5fbd35e16b83d0f4f333aebe656ea4fa6ff735d297f71dde8a1d49e3b29996",
+      "bytes": 1134,
+      "exit_code": 16,
+      "exit_code_name": "E_INVALID_FILE_TYPE",
+      "stdout_bytes": 0,
+      "note": "Real capa stderr for a non-PE input (plain text). Exit 16 is E_INVALID_FILE_TYPE (capa/main.py) — UNSUPPORTED input, which is NOT a parser/adapter failure."
+    }
+  ],
+  "exit_code_map": {
+    "0": "success",
+    "10": "E_MISSING_RULES",
+    "11": "E_MISSING_FILE",
+    "12": "E_INVALID_RULE",
+    "13": "E_CORRUPT_FILE",
+    "14": "E_FILE_LIMITATION",
+    "15": "E_INVALID_SIG",
+    "16": "E_INVALID_FILE_TYPE",
+    "17": "E_INVALID_FILE_ARCH",
+    "18": "E_INVALID_FILE_OS",
+    "23": "E_EMPTY_REPORT (CAPE/DRAKVUF sandbox formats only; never the static PE/ELF path)"
+  }
+}

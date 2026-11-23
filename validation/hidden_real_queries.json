@@ -1,0 +1,152 @@
+[
+  {
+    "query_id": "hq_01",
+    "query": "Windows Remote Desktop Licensing Service heap overflow MadLicense CVE-2024-38077",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_02",
+    "query": "liblzma xz-utils multi-stage backdoor sshd RSA_public_decrypt interception CVE-2024-3094",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_03",
+    "query": "CrowdStrike Falcon sensor Channel File 291 kernel logic memory corruption null pointer",
+    "domain": "INCIDENT_RESPONSE"
+  },
+  {
+    "query_id": "hq_04",
+    "query": "Polyfill.io supply chain domain hijack cdn.polyfill.io malicious redirection",
+    "domain": "NETWORK_SECURITY"
+  },
+  {
+    "query_id": "hq_05",
+    "query": "Microsoft Outlook MAPI remote code execution preview pane zero-day CVE-2024-38021",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_06",
+    "query": "Microsoft Exchange Server NTLM relay elevation of privilege CVE-2024-21410",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_07",
+    "query": "SmartScreen security feature bypass zero-day CVE-2024-29988 malicious zipped shortcut",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_08",
+    "query": "Windows AppLocker kernel driver elevation of privilege Lazarus zero-day CVE-2024-21338",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_09",
+    "query": "Windows Wi-Fi driver remote code execution unauthenticated packet injection CVE-2024-30078",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_10",
+    "query": "Black Basta QR code social engineering Microsoft Teams chat intrusion technique",
+    "domain": "THREAT_ACTOR"
+  },
+  {
+    "query_id": "hq_11",
+    "query": "BianLian ransomware Go-based exfiltration multi-threaded channel encryption",
+    "domain": "MALWARE"
+  },
+  {
+    "query_id": "hq_12",
+    "query": "RansomHub ransomware Sophos EDR blinding via signed vulnerable driver BYOVD",
+    "domain": "MALWARE"
+  },
+  {
+    "query_id": "hq_13",
+    "query": "Sliver C2 framework mutual TLS JA4 fingerprint beaconing communication pattern",
+    "domain": "NETWORK_SECURITY"
+  },
+  {
+    "query_id": "hq_14",
+    "query": "Active Directory Certificate Services ADCS ESC1 template misconfiguration privilege escalation",
+    "domain": "NETWORK_SECURITY"
+  },
+  {
+    "query_id": "hq_15",
+    "query": "ZeroLogon Netlogon cryptographic authentication bypass CVE-2020-1472 domain controller",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_16",
+    "query": "CISA BOD 22-01 mandatory federal operational directive remediation timelines",
+    "domain": "VULNERABILITY"
+  },
+  {
+    "query_id": "hq_17",
+    "query": "Volatility 3 malfind unbacked memory region executable permission shellcode extraction",
+    "domain": "DFIR_MEMORY"
+  },
+  {
+    "query_id": "hq_18",
+    "query": "Kernel SSDT function table address modification rootkit hook detection",
+    "domain": "DFIR_MEMORY"
+  },
+  {
+    "query_id": "hq_19",
+    "query": "Mimikatz sekurlsa logondpv credential provider memory artifact extraction",
+    "domain": "DFIR_MEMORY"
+  },
+  {
+    "query_id": "hq_20",
+    "query": "Process ghosting file deletion pending execution handle memory mapping",
+    "domain": "DFIR_MEMORY"
+  },
+  {
+    "query_id": "hq_21",
+    "query": "CR3 page directory base register swap kernel memory corruption forensics",
+    "domain": "DFIR_MEMORY"
+  },
+  {
+    "query_id": "hq_22",
+    "query": "NIST SP 800-61 containment strategies isolating infected network segment vs host shutdown",
+    "domain": "INCIDENT_RESPONSE"
+  },
+  {
+    "query_id": "hq_23",
+    "query": "NIST SP 800-150 community trust circles sanitized indicator dissemination protocols",
+    "domain": "INCIDENT_RESPONSE"
+  },
+  {
+    "query_id": "hq_24",
+    "query": "STIX v2.1 Relationship SDO connecting Threat Actor to Attack Pattern technique",
+    "domain": "INCIDENT_RESPONSE"
+  },
+  {
+    "query_id": "hq_25",
+    "query": "TAXII v2.1 API Root discovery endpoint polling intelligence collection feeds",
+    "domain": "INCIDENT_RESPONSE"
+  },
+  {
+    "query_id": "hq_26",
+    "query": "Richards Heuer cognitive bias anchoring bias in cybersecurity incident attribution",
+    "domain": "INCIDENT_RESPONSE"
+  },
+  {
+    "query_id": "hq_27",
+    "query": "Cobalt Strike malleable profile HTTP GET /dpixel jittered beaconing pattern",
+    "domain": "NETWORK_SECURITY"
+  },
+  {
+    "query_id": "hq_28",
+    "query": "Kerberos pre-authentication AS-REP roasting unconstrained delegation extraction",
+    "domain": "NETWORK_SECURITY"
+  },
+  {
+    "query_id": "hq_29",
+    "query": "Volt Typhoon SOHO router KV-botnet mesh communication command channel",
+    "domain": "THREAT_ACTOR"
+  },
+  {
+    "query_id": "hq_30",
+    "query": "Scattered Spider helpdesk voice phishing social engineering MFA reset bypass",
+    "domain": "THREAT_ACTOR"
+  }
+]

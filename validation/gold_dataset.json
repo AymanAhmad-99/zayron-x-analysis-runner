@@ -1,0 +1,1815 @@
+[
+  {
+    "query_id": "gq_vuln_01",
+    "query": "SonicWall SonicOS post-authentication buffer overflow remote code execution patch",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "kb-doc-cisa-kev-record-1182",
+      "vec_chk_hae_01"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-07-first-cvss4",
+      "doc-08-first-epss"
+    ],
+    "relevance_grade": {
+      "kb-doc-cisa-kev-record-1182": 3,
+      "vec_chk_hae_01": 2,
+      "doc-07-first-cvss4": 2
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_02",
+    "query": "CVSS v4.0 Attack Vector network vs local metric definition and scoring calculation",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "chk_cvss4_metric_av",
+      "doc-07-first-cvss4"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-07-first-cvss4",
+      "doc-08-first-epss"
+    ],
+    "relevance_grade": {
+      "doc-07-first-cvss4": 3,
+      "chk_cvss4_metric_av": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_03",
+    "query": "FIRST EPSS model 30-day exploit prediction probability threshold percentile",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "chk_first_epss_01",
+      "doc-08-first-epss"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-08-first-epss",
+      "doc-cisa-kev"
+    ],
+    "relevance_grade": {
+      "doc-08-first-epss": 3,
+      "chk_first_epss_01": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_04",
+    "query": "CISA KEV Binding Operational Directive BOD 22-01 remediation timelines for federal agencies",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "chk_cisa_kev_01",
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3,
+      "chk_cisa_kev_01": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_05",
+    "query": "Windows MSHTML platform spoofing zero-day vulnerability CVE-2024-38112 exploit in the wild",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "kb-doc-cisa-kev-record-521",
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3,
+      "kb-doc-cisa-kev-record-521": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_06",
+    "query": "OpenSSH regreSSHion signal handler race condition CVE-2024-6387 glibc vulnerability",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "kb-doc-cisa-kev-record-858",
+      "vec_chk_hae_01"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3,
+      "vec_chk_hae_01": 2
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_07",
+    "query": "Palo Alto Networks PAN-OS GlobalProtect command injection CVE-2024-3400 root shell",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "kb-doc-cisa-kev-record-1182",
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_08",
+    "query": "ConnectWise ScreenConnect authentication bypass CVE-2024-1709 administrative setup wizard",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_09",
+    "query": "Ivanti Connect Secure authentication bypass and command injection CVE-2023-46805 CVE-2024-21887",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_10",
+    "query": "Citrix Bleed NetScaler ADC session token memory disclosure vulnerability CVE-2023-4966",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_11",
+    "query": "Atlassian Confluence broken access control setup administrator account creation CVE-2023-22515",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_12",
+    "query": "Fortinet FortiOS SSL-VPN heap-based buffer overflow remote code execution CVE-2023-27997",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev",
+      "vec_chk_hae_01"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3,
+      "vec_chk_hae_01": 2
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_13",
+    "query": "MOVEit Transfer SQL injection zero-day data exfiltration vulnerability CVE-2023-34362",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_14",
+    "query": "Microsoft Outlook NTLM credential relay NetBIOS hash theft CVE-2023-23397",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_15",
+    "query": "Log4j JNDI LDAP lookup remote code execution vulnerability Log4Shell CVE-2021-44228",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_16",
+    "query": "Follina MSDT Microsoft Support Diagnostic Tool URL protocol handler RCE CVE-2022-30190",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_17",
+    "query": "PrintNightmare Windows Print Spooler remote code execution CVE-2021-34527",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_18",
+    "query": "PHP CGI argument injection Windows best-fit character mapping bypass CVE-2024-4577",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_19",
+    "query": "VMware ESXi Active Directory integration authentication bypass privilege escalation CVE-2024-37085",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_20",
+    "query": "Check Point Quantum Security Gateway arbitrary file read CVE-2024-24919 VPN appliance",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_21",
+    "query": "Jenkins CLI arbitrary file read vulnerability via args4j parser CVE-2024-23897",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_22",
+    "query": "JetBrains TeamCity authentication bypass administrator account creation CVE-2024-27198",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_23",
+    "query": "Cisco ASA and FTD persistent local code execution line-in-the-sand CVE-2024-20359",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_24",
+    "query": "Windows Error Reporting Service local privilege escalation zero-day CVE-2024-26169",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_vuln_25",
+    "query": "Spring4Shell Spring Framework DataBinder remote code execution CVE-2022-22965 classLoader",
+    "domain": "VULNERABILITY",
+    "expected_relevant_chunk_ids": [
+      "doc-cisa-kev"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-cisa-kev",
+      "doc-14-nist-sp-800-53"
+    ],
+    "relevance_grade": {
+      "doc-cisa-kev": 3
+    },
+    "label_source": "CISA KEV / FIRST CVSS / NIST NVD Cross-Reference",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_01",
+    "query": "Process injection techniques CreateRemoteThread VirtualAllocEx memory injection T1055",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1055"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_02",
+    "query": "Process hollowing unmapping executable image replacing PE header memory evasion T1055.012",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1055-012"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_03",
+    "query": "Reflective DLL loading memory execution without touching disk Windows API evasion T1620",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1620"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_04",
+    "query": "Dynamic-link library search order hijacking DLL side-loading persistence T1574.002",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1574-002"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_05",
+    "query": "Obfuscated files or information software packing entropy analysis packing detection T1027.002",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1027-002"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_06",
+    "query": "Credential dumping LSASS memory minidump sekurlsa password extraction T1003.001",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1003-001"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_07",
+    "query": "Living off the land binaries LOLBAS Rundll32 proxy execution defense evasion T1218.011",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1218-011"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_08",
+    "query": "Regsvr32 squiblydoo scriptlet execution AppLocker bypass T1218.010",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1218-010"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_09",
+    "query": "Scheduled task job persistence creation schtasks administrative utility T1053.005",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1053-005"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_10",
+    "query": "Registry run keys startup folder persistence autostart execution T1547.001",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1547-001"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_11",
+    "query": "Cobalt Strike malleable C2 profile HTTP beaconing user-agent customization T1071.001",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1071-001"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_12",
+    "query": "Asynchronous Remote Access Trojan AsyncRAT dynamic DNS client evasion T1219",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1219"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_13",
+    "query": "RedLine Stealer web browser credential sqlite database cookie harvesting T1555.003",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1555-003"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_14",
+    "query": "LummaC2 information stealer encrypted strings anti-debugging PE structure T1027",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1027"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_15",
+    "query": "LockBit ransomware multithreaded file encryption shadow copy deletion vssadmin T1486",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1486"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_16",
+    "query": "BlackCat ALPHV Rust-based modular ransomware cross-platform execution T1486",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1486"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_17",
+    "query": "Wiper malware master boot record MBR destruction HermeticWiper data destruction T1561.002",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1561-002"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_18",
+    "query": "Endpoint evasion Bring Your Own Vulnerable Driver BYOVD kernel driver exploit T1068",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1068"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_19",
+    "query": "PowerShell encoded command execution bypass execution policy AMSI memory bypass T1059.001",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1059-001"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_malw_20",
+    "query": "Impair defenses disabling Windows Defender antivirus tampering service stoppage T1562.001",
+    "domain": "MALWARE",
+    "expected_relevant_chunk_ids": [
+      "attack-t1562-001"
+    ],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3
+    },
+    "label_source": "MITRE ATT&CK Enterprise Matrix v15.1",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_01",
+    "query": "DNS tunneling data exfiltration encoded subdomains TXT record inspection T1071.004",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_02",
+    "query": "Kerberoasting Active Directory service principal name SPN RC4 ticket extraction T1558.003",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_03",
+    "query": "DCSync attack Directory Replication Service DRS GetNCChanges account replication T1003.006",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_04",
+    "query": "SMB lateral movement named pipe execution svcctl PsExec remote service creation T1021.002",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_05",
+    "query": "Remote Desktop Protocol RDP remote services lateral movement network logon Type 10 T1021.001",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_06",
+    "query": "TLS JA3 JA4 client fingerprint anomaly SSL handshake client hello ciphersuite T1573",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_07",
+    "query": "Network service port scanning TCP SYN sweep host discovery subnet reconnaissance T1046",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_08",
+    "query": "Automated SQL injection web application scanning ingress HTTP payload inspection T1190",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_09",
+    "query": "Fast flux DNS bulletproof hosting short TTL IP address cycling C2 domain evasion T1568.001",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_10",
+    "query": "Domain Name System over HTTPS DoH enterprise resolver bypass encrypted exfiltration T1572",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_11",
+    "query": "Protocol tunneling SSH port forwarding SOCKS proxy internal pivot network evasion T1572",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_12",
+    "query": "Command and control multi-hop proxy traffic redirection network beaconing T1090.003",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_13",
+    "query": "Data transfer size limits exfiltration over C2 channel bandwidth throttling T1030",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_14",
+    "query": "Network boundary protection ingress packet filtering firewall security controls AC-4",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_15",
+    "query": "NIST SP 800-53 SC-7 boundary protection demilitarized zone DMZ traffic inspection",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_16",
+    "query": "NIST SP 800-53 SI-4 information system monitoring network intrusion detection IDS",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_17",
+    "query": "Network Security Monitoring NSM full packet capture session flow analysis zeek conn log",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_18",
+    "query": "SYN flood distributed denial of service DDoS state exhaustion boundary filtering T1498",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_19",
+    "query": "NTLM relay cross-protocol reflection attack SMB signing requirement enforcement T1557.001",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_net_20",
+    "query": "Network denial of service UDP amplification DNS reflection NTP monlist flood T1498.002",
+    "domain": "NETWORK_SECURITY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-14-nist-sp-800-53",
+      "doc-03-nist-sp-800-150"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-14-nist-sp-800-53": 2,
+      "doc-03-nist-sp-800-150": 2
+    },
+    "label_source": "MITRE ATT&CK & NIST SP 800-53 Controls",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_01",
+    "query": "NIST SP 800-86 guide to integrating forensic techniques into incident response evidence collection",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_02",
+    "query": "Physical memory acquisition order of volatility volatile data preservation live triage",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_03",
+    "query": "Virtual Address Descriptor VAD tree traversal unbacked executable memory allocation PAGE_EXECUTE_READWRITE",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_04",
+    "query": "System Service Descriptor Table SSDT hooking kernel driver function pointer integrity",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_05",
+    "query": "Direct Kernel Object Manipulation DKOM process unlinking EPROCESS active process list",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_06",
+    "query": "Volatility 3 framework malfind plugin identifying injected PE headers in process address space",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_07",
+    "query": "LSASS memory mini-dump offline extraction plaintext credential artifact parsing",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_08",
+    "query": "Process ghosting deleted file handle mapping anti-forensic execution evasion",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_09",
+    "query": "Process doppelganging NTFS transactional memory section hollowing",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_10",
+    "query": "Memory pool tag allocation analysis detecting hidden kernel drivers and rootkit root threads",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_11",
+    "query": "NIST SP 800-86 forensic disk imaging cryptographic hash integrity SHA-256 chain of custody",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_12",
+    "query": "Windows Event Log analysis Event ID 4624 logon types logon type 3 network vs logon type 10 RDP",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_13",
+    "query": "Windows Prefetch file parsing execution timestamp evidence application run frequency",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_14",
+    "query": "ShimCache AppCompatCache application execution artifact forensic timeline reconstruction",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_dfir_15",
+    "query": "Volume Shadow Copy VSS forensic analysis retrieving deleted files and historical registry hives",
+    "domain": "DFIR_MEMORY",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-04-nist-sp-800-86",
+      "doc-nist-800-86",
+      "doc-05-nist-sp-800-61r3"
+    ],
+    "relevance_grade": {
+      "doc-04-nist-sp-800-86": 3,
+      "doc-nist-800-86": 3,
+      "doc-05-nist-sp-800-61r3": 2
+    },
+    "label_source": "NIST SP 800-86 & Digital Forensic Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_01",
+    "query": "APT29 Cozy Bear Nobelium OAuth application abuse cloud tenant persistence token theft",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_02",
+    "query": "APT28 Fancy Bear credential harvesting password spraying NTLM authentication relay",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_03",
+    "query": "Lazarus Group APT38 cryptocurrency cross-chain bridge heist trojanized decentralized finance tooling",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_04",
+    "query": "Volt Typhoon living off the land router mesh stealth proxy network critical infrastructure reconnaissance",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_05",
+    "query": "Sandworm Unit 74455 industrial control system ICS OT substations destructive wiper deployment",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_06",
+    "query": "Scattered Spider UNC3944 identity provider Okta social engineering helpdesk SIM swap",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_07",
+    "query": "Midnight Blizzard cloud identity residential proxy password spray Exchange Web Services access",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_08",
+    "query": "FIN7 Carbanak financial payment point-of-sale card skimming weaponized macro delivery",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_09",
+    "query": "Kimsuky spear-phishing malicious OneNote attachments CHM compiled HTML help file execution",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_actor_10",
+    "query": "Turla Snake Uroburos satellite communication link hijacking custom covert C2 protocol",
+    "domain": "THREAT_ACTOR",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-09-mitre-attack",
+      "doc-01-heuer-psychology"
+    ],
+    "relevance_grade": {
+      "doc-09-mitre-attack": 3,
+      "doc-01-heuer-psychology": 2
+    },
+    "label_source": "MITRE ATT&CK Groups & CIA Intelligence Methodology",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_01",
+    "query": "NIST SP 800-61 Rev. 3 incident handling lifecycle preparation detection analysis containment eradication recovery",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_02",
+    "query": "NIST SP 800-61 incident coordination communication information sharing stakeholders CSIRT",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_03",
+    "query": "NIST SP 800-150 cyber threat information sharing operational trust communities STIX TAXII exchange",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_04",
+    "query": "OASIS STIX v2.1 structured threat information expression indicator observed data sdo relationship",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_05",
+    "query": "OASIS TAXII v2.1 trusted automated exchange of intelligence information collection api root channel",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_06",
+    "query": "NIST Cybersecurity Framework CSF 2.0 Govern Identify Protect Detect Respond Recover functions",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_07",
+    "query": "NIST SP 800-53 IR-4 incident handling containment eradication recovery automated response procedures",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_08",
+    "query": "Psychology of intelligence analysis Heuer cognitive biases confirmation bias analysis of competing hypotheses ACH",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_09",
+    "query": "Analysis of Competing Hypotheses ACH matrix evidence evaluation alternative diagnostic explanations",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  },
+  {
+    "query_id": "gq_ir_10",
+    "query": "NIST AI Risk Management Framework 1.0 AI RMF trustworthiness validity reliability safety governance",
+    "domain": "INCIDENT_RESPONSE",
+    "expected_relevant_chunk_ids": [],
+    "expected_relevant_document_ids": [
+      "doc-05-nist-sp-800-61r3",
+      "doc-03-nist-sp-800-150",
+      "doc-10-oasis-stix21",
+      "doc-11-oasis-taxii21",
+      "doc-06-nist-csf-2",
+      "doc-01-heuer-psychology",
+      "doc-12-nist-ai-rmf"
+    ],
+    "relevance_grade": {
+      "doc-05-nist-sp-800-61r3": 3,
+      "doc-03-nist-sp-800-150": 3,
+      "doc-10-oasis-stix21": 3,
+      "doc-11-oasis-taxii21": 3,
+      "doc-06-nist-csf-2": 3,
+      "doc-01-heuer-psychology": 3,
+      "doc-12-nist-ai-rmf": 3
+    },
+    "label_source": "NIST Standards & OASIS Technical Specifications",
+    "label_method": "independent_document_mapping"
+  }
+]

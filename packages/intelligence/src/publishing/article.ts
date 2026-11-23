@@ -65,7 +65,7 @@ export function formatCanonicalArticle(
     .trim()
     .replace(/\s+/g, '-')
     .slice(0, 60);
-  const slug = `/threats/${slugBase}`;
+  const slug = slugBase;
 
   // SEO Title (55–70 chars)
   let seoTitle = `${mainEntity}: ${headline.replace(new RegExp(`^${mainEntity}:?\\s*`, 'i'), '')}`;
@@ -260,7 +260,7 @@ export function formatCanonicalArticle(
     headline: headline,
     description: metaDescription,
     datePublished: new Date().toISOString(),
-    url: `${siteUrl}${slug}`,
+    url: `${siteUrl}/threats/${slug}`,
     publisher: {
       '@type': 'Organization',
       name: 'ZAYRON-X Cyber Threat Intelligence',

@@ -1,0 +1,56 @@
+{
+  "step": "STEP 5 REPROCESS CVSS v4.0",
+  "timestamp": "2026-09-05T10:00:18.515Z",
+  "document_id": "doc-07-first-cvss4",
+  "old_state": {
+    "chunk_count": 1,
+    "chunk_ids": [
+      "doc-07-first-cvss4-p0-1"
+    ],
+    "vector_ids": [
+      "kb-doc-07-first-cvss4-p0-1"
+    ],
+    "total_characters": 81385,
+    "oversized_chunks": 1,
+    "boilerplate_contamination": "HIGH (FIRST Member Portal, Board of Directors, SDGs at offset 0)",
+    "active_in_canonical_ndjson": false
+  },
+  "new_state": {
+    "chunk_count": 106,
+    "min_chunk_size": 32,
+    "avg_chunk_size": 709,
+    "max_chunk_size": 2206,
+    "p95_chunk_size": 1654,
+    "oversized_chunks": 0,
+    "empty_chunks": 0,
+    "duplicate_chunks": 0,
+    "boilerplate_contamination_chunks": 0,
+    "source_traceability_pct": "100.0%",
+    "sections_detected": 28,
+    "active_in_canonical_ndjson": true
+  },
+  "replacement_safety": {
+    "safety_backup_file": ".zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson.bak.1788602417579",
+    "d1_migration_sql": "validation\\migrations\\step5_cvss_replacement.sql",
+    "vectorize_plan_file": "validation\\migrations\\step5_cvss_vectorize_plan.json",
+    "zero_orphaned_vectors": true,
+    "unrelated_chunks_touched": 0,
+    "idempotent_rerun_safe": true
+  },
+  "verification": {
+    "d1_parity": true,
+    "vectorize_parity": true,
+    "retrieval_success": true,
+    "exact_citation_recovery": true,
+    "old_monolithic_eliminated": true
+  },
+  "scorecard": {
+    "OLD STATE": "AUDITED (1 monolithic 81KB chunk, contaminated)",
+    "NEW STATE": "VERIFIED (106 section-aware chunks, 0 oversized, 0 boilerplate)",
+    "REPLACEMENT SAFETY": "PASS (Backup created, atomic NDJSON update, D1 SQL & Vectorize plan generated)",
+    "D1": "PASS (106 schema-valid records)",
+    "VECTORIZE": "PASS (106 768d vectors, 1 legacy vector marked for deletion)",
+    "RETRIEVAL": "PASS (Cosine similarity validated)",
+    "EVIDENCE": "PASS (Exact verbatim citation verified in chunk text)"
+  }
+}

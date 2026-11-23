@@ -4,50 +4,24 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "vinext build && node scripts/prepare-preview.js",
     "dev": "vinext dev",
-    "build": "vinext build",
-    "start": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "lint": "eslint"
+    "prepare:preview": "node scripts/prepare-preview.js",
+    "guard:preview": "node scripts/assert-preview-target.mjs",
+    "deploy": "node -e \"console.error('[deploy] generic deploy is disabled. Use deploy:preview (guarded). Production is a separate, explicitly authorized process.'); process.exit(1)\"",
+    "deploy:preview": "node scripts/deploy-preview.mjs",
+    "deploy:preview:dry-run": "node scripts/deploy-preview.mjs --dry-run",
+    "deploy:production": "node -e \"console.error('[deploy:production] the web product is intentionally unavailable in production (holding gate active). Use deploy:holding.'); process.exit(1)\"",
+    "deploy:holding": "node ../../scripts/release/production-release-gate.mjs web-holding -- npx wrangler deploy --config wrangler.holding.jsonc"
   },
   "dependencies": {
-    "@swc/helpers": "^0.5.23",
-    "@vinext/cloudflare": "^1.0.0-beta.6",
-    "@zayron/intelligence": "workspace:*",
-    "@zayron/types": "workspace:*",
-    "@zayron/ui": "workspace:*",
-    "framer-motion": "^13.1.1",
-    "lucide-react": "^1.33.0",
-    "next": "16.3.2",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "react-server-dom-webpack": "^19.2.8",
-    "styled-jsx": "^5.1.7",
-    "vinext": "^1.0.0-beta.8"
+    "vinext": "1.0.0-beta.8"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.54.3",
-    "@tailwindcss/postcss": "^4",
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6.1.1",
-    "@vitejs/plugin-rsc": "^0.5.34",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.2",
-    "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^8.2.2",
     "wrangler": "^4.128.0"
-  },
-  "packageManager": "bun@1.3.13",
-  "ignoreScripts": [
-    "sharp",
-    "unrs-resolver"
-  ],
-  "trustedDependencies": [
-    "sharp",
-    "unrs-resolver"
-  ]
+  }
 }

@@ -1,0 +1,81 @@
+name = "zayron-x-source-fabric"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "SOURCE_STATE"
+database_name = "zayron-x-intelligence-db"
+database_id = "91ed8f95-95ad-4451-bb18-e0d1dbadbe53"
+migrations_dir = "../../db/migrations"
+
+[[r2_buckets]]
+binding = "RAW_ARTIFACTS"
+bucket_name = "zayron-x-intelligence-raw"
+
+[[queues.producers]]
+binding = "COLLECTION_EVENTS"
+queue = "zayron-x-source-collection"
+[[queues.producers]]
+binding = "NORMALIZATION_EVENTS"
+queue = "zayron-x-source-normalization"
+[[queues.producers]]
+binding = "EVIDENCE_EVENTS"
+queue = "zayron-x-source-evidence"
+
+# ZX-08: the former `ANALYSIS_EVENTS` (zayron-x-source-analysis) and
+# `PUBLICATION_EVENTS` (zayron-x-source-publication) producers were removed.
+# Neither binding is referenced anywhere in this worker's source, and neither
+# queue had a consumer — they were dead config that produced orphan queues with
+# no delivery path. Re-add a producer ONLY together with a real consumer (or an
+# explicit DLQ) when the analysis/publication stage is actually implemented.
+
+[[queues.consumers]]
+queue = "zayron-x-source-collection"
+max_batch_size = 1
+max_batch_timeout = 5
+max_retries = 3
+[[queues.consumers]]
+queue = "zayron-x-source-normalization"
+max_batch_size = 1
+max_batch_timeout = 5
+max_retries = 3
+[[queues.consumers]]
+queue = "zayron-x-source-evidence"
+max_batch_size = 1
+max_batch_timeout = 5
+max_retries = 3
+
+[vars]
+ENVIRONMENT = "production"
+SOURCE_ACTIVATION_ENABLED = "false"
+
+[env.staging]
+name = "zayron-x-source-fabric-staging"
+
+[[env.staging.d1_databases]]
+binding = "SOURCE_STATE"
+database_name = "zayron-x-preview-db"
+database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
+migrations_dir = "../../db/migrations"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+SOURCE_ACTIVATION_ENABLED = "false"
+
+[env.staging.ai]
+binding = "AI"
+
+[[env.staging.vectorize]]
+binding = "VECTORIZE"
+index_name = "zayron-doc04-staging-index"
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "zayron-knowledge-index"
+
+[observability]
+enabled = true

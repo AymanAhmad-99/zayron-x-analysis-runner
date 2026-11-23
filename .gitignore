@@ -149,3 +149,63 @@ docs/audits/wip-homepage-redesign-backup/
 **/.pilot-token.tmp
 *.token.tmp
 *.session.tmp
+
+# M16.3.7C: operator credential material — never commit any private-key file
+*.pem
+*.p8
+*.key
+
+# M14.3 local analysis executor scratch (never commit samples or tool dumps)
+.m14-executor/
+/nul
+
+# ================================================
+# Secret protection (Wave 1 / ZX-33) - negations LAST so they win
+# ================================================
+.env
+.env.*
+!/.env.example
+!**/.env.example
+!**/.env.collector.example
+*.pem
+*.key
+pnpm-lock.yaml
+
+# Operator credential material for local Worker dev (never commit)
+.dev.vars
+.dev.vars.*
+!**/.dev.vars.example
+
+
+# ════════════════════════════════════════════════
+# WAVE 4C — GENERATED / LOCAL ARTIFACTS (never commit)
+# Each entry verified as non-source: build output, scratch, backup or
+# captured sample data. No tracked source file is hidden by these rules.
+# ════════════════════════════════════════════════
+
+# Local scratch directories (.tmp-ssh, .tmp-tsc, ...)
+.tmp-*/
+
+# Worker build / dry-run output and the nested dist dump left by an old deploy
+workers/api/dist-*/
+workers/api/.dryrun-*/
+workers/api/workers/
+
+# Next / vinext build output
+apps/web/dist/
+apps/web/.vinext/
+
+# Backup snapshots (point-in-time copies, not source)
+.zayron/backups/
+db/backups/
+
+# Malware samples captured by validation runs — never commit
+workers/malware-validation/malware-artifacts/
+
+# Vendored upstream checkout (embedded git repo, not our source)
+vendor/osv-schema/
+
+# Rust build output only (820M target/ + 246M target_test/). The crate sources
+# stay visible so the kernel package can be committed deliberately later.
+packages/intelligence-kernel/target/
+packages/intelligence-kernel/target_test/

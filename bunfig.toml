@@ -1,0 +1,5 @@
+[test]
+pathIgnorePatterns = [
+  "docs/forensics/DOC04_EVIDENCE_PACK_2026-09-09/**",
+  "docs/forensics/DOC04_BATCH_FORENSIC_INPUT_2026-09-09/**"
+]

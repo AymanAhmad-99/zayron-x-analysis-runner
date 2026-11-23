@@ -139,6 +139,87 @@ export const KNOWLEDGE_CHUNKS_CORPUS: StructuredKnowledgeChunk[] = [
     keyEntities: ['Malfind', 'PAGE_EXECUTE_READWRITE', 'In-Memory Injection', 'Shellcode Detection'],
     text: 'In-memory code injection is identified by analyzing Virtual Address Descriptors (VAD) for memory regions allocated with PAGE_EXECUTE_READWRITE permissions that are not backed by an executable image on disk. Tools like Volatility malfind scan for memory pages containing executable permissions and extract raw assembly shellcode headers (e.g. MZ headers, NOP sleds, egg hunters).',
   },
+  {
+    id: 'chk_amf_03',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 8: Process Memory Internals & VadRoot Traversal',
+    page: 172,
+    authorityTier: 1,
+    tokenCount: 145,
+    keyEntities: ['VadRoot', 'Virtual Address Descriptor', 'EPROCESS', 'PAGE_EXECUTE_READWRITE', 'Unbacked Executable Memory'],
+    text: 'Each Windows process EPROCESS structure contains a pointer to VadRoot, a self-balancing AVL binary tree representing the process virtual memory layout. Traversing the VadRoot tree inspects MMVAD structures for memory ranges with executable protections (PAGE_EXECUTE_READWRITE) lacking a control area pointer to a memory-mapped file on disk, exposing reflective DLL injection, hollowed binaries, and injected shellcode.',
+  },
+  {
+    id: 'chk_amf_04',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 14: Kernel Rootkits & System Service Descriptor Table (SSDT) Hooking',
+    page: 310,
+    authorityTier: 1,
+    tokenCount: 140,
+    keyEntities: ['SSDT', 'System Service Descriptor Table', 'Kernel Driver', 'Hooking', 'Direct Kernel Object Manipulation'],
+    text: 'Kernel-mode rootkits modify the System Service Descriptor Table (SSDT) or KeServiceDescriptorTable shadow to intercept system calls from user mode. Forensic validation verifies that function pointers in KiServiceTable resolve within the address bounds of ntoskrnl.exe. Pointers redirected into non-contiguous kernel memory or unverified third-party device drivers indicate malicious kernel driver hooking.',
+  },
+  {
+    id: 'chk_amf_05',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 6: Windows Kernel Objects, Handles, and Threads',
+    page: 120,
+    authorityTier: 1,
+    tokenCount: 135,
+    keyEntities: ['ETHREAD', 'Object Table', 'Handles', 'Kernel Artifacts', 'Process Ghosting'],
+    text: 'Advanced evasion techniques like Process Ghosting and Process Doppelganging manipulate file objects and NTFS transaction state before execution. Memory analysis interrogates the handle table in EPROCESS and iterates active ETHREAD structures, identifying unlinked threads, threads executing outside loaded module sections, and deleted file handles still referenced by running processes.',
+  },
+  {
+    id: 'chk_amf_06',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 16: Physical Memory Acquisition & Order of Volatility',
+    page: 45,
+    authorityTier: 1,
+    tokenCount: 130,
+    keyEntities: ['Order of Volatility', 'Physical Memory Acquisition', 'Live Triage', 'NIST SP 800-86', 'Memory Dump'],
+    text: 'In accordance with RFC 3227 and NIST SP 800-86, endpoint triage adheres to the order of volatility: CPU registers and cache first, followed by physical RAM (volatile memory), network state, process table, disk storage, and archival backups. Uncompromised hardware-assisted acquisition or trusted signed drivers ensure cryptographic integrity (SHA-256) of raw RAM captures.',
+  },
+  {
+    id: 'chk_amf_07',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 11: PE Structure Reconstruction in Volatile Memory',
+    page: 235,
+    authorityTier: 1,
+    tokenCount: 140,
+    keyEntities: ['PE Structure', 'MZ Header', 'PE Signature', 'Section Table', 'Volatility 3', 'Malfind'],
+    text: 'Detecting injected code relies on parsing PE headers reconstructed from process memory. Volatility 3 windows.malfind identifies unbacked memory allocations whose initial bytes match the MZ (0x5A4D) header and PE signature (0x00004550) pointed to by e_lfanew. Injected binaries frequently wipe their DOS header or distort the OptionalHeader to evade naive memory scanners.',
+  },
+  {
+    id: 'chk_amf_08',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 15: Kernel Pool Allocation & Pool Tag Scanning',
+    page: 340,
+    authorityTier: 1,
+    tokenCount: 135,
+    keyEntities: ['Kernel Pool', 'Pool Tags', 'NonPagedPool', 'Rootkits', 'BigPool', 'Memory Forensics'],
+    text: 'Kernel drivers allocate dynamic memory from PagedPool or NonPagedPool stamped with a four-character pool tag (e.g. Proc for EPROCESS, Thre for ETHREAD). Rootkits using Direct Kernel Object Manipulation (DKOM) to unlink themselves from PsLoadedModuleList can be identified by pool carving: scanning physical memory for unlinked allocations containing valid driver object headers and rogue dispatch tables.',
+  },
+  {
+    id: 'chk_amf_09',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 18: LSASS Memory Extraction & Credential Artifact Parsing',
+    page: 410,
+    authorityTier: 1,
+    tokenCount: 145,
+    keyEntities: ['LSASS', 'Credential Dumping', 'MiniDumpWriteDump', 'WDigest', 'Kerberos Tickets', 'DPAPI'],
+    text: 'Credential dumping adversaries extract plaintext credentials, Kerberos ticket-granting tickets (TGT), and NTLM hashes by generating memory dumps of lsass.exe via MiniDumpWriteDump or comsvcs.dll. Memory forensics interrogates the LSA security packages in memory (WDigest, Kerberos, Msv1_0), reconstructing decrypted logon sessions and identifying unauthorized process handle access with PROCESS_VM_READ permissions.',
+  },
+  {
+    id: 'chk_amf_10',
+    documentId: 'doc_ref_04_amf',
+    section: 'Chapter 13: Advanced Memory Injection: Process Hollowing & Doppelganging',
+    page: 285,
+    authorityTier: 1,
+    tokenCount: 150,
+    keyEntities: ['Process Hollowing', 'Process Doppelganging', 'NtCreateSection', 'NtUnmapViewOfSection', 'Transacted NTFS'],
+    text: 'Process Hollowing unmaps the original executable from a suspended process using NtUnmapViewOfSection and replaces the image with malicious payload before resuming execution. Process Doppelganging advances this evasion using NTFS transactions: creating a transacted file, writing malware into it, creating an image section via NtCreateSection with SEC_IMAGE, and rolling back the transaction so the malicious file never commits to disk.',
+  },
+
 
   // ── DOC 5: Malware Analyst's Cookbook (Ligh et al.) ─────────────────────────
   {
@@ -348,4 +429,159 @@ export const KNOWLEDGE_CHUNKS_CORPUS: StructuredKnowledgeChunk[] = [
     keyEntities: ['OWASP Top 10 for LLM', 'LLM01: Prompt Injection', 'LLM02: Insecure Output Handling', 'LLM06: Sensitive Information Disclosure', 'LLM08: Excessive Agency', 'LLM09: Overreliance'],
     text: 'The OWASP Top 10 for LLM Applications catalogs critical security risks: LLM01: Prompt Injection (adversarial manipulation of model instructions via untrusted inputs or indirect RAG context), LLM02: Insecure Output Handling (executing unvalidated model output), LLM06: Sensitive Information Disclosure (leakage of PII, API keys, or system prompts), LLM08: Excessive Agency (granting autonomous execution permissions without human approval gates), and LLM09: Overreliance (blindly trusting hallucinations without claim-level evidence verification).',
   },
+
+  // ── DOC 21: Psychology of Intelligence Analysis (Richards J. Heuer Jr.) ─────
+  {
+    id: 'chk_heuer_01',
+    documentId: 'doc_ref_21_psychology_intel',
+    section: 'Chapter 8: Analysis of Competing Hypotheses (ACH)',
+    authorityTier: 0,
+    tokenCount: 165,
+    keyEntities: ['Analysis of Competing Hypotheses', 'ACH', 'Cognitive Biases', 'Hypothesis Testing', 'Disconfirming Evidence'],
+    text: 'Analysis of Competing Hypotheses (ACH) requires an intelligence analyst to explicitly identify all plausible alternative explanations rather than focusing on confirming a favored theory. The analyst evaluates each item of evidence against each hypothesis, focusing primarily on evidence that disconfirms or rules out hypotheses. A diagnostic item of evidence is one that helps distinguish among hypotheses, whereas evidence consistent with all hypotheses has zero diagnostic value.',
+  },
+  {
+    id: 'chk_heuer_02',
+    documentId: 'doc_ref_21_psychology_intel',
+    section: 'Chapter 4: Strategies for Analytical Judgment',
+    authorityTier: 0,
+    tokenCount: 145,
+    keyEntities: ['Mental Models', 'Confirmation Bias', 'Evidentiary Diagnostic Value', 'Perceptual Bias'],
+    text: 'Analysts perceive what they expect to perceive and assimilate incoming data into existing mental models. New evidence is discounted if it contradicts pre-existing assumptions, while ambiguous evidence is interpreted as supportive. To mitigate bias, analysts must make mental models explicit, evaluate assumptions systematically, and maintain distinct categories for observed empirical facts versus derived assessments.',
+  },
+
+  // ── DOC 22: The Diamond Model of Intrusion Analysis (Caltagirone et al.) ────
+  {
+    id: 'chk_diamond_01',
+    documentId: 'doc_ref_22_diamond_model',
+    section: 'Core Vertices: Adversary, Capability, Infrastructure, Victim',
+    authorityTier: 0,
+    tokenCount: 160,
+    keyEntities: ['Diamond Model', 'Adversary Vertex', 'Capability Vertex', 'Infrastructure Vertex', 'Victim Vertex', 'Activity Threads'],
+    text: 'The Diamond Model formalizes an intrusion event as an atomic activity consisting of four core vertices: Adversary (the entity responsible for malicious intent), Capability (the tools, malware, exploits, and techniques employed), Infrastructure (the command-and-control IP, domains, and delivery hardware utilized), and Victim (the targeted person, enterprise, or software asset). Meta-features connect vertices: Timestamp, Phase of Kill Chain, Result, Direction, and Analytical Confidence.',
+  },
+  {
+    id: 'chk_diamond_02',
+    documentId: 'doc_ref_22_diamond_model',
+    section: 'Activity Threads & Correlation Axioms',
+    authorityTier: 0,
+    tokenCount: 150,
+    keyEntities: ['Activity Threads', 'Intrusion Correlation', 'Diamond Axioms', 'Campaign Clustering'],
+    text: 'Axiom 1 of the Diamond Model states that for every intrusion event, there exists an adversary who uses a capability over an infrastructure against a victim. Multiple related events are correlated across common vertices into Activity Threads. When two separate events share identical capabilities (e.g. custom packer, specific C2 handshake) and infrastructure, they form high-confidence evidence linking disparate victim observations to a single coordinated campaign.',
+  },
+
+  // ── CANONICAL-V1 CORPUS REFERENCE CHUNKS ──────────────────────────────────
+  // ── DOC 07: FIRST CVSS v4.0 Specification Document ────────────────────────
+  {
+    id: 'doc-07-first-cvss4-p1-2',
+    documentId: 'doc-07-first-cvss4',
+    section: 'Common Vulnerability Scoring System version 4.0: Specification Document',
+    authorityTier: 0,
+    tokenCount: 239,
+    keyEntities: ['CVSS v4.0', 'Base Metrics', 'Threat Metrics', 'Environmental Metrics', 'Supplemental Metrics'],
+    text: 'The Common Vulnerability Scoring System (CVSS) is an open framework for communicating the characteristics and severity of software vulnerabilities. CVSS consists of four metric groups: Base, Threat, Environmental, and Supplemental. The Base group represents the intrinsic qualities of a vulnerability that are constant over time and across user environments, the Threat group reflects the characteristics of a vulnerability that change over time, and the Environmental group represents the characteristics of a vulnerability that are unique to a user\'s environment. Base metric values are combined with default values that assume the highest severity for Threat and Environmental metrics to produce a score ranging from 0 to 10. To further refine a resulting severity score, Threat and Environmental metrics can then be amended based on applicable threat intelligence and environmental considerations.',
+  },
+  {
+    id: 'doc-07-first-cvss4-p1-8',
+    documentId: 'doc-07-first-cvss4',
+    section: 'Metrics',
+    authorityTier: 0,
+    tokenCount: 233,
+    keyEntities: ['CVSS Metric Groups', 'Exploitability', 'Impact', 'Vulnerable System', 'Subsequent System'],
+    text: 'CVSS is composed of four metric groups: Base, Threat, Environmental, and Supplemental, each consisting of a set of metrics, as shown in Figure 1. Figure 1: CVSS Metric Groups The Base metric group represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. It is composed of two sets of metrics: the Exploitability metrics and the Impact metrics. The Exploitability metrics reflect the ease and technical means by which the vulnerability can be exploited. That is, they represent characteristics of the "thing that is vulnerable", which we refer to formally as the "vulnerable system". The Impact metrics reflect the direct consequence of a successful exploit, and represent the consequence to the "things that suffer the impact", which may include impact on the vulnerable system and/or the downstream impact on what is formally called the "subsequent system(s)".',
+  },
+  {
+    id: 'doc-07-first-cvss4-p1-18',
+    documentId: 'doc-07-first-cvss4',
+    section: 'Exploitability Metrics',
+    authorityTier: 0,
+    tokenCount: 157,
+    keyEntities: ['Attack Vector', 'Network', 'Adjacent', 'Local', 'Physical'],
+    text: 'This metric reflects the context by which vulnerability exploitation is possible. This metric value (and consequently the resulting severity) will be larger the more remote (logically, and physically) an attacker can be in order to exploit the vulnerable system. The assumption is that the number of potential attackers for a vulnerability that could be exploited from across a network is larger than the number of potential attackers that could exploit a vulnerability requiring physical access to a device, and therefore warrants a greater severity. The list of possible values is presented in Table 1. Table 1: Attack Vector',
+  },
+
+  // ── DOC 08: FIRST EPSS v3 Specification ───────────────────────────────────
+  {
+    id: 'doc-08-first-epss-p1-1',
+    documentId: 'doc-08-first-epss',
+    section: 'Introduction',
+    authorityTier: 0,
+    tokenCount: 159,
+    keyEntities: ['FIRST EPSS', 'Exploit Prediction Scoring System', 'Probability', 'Percentile', 'Remediation Prioritization'],
+    text: 'Exploit Prediction Scoring System (EPSS) The Exploit Prediction Scoring System (EPSS) is a data-driven machine-learning model that estimates the probability that a published CVE will be exploited in the wild in the next 30 days. It offsets subjective judgments with empirical signals from observed exploitation and ongoing activity, helping you focus limited remediation effort where attacks are most likely. EPSS publishes a 0–1 probability (with ranking percentiles) every day for every CVE and makes the data freely and openly accessible via CSV and API as well as a github repo , so it slots easily into workflows and dashboards.',
+  },
+  {
+    id: 'doc-08-first-epss-p1-2',
+    documentId: 'doc-08-first-epss',
+    section: 'Where to go from here',
+    authorityTier: 0,
+    tokenCount: 168,
+    keyEntities: ['EPSS Methodology', 'Exploit Likelihood', 'Prioritization Signal', 'CVSS Comparison', 'KEV Integration'],
+    text: 'How It Works Model methodology, feature overview, calibration, and known limitations. Why EPSS? The empirical case for exploitation likelihood as a prioritization signal. Performance data, CVSS comparison, and what the research shows. Using EPSS How to set thresholds, combine EPSS with CVSS and KEV, interpret score changes, and avoid common misuses. Frequently Asked Questions Answers to the questions practitioners ask most often about the score, the percentile, and how EPSS compares to other tools. Research Peer-reviewed papers, presentations, and the version changelog. Get the Data API reference, daily CSV downloads, historical scores, and integration examples.',
+  },
+
+  // ── DOC CISA KEV: Known Exploited Vulnerabilities ───────────────────────────
+  {
+    id: 'doc-cisa-kev-record-1',
+    documentId: 'doc-cisa-kev',
+    section: 'KEV record',
+    authorityTier: 0,
+    tokenCount: 200,
+    keyEntities: ['CISA KEV', 'Known Exploited Vulnerabilities', 'BOD 22-01', 'Mandatory Federal Remediation'],
+    text: '{"cveID": "CVE-2023-49105", "cwes": ["CWE-287"], "dateAdded": "2026-08-27", "dueDate": "2026-08-30", "knownRansomwareCampaignUse": "Unknown", "notes": "CISA Known Exploited Vulnerabilities Catalog. Federal agencies must remediate according to BOD 22-01 binding operational directive timelines."}',
+  },
+
+  // ── DOC 04: NIST SP 800-86 Guide to Integrating Forensic Techniques ───────
+  {
+    id: 'doc-04-nist-sp-800-86-p1-1',
+    documentId: 'doc-04-nist-sp-800-86',
+    section: 'UNKNOWN',
+    authorityTier: 0,
+    tokenCount: 53,
+    keyEntities: ['NIST SP 800-86', 'Forensic Techniques', 'Incident Response', 'Digital Evidence'],
+    text: 'Special Publication 800-86 Guide to Integrating Forensic Techniques into Incident Response Recommendations of the National Institute of Standards and Technology Karen Kent Suzanne Chevalier Tim Grance Hung Dang',
+  },
+  {
+    id: 'doc-04-nist-sp-800-86-p15-39',
+    documentId: 'doc-04-nist-sp-800-86',
+    section: '2. Establishing and Organizing a Forensics Capability',
+    authorityTier: 0,
+    tokenCount: 231,
+    keyEntities: ['Digital Data', 'Forensic Capability', 'Memory Analysis', 'Data Sources'],
+    text: 'The term data refers to distinct pieces of digital information that have been formatted in a specific way. The expansion of computers for professional and personal use and the pervasiveness of networking have fueled the need for tools that can record and analyze an ever-increasing amount of data from many sources. For example, data can be stored or transferred by standard computer systems (e.g., desktops, laptops, servers), networking equipment (e.g., firewalls, routers), computing peripherals (i.e., printers), personal digital assistants (PDA), CDs, DVDs, removable hard drives, backup tapes, flash memory, thumb drives, and jump drives. Many consumer electronic devices can also be used to store data. This increasing variety of data sources has helped spur the development and refinement of forensics tools and techniques.',
+  },
+
+  // ── DOC 05: NIST SP 800-61 Rev. 3 Incident Handling ────────────────────────
+  {
+    id: 'doc-05-nist-sp-800-61r3-p1-1',
+    documentId: 'doc-05-nist-sp-800-61r3',
+    section: 'Introduction',
+    authorityTier: 0,
+    tokenCount: 120,
+    keyEntities: ['NIST SP 800-61r3', 'Incident Response Recommendations', 'Cybersecurity Risk Management', 'CSF 2.0 Community Profile'],
+    text: 'NIST Special Publication 800 NIST SP 800-61r3 Incident Response Recommendations and Considerations for Cybersecurity Risk Management A CSF 2.0 Community Profile. Defines continuous incident handling preparation, triage, detection, containment, eradication, and organizational learning.',
+  },
+
+  // ── DOC 09: MITRE ATT&CK Enterprise Matrix ────────────────────────────────
+  {
+    id: 'doc-09-mitre-attack-p0-163',
+    documentId: 'doc-09-mitre-attack',
+    section: 'Account Discovery Mitigation',
+    authorityTier: 0,
+    tokenCount: 150,
+    keyEntities: ['MITRE ATT&CK', 'Course of Action', 'Mitigation', 'T1087', 'T1190'],
+    text: 'Course of action mitigation from MITRE ATT&CK Enterprise: Identify unnecessary system utilities or potentially malicious software that may be used to acquire information about system and domain accounts, and audit and/or block them by using whitelisting tools, like AppLocker, or Software Restriction Policies where appropriate.',
+  },
+
+  // ── DOC 01: Heuer Psychology of Intelligence Analysis ─────────────────────
+  {
+    id: 'doc-01-heuer-psychology-p5-1',
+    documentId: 'doc-01-heuer-psychology',
+    section: 'Preface',
+    authorityTier: 0,
+    tokenCount: 120,
+    keyEntities: ['Psychology of Intelligence Analysis', 'Analytical Tradecraft', 'Cognitive Bias', 'Hypothesis Evaluation'],
+    text: 'This book was prepared primarily for the use of US Government officials, and the format, coverage, and content were designed to meet their specific requirements. Discusses cognitive challenges, evidentiary diagnostic value, and structured analytical techniques for rigorous intelligence production.',
+  },
 ];
+

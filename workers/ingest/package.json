@@ -6,7 +6,10 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "node -e \"console.error('[deploy] generic deploy is disabled. Use deploy:preview (guarded). Production is a separate, explicitly authorized process.'); process.exit(1)\"",
+    "deploy:preview": "node scripts/deploy-preview.mjs",
+    "deploy:preview:dry-run": "node scripts/deploy-preview.mjs --dry-run",
+    "deploy:production": "node ../../scripts/release/production-release-gate.mjs ingest-production -- npx wrangler deploy"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250815.0",

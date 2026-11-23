@@ -1,0 +1,13 @@
+{
+  "name": "zayron-x-web",
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "zayron-x.co/*", "zone_name": "zayron-x.co" },
+    { "pattern": "www.zayron-x.co/*", "zone_name": "zayron-x.co" }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "NEXT_PUBLIC_SITE_URL": "https://zayron-x.co",
+    "NEXT_PUBLIC_API_BASE_URL": "https://zayron-x.co/api/v1"
+  }
+}

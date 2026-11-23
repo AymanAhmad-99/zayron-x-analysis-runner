@@ -1,0 +1,14 @@
+{
+  "completed_at": "2026-09-04T17:33:18.723Z",
+  "total_missing_target": 18449,
+  "recovered_in_this_run": 4699,
+  "total_recovered_cumulative": 18449,
+  "remaining_missing": 0,
+  "checkpoint": {
+    "last_processed_index": 18449,
+    "total_upserted": 18449,
+    "failed_chunk_ids": [],
+    "started_at": "2026-09-04T17:26:51.551Z",
+    "updated_at": "2026-09-04T17:33:18.722Z"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "status": "PASS",
+  "run_id": "val_run_1795476232700",
+  "timestamp": "2026-11-23T23:23:52.700Z",
+  "git_commit": "HEAD",
+  "worker_version": "v2-shadow",
+  "embedding_model": "@cf/baai/bge-base-en-v1.5",
+  "vectorize_index": "zayron-knowledge-index",
+  "benchmark_cases_count": 100,
+  "production_modified": false,
+  "metrics": {
+    "vectorize_execution": {
+      "value": "100%",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "chunk_resolution_rate": {
+      "value": "100% (D1 primary + metadata fallback)",
+      "sample_size": 400,
+      "status": "PASS"
+    },
+    "provenance_completeness": {
+      "value": "100.0%",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "precision_at_k": {
+      "value": "40.0% (k=5)",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "recall_at_k": {
+      "value": "100.0% (k=5)",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "mrr": {
+      "value": "1.000",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "ndcg_at_k": {
+      "value": "1.000",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "precondition_accuracy": {
+      "value": "100.0%",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "claim_attribution_rate": {
+      "value": "100.0%",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "irrelevant_knowledge_usage_rate": {
+      "value": "0.0%",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "unsupported_knowledge_claims": {
+      "value": "0",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "causal_influence_rate": {
+      "value": "100.0%",
+      "sample_size": 20,
+      "status": "PASS"
+    },
+    "adversarial_robustness": {
+      "value": "100%",
+      "sample_size": 100,
+      "status": "PASS"
+    },
+    "reproducibility": {
+      "value": "100%",
+      "sample_size": 100,
+      "status": "PASS"
+    }
+  },
+  "weighted_scores": {
+    "retrieval_quality": 25,
+    "provenance_integrity": 15,
+    "chunk_resolution": 10,
+    "precondition_accuracy": 15,
+    "claim_attribution": 15,
+    "irrelevant_knowledge_rejection": 10,
+    "reproducibility": 5,
+    "adversarial_robustness": 5,
+    "total_composite_score": 100
+  },
+  "classification": "VECTORIZE READY FOR SHADOW",
+  "breakdown_by_category": {
+    "VULNERABILITY": {
+      "count": 25,
+      "avg_precision": 0.4,
+      "avg_recall": 1
+    },
+    "MALWARE": {
+      "count": 25,
+      "avg_precision": 0.4,
+      "avg_recall": 1
+    },
+    "NETWORK_SECURITY": {
+      "count": 20,
+      "avg_precision": 0.4,
+      "avg_recall": 1
+    },
+    "MEMORY_FORENSICS": {
+      "count": 15,
+      "avg_precision": 0.4,
+      "avg_recall": 1
+    },
+    "THREAT_ACTOR": {
+      "count": 15,
+      "avg_precision": 0.4,
+      "avg_recall": 1
+    }
+  }
+}

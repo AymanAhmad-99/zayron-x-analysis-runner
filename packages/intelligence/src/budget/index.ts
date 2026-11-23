@@ -57,6 +57,82 @@ export function estimateNeurons(modelId: string, promptTokens: number, completio
 }
 
 /**
+ * Gemini provider-reported token usage.
+ *
+ * NO COST IS CLAIMED HERE, deliberately. Cloudflare's neuron accounting does not
+ * apply to Gemini, and this repository records no verified per-token Gemini price,
+ * so only the RAW provider-reported token counts are aggregated and bounded.
+ * Absent counts stay absent (counted in `requests_without_usage`) rather than being
+ * treated as zero, and no USD estimate is derived from them.
+ */
+export interface GeminiTokenUsage {
+  requests: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  /** Records whose provider reported no usage at all. */
+  requests_without_usage: number;
+}
+
+export interface GeminiTokenSample {
+  prompt_tokens?: number | null;
+  completion_tokens?: number | null;
+}
+
+/** Token-volume ceiling for Gemini traffic; a resource bound, not a price. */
+export const DEFAULT_GEMINI_DAILY_TOKEN_LIMIT = 250_000;
+
+export function accumulateGeminiTokenUsage(samples: readonly GeminiTokenSample[]): GeminiTokenUsage {
+  let promptTokens = 0;
+  let completionTokens = 0;
+  let withoutUsage = 0;
+  const list = samples ?? [];
+  for (const sample of list) {
+    const prompt = typeof sample?.prompt_tokens === 'number' ? sample.prompt_tokens : null;
+    const completion = typeof sample?.completion_tokens === 'number' ? sample.completion_tokens : null;
+    if (prompt === null && completion === null) {
+      withoutUsage += 1;
+      continue;
+    }
+    promptTokens += prompt ?? 0;
+    completionTokens += completion ?? 0;
+  }
+  return {
+    requests: list.length,
+    prompt_tokens: promptTokens,
+    completion_tokens: completionTokens,
+    total_tokens: promptTokens + completionTokens,
+    requests_without_usage: withoutUsage,
+  };
+}
+
+/**
+ * Whether the aggregated Gemini token volume has reached its resource ceiling.
+ * `dailyTokenLimit` is a volume bound; it is NOT a monetary budget.
+ */
+export function isGeminiTokenLimitReached(
+  usage: GeminiTokenUsage,
+  dailyTokenLimit: number = DEFAULT_GEMINI_DAILY_TOKEN_LIMIT,
+): boolean {
+  return usage.total_tokens >= dailyTokenLimit;
+}
+
+/**
+ * Neuron accounting is Cloudflare-specific. For Gemini this returns `null` — the
+ * absence of a cost figure is stated explicitly rather than filled with a guess
+ * derived from Cloudflare's neuron rates.
+ */
+export function estimateNeuronsForProvider(
+  provider: 'cloudflare' | 'gemini',
+  modelId: string,
+  promptTokens: number,
+  completionTokens: number,
+): number | null {
+  if (provider === 'gemini') return null;
+  return estimateNeurons(modelId, promptTokens, completionTokens);
+}
+
+/**
  * Queries D1 to compute today's AI usage and determines budget state.
  */
 export async function getBudgetStatus(db: any, config: BudgetConfig = DEFAULT_BUDGET_CONFIG): Promise<BudgetStatus> {

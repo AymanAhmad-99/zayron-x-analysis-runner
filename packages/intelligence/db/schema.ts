@@ -62,21 +62,37 @@ export const paymentSessions = sqliteTable('payment_sessions', {
 
 // ── 3. SOURCES & INGESTION ────────────────────────────────────
 export const sources = sqliteTable('sources', {
-  id: text('id').primaryKey(), // e.g. 'tg_src_0042'
+  id: text('id').primaryKey(), // e.g. 'tg_vxunderground'
+  handle: text('handle'),
+  channelId: text('channel_id'),
   displayName: text('display_name').notNull(),
   url: text('url'),
   type: text('source_type').notNull(), // 'telegram', 'rss', 'api', 'cert', 'vendor'
+  category: text('category').default('General Threat Intel'),
   language: text('language').default('en').notNull(),
   region: text('region'),
+  topic: text('topic').default('Cyber Threat Intelligence'),
+  authorityTier: integer('authority_tier').default(1).notNull(), // 0=primary, 1=trusted research, 2=zayron obs, 3=secondary, 4=unverified
   trustScore: real('trust_score').default(0.5).notNull(), // 0.0 - 1.0
   priority: text('priority').default('B').notNull(), // 'A', 'B', 'C'
   status: text('status').default('ENABLED').notNull(), // 'DISCOVERED', 'REVIEWED', 'ENABLED', 'MONITORED', 'DEGRADED', 'QUARANTINED', 'DISABLED'
   enabled: integer('enabled', { mode: 'boolean' }).default(true).notNull(),
+  monitoringStatus: text('monitoring_status').default('MONITORED').notNull(), // 'OBSERVED', 'MONITORED', 'PAUSED', 'DISABLED'
+  verificationStatus: text('verification_status').default('UNVERIFIED').notNull(), // 'NEW', 'UNVERIFIED', 'OBSERVED', 'VALIDATED', 'ACTIVE', 'REJECTED'
+  collectorId: text('collector_id').default('global-telegram-collector'),
+  shardId: text('shard_id').default('shard_01'),
+  messageCount: integer('message_count').default(0).notNull(),
+  errorCount: integer('error_count').default(0).notNull(),
+  lastError: text('last_error'),
   lastSeenAt: text('last_seen_at'),
+  lastSuccessfulIngestionAt: text('last_successful_ingestion_at'),
   ...timestamps,
 }, (table) => [
   index('idx_sources_status').on(table.status),
   index('idx_sources_type').on(table.type),
+  index('idx_sources_handle').on(table.handle),
+  index('idx_sources_shard').on(table.shardId),
+  index('idx_sources_verification').on(table.verificationStatus),
 ]);
 
 export const sourceMessages = sqliteTable('source_messages', {
@@ -262,11 +278,29 @@ export const articles = sqliteTable('articles', {
   isBreaking: integer('is_breaking', { mode: 'boolean' }).default(false).notNull(),
   canonicalIntelligenceEventId: text('canonical_intel_event_id').references(() => intelligenceEvents.id),
   publishedAt: text('published_at'),
+  version: integer('version').default(1).notNull(),
+  revisionReason: text('revision_reason'),
   ...timestamps,
 }, (table) => [
   uniqueIndex('idx_articles_slug').on(table.slug),
   index('idx_articles_category_published').on(table.category, table.isPublished),
   index('idx_articles_published_at').on(table.publishedAt),
+]);
+
+export const reportRevisions = sqliteTable('report_revisions', {
+  id: text('id').primaryKey(),
+  articleId: text('article_id').notNull().references(() => articles.id, { onDelete: 'cascade' }),
+  eventId: text('event_id').notNull().references(() => intelligenceEvents.id),
+  version: integer('version').notNull(),
+  previousConfidence: real('previous_confidence'),
+  newConfidence: real('new_confidence').notNull(),
+  evidenceAddedCount: integer('evidence_added_count').default(1).notNull(),
+  reason: text('reason').notNull(), // 'NEW_CORROBORATING_SOURCE', 'CISA_CONFIRMATION', 'NEW_ACTOR_RELATION', 'CONTRADICTION_IDENTIFIED'
+  contentSnapshot: text('content_snapshot'),
+  createdAt: text('created_at').default(sql`(strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))`).notNull(),
+}, (table) => [
+  index('idx_revisions_article_id').on(table.articleId),
+  index('idx_revisions_event_id').on(table.eventId),
 ]);
 
 export const reports = sqliteTable('reports', {

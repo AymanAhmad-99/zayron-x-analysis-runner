@@ -3,7 +3,7 @@
  * Master Entry Point & Pipeline Orchestrator
  */
 
-import { enrichAuthoritativeData } from './enrichment';
+import { enrichAuthoritativeData, KevEvidencePort, EpssEvidencePort } from './enrichment';
 import { executePreconditionGatedRetrieval } from './knowledge_router';
 import { generateStructuredClaims, validateClaims } from './claims';
 import { detectContradictions } from './contradictions';
@@ -51,6 +51,10 @@ export interface DeepAnalysisRequestV2 {
   authorityTier?: number;
   skipKnowledgeRetrieval?: boolean;
   externalKnowledgeTrace?: import('./types').KnowledgeTraceItemV2[];
+  /** Injected authoritative CISA KEV evidence; omit to run with no KEV evidence (ABSENT, never fabricated). */
+  kevEvidence?: KevEvidencePort;
+  /** Injected measured FIRST EPSS evidence; omit to run with no EPSS evidence (null/UNKNOWN, never synthesized). */
+  epssEvidence?: EpssEvidencePort;
 }
 
 /**
@@ -231,6 +235,8 @@ export function executeDeepIntelligenceAnalysisV2(
     extractedCvssSeverity: null,
     extractedCvssVector: cvssVector,
     referenceUrls,
+    kevEvidence: request.kevEvidence,
+    epssEvidence: request.epssEvidence,
   });
 
   // 6. Source Provenance Setup (Strict Separation)

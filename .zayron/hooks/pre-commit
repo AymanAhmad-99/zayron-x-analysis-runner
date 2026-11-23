@@ -1,0 +1,53 @@
+#!/bin/sh
+# ZAYRON-X R1 governance dispatcher (MODEL B — dedicated tracked hook directory).
+#
+# LOCAL COMMIT BOUNDARY — hermetic only.
+#
+# This pre-commit hook enforces exactly one control:
+#   * the tracked historical secret scanner
+#     (.zayron/scripts/secret-scan.cjs), invoked verbatim. No scanner logic is
+#     duplicated, forked or altered here.
+#
+# It deliberately performs NO network access and NO Cloudflare-dependent work.
+# Corpus parity / external reconciliation is a SEPARATE governance command
+# (`bun run verify --manifest corpus_manifest.json`) that is invoked explicitly
+# and in CI when credentials and network are available — never at the local
+# commit boundary.
+#
+# Fail-closed: if the scanner is missing or cannot run, the commit is refused.
+# There is deliberately NO '|| true', NO stderr suppression and NO
+# '--no-verify' escape hatch in this dispatcher.
+
+set -u
+
+# Resolve the repository root robustly: the hook may be invoked from any
+# working directory (including deep subdirectories), never assume CWD == root.
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
+if [ -z "${REPO_ROOT:-}" ]; then
+  echo "[ZAYRON-X] pre-commit: cannot resolve repository root (git rev-parse --show-toplevel)" >&2
+  echo "[ZAYRON-X] pre-commit: BLOCKED - refusing commit (fail-closed)" >&2
+  exit 1
+fi
+
+# ---- Local control (1/1): secrets scan — hermetic, no network ----------------
+SCANNER="$REPO_ROOT/.zayron/scripts/secret-scan.cjs"
+if [ ! -f "$SCANNER" ]; then
+  echo "[ZAYRON-X] pre-commit: mandatory secret scanner missing: $SCANNER" >&2
+  echo "[ZAYRON-X] pre-commit: BLOCKED - refusing commit (fail-closed)" >&2
+  exit 1
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "[ZAYRON-X] pre-commit: 'node' not found on PATH; cannot run the secret scanner" >&2
+  echo "[ZAYRON-X] pre-commit: BLOCKED - refusing commit (fail-closed)" >&2
+  exit 1
+fi
+
+if ! node "$SCANNER"; then
+  echo "[ZAYRON-X] pre-commit: BLOCKED - FAILED check [secret-scan]" >&2
+  exit 1
+fi
+
+echo "[ZAYRON-X] pre-commit: PASS check [secret-scan] (local, hermetic)"
+echo "[ZAYRON-X] pre-commit: local commit boundary satisfied"
+exit 0

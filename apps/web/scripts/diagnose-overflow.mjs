@@ -1,0 +1,10 @@
+import { spawn } from "node:child_process";
+import { chromium } from "playwright";
+import { writeFile } from "node:fs/promises";
+const server = spawn("bunx", ["wrangler", "dev", "--local", "--port", "8787"], { cwd: process.cwd(), windowsHide: true, stdio: "ignore" });
+await new Promise((r) => setTimeout(r, 10000));
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 375, height: 900 } });
+await page.goto("http://127.0.0.1:8787", { waitUntil: "domcontentloaded" });
+await writeFile("D:/Temp/overflow-diagnostic.json", JSON.stringify(await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth, hero: (() => { const e=document.querySelector('.hero'); const r=e.getBoundingClientRect(); const s=getComputedStyle(e,'::before'); return {left:r.left,width:r.width,pseudoLeft:s.left,pseudoWidth:s.width,transform:s.transform}})(), offenders: [...document.querySelectorAll("*")].map((el) => ({ tag: el.tagName, cls: String(el.className), width: el.getBoundingClientRect().width, right: el.getBoundingClientRect().right })).filter((x) => x.right > document.documentElement.clientWidth + 1).sort((a,b) => b.right-a.right).slice(0, 12) })), null, 2));
+await browser.close(); server.kill();

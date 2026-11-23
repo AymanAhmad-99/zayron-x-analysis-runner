@@ -1,0 +1,263 @@
+{
+  "audit_version": "1.0.0",
+  "audit_timestamp": "2026-09-05T12:45:00.000Z",
+  "status": "FOUNDATION PARTIAL",
+  "canonical_corpus": {
+    "total_documents": 17,
+    "total_chunks": 36963,
+    "chunk_storage_path": ".zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson",
+    "documents": [
+      {
+        "document_id": "doc-nist-800-150",
+        "title": "NIST SP 800-150: Guide to Cyber Threat Information Sharing",
+        "chunk_count": 105,
+        "avg_chars": 1203,
+        "min_chars": 81,
+        "max_chars": 4293,
+        "vectorize_indexed": 105,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-nist-800-86",
+        "title": "NIST SP 800-86: Guide to Integrating Forensic Techniques into Incident Response",
+        "chunk_count": 224,
+        "avg_chars": 1689,
+        "min_chars": 80,
+        "max_chars": 5683,
+        "vectorize_indexed": 224,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-cisa-kev",
+        "title": "CISA Known Exploited Vulnerabilities (KEV) Catalog",
+        "chunk_count": 1685,
+        "avg_chars": 770,
+        "min_chars": 462,
+        "max_chars": 2025,
+        "vectorize_indexed": 1685,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-01-heuer-psychology",
+        "title": "Psychology of Intelligence Analysis (Richards J. Heuer, Jr.)",
+        "chunk_count": 1014,
+        "avg_chars": 420,
+        "min_chars": 80,
+        "max_chars": 2111,
+        "vectorize_indexed": 1014,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-03-nist-sp-800-150",
+        "title": "NIST SP 800-150 Full Standard",
+        "chunk_count": 210,
+        "avg_chars": 483,
+        "min_chars": 80,
+        "max_chars": 3111,
+        "vectorize_indexed": 210,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-04-nist-sp-800-86",
+        "title": "NIST SP 800-86 Full Standard",
+        "chunk_count": 1846,
+        "avg_chars": 171,
+        "min_chars": 80,
+        "max_chars": 2299,
+        "vectorize_indexed": 1846,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-05-nist-sp-800-61r3",
+        "title": "NIST SP 800-61 Rev. 3: Incident Handling Guide",
+        "chunk_count": 322,
+        "avg_chars": 304,
+        "min_chars": 80,
+        "max_chars": 2053,
+        "vectorize_indexed": 322,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-06-nist-csf-2",
+        "title": "NIST Cybersecurity Framework 2.0 (CSF 2.0)",
+        "chunk_count": 157,
+        "avg_chars": 424,
+        "min_chars": 80,
+        "max_chars": 2500,
+        "vectorize_indexed": 157,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-07-first-cvss4",
+        "title": "FIRST CVSS v4.0 Specification Document",
+        "chunk_count": 1,
+        "avg_chars": 81385,
+        "min_chars": 81385,
+        "max_chars": 81385,
+        "vectorize_indexed": 1,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-08-first-epss",
+        "title": "FIRST EPSS v3 User Guide & Specification",
+        "chunk_count": 1,
+        "avg_chars": 8678,
+        "min_chars": 8678,
+        "max_chars": 8678,
+        "vectorize_indexed": 1,
+        "vectorize_coverage_pct": 100.0
+      },
+      {
+        "document_id": "doc-09-mitre-attack",
+        "title": "MITRE ATT&CK Enterprise Matrix v14.1",
+        "chunk_count": 26086,
+        "avg_chars": 1536,
+        "min_chars": 370,
+        "max_chars": 3069114,
+        "vectorize_indexed": 12949,
+        "vectorize_coverage_pct": 49.6
+      },
+      {
+        "document_id": "doc-10-oasis-stix21",
+        "title": "OASIS STIX 2.1 Specification Document",
+        "chunk_count": 331,
+        "avg_chars": 1652,
+        "min_chars": 108,
+        "max_chars": 4553,
+        "vectorize_indexed": 0,
+        "vectorize_coverage_pct": 0.0
+      },
+      {
+        "document_id": "doc-11-oasis-taxii21",
+        "title": "OASIS TAXII 2.1 Specification Document",
+        "chunk_count": 512,
+        "avg_chars": 268,
+        "min_chars": 80,
+        "max_chars": 6700,
+        "vectorize_indexed": 0,
+        "vectorize_coverage_pct": 0.0
+      },
+      {
+        "document_id": "doc-12-nist-ai-rmf",
+        "title": "NIST AI Risk Management Framework 1.0 (AI RMF 1.0)",
+        "chunk_count": 48,
+        "avg_chars": 2216,
+        "min_chars": 88,
+        "max_chars": 3131,
+        "vectorize_indexed": 0,
+        "vectorize_coverage_pct": 0.0
+      },
+      {
+        "document_id": "doc-13-nist-genai-profile",
+        "title": "NIST GenAI Profile (NIST SP 600-1)",
+        "chunk_count": 501,
+        "avg_chars": 309,
+        "min_chars": 81,
+        "max_chars": 1067,
+        "vectorize_indexed": 0,
+        "vectorize_coverage_pct": 0.0
+      },
+      {
+        "document_id": "doc-14-nist-sp-800-53",
+        "title": "NIST SP 800-53 Rev. 5: Security and Privacy Controls for Information Systems",
+        "chunk_count": 3919,
+        "avg_chars": 381,
+        "min_chars": 80,
+        "max_chars": 4857,
+        "vectorize_indexed": 0,
+        "vectorize_coverage_pct": 0.0
+      },
+      {
+        "document_id": "doc-15-owasp-top10",
+        "title": "OWASP Top 10 API Security Risks",
+        "chunk_count": 1,
+        "avg_chars": 24141,
+        "min_chars": 24141,
+        "max_chars": 24141,
+        "vectorize_indexed": 0,
+        "vectorize_coverage_pct": 0.0
+      }
+    ]
+  },
+  "corpus_manifest": {
+    "manifest_file": "corpus_manifest.json",
+    "version": "1.0.0",
+    "updated_at": "2026-09-04T17:52:00.000Z",
+    "embedding_model": "@cf/baai/bge-base-en-v1.5",
+    "vectorize_index": "zayron-knowledge-index",
+    "database_table": "knowledge_chunks",
+    "manifest_status_defect": "All 17 documents marked 'INDEXED' despite 6 documents having 0 vectors in Vectorize."
+  },
+  "d1_knowledge_storage": {
+    "database_name": "zayron-x-db",
+    "database_id": "c19c8f45-801b-4034-bd76-402e5e5389b5",
+    "table_name": "knowledge_chunks",
+    "total_rows_recorded": 36808,
+    "missing_vs_canonical_ndjson": 155,
+    "schema": "id, document_id, source_id, section, page, text, embedding_id, authority_tier, token_count, version, content_hash, metadata, created_at"
+  },
+  "vectorize_index": {
+    "index_name": "zayron-knowledge-index",
+    "dimensions": 768,
+    "metric": "cosine",
+    "total_vectors_in_index": 25682,
+    "canonical_vectors_present": 18514,
+    "canonical_vectors_missing": 18449,
+    "duplicate_vector_id_pairs": 3501,
+    "orphan_event_vectors": 3437,
+    "canonical_coverage_pct": 50.09
+  },
+  "retrieval_implementation": {
+    "file": "packages/intelligence/src/engine_v2/shadow_vectorize.ts",
+    "function": "executeShadowVectorizeRetrieval",
+    "query_embedding_provider": "Cloudflare Workers AI (@cf/baai/bge-base-en-v1.5)",
+    "vector_query_provider": "Cloudflare Vectorize (zayron-knowledge-index)",
+    "resolution_tiers": [
+      "D1 Database (knowledge_chunks table via IN clause)",
+      "LRU Memory Cache",
+      "CANONICAL_CORPUS_MAP in-memory fallback",
+      "Vectorize metadata fallback",
+      "FAILED status"
+    ],
+    "precondition_filters": "Active for domain relevance (vulnerability, malware, dfir)"
+  },
+  "citation_grounding_implementation": {
+    "claims_generator": "packages/intelligence/src/engine_v2/claims.ts (generateStructuredClaims)",
+    "fragment_extractor": "extractVerbatimFragment (<= 30 words, targeted domain/vector cues)",
+    "quality_gate": "packages/intelligence/src/engine_v2/quality_gate.ts (evaluateDeepQualityGateV2)",
+    "boilerplate_filter": "BOILERPLATE_PATTERNS active (rejects FIRST portal/nav/board text)",
+    "grounding_enforcement": "Stage 3 hard gate (rejects non-verbatim substrings or boilerplate with CITATION SUBSTANCE DEFECT)"
+  },
+  "entity_report_structures": {
+    "definitions_file": "packages/intelligence/src/engine_v2/types.ts",
+    "report_structure": "CanonicalReportV2 (18 standardized sections)",
+    "claim_types": ["CONFIRMED_FACT", "INFERENCE", "UNVERIFIED", "CONFLICTING_SOURCES"],
+    "epistemic_modes": ["OBSERVED", "INFERRED", "CONTEXTUAL"]
+  },
+  "gemini_integration": {
+    "status": "MISSING",
+    "active_sdk": null,
+    "api_caller_file": null,
+    "notes": "Codebase currently uses Cloudflare Workers AI (@cf/meta/llama-3.1-8b-instruct-fp8) for LLM generation and @cf/baai/bge-base-en-v1.5 for embeddings. Gemini is only mentioned as a rate-limit note in .zayron/infra/isolated_pipeline_health.json."
+  },
+  "existing_tests": {
+    "total_tests": 103,
+    "passing": 101,
+    "failing": 2,
+    "failing_tests": [
+      "tests/corpus_scale_test.test.ts: processes 3 new documents in a single automated pipeline execution",
+      "tests/corpus_scale_test.test.ts: demonstrates strict idempotency on second pass (zero redundant writes)"
+    ],
+    "failure_root_cause": "Vectorize REST API upsert fails with HTTP 401 Authentication error due to expired/unauthorized Cloudflare OAuth token in wrangler config."
+  },
+  "book_pipeline_stages": {
+    "source": "PARTIAL",
+    "extraction": "FAIL",
+    "chunking": "FAIL",
+    "d1": "PASS",
+    "embedding": "PASS",
+    "vectorize": "PARTIAL",
+    "retrieval": "PASS",
+    "ai": "PASS"
+  }
+}
