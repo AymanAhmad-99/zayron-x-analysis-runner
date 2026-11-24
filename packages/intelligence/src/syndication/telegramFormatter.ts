@@ -17,6 +17,11 @@
  *     at most 7. Tags come only from verified facts (`#CISAKEV` requires a KEV
  *     listing; a family tag requires a resolved/source-reported family).
  *   · Hyphens break Telegram hashtags, so a CVE id becomes `#CVE_2026_132147`.
+ *   · Brief copy is cut only at a SENTENCE boundary — a shipped post never ends
+ *     mid-phrase (`"lateral movement within…"`), because a fragment reads as a
+ *     broken sentence on a public channel.
+ *   · Every dispatch carries the `📡 @zayronxai` attribution line right above
+ *     the hashtags, so a forwarded message or screenshot keeps its source.
  *
  * Kept free of Worker imports so every rule is unit-testable.
  */
@@ -32,6 +37,9 @@ export const TELEGRAM_CVE_BASE_URL = 'https://zayron-x.co/intelligence/vulnerabi
 export const TELEGRAM_MALWARE_BASE_URL = 'https://zayron-x.co/malware/intelligence/reports';
 
 export const TELEGRAM_HAIRLINE = '─────────────────────';
+
+/** Channel attribution — survives forwarding and screenshots. */
+export const TELEGRAM_CHANNEL_HANDLE = '@zayronxai';
 
 /** The exact CTA copy — executive, never a naked URL. */
 export const TELEGRAM_CVE_CTA =
@@ -147,18 +155,37 @@ export function composeHashtags(candidates: Array<string | null | undefined>): s
 
 /* ─────────────────────────────── text helpers ─────────────────────────────── */
 
-/** First `count` sentences, trimmed to a word boundary — never mid-word. */
+/**
+ * Up to `count` WHOLE sentences, bounded by `maxChars` at a sentence boundary.
+ *
+ * A sentence is added only if it fits the budget, so the result always ends on
+ * `.`, `!` or `?` — never mid-phrase. The single exception is one sentence that
+ * is long by itself: then (and only then) it is cut on a word boundary with an
+ * ellipsis, because dropping the only sentence would leave no assessment.
+ */
 export function briefSentences(text: unknown, count = 2, maxChars = 320): string {
   const raw = String(text ?? '').replace(/\s+/g, ' ').trim();
   if (!raw) return '';
-  const sentences = raw.split(/(?<=[.!?])\s+/).filter(Boolean).slice(0, Math.max(1, count));
-  let out = sentences.join(' ');
-  if (out.length > maxChars) {
-    const cut = out.slice(0, maxChars);
-    const boundary = cut.lastIndexOf(' ');
-    out = `${(boundary > 80 ? cut.slice(0, boundary) : cut).replace(/[.,;:\s]+$/, '')}…`;
+  const limit = Math.max(1, count);
+  const sentences = raw
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+  const selected: string[] = [];
+  for (const sentence of sentences) {
+    if (selected.length >= limit) break;
+    const candidate = [...selected, sentence].join(' ');
+    // Keep adding only while the whole sentence still fits the budget.
+    if (selected.length > 0 && candidate.length > maxChars) break;
+    selected.push(sentence);
   }
-  return out;
+
+  const out = selected.join(' ');
+  if (out.length <= maxChars) return out;
+  const cut = out.slice(0, maxChars);
+  const boundary = cut.lastIndexOf(' ');
+  return `${(boundary > 80 ? cut.slice(0, boundary) : cut).replace(/[.,;:\s]+$/, '')}…`;
 }
 
 function trimTo(value: unknown, max: number): string {
@@ -270,6 +297,7 @@ export function formatCveTelegramDispatch(record: TelegramCveRecord): TelegramDi
     `▸ <b>Affected</b>: ${escapeTelegramHtml(affectedLine)}`,
     TELEGRAM_HAIRLINE,
     `↳ <a href="${escapeTelegramHtml(url)}"><u>${TELEGRAM_CVE_CTA} ↗</u></a>`,
+    TELEGRAM_CHANNEL_HANDLE,
     hashtags.join(' '),
   ].join('\n');
 
@@ -325,6 +353,7 @@ export function formatMalwareTelegramDispatch(record: TelegramMalwareRecord): Te
     `▸ <b>Family</b>: ${family ? `${escapeTelegramHtml(family)} (single-source feed tag)` : 'UNRESOLVED — no attribution claimed'}`,
     TELEGRAM_HAIRLINE,
     `↳ <a href="${escapeTelegramHtml(url)}"><u>${TELEGRAM_MALWARE_CTA} ↗</u></a>`,
+    TELEGRAM_CHANNEL_HANDLE,
     hashtags.join(' '),
   ].join('\n');
 

@@ -203,6 +203,61 @@ describe('telegram text helpers', () => {
     expect(briefSentences(text, 2)).toBe('One. Two.');
   });
 
+  test('two full sentences are returned without any mid-sentence cut', () => {
+    const text = 'The flaw exposes lateral movement within a single tenant boundary. '
+      + 'Patch within 24 hours because exploitation is already observed in the wild. '
+      + 'A third sentence is dropped entirely.';
+    const brief = briefSentences(text, 2);
+    expect(brief).not.toContain('…');
+    expect(brief.endsWith('.')).toBe(true);
+    expect(brief).toBe(
+      'The flaw exposes lateral movement within a single tenant boundary. '
+      + 'Patch within 24 hours because exploitation is already observed in the wild.',
+    );
+  });
+
+  test('an over-long second sentence is dropped whole instead of chopped', () => {
+    const text = `Short opening sentence ends here. ${'a'.repeat(400)} trailing clause never closes`;
+    const brief = briefSentences(text, 2, 320);
+    expect(brief).toBe('Short opening sentence ends here.');
+    expect(brief).not.toContain('…');
+  });
+
+  test('a rendered CVE brief never ends in a mid-phrase ellipsis', () => {
+    const html = formatCveTelegramDispatch({
+      ...CVE_RECORD,
+      brief: {
+        executive_bluf: 'Authenticated attackers reach adjacent tenants through a path traversal in the asset resolver. '
+          + 'Lateral movement within the shared hosting tier is possible once a single session is captured, which raises blast radius to estate level. '
+          + 'Patch now.',
+        operational_prioritization: { priority: 'P0', remediation_sla: '24–48 hours' },
+      },
+    }).html;
+    const assessment = html.split('<b>EXECUTIVE ASSESSMENT</b>\n')[1].split('\n')[0];
+    expect(assessment).not.toContain('…');
+    expect(/[.!?]$/.test(assessment)).toBe(true);
+  });
+
+  test('every dispatch carries the channel attribution line above the hashtags', () => {
+    const cve = formatCveTelegramDispatch(CVE_RECORD);
+    const malware = formatMalwareTelegramDispatch({
+      report_id: 'mir_66cd231d1563b12f',
+      sha256: MALWARE_REPORT.sha256,
+      family: 'AgentTesla',
+      severity: 'HIGH',
+      format_class: 'PE32',
+      capability_candidates: 7,
+      primary_network_indicators: 1,
+      brief: MALWARE_BRIEF,
+    });
+    for (const payload of [cve, malware]) {
+      const lines = payload.html.split('\n');
+      const tagLine = lines.findIndex((line) => line.startsWith('#USA'));
+      expect(lines[tagLine - 1]).toBe('@zayronxai');
+      expect(validateTelegramDispatch(payload.html, payload.hashtags)).toEqual([]);
+    }
+  });
+
   test('sha256 is shortened without losing the 64-hex identity', () => {
     expect(shortenSha256(MALWARE_REPORT.sha256)).toBe('ddb637300173…ce13b973');
     expect(shortenSha256('nope')).toBe('UNAVAILABLE');

@@ -73,11 +73,12 @@ LEGACY_FREEZE = "true"
 # returns before the RSS/KEV/MSRC enqueues, the AI smoke test and any outbound
 # work. Absent or any other value leaves the pulse disabled.
 AUTHORITATIVE_CVE_CRON_ENABLED = "true"
-# Phase 4C — EXECUTIVE TELEGRAM WIRE. The wire ships CLOSED: publishing to a
-# public channel is a live, unrecallable action, so it opens only on an explicit
-# operator decision (`true`) once TELEGRAM_BOT_TOKEN exists for the channel bot.
-# The cap is a hard ceiling (dispatcher clamps to 1..6).
-TELEGRAM_OUTBOUND_ENABLED = "false"
+# Phase 4C.2 — EXECUTIVE TELEGRAM WIRE IS OPEN. Publishing to a public channel
+# is a live, unrecallable action, so it opens only on an explicit operator
+# decision: the Phase 4C.2 ruling, with TELEGRAM_BOT_TOKEN provisioned as a
+# Worker Secret and the bot added as an admin of @zayronxai. Preview stays
+# closed (dry run only). The cap is a hard ceiling (dispatcher clamps to 1..6).
+TELEGRAM_OUTBOUND_ENABLED = "true"
 TELEGRAM_MAX_DAILY_DISPATCHES = "6"
 
 [env.preview]
