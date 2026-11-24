@@ -586,12 +586,17 @@ describe("Wave 4C — ingest cron throttle", () => {
   });
 
   test("production runs every 4 hours, not every 10 minutes", () => {
-    const production = tomlSection(ingest, "[env.production.triggers]");
+    // Phase 4A — the schedule must sit on the TOP-LEVEL worker, because that is
+    // the name `wrangler deploy` publishes. A schedule under [env.production]
+    // targets `<name>-production`, which is never deployed, so the live loop had
+    // no cron at all while this assertion passed.
+    const production = tomlSection(ingest, "[triggers]");
     expect(production).toMatch(/^crons = \["0 \*\/4 \* \* \*"\]$/m);
     expect(production).not.toMatch(/^crons = \[.*\*\/10.*\]$/m);
-    expect(production).toContain("Free-Tier Survival Mode (every 4h)");
+    expect(ingest).toContain("Free-Tier Survival Mode (every 4h)");
     // 6 runs/day instead of 144.
     expect(production).not.toContain('"*/30 * * * *"');
+    expect(tomlSection(ingest, "[env.production.triggers]")).toBe("");
   });
 
   test("the deployment-guard preview fixture mirrors the dormant preview", () => {
