@@ -91,6 +91,22 @@ export interface CveTitleInput {
 }
 
 /**
+ * Visible H1: short enough to scan in one or two lines. The long,
+ * entity-dense variant stays in `<title>` / metadata only.
+ * `CVE-2026-116160 — ImageMagick Vulnerability`
+ */
+export function vulnerabilityDisplayHeading(input: CveTitleInput): string {
+  const cve = (input.cveId || "").trim() || "CVE";
+  const vendor = displayVendor(input.vendor);
+  const product = displayProduct(input.product);
+  const subject =
+    vendor && product && vendor.toLowerCase() !== product.toLowerCase()
+      ? `${vendor} ${product}`
+      : (vendor ?? product);
+  return subject ? `${cve} — ${subject} Vulnerability` : `${cve} — Vulnerability advisory`;
+}
+
+/**
  * `CVE-2026-116156: ImageMagick Vulnerability (CVSS 3.3) — Affected & Fixed
  * Versions`. Degrades field by field; the CVE id is always first for entity
  * density, and the brand suffix is added by the root title template.
