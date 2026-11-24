@@ -552,9 +552,19 @@ export interface VulnerabilityDetail {
   observed_at?: string;
 }
 
+/**
+ * Phase 5A — the detail read must NEVER be served from the data cache.
+ *
+ * A cached copy kept returning a pre-enrichment advisory and a superseded v3
+ * brief for many minutes after the row had been re-enriched and re-briefed, so
+ * the public page contradicted the stored record. The API applies its own short
+ * `Cache-Control`; this read bypasses the framework cache entirely.
+ */
+const DETAIL_READ_INIT = { headers: { accept: "application/json" }, cache: "no-store" } as unknown as RequestInit;
+
 export async function getVulnerabilityDetail(id: string): Promise<ApiResult<VulnerabilityDetail>> {
   try {
-    const response = await apiFetch(`${getApiBaseUrl()}/intelligence/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
+    const response = await apiFetch(`${getApiBaseUrl()}/intelligence/${encodeURIComponent(id)}`, DETAIL_READ_INIT);
     if (response.ok) {
       const payload = await response.json() as { report?: VulnerabilityDetail };
       if (payload.report) {
@@ -568,7 +578,7 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
       }
     }
     // Fallback to canonical /vulnerabilities/:id endpoint
-    const vulnRes = await apiFetch(`${getApiBaseUrl()}/vulnerabilities/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
+    const vulnRes = await apiFetch(`${getApiBaseUrl()}/vulnerabilities/${encodeURIComponent(id)}`, DETAIL_READ_INIT);
     if (vulnRes.ok) {
       const vulnPayload = await vulnRes.json() as { data?: Record<string, unknown> };
       if (vulnPayload.data) {

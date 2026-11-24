@@ -892,7 +892,7 @@ export async function withSecurityBoundary(
   // D1 reads and ZERO D1 writes. Only an anonymous public GET on the explicit
   // allowlist is ever considered; everything else falls through untouched.
   const edgeCacheKey =
-    auth.role === "public" && isEdgeCacheEligible(request, url) ? edgeCacheRequest(request, url) : null;
+    auth.role === "public" && isEdgeCacheEligible(request, url) ? edgeCacheRequest(request, url, env) : null;
   const edgeCache = edgeCacheKey
     ? options.cache === undefined
       ? defaultEdgeCache()

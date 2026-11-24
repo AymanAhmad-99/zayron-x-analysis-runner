@@ -202,6 +202,10 @@ ALLOWED_ORIGINS = "https://zayron-x.co,https://www.zayron-x.co"
 # before a D1 read is paid again. Overridable per environment without a code
 # change; absent/invalid falls back to the same 14400s default in edgeCache.ts.
 PUBLIC_EDGE_CACHE_TTL_SECONDS = "14400"
+# Cache generation. Bump it whenever a release changes the SHAPE or MEANING of a
+# cached public record (schema migration, re-enrichment, brief contract), so the
+# new payload is served immediately instead of after the TTL above.
+PUBLIC_EDGE_CACHE_EPOCH = "cti-v4-2026-11-24"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # OPTIONAL DEAD-LETTER QUEUE (env.DLQ)

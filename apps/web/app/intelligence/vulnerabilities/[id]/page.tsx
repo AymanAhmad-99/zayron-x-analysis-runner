@@ -10,6 +10,16 @@ import { resolvePageRobots, vulnerabilitySeoTitle } from "../../../lib/seo";
 type Props = { params: Promise<{ id: string }> };
 
 /**
+ * Phase 5A — this page must reflect the stored intelligence on every request.
+ *
+ * A cached full-route render kept serving a pre-enrichment advisory and a v3
+ * brief long after the row had been re-enriched and re-briefed. The API already
+ * applies its own short `Cache-Control`, so rendering per request here costs one
+ * in-worker read and removes an entire class of stale intelligence.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  * Wave 4B audit — `generateMetadata` and the page body both need this record.
  * React's `cache` memoises the loader for the duration of ONE server request,
  * so a page render performs a single API call instead of two.

@@ -28,6 +28,7 @@
 /** The only env input this module needs. Absent ⇒ the Free-Tier default. */
 export interface EdgeCacheEnv {
   PUBLIC_EDGE_CACHE_TTL_SECONDS?: string;
+  PUBLIC_EDGE_CACHE_EPOCH?: string;
 }
 
 /** Minimal, injectable surface of the Cloudflare Cache API. */
@@ -123,10 +124,30 @@ export function isEdgeCacheEligible(request: Request, url: URL = new URL(request
  * {@link buildCacheableCopy}). The fragment is dropped because it is never sent
  * to a server.
  */
-export function edgeCacheRequest(request: Request, url: URL = new URL(request.url)): Request {
+export function edgeCacheRequest(request: Request, url: URL = new URL(request.url), env: EdgeCacheEnv = {}): Request {
   const key = new URL(url.toString());
   key.hash = "";
+  const epoch = resolveEdgeCacheEpoch(env);
+  if (epoch) key.searchParams.set(EDGE_CACHE_EPOCH_PARAM, epoch);
   return new Request(key.toString(), { method: "GET" });
+}
+
+/** Cache-key parameter that carries the cache generation. */
+export const EDGE_CACHE_EPOCH_PARAM = "__edge_epoch";
+
+/**
+ * Resolve `PUBLIC_EDGE_CACHE_EPOCH` — the cache generation.
+ *
+ * A public read is cached for hours, so a release that changes the SHAPE or the
+ * MEANING of a stored record (a schema migration, a re-enrichment, a brief
+ * contract bump) would otherwise keep serving the previous payload until the TTL
+ * expired. Changing this value moves every public read to a new cache key, which
+ * invalidates the whole generation at once without a purge API. Anything outside
+ * a conservative token charset is ignored rather than trusted into the key.
+ */
+export function resolveEdgeCacheEpoch(env: EdgeCacheEnv = {}): string {
+  const raw = (env.PUBLIC_EDGE_CACHE_EPOCH ?? "").trim();
+  return /^[A-Za-z0-9._-]{1,32}$/.test(raw) ? raw : "";
 }
 
 /**
