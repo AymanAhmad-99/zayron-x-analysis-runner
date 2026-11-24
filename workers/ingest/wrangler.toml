@@ -78,6 +78,12 @@ max_batch_size = 10
 max_batch_timeout = 30
 max_retries = 3
 
+# Gate 2C — PREVIEW ISOLATION. The production producer binding would enqueue
+# real publish jobs from preview runs into the production queue.
+[[env.preview.queues.producers]]
+binding = "PUBLISH_QUEUE"
+queue = "zayron-publish-queue-preview"
+
 [env.preview.vars]
 ENVIRONMENT = "preview"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
@@ -86,6 +92,26 @@ LEGACY_FREEZE = "false"
 [[env.preview.vectorize]]
 binding = "VECTORIZE"
 index_name = "zayron-doc04-staging-index"
+
+# Gate 2C — PREVIEW ISOLATION. Production writes corpus artifacts to
+# `zayron-x-knowledge`; preview must never overwrite them.
+[[env.preview.r2_buckets]]
+binding = "KNOWLEDGE_BUCKET"
+bucket_name = "zayron-x-knowledge-preview"
+
+# Gate 2C — PREVIEW ISOLATION. Distinct workflow names; the classes live in the
+# preview API script, matching the production `script_name` arrangement.
+[[env.preview.workflows]]
+name = "zayron-research-workflow-preview"
+binding = "RESEARCH_WORKFLOW"
+class_name = "ResearchWorkflow"
+script_name = "zayron-x-api-preview"
+
+[[env.preview.workflows]]
+name = "zayron-knowledge-corpus-workflow-preview"
+binding = "KNOWLEDGE_CORPUS_WORKFLOW"
+class_name = "KnowledgeCorpusWorkflow"
+script_name = "zayron-x-api-preview"
 
 [[env.preview.services]]
 binding = "TELEGRAM_COLLECTOR_SERVICE"
@@ -128,4 +154,8 @@ crons = ["0 */4 * * *"]
 # ZX-28: Workers Logs / traces for queue and cron invocations. CPU limits are
 # deliberately untouched: a cap would throttle AI/ingest workloads.
 [observability]
+enabled = true
+
+# Gate 2C — preview observability parity.
+[env.preview.observability]
 enabled = true

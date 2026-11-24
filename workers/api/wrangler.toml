@@ -109,6 +109,10 @@ ENVIRONMENT = "preview"
 LEGACY_FREEZE = "false"
 ALLOWED_ORIGINS = "https://zayron-x.co,https://www.zayron-x.co,https://zayron-x-web-preview.aabusabih.workers.dev,http://localhost:8799,http://127.0.0.1:8799,http://localhost:8801,http://127.0.0.1:8801"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
+# Gate 2C — declared explicitly so preview is not silently dependent on the
+# 14400s production default in edgeCache.ts. Short TTL keeps preview iteration
+# snappy and its D1 read budget small.
+PUBLIC_EDGE_CACHE_TTL_SECONDS = "300"
 
 # Effective Preview INTELLIGENCE-SUPPLY destination, declared as configuration
 # ("<database_name>:<database_id>") rather than inferred from the environment
@@ -138,6 +142,39 @@ service = "zayron-telegram-collector-do-preview"
 [[env.preview.queues.producers]]
 binding = "INGEST_QUEUE"
 queue = "zayron-ingest-queue-preview"
+
+# Gate 2C — PREVIEW ISOLATION. The publish queue is a DEDICATED preview queue.
+# Binding the production `zayron-publish-queue` here would let the preview worker
+# consume (and ack or discard) real production publish messages.
+[[env.preview.queues.producers]]
+binding = "PUBLISH_QUEUE"
+queue = "zayron-publish-queue-preview"
+
+[[env.preview.queues.consumers]]
+queue = "zayron-publish-queue-preview"
+max_batch_size = 10
+max_batch_timeout = 30
+max_retries = 3
+
+# Gate 2C — PREVIEW ISOLATION. Dedicated bucket; never `zayron-x-knowledge`,
+# which is the production corpus store.
+[[env.preview.r2_buckets]]
+binding = "KNOWLEDGE_BUCKET"
+bucket_name = "zayron-x-knowledge-preview"
+
+# Gate 2C — PREVIEW ISOLATION. Workflow names are account-scoped, so binding
+# `zayron-research-workflow` / `zayron-knowledge-corpus-workflow` here would
+# attach the preview script to the PRODUCTION workflow definitions and their
+# instances. Preview gets its own `-preview` named workflows.
+[[env.preview.workflows]]
+name = "zayron-research-workflow-preview"
+binding = "RESEARCH_WORKFLOW"
+class_name = "ResearchWorkflow"
+
+[[env.preview.workflows]]
+name = "zayron-knowledge-corpus-workflow-preview"
+binding = "KNOWLEDGE_CORPUS_WORKFLOW"
+class_name = "KnowledgeCorpusWorkflow"
 
 [[env.preview.vectorize]]
 binding = "VECTORIZE"
@@ -193,4 +230,9 @@ PUBLIC_EDGE_CACHE_TTL_SECONDS = "14400"
 # ZX-28: Workers Logs / traces. Enables structured invocation logs and error
 # traces without touching CPU limits (a 200ms cap would throttle AI analysis).
 [observability]
+enabled = true
+
+# Gate 2C — preview observability parity (Wrangler does not inherit the
+# top-level block into a named environment).
+[env.preview.observability]
 enabled = true
