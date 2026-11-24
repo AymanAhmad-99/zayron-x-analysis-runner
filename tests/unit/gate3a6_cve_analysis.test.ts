@@ -46,6 +46,22 @@ describe('Gate 3A.6 — CVSS vector parser', () => {
     expect(summary).toContain('1 of 3 impact dimensions partially affected');
     expect(cvssVectorSummary(null)).toBe('CVSS vector not reported by the source.');
   });
+
+  it('reads a CVSS v4.0 vector instead of reporting it as no impact', () => {
+    const v4 = 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N';
+    const readings = parseCvssVector(v4);
+    expect(readings.map((r) => r.key)).toEqual(['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A']);
+    expect(readings.filter((r) => r.group === 'impact').map((r) => r.code)).toEqual(['H', 'H', 'H']);
+    const summary = cvssVectorSummary(v4);
+    expect(summary).toContain('3 of 3 impact dimensions fully compromised');
+    expect(summary).not.toContain('no confidentiality');
+  });
+
+  it('derives scope change from the v4 subsequent-system impact metrics', () => {
+    const v4 = 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:N/SA:N';
+    expect(parseCvssVector(v4).find((r) => r.key === 'S')?.label).toBe('Changed');
+    expect(cvssVectorSummary(v4)).toContain('scope change across a trust boundary');
+  });
 });
 
 describe('Gate 3A.6 — triage posture', () => {
