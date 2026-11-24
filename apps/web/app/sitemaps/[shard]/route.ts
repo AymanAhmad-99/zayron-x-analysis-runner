@@ -1,4 +1,4 @@
-import { getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../../lib/siteConfig";
+import { apiFetch, getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../../lib/siteConfig";
 import {
   buildUrlset,
   isSitemapPageWithinCap,
@@ -63,9 +63,9 @@ export async function GET(
 
   let payload: ShardResponse;
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${getApiBaseUrl()}/sitemap/${parsed.kind}?page=${parsed.page}&limit=${SITEMAP_PAGE_SIZE}`,
-      { headers: { accept: "application/json" }, signal: AbortSignal.timeout(3000) },
+      { headers: { accept: "application/json" }, signal: AbortSignal.timeout(8000) },
     );
     if (!response.ok) throw new Error(`sitemap feed returned ${response.status}`);
     payload = (await response.json()) as ShardResponse;

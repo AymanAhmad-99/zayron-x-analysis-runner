@@ -16,7 +16,8 @@
 
 export const WEB_PREVIEW_WORKER = "zayron-x-web-preview";
 export const WEB_PREVIEW_HOST = "zayron-x-web-preview.aabusabih.workers.dev";
-export const WEB_PREVIEW_API_HOST = "zayron-x-api-preview.aabusabih.workers.dev";
+export const WEB_PREVIEW_API_WORKER = "zayron-x-api-preview";
+export const WEB_PREVIEW_API_HOST = `${WEB_PREVIEW_API_WORKER}.aabusabih.workers.dev`;
 export const WEB_PRODUCTION_WORKER = "zayron-x-web";
 export const WEB_PRODUCTION_HOSTS = ["zayron-x.co", "www.zayron-x.co"];
 /** Production API on workers.dev (distinct from the `-preview` API host). */
@@ -194,9 +195,29 @@ export function evaluateWebPreviewTarget(cfg) {
     return fail("PRODUCTION_TARGET", "worker identity contains a production hostname");
   }
 
-  // Independent signal: bindings. The web preview worker has none; any binding
-  // is either a production resource or cannot be classified — both rejected.
+  // Gate 3A.2: the ONE permitted binding is the `API` service binding to the
+  // preview API worker (Error 1042 fix). It is validated exactly; anything else
+  // stays rejected.
+  if (!isEmptyValue(cfg.services)) {
+    if (!Array.isArray(cfg.services)) {
+      return fail("UNCLASSIFIED_BINDING", "`services` must be an array of service bindings");
+    }
+    for (const entry of cfg.services) {
+      const service = entry && typeof entry === "object" ? entry.service : undefined;
+      const bindingName = entry && typeof entry === "object" ? entry.binding : undefined;
+      if (service !== WEB_PREVIEW_API_WORKER || bindingName !== "API") {
+        return fail(
+          "PRODUCTION_BINDING",
+          `service binding ${JSON.stringify(entry)} must be {binding:'API', service:'${WEB_PREVIEW_API_WORKER}'}`,
+        );
+      }
+    }
+  }
+
+  // Independent signal: bindings. Besides the preview API binding validated
+  // above, the web preview worker has none; anything else is rejected.
   for (const key of BINDING_KEYS) {
+    if (key === "services") continue;
     if (!isEmptyValue(cfg[key])) {
       const production = findProductionReference(cfg[key]);
       return fail(

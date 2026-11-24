@@ -1,4 +1,4 @@
-import { getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../lib/siteConfig";
+import { apiFetch, getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../lib/siteConfig";
 import {
   buildSitemapIndex,
   buildSitemapIndexEntries,
@@ -21,9 +21,9 @@ import {
  */
 async function fetchShardCounts(): Promise<Partial<Record<SitemapKind, number>> | null> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/sitemap/manifest`, {
+    const response = await apiFetch(`${getApiBaseUrl()}/sitemap/manifest`, {
       headers: { accept: "application/json" },
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(8000),
     });
     if (!response.ok) return null;
     const payload = (await response.json()) as { shards?: Partial<Record<SitemapKind, number>> };

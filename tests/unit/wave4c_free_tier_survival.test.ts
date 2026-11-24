@@ -636,7 +636,9 @@ describe("Wave 4C — API worker config", () => {
 
   test("the web worker advertises the capped sitemap inventory", () => {
     const web = JSON.parse(readFileSync("apps/web/wrangler.jsonc", "utf8"));
-    expect(web.env.production.vars.SITEMAP_MAX_SHARDS).toBe("1");
+    // Gate 3A.2: raised from "1" to "10" — a cap of 1 silently drops every URL
+    // past 2,000 per kind without an error. 10 gives 20,000 URLs of headroom.
+    expect(web.env.production.vars.SITEMAP_MAX_SHARDS).toBe("10");
     // Preview keeps the full inventory: it is robots-disallowed, so no crawler
     // can walk it, and preview debugging must not be capped.
     expect(web.env.preview.vars.SITEMAP_MAX_SHARDS).toBeUndefined();

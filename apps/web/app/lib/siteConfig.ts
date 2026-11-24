@@ -130,6 +130,65 @@ export function getApiBaseUrl(): string {
 }
 
 /**
+ * Gate 3A.2 — Service Binding transport for server-side API calls.
+ *
+ * A Worker that `fetch()`es another Worker's `*.workers.dev` hostname in the SAME
+ * zone fails with Cloudflare Error 1042 (that is why the preview web Worker could
+ * not read the preview API at all). The binding is a direct Worker-to-Worker call:
+ * no DNS, no TLS, no zone routing, no WAF, and no public hop.
+ *
+ * `API_BASE_URL` stays the fallback for local `vinext dev`, browser bundles and
+ * any runtime without bindings, so nothing else changes.
+ */
+interface ApiServiceBinding {
+  fetch(request: Request): Promise<Response>;
+}
+
+interface CloudflareWorkersModule {
+  env?: { API?: ApiServiceBinding };
+}
+
+/** Internal origin used to shape a Request for the binding (never resolved). */
+const INTERNAL_API_ORIGIN = "https://api.internal";
+
+let apiBindingPromise: Promise<ApiServiceBinding | null> | null = null;
+
+/** The `API` service binding when running inside the Worker, else null. */
+function resolveApiServiceBinding(): Promise<ApiServiceBinding | null> {
+  if (detectRuntime() === "browser") return Promise.resolve(null);
+  if (!apiBindingPromise) {
+    apiBindingPromise = (async () => {
+      try {
+        // Non-literal specifier: the bundler never tries to resolve a runtime-only module.
+        const specifier = "cloudflare:workers";
+        const mod = (await import(/* @vite-ignore */ specifier)) as unknown as CloudflareWorkersModule;
+        return mod.env?.API ?? null;
+      } catch {
+        return null;
+      }
+    })();
+  }
+  return apiBindingPromise;
+}
+
+/**
+ * Server-side API fetch: the Service Binding when present, plain HTTP otherwise.
+ * `input` may be a full `${getApiBaseUrl()}/...` URL or a `/path` relative to it.
+ */
+export async function apiFetch(input: string, init?: RequestInit): Promise<Response> {
+  const binding = await resolveApiServiceBinding();
+  if (!binding) return fetch(input, init);
+
+  const apiBase = getApiBaseUrl();
+  let path = input;
+  if (input.startsWith(apiBase)) path = input.slice(apiBase.length);
+  else if (/^https?:/i.test(input)) path = new URL(input).pathname.replace(/^\/api\/v1/, "");
+  if (!path.startsWith("/")) path = `/${path}`;
+
+  return binding.fetch(new Request(`${INTERNAL_API_ORIGIN}/api/v1${path}`, init));
+}
+
+/**
  * Wave 4C — graduated sitemap rollout cap (Free-Tier Survival Mode).
  *
  * A full sitemap enumeration is the single most expensive thing a search

@@ -11,6 +11,9 @@ if (fs.existsSync(distWranglerPath)) {
   cfg.name = "zayron-x-web-preview";
   cfg.workers_dev = true;
   cfg.routes = [];
+  // Gate 3A.2 — the preview web Worker reads the preview API over a Service
+  // Binding (a `*.workers.dev` subrequest in the same zone is Error 1042).
+  cfg.services = [{ binding: "API", service: "zayron-x-api-preview" }];
   cfg.vars = {
     ENVIRONMENT: "preview",
     NEXT_PUBLIC_ENVIRONMENT: "preview",

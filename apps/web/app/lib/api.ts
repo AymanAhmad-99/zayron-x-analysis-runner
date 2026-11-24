@@ -1,5 +1,5 @@
 import { VULNERABILITY_INTELLIGENCE_TYPE } from "./taxonomy";
-import { getApiBaseUrl } from "./siteConfig";
+import { apiFetch, getApiBaseUrl } from "./siteConfig";
 import { projectVulnerabilityReportRead, type AnalysisAvailability, type ReportIntegrityInput } from "../../../../packages/intelligence/src/vulnerability/reportIntegrity";
 
 /** EPSS is a probability in [0, 1]; sentinels, partial numbers and non-finite values are unavailable. */
@@ -32,7 +32,7 @@ export interface IocRecord { id?: string; type?: string; normalized_value?: stri
 export interface RelationRecord { id?: string; source_entity_type?: string; source_entity_id?: string; target_entity_type?: string; target_entity_id?: string; relation_type?: string; confidence?: number; created_at?: string; updated_at?: string; }
 
 export async function getRelations(limit = 100): Promise<ApiResult<{ items: RelationRecord[]; total: number }>> {
-  try { const response = await fetch(`${getApiBaseUrl()}/graph/edges?limit=${Math.min(limit, 300)}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: RelationRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "Relationship API is unavailable" }; }
+  try { const response = await apiFetch(`${getApiBaseUrl()}/graph/edges?limit=${Math.min(limit, 300)}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: RelationRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "Relationship API is unavailable" }; }
 }
 
 export async function resolveEntity(type: string, id: string): Promise<string | null> {
@@ -42,26 +42,26 @@ export async function resolveEntity(type: string, id: string): Promise<string | 
   else if (["campaign", "campaigns"].includes(normalized)) endpoint = `${base}/campaigns/${encodeURIComponent(id)}`;
   else if (["ioc", "iocs"].includes(normalized)) endpoint = `${base}/iocs/${encodeURIComponent(id)}`;
   if (!endpoint) return null;
-  try { const response = await fetch(endpoint, { headers: { accept: "application/json" }, cache: "no-store" }); if (!response.ok) return null; const payload = await response.json() as Record<string, unknown>; const entity = mode === "report" ? payload.report : payload.data; if (!entity || typeof entity !== "object") return null; const record = entity as Record<string, unknown>; return typeof record.title === "string" ? record.title : typeof record.name === "string" ? record.name : typeof record.normalized_value === "string" ? record.normalized_value : typeof record.intelligence_id === "string" ? record.intelligence_id : null; } catch { return null; }
+  try { const response = await apiFetch(endpoint, { headers: { accept: "application/json" }, cache: "no-store" }); if (!response.ok) return null; const payload = await response.json() as Record<string, unknown>; const entity = mode === "report" ? payload.report : payload.data; if (!entity || typeof entity !== "object") return null; const record = entity as Record<string, unknown>; return typeof record.title === "string" ? record.title : typeof record.name === "string" ? record.name : typeof record.normalized_value === "string" ? record.normalized_value : typeof record.intelligence_id === "string" ? record.intelligence_id : null; } catch { return null; }
 }
 
 export async function getIocs(params: { type?: string; q?: string } = {}): Promise<ApiResult<{ items: IocRecord[]; total: number }>> {
   const query = new URLSearchParams(); if (params.type) query.set("type", params.type); if (params.q) query.set("q", params.q);
-  try { const response = await fetch(`${getApiBaseUrl()}/iocs${query.size ? `?${query}` : ""}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: IocRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "IOC API is unavailable" }; }
+  try { const response = await apiFetch(`${getApiBaseUrl()}/iocs${query.size ? `?${query}` : ""}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: IocRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "IOC API is unavailable" }; }
 }
 
 export async function getCampaigns(): Promise<ApiResult<{ items: CampaignRecord[]; total: number }>> {
-  try { const response = await fetch(`${getApiBaseUrl()}/campaigns`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: CampaignRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "Campaign API is unavailable" }; }
+  try { const response = await apiFetch(`${getApiBaseUrl()}/campaigns`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: CampaignRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "Campaign API is unavailable" }; }
 }
 
 export async function getThreatActors(params: { q?: string } = {}): Promise<ApiResult<{ items: ThreatActorRecord[]; total: number }>> {
   const query = params.q ? `?q=${encodeURIComponent(params.q)}` : "";
-  try { const response = await fetch(`${getApiBaseUrl()}/actors${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: ThreatActorRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "Threat actor API is unavailable" }; }
+  try { const response = await apiFetch(`${getApiBaseUrl()}/actors${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as { data?: ThreatActorRecord[]; meta?: { total?: number } }; const items = Array.isArray(payload.data) ? payload.data : []; return { state: items.length ? "success" : "empty", data: { items, total: payload.meta?.total ?? items.length } }; } catch { return { state: "error", data: null, error: "Threat actor API is unavailable" }; }
 }
 
 export async function getExploits(params: { limit?: number; offset?: number } = {}): Promise<ApiResult<{ items: ExploitRecord[]; total: number; limit: number; offset: number }>> {
   const limit = params.limit ?? 25; const offset = params.offset ?? 0; const query = new URLSearchParams({ category: "exploit", limit: String(limit), offset: String(offset) });
-  try { const response = await fetch(`${getApiBaseUrl()}/intelligence?${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as Record<string, unknown>; const reports = Array.isArray(payload.reports) ? payload.reports as ExploitRecord[] : []; const total = typeof payload.total === "number" ? payload.total : reports.length; return { state: reports.length ? "success" : "empty", data: { items: reports, total, limit, offset } }; } catch { return { state: "error", data: null, error: "Exploit API is unavailable" }; }
+  try { const response = await apiFetch(`${getApiBaseUrl()}/intelligence?${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as Record<string, unknown>; const reports = Array.isArray(payload.reports) ? payload.reports as ExploitRecord[] : []; const total = typeof payload.total === "number" ? payload.total : reports.length; return { state: reports.length ? "success" : "empty", data: { items: reports, total, limit, offset } }; } catch { return { state: "error", data: null, error: "Exploit API is unavailable" }; }
 }
 
 // ── Canonical malware intelligence reports (single source of truth) ──
@@ -120,7 +120,7 @@ export interface CanonicalMalwareReport {
 
 export async function getCanonicalMalwareReports(): Promise<ApiResult<{ items: CanonicalMalwareReportListItem[]; total: number }>> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/malware/intelligence/reports`, PUBLIC_READ_INIT);
+    const response = await apiFetch(`${getApiBaseUrl()}/malware/intelligence/reports`, PUBLIC_READ_INIT);
     if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` };
     const payload = await response.json() as { data?: CanonicalMalwareReportListItem[]; meta?: { total?: number } };
     const items = Array.isArray(payload.data) ? payload.data : [];
@@ -130,7 +130,7 @@ export async function getCanonicalMalwareReports(): Promise<ApiResult<{ items: C
 
 export async function getCanonicalMalwareReport(id: string): Promise<ApiResult<CanonicalMalwareReport>> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/malware/intelligence/reports/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
+    const response = await apiFetch(`${getApiBaseUrl()}/malware/intelligence/reports/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
     if (!response.ok) return { state: response.status === 404 ? "empty" : "error", data: null, error: `API returned HTTP ${response.status}` };
     const payload = await response.json() as { report?: CanonicalMalwareReport };
     if (!payload.report) return { state: "empty", data: null };
@@ -140,7 +140,7 @@ export async function getCanonicalMalwareReport(id: string): Promise<ApiResult<C
 
 export async function getMalware(params: { limit?: number; offset?: number } = {}): Promise<ApiResult<{ items: MalwareRecord[]; total: number; limit: number; offset: number }>> {
   const limit = params.limit ?? 25; const offset = params.offset ?? 0; const query = new URLSearchParams({ category: "malware", limit: String(limit), offset: String(offset) });
-  try { const response = await fetch(`${getApiBaseUrl()}/intelligence?${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as Record<string, unknown>; const reports = Array.isArray(payload.reports) ? payload.reports as MalwareRecord[] : []; const total = typeof payload.total === "number" ? payload.total : reports.length; return { state: reports.length ? "success" : "empty", data: { items: reports, total, limit, offset } }; } catch { return { state: "error", data: null, error: "Malware API is unavailable" }; }
+  try { const response = await apiFetch(`${getApiBaseUrl()}/intelligence?${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as Record<string, unknown>; const reports = Array.isArray(payload.reports) ? payload.reports as MalwareRecord[] : []; const total = typeof payload.total === "number" ? payload.total : reports.length; return { state: reports.length ? "success" : "empty", data: { items: reports, total, limit, offset } }; } catch { return { state: "error", data: null, error: "Malware API is unavailable" }; }
 }
 export interface VulnerabilityEvidence {
   id?: string;
@@ -437,7 +437,7 @@ export interface VulnerabilityDetail {
 
 export async function getVulnerabilityDetail(id: string): Promise<ApiResult<VulnerabilityDetail>> {
   try {
-    const response = await fetch(`${getApiBaseUrl()}/intelligence/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
+    const response = await apiFetch(`${getApiBaseUrl()}/intelligence/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
     if (response.ok) {
       const payload = await response.json() as { report?: VulnerabilityDetail };
       if (payload.report) {
@@ -451,7 +451,7 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
       }
     }
     // Fallback to canonical /vulnerabilities/:id endpoint
-    const vulnRes = await fetch(`${getApiBaseUrl()}/vulnerabilities/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
+    const vulnRes = await apiFetch(`${getApiBaseUrl()}/vulnerabilities/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
     if (vulnRes.ok) {
       const vulnPayload = await vulnRes.json() as { data?: Record<string, unknown> };
       if (vulnPayload.data) {
@@ -510,7 +510,7 @@ export async function getIntelligence(params: { limit?: number; cursor?: string 
   if (params.limit) query.set("limit", String(params.limit));
   if (params.cursor) query.set("cursor", params.cursor);
   try {
-    const response = await fetch(`${getApiBaseUrl()}/intelligence${query.size ? `?${query}` : ""}`, PUBLIC_READ_INIT);
+    const response = await apiFetch(`${getApiBaseUrl()}/intelligence${query.size ? `?${query}` : ""}`, PUBLIC_READ_INIT);
     if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` };
     const payload = await response.json() as Record<string, unknown>;
     const raw = Array.isArray(payload.reports) ? payload.reports : Array.isArray(payload.items) ? payload.items : Array.isArray(payload.data) ? payload.data : [];
@@ -530,7 +530,7 @@ export async function getVulnerabilities(params: { limit?: number; offset?: numb
   if (params.q) query.set("q", params.q);
 
   try {
-    const response = await fetch(`${getApiBaseUrl()}/vulnerabilities?${query}`, PUBLIC_READ_INIT);
+    const response = await apiFetch(`${getApiBaseUrl()}/vulnerabilities?${query}`, PUBLIC_READ_INIT);
     if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` };
     const payload = await response.json() as { data?: Record<string, unknown>[]; meta?: { total?: number; limit?: number; offset?: number } };
     const rawItems = Array.isArray(payload.data) ? payload.data : [];
@@ -563,7 +563,7 @@ export async function getVulnerabilities(params: { limit?: number; offset?: numb
 export async function searchIntelligence(query: string): Promise<ApiResult<IntelligenceList>> {
   if (!query.trim()) return { state: "empty", data: { items: [] } };
   try {
-    const response = await fetch(`${getApiBaseUrl()}/search?q=${encodeURIComponent(query.trim())}`, { headers: { accept: "application/json" }, cache: "no-store" });
+    const response = await apiFetch(`${getApiBaseUrl()}/search?q=${encodeURIComponent(query.trim())}`, { headers: { accept: "application/json" }, cache: "no-store" });
     if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` };
     const payload = await response.json() as Record<string, unknown>;
     const searchData = payload.data && typeof payload.data === "object" ? payload.data as Record<string, unknown> : payload;
