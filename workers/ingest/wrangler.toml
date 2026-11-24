@@ -73,6 +73,12 @@ LEGACY_FREEZE = "true"
 # returns before the RSS/KEV/MSRC enqueues, the AI smoke test and any outbound
 # work. Absent or any other value leaves the pulse disabled.
 AUTHORITATIVE_CVE_CRON_ENABLED = "true"
+# Phase 4C — EXECUTIVE TELEGRAM WIRE. The wire ships CLOSED: publishing to a
+# public channel is a live, unrecallable action, so it opens only on an explicit
+# operator decision (`true`) once TELEGRAM_BOT_TOKEN exists for the channel bot.
+# The cap is a hard ceiling (dispatcher clamps to 1..6).
+TELEGRAM_OUTBOUND_ENABLED = "false"
+TELEGRAM_MAX_DAILY_DISPATCHES = "6"
 
 [env.preview]
 name = "zayron-x-ingest-preview"
@@ -104,6 +110,9 @@ ENVIRONMENT = "preview"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 LEGACY_FREEZE = "false"
 AUTHORITATIVE_CVE_CRON_ENABLED = "true"
+# Preview must never publish to the production channel: dry run only.
+TELEGRAM_OUTBOUND_ENABLED = "false"
+TELEGRAM_MAX_DAILY_DISPATCHES = "6"
 
 [[env.preview.vectorize]]
 binding = "VECTORIZE"

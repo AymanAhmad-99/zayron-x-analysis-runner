@@ -31,6 +31,7 @@ import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
 import { runCtiEnrichmentPass } from './ctiEnrichment';
 import { authoritativeCronEnabled, runAuthoritativePulse } from './authoritativePulse';
 import { runStrategicPass } from './strategicCveAnalysis';
+import { runTelegramDispatchPass } from './telegramDispatch';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -61,6 +62,15 @@ export interface Env {
   STRATEGIC_OPERATOR_TOKEN?: string;
   /** Phase 5A — operator bearer for the bounded CTI enrichment backfill. */
   CTI_OPERATOR_TOKEN?: string;
+  /**
+   * Phase 4C — executive outbound wire. The token is input-only: it is never
+   * logged, echoed, returned or written to the dispatch ledger.
+   */
+  TELEGRAM_BOT_TOKEN?: string;
+  /** Outbound publishes only for the literal `true`; absent keeps it closed. */
+  TELEGRAM_OUTBOUND_ENABLED?: string;
+  /** High-signal cap per UTC day, clamped to 1..6 by the dispatcher. */
+  TELEGRAM_MAX_DAILY_DISPATCHES?: string;
   /** RPC into the API worker's strategic engine (owns the AI/credential bindings). */
   STRATEGIC_ANALYST?: { analyze(input: { limit?: number }): Promise<any> };
   RESEARCH_WORKFLOW?: any;
@@ -241,6 +251,18 @@ const ingestHandlers = {
       } catch (error) {
         console.error(JSON.stringify({
           type: 'AUTHORITATIVE_CVE_PULSE_FAILED',
+          error: String((error as Error)?.message || error).slice(0, 300),
+        }));
+      }
+      // Phase 4C — the executive wire runs AFTER the corpus is refreshed and
+      // briefed, so a dispatch can never publish a pre-enrichment fact. It is
+      // independently fallible and closed unless TELEGRAM_OUTBOUND_ENABLED=true.
+      try {
+        const dispatch = await runTelegramDispatchPass(env as any, {});
+        console.log(JSON.stringify({ type: 'TELEGRAM_DISPATCH_PASS', ...dispatch }));
+      } catch (error) {
+        console.error(JSON.stringify({
+          type: 'TELEGRAM_DISPATCH_PASS_FAILED',
           error: String((error as Error)?.message || error).slice(0, 300),
         }));
       }
@@ -1551,7 +1573,11 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     // Phase 5A — bounded backfill: enrich the existing authoritative corpus and
     // re-brief rows that still carry a superseded contract version.
     const isEnrichment = url.pathname === '/internal/cti-enrichment';
-    if (!isStrategic && !isEnrichment && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // Phase 4C — bounded executive dispatch (dry run first, then a capped live
+    // pass). Renders stored briefs only; never invents a fact and never posts
+    // twice for one entity because the ledger is the idempotency boundary.
+    const isTelegramDispatch = url.pathname === '/internal/telegram-dispatch';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1562,7 +1588,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1578,6 +1604,24 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       return new Response(JSON.stringify({ error: 'LEGACY_FREEZE_ACTIVE' }), { status: 409, headers: { 'content-type': 'application/json' } });
     }
     const requested = Number(url.searchParams.get('limit'));
+
+    // Phase 4C operator hook — one bounded executive dispatch pass.
+    // Body: { dryRun?: boolean, limit?: number, entityType?: 'cve' | 'malware' | 'both' }
+    if (isTelegramDispatch) {
+      let body: { dryRun?: boolean; limit?: number; entityType?: 'cve' | 'malware' | 'both' } = {};
+      try {
+        body = JSON.parse(new TextDecoder().decode(await request.arrayBuffer())) as typeof body;
+      } catch { /* empty body → defaults below */ }
+      const summary = await runTelegramDispatchPass(this.env as any, {
+        dryRun: body.dryRun === true,
+        limit: Number.isFinite(body.limit) ? Number(body.limit) : undefined,
+        entityType: body.entityType,
+      });
+      return new Response(JSON.stringify(summary), {
+        status: summary.status === 'OK' ? 200 : 409,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
 
     // Phase 5A operator hook — enrich + upgrade briefs in ONE bounded action.
     // Body: { cves?: string[], limit?: number, brief?: boolean, force?: boolean }
