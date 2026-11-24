@@ -48,7 +48,10 @@ describe('Gate 3A.6 — CVSS vector parser', () => {
   });
 
   it('reads a CVSS v4.0 vector instead of reporting it as no impact', () => {
-    const v4 = 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N';
+    // Trimmed only of the trailing threat/environmental group: this is the exact
+    // shape NVD stores, including the supplemental `S:X` (Safety) token that must
+    // not be mistaken for the v3 Scope metric.
+    const v4 = 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X';
     const readings = parseCvssVector(v4);
     expect(readings.map((r) => r.key)).toEqual(['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A']);
     expect(readings.filter((r) => r.group === 'impact').map((r) => r.code)).toEqual(['H', 'H', 'H']);
