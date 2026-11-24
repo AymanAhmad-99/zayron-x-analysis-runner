@@ -231,7 +231,7 @@ export function formatCveTelegramDispatch(record: TelegramCveRecord): TelegramDi
 
   const exploitParts: string[] = [`EPSS ${epssLabel(record?.epss_score)}`];
   const automatable = String(record?.cisa_ssvc?.automatable ?? '').trim();
-  if (automatable) exploitParts.push(`SSVC Automatable ${escapeTelegramHtml(automatable)}`);
+  if (automatable) exploitParts.push(`SSVC Automatable: ${escapeTelegramHtml(automatable)}`);
   if (String(record?.public_poc_status ?? '') === 'OBSERVED') exploitParts.push('Public PoC observed');
 
   const kevLine = record?.known_exploited === true
