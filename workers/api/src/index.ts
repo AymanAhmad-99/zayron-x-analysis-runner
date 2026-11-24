@@ -123,8 +123,9 @@ import {
 import { backfillCandidateSelectionSql } from './vulnerabilityPriority';
 import { createD1ProviderStatePort } from './aiProviderState';
 import { attackMappingClaim } from '../../../packages/intelligence/src/sources/adapters';
-import { assessDetectionEvidence, classifyPublicationWriteResult, decodeStoredAnalysis, decodeStoredStructuredReport, evaluatePublicationWrite, projectVulnerabilityReportRead, publicationOverwriteGuardSql } from '../../../packages/intelligence/src/vulnerability/reportIntegrity';
+import { assessDetectionEvidence, buildAuthoritativeAdvisory, classifyPublicationWriteResult, decodeStoredAnalysis, decodeStoredStructuredReport, evaluatePublicationWrite, projectVulnerabilityReportPublicRead, projectVulnerabilityReportRead, publicationOverwriteGuardSql, reportAnalysisAvailability } from '../../../packages/intelligence/src/vulnerability/reportIntegrity';
 import { projectAnalystServiceResult, type AnalystServiceResult } from './analystResult';
+import { AI_ANALYST_PROMPT_VERSION, parseAiAssessmentOutput } from './aiAssessmentContract';
 import { WorkerEntrypoint, WorkflowEntrypoint, WorkflowEvent, WorkflowStep } from 'cloudflare:workers';
 // @ts-ignore
 import kernelWasmModule from './kernel_wasm.wasm';
@@ -4632,7 +4633,18 @@ const worker = {
               storedBreakdown.claim_metrics = readClaimMetrics;
               storedBreakdown.claim_metrics_reconciliation = readReconciliation.length === 0 ? 'CONSISTENT' : readReconciliation;
             }
-            const readReport = projectVulnerabilityReportRead(parsedReport);
+            // Gate 3A.3 — PUBLIC read boundary. When the analyst assessment is
+            // withheld the public response carries no gate rationale and no
+            // provider/model diagnostics; it carries the authoritative
+            // NVD/KEV/EPSS advisory instead, when one exists for this CVE.
+            let publicAdvisory = null;
+            if (reportAnalysisAvailability(parsedReport).state !== 'AVAILABLE' && /^CVE-\d{4}-\d{4,19}$/i.test(cleanId)) {
+              const advisoryRow = await env.DB.prepare(
+                'SELECT * FROM vulnerabilities WHERE cve_id = ? LIMIT 1'
+              ).bind(cleanId.toUpperCase()).first().catch(() => null);
+              publicAdvisory = buildAuthoritativeAdvisory(advisoryRow);
+            }
+            const readReport = projectVulnerabilityReportPublicRead(parsedReport, { publicAdvisory });
             return jsonResponse({ status: readReport.publication_status === 'WITHHELD' ? 'ANALYSIS_UNAVAILABLE' : 'SUCCESS', report: readReport });
           }
         } catch (dbErr: any) {
@@ -4697,6 +4709,12 @@ const worker = {
             vulnRow = await env.DB.prepare(
               'SELECT * FROM vulnerabilities WHERE cve_id = ? OR id = ? LIMIT 1'
             ).bind(upperCve, cleanId.toLowerCase()).first().catch(() => null);
+          }
+
+          // Gate 3A.3 — a quarantined (synthetic/unverified) CVE row is never
+          // served, even through cross-resolution.
+          if (vulnRow && String((vulnRow as any).provenance_state || '') === 'SYNTHETIC_UNVERIFIED') {
+            vulnRow = null;
           }
 
           if (eventRow || vulnRow) {
@@ -4767,7 +4785,10 @@ const worker = {
               created_at: eventRow?.created_at || vulnRow?.created_at,
               updated_at: eventRow?.updated_at || vulnRow?.updated_at,
               first_seen_at: eventRow?.first_seen_at || vulnRow?.published_at,
-              published_at: eventRow?.first_seen_at || vulnRow?.published_at || eventRow?.created_at
+              published_at: eventRow?.first_seen_at || vulnRow?.published_at || eventRow?.created_at,
+              // Authoritative source facts a public page may render without any
+              // analyst assessment. Null when the row has no verified fact.
+              public_advisory: buildAuthoritativeAdvisory(vulnRow)
             };
             return jsonResponse({ status: 'SUCCESS', report: reportObj });
           }
@@ -5247,8 +5268,9 @@ const worker = {
         const severity = url.searchParams.get('severity');
         const q = url.searchParams.get('q');
 
-        let query = `SELECT * FROM vulnerabilities WHERE 1=1`;
-        let countQuery = `SELECT COUNT(*) as total FROM vulnerabilities WHERE 1=1`;
+        // Gate 3A.3 — quarantined rows are never listed publicly.
+        let query = `SELECT * FROM vulnerabilities WHERE provenance_state <> 'SYNTHETIC_UNVERIFIED'`;
+        let countQuery = `SELECT COUNT(*) as total FROM vulnerabilities WHERE provenance_state <> 'SYNTHETIC_UNVERIFIED'`;
         const params: any[] = [];
         const countParams: any[] = [];
 
@@ -5308,6 +5330,10 @@ const worker = {
 
           if (!vuln) {
             return errorResponse(`Vulnerability ${cveQuery} not found in database`, 404, 'NOT_FOUND');
+          }
+          // Gate 3A.3 — quarantined rows are withheld from the public detail route.
+          if (String((vuln as any).provenance_state || '') === 'SYNTHETIC_UNVERIFIED') {
+            return errorResponse(`Vulnerability ${cveQuery} is not published`, 404, 'NOT_FOUND');
           }
 
           const events = await env.DB.prepare(
@@ -5881,29 +5907,54 @@ Return ONLY a valid JSON object matching this schema:
         const userPrompt = `User Query: "${userQuery}"\n\nRetrieved Grounding Evidence:\n${JSON.stringify(groundingEvidence, null, 2)}`;
 
         let aiResult: any = null;
-        let modelUsed = '@cf/meta/llama-3.1-8b-instruct';
-        let status = 'COMPLETED';
+        const modelUsed = '@cf/meta/llama-3.1-8b-instruct';
+        const promptVersion = AI_ANALYST_PROMPT_VERSION;
+        let status = 'SUCCEEDED';
+        // Explicit failure accounting. The previous block recorded FALLBACK only
+        // when `env.AI.run` THREW: an unparsable completion or a schema-invalid
+        // object was persisted as a successful run with a null error_code.
+        let aiErrorCode: string | null = null;
+        let promptTokens: number | null = null;
+        let completionTokens: number | null = null;
 
         if (env.AI) {
+          const runModel = async (content: string) => env.AI!.run(modelUsed, {
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content },
+            ],
+            temperature: 0.2,
+            max_tokens: 1500,
+          });
           try {
-            const aiResponse = await env.AI.run(modelUsed, {
-              messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt },
-              ],
-              temperature: 0.2,
-              max_tokens: 1500,
-            });
-
-            const textOutput = aiResponse?.response || '';
-            const jsonMatch = textOutput.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-              aiResult = JSON.parse(jsonMatch[0]);
-            }
+            const aiResponse: any = await runModel(userPrompt);
+            promptTokens = typeof aiResponse?.usage?.prompt_tokens === 'number' ? aiResponse.usage.prompt_tokens : null;
+            completionTokens = typeof aiResponse?.usage?.completion_tokens === 'number' ? aiResponse.usage.completion_tokens : null;
+            const first = parseAiAssessmentOutput(aiResponse?.response);
+            aiResult = first.value;
+            aiErrorCode = first.error;
           } catch (aiErr) {
             console.error('[AI] Model inference error:', aiErr);
-            status = 'FALLBACK';
+            aiErrorCode = 'PROVIDER_ERROR';
           }
+
+          // ONE structured repair attempt. A repair is a new request with the exact
+          // rejection reason — not a regex extraction that guesses at the intent.
+          if (!aiResult && aiErrorCode) {
+            try {
+              const repairedResponse: any = await runModel(`${userPrompt}\n\nSTRICT REPAIR: your previous response was rejected (${aiErrorCode}). Return ONLY the JSON object defined above, with every required key present and correctly typed. No prose, no markdown fences.`);
+              const repaired = parseAiAssessmentOutput(repairedResponse?.response);
+              if (repaired.value) {
+                aiResult = repaired.value;
+                aiErrorCode = null;
+              } else {
+                aiErrorCode = `REPAIR_FAILED:${repaired.error}`;
+              }
+            } catch (repairErr) {
+              aiErrorCode = `REPAIR_FAILED:${String((repairErr as Error)?.message || repairErr).slice(0, 80)}`;
+            }
+          }
+          if (!aiResult) status = 'FALLBACK';
         }
 
         // Strict Evidence-Derived Fallback (ZERO FABRICATIONS)
@@ -5951,12 +6002,16 @@ Return ONLY a valid JSON object matching this schema:
         const durationMs = Date.now() - startTime;
 
         // 3. Audit Log in ai_runs table
+        // `ai_runs` is an OBSERVABILITY row: no fabricated token counts and no
+        // silent success. Absent usage is null, and the machine-readable failure
+        // code plus the prompt version are always recorded.
         await env.DB.prepare(
           `INSERT INTO ai_runs (
-            id, workflow, model_id, prompt_tokens, completion_tokens, cost_estimated_usd, duration_ms, status, created_at
-          ) VALUES (?, 'ai_analyst_assessment', ?, 450, 320, 0.0001, ?, ?, datetime('now'))`
+            id, workflow, model_id, prompt_tokens, completion_tokens, cost_estimated_usd,
+            duration_ms, status, created_at, prompt_version, error_code
+          ) VALUES (?, 'ai_analyst_assessment', ?, ?, ?, NULL, ?, ?, datetime('now'), ?, ?)`
         )
-          .bind(runId, modelUsed, durationMs, status)
+          .bind(runId, modelUsed, promptTokens, completionTokens, durationMs, status, promptVersion, aiErrorCode)
           .run();
 
         return jsonResponse({

@@ -1825,9 +1825,25 @@ export function reconcileOpenSourceEnrichment(params: {
   // has any (backward compatible), otherwise the report-level fixed set with commit
   // identifiers removed (a commit is never a product version). NEVER the copied list.
   const primaryMapping = selectPrimaryVersionMapping(versionMappings, product);
-  const canonicalFixedVersions = (primaryMapping && primaryMapping.fixed_provenance === 'EXPLICIT')
+  const primaryFixedVersions = primaryMapping
     ? flattenMappingFixed(primaryMapping, { includeCommits: false })
-    : sortedFixedVersions.filter(t => classifyVersionEntity(t) !== 'FIX_COMMIT');
+    : [];
+  // VER-006 PROJECTION FIX — the flat scalar is a PROJECTION of the canonical
+  // branch-aware mappings, so it may never render UNKNOWN/empty while ANY branch
+  // carries fixed evidence. The previous projection consulted only the primary
+  // branch and the report-level set: when the primary branch had no fixed tokens
+  // (or the report-level set was empty) the evidence that existed in a sibling
+  // branch was silently dropped, which is exactly the shape VER-006 rejects.
+  // Order of preference: primary branch's own explicit evidence → union of every
+  // branch's fixed tokens → report-level set with commits removed.
+  const mappingFixedUnion = Array.from(new Set(
+    versionMappings.flatMap(m => flattenMappingFixed(m, { includeCommits: false })),
+  ));
+  const canonicalFixedVersions = primaryMapping && primaryMapping.fixed_provenance === 'EXPLICIT' && primaryFixedVersions.length > 0
+    ? primaryFixedVersions
+    : (mappingFixedUnion.length > 0
+        ? mappingFixedUnion
+        : sortedFixedVersions.filter(t => classifyVersionEntity(t) !== 'FIX_COMMIT'));
   const canonicalFixedCommits = Array.from(new Set(versionMappings.flatMap(m => m.fixed.commit)));
 
   return {

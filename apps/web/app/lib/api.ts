@@ -1,6 +1,6 @@
 import { VULNERABILITY_INTELLIGENCE_TYPE } from "./taxonomy";
 import { apiFetch, getApiBaseUrl } from "./siteConfig";
-import { projectVulnerabilityReportRead, type AnalysisAvailability, type ReportIntegrityInput } from "../../../../packages/intelligence/src/vulnerability/reportIntegrity";
+import { projectVulnerabilityReportPublicRead, type AnalysisAvailability, type AuthoritativeAdvisory, type ReportIntegrityInput } from "../../../../packages/intelligence/src/vulnerability/reportIntegrity";
 
 /** EPSS is a probability in [0, 1]; sentinels, partial numbers and non-finite values are unavailable. */
 export function formatEpss(epss?: { score?: unknown; percentile?: unknown; status?: unknown }) {
@@ -413,6 +413,8 @@ export interface VulnerabilityDetail {
   structured_report?: StructuredVulnerabilityReport;
   ai_analysis?: ReportIntegrityInput['ai_analysis'];
   analysis_availability?: AnalysisAvailability;
+  /** Gate 3A.3 — verified NVD/KEV/EPSS facts, safe on a withheld public page. */
+  public_advisory?: AuthoritativeAdvisory | null;
   knowledge_trace?: any[];
   epistemic_breakdown?: any;
   entities?: Array<{ id?: string; name?: string; type?: string }>;
@@ -441,7 +443,7 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
     if (response.ok) {
       const payload = await response.json() as { report?: VulnerabilityDetail };
       if (payload.report) {
-        const report = projectVulnerabilityReportRead(payload.report);
+        const report = projectVulnerabilityReportPublicRead(payload.report);
         // Keep negative diagnostics even on older/incompatible structured payloads.
         // Never fall through to another record when the requested analysis was withheld.
         if (report.publication_status === "WITHHELD") return { state: "success", data: report };

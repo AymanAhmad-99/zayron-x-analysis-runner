@@ -72,8 +72,11 @@ export function Navbar() {
             {intelligenceRoutes.map((item) => <a href={item.href} role="menuitem" key={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
           </div>
         </div>
-        {/* Wave 4B — /news and /research are placeholder surfaces and stay out of
-            primary navigation until they serve real content. */}
+        {/* Gate 3A.3 — News and Research are first-class top-level surfaces next to
+            Home and Intelligence. They are static editorial pages that render on
+            every viewport (no client-only data dependency). */}
+        <a href={routes.news.href}>{routes.news.label}</a>
+        <a href={routes.research.href}>{routes.research.label}</a>
         <a href={routes.pricing.href}>Pricing</a>
       </nav>
       <button className="nav-search-pill" type="button" onClick={() => setSearchOpen(true)} aria-label="Open search">

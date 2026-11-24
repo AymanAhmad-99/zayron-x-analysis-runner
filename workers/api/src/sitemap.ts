@@ -7,7 +7,7 @@
  *
  * Every query uses the SAME visibility gate as the corresponding public detail
  * route, so a sitemap can never advertise a withheld or draft record:
- *   vulnerabilities → intelligence_reports.publication_status = 'PUBLISHED'
+ *   vulnerabilities → vulnerabilities.provenance_state = 'AUTHORITATIVE_VERIFIED'
  *   malware         → the canonical malware report read gate (loadServable…)
  *   articles        → articles.is_published = 1
  *
@@ -60,15 +60,19 @@ export interface SitemapQuery {
  */
 export function sitemapRowsQuery(kind: SitemapKind, tokens: string[], limit: number, offset: number): SitemapQuery {
   if (kind === "vulnerabilities") {
-    const clauses = tokens.map(() => "(LOWER(source_category) = ? OR LOWER(categories_json) LIKE ?)");
-    const params: string[] = [];
-    for (const token of tokens) params.push(token, `%"${token}"%`);
-    if (!clauses.length) return { sql: "SELECT intelligence_id AS id, updated_at FROM intelligence_reports WHERE 0", params: [] };
+    // Gate 3A.3 — the sitemap and the public vulnerability detail route now
+    // read the SAME corpus and the SAME gate. The previous query projected
+    // `intelligence_reports` while the detail route served `vulnerabilities`,
+    // so the two populations could drift apart (prod advertised 0 CVE URLs while
+    // detail pages existed). Only NVD/KEV/EPSS-verified rows are advertised;
+    // `tokens` is intentionally unused because a verified CVE belongs to the
+    // vulnerability domain by construction.
+    void tokens;
     return {
-      sql: `SELECT intelligence_id AS id, updated_at FROM intelligence_reports
-        WHERE publication_status = 'PUBLISHED' AND (${clauses.join(" OR ")})
-        ORDER BY intelligence_id ASC LIMIT ? OFFSET ?`,
-      params: [...params, limit, offset],
+      sql: `SELECT cve_id AS id, updated_at FROM vulnerabilities
+        WHERE provenance_state = 'AUTHORITATIVE_VERIFIED' AND cve_id IS NOT NULL AND cve_id <> ''
+        ORDER BY cve_id ASC LIMIT ? OFFSET ?`,
+      params: [limit, offset],
     };
   }
   if (kind === "articles") {
@@ -90,14 +94,11 @@ export function sitemapRowsQuery(kind: SitemapKind, tokens: string[], limit: num
 /** COUNT for the manifest — same WHERE clause as the rows query, no projection. */
 export function sitemapCountQuery(kind: SitemapKind, tokens: string[]): SitemapQuery {
   if (kind === "vulnerabilities") {
-    const clauses = tokens.map(() => "(LOWER(source_category) = ? OR LOWER(categories_json) LIKE ?)");
-    const params: string[] = [];
-    for (const token of tokens) params.push(token, `%"${token}"%`);
-    if (!clauses.length) return { sql: "SELECT COUNT(*) AS total FROM intelligence_reports WHERE 0", params: [] };
+    void tokens;
     return {
-      sql: `SELECT COUNT(*) AS total FROM intelligence_reports
-        WHERE publication_status = 'PUBLISHED' AND (${clauses.join(" OR ")})`,
-      params,
+      sql: `SELECT COUNT(*) AS total FROM vulnerabilities
+        WHERE provenance_state = 'AUTHORITATIVE_VERIFIED' AND cve_id IS NOT NULL AND cve_id <> ''`,
+      params: [],
     };
   }
   if (kind === "articles") {

@@ -270,19 +270,23 @@ describe("Wave 4B — sitemap XML builders", () => {
 });
 
 describe("Wave 4B — API sitemap contract", () => {
-  test("vulnerability rows and counts share the PUBLISHED gate and projection", () => {
+  test("vulnerability rows and counts share the AUTHORITATIVE_VERIFIED gate and projection", () => {
     const rows = sitemapRowsQuery("vulnerabilities", TOKENS, 10, 20);
     const count = sitemapCountQuery("vulnerabilities", TOKENS);
-    expect(rows.sql).toContain("publication_status = 'PUBLISHED'");
-    expect(count.sql).toContain("publication_status = 'PUBLISHED'");
+    // Gate 3A.3 — the sitemap and the public detail route share ONE corpus
+    // (`vulnerabilities`) and ONE gate (`provenance_state`). The old projection
+    // read `intelligence_reports.publication_status`, which is why vendor
+    // advertised 0 CVE URLs while detail pages existed.
+    expect(rows.sql).toContain("provenance_state = 'AUTHORITATIVE_VERIFIED'");
+    expect(count.sql).toContain("provenance_state = 'AUTHORITATIVE_VERIFIED'");
+    expect(rows.sql).not.toContain("intelligence_reports");
+    expect(count.sql).not.toContain("intelligence_reports");
     expect(rows.sql).not.toContain("SELECT *");
     expect(count.sql).not.toContain("SELECT *");
     expect(rows.sql).toContain("LIMIT ? OFFSET ?");
     expect(count.sql).not.toContain("LIMIT");
-    expect(rows.params.slice(-2)).toEqual([10, 20]);
-    // Every alias token is bound twice (source_category + categories_json).
-    expect(rows.params.slice(0, -2)).toEqual(count.params);
-    expect(rows.params.length).toBe(TOKENS.length * 2 + 2);
+    expect(rows.params).toEqual([10, 20]);
+    expect(count.params).toEqual([]);
   });
 
   test("articles use the is_published gate; malware reads the gated store", () => {
@@ -424,11 +428,12 @@ describe("Wave 4B.2 — server vs browser API base (Error 1042 closure)", () => 
 describe("Wave 4B — sitemap id parity and D1 row-read safety", () => {
   test("vulnerability ids are the exact route parameter the detail page resolves", () => {
     const rows = sitemapRowsQuery("vulnerabilities", TOKENS, 10, 0);
-    // `/intelligence/vulnerabilities/[id]` → GET /api/v1/intelligence/:id →
-    // `WHERE intelligence_id = ?`. The shard must emit that same column.
-    expect(rows.sql).toContain("SELECT intelligence_id AS id, updated_at");
+    // `/intelligence/vulnerabilities/[id]` → GET /api/v1/intelligence/:id arrives
+    // at the CANONICAL CVE row (`WHERE cve_id = ?`) after the verified-corpus
+    // cross-resolution. The shard must emit that same identifier.
+    expect(rows.sql).toContain("SELECT cve_id AS id, updated_at");
     const detailRoute = readFileSync("workers/api/src/index.ts", "utf8");
-    expect(detailRoute).toContain("FROM intelligence_reports WHERE intelligence_id = ?");
+    expect(detailRoute).toContain("FROM vulnerabilities WHERE cve_id = ?");
     const detailPage = readFileSync("apps/web/app/intelligence/vulnerabilities/[id]/page.tsx", "utf8");
     expect(detailPage).toContain("getVulnerabilityDetail");
   });
@@ -499,10 +504,10 @@ describe("Wave 4B — clean launch navigation", () => {
     }
   });
 
-  test("the navbar source links no placeholder surface", () => {
+  test("the navbar links Home, Intelligence, News and Research — and no unbuilt surface", () => {
     const navbar = readFileSync("apps/web/app/components/Navbar.tsx", "utf8");
-    expect(navbar).not.toContain("routes.news");
-    expect(navbar).not.toContain("routes.research");
+    expect(navbar).toContain("routes.news");
+    expect(navbar).toContain("routes.research");
     expect(navbar).not.toContain("routes.graph");
     expect(navbar).toContain("routes.pricing");
   });

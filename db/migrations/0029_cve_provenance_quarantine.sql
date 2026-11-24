@@ -1,0 +1,12 @@
+ALTER TABLE vulnerabilities ADD COLUMN provenance_state TEXT NOT NULL DEFAULT 'UNVERIFIED';
+ALTER TABLE vulnerabilities ADD COLUMN provenance_source TEXT;
+ALTER TABLE vulnerabilities ADD COLUMN provenance_updated_at TEXT;
+ALTER TABLE vulnerabilities ADD COLUMN epss_percentile REAL;
+ALTER TABLE vulnerabilities ADD COLUMN affected_versions_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE vulnerabilities ADD COLUMN fixed_versions_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE vulnerabilities ADD COLUMN kev_due_date TEXT;
+CREATE INDEX IF NOT EXISTS idx_vulnerabilities_provenance_state ON vulnerabilities (provenance_state);
+UPDATE vulnerabilities SET provenance_state = 'SYNTHETIC_UNVERIFIED', provenance_updated_at = datetime('now') WHERE provenance_state = 'UNVERIFIED' AND (description LIKE 'CRITICAL ADVISORY%' OR instr(COALESCE(description, ''), 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855') > 0 OR instr(COALESCE(description, ''), 'd41d8cd98f00b204e9800998ecf8427e') > 0 OR instr(COALESCE(description, ''), 'da39a3ee5e6b4b0d3255bfef95601890afd80709') > 0 OR cvss_score IS NULL);
+UPDATE vulnerabilities SET severity = 'UNKNOWN', provenance_updated_at = datetime('now') WHERE provenance_state = 'SYNTHETIC_UNVERIFIED' AND cvss_score IS NULL AND severity <> 'UNKNOWN';
+UPDATE vulnerabilities SET is_exploited_in_wild = 0, provenance_updated_at = datetime('now') WHERE provenance_state = 'SYNTHETIC_UNVERIFIED' AND is_exploited_in_wild <> 0 AND NOT EXISTS (SELECT 1 FROM evidence e WHERE e.source_id = 'cisa-kev' AND (instr(COALESCE(e.snippet, ''), vulnerabilities.cve_id) > 0 OR instr(COALESCE(e.url, ''), vulnerabilities.cve_id) > 0));
+INSERT INTO sources (id, display_name, source_type, language, region, trust_score, priority, status, enabled, created_at, updated_at) VALUES ('first-epss', 'FIRST Exploit Prediction Scoring System', 'api', 'en', 'global', 0.9, 'A', 'ENABLED', 1, datetime('now'), datetime('now')) ON CONFLICT(id) DO NOTHING;

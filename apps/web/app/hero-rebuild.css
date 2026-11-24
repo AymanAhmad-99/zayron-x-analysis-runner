@@ -738,3 +738,14 @@
   .signal-pipeline { padding: 0 20px; }
   .pipeline-label { font-size: 9px; }
 }
+
+/* Gate 3A.3 — primary nav on small viewports.
+   globals.css hides `.nav nav` below 850px, which removed Home / Intelligence /
+   News / Research from mobile entirely. Keep them visible as a wrapped row
+   instead (44px tap targets, same as desktop). */
+@media (max-width: 850px) {
+  .nav { height: auto; padding: 10px 0 4px; flex-wrap: wrap; row-gap: 2px; }
+  .nav nav { display: flex; flex-wrap: wrap; width: 100%; gap: 2px 12px; order: 3; }
+  .nav nav a, .nav-dropdown-trigger { font-size: 10px; letter-spacing: 0.05em; min-height: 44px; }
+  .nav-dropdown > .menu { top: 44px; left: 0; }
+}

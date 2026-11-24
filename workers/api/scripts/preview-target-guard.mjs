@@ -313,6 +313,11 @@ const findBinding = (arr, binding) => (arr || []).find((b) => b && b.binding ===
 const ALLOWED_PREVIEW_KEYS = new Set([
   "name", "workers_dev", "routes", "vars", "d1_databases", "queues", "services",
   "vectorize", "r2_buckets", "workflows", "ai", "main", "compatibility_date", "compatibility_flags",
+  // Gate 3A.3: `[env.preview.observability]` is log/trace configuration, not a
+  // resource binding — it cannot address a production database, queue or bucket.
+  // The guard refused it, which blocked the preview deploy of an otherwise
+  // correctly-targeted config.
+  "observability",
 ]);
 
 const PRODUCTION_IDENTIFIERS = new Set([
@@ -363,8 +368,19 @@ export function evaluateApiPreviewTarget(doc) {
   if (unknownKey) {
     return fail("UNCLASSIFIED_KEY", `[env.preview] has key '${unknownKey}' that cannot be classified as preview-only`);
   }
-  if (doc.env.preview.queues && Object.keys(doc.env.preview.queues).some((k) => k !== "producers")) {
-    return fail("UNCLASSIFIED_KEY", "[env.preview.queues] has entries other than producers (e.g. consumers) that are unclassified");
+  if (doc.env.preview.queues) {
+    const queueKeys = Object.keys(doc.env.preview.queues);
+    const unknownQueueKey = queueKeys.find((k) => k !== "producers" && k !== "consumers");
+    if (unknownQueueKey) return fail("UNCLASSIFIED_KEY", `[env.preview.queues] has unclassified key '${unknownQueueKey}'`);
+    // Gate 3A.3: a preview consumer is permitted ONLY for the dedicated preview
+    // publish queue. A consumer bound to any other queue could ack or discard real
+    // production messages, which is what this check exists to prevent.
+    const consumers = doc.env.preview.queues.consumers || [];
+    for (const consumer of Array.isArray(consumers) ? consumers : [consumers]) {
+      if (!consumer || consumer.queue !== "zayron-publish-queue-preview") {
+        return fail("UNCLASSIFIED_KEY", `[env.preview.queues].consumers queue '${consumer?.queue}' is not the dedicated preview publish queue`);
+      }
+    }
   }
   if (name === API_PRODUCTION_WORKER) {
     return fail("PRODUCTION_TARGET", `[env.preview].name is the production worker '${name}'`);

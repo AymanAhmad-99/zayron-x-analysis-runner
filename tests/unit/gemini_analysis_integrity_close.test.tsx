@@ -237,10 +237,14 @@ describe('read API and Preview UI fail closed without mutation', () => {
     const row = storedRow(r); const before = JSON.stringify(row);
     const { payload, calls } = await detailRead(row);
     expect(payload.status).toBe('ANALYSIS_UNAVAILABLE'); expect(payload.report.publication_status).toBe('WITHHELD');
-    expect(payload.report.analysis_availability?.state).toBe('FAILED'); expect(payload.report.analysis_availability?.reasons.join(' ')).toContain('JSON_PARSE_ERROR');
+    // Gate 3A.3 — the public verdict is a state plus one notice. The provider error
+    // code is operator data and is not shipped to the browser.
+    expect(payload.report.analysis_availability?.state).toBe('FAILED');
+    expect(payload.report.analysis_availability?.reasons.join(' ')).not.toContain('JSON_PARSE_ERROR');
     expect(calls).toHaveLength(1); expect(calls[0]).toMatch(/^SELECT /); expect(JSON.stringify(row)).toBe(before);
     const html = renderToStaticMarkup(<VulnerabilityReportView report={payload.report} id="fixture" />);
-    expect(html).toContain('ANALYSIS FAILED'); expect(html).toContain('JSON_PARSE_ERROR'); expect(html).toContain('not Gemini-authored'); expect(html).not.toContain('Valid source-grounded summary'); expect(html).not.toContain('vx-hero');
+    expect(html).toContain('DEEP ANALYST ASSESSMENT PENDING VERIFICATION');
+    expect(html).not.toContain('JSON_PARSE_ERROR'); expect(html).not.toContain('Gemini'); expect(html).not.toContain('Valid source-grounded summary'); expect(html).not.toContain('vx-hero');
   });
   it('semantic and kernel rejection stay blocked even if stale row flags say PUBLISHED', async () => {
     for (const failure of ['semantic', 'kernel'] as const) {

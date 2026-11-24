@@ -76,6 +76,9 @@ const SUITES = [
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).
   'tests/unit/wave4c_free_tier_survival.test.ts',
+  // Gate 3A.3: VER-006 projection, bounded provider circuit (half-open probe),
+  // IOC/hash sanity, public error-leak shield, sitemap parity, ai_runs contract.
+  'tests/unit/gate3a3_cve_trust_engine.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

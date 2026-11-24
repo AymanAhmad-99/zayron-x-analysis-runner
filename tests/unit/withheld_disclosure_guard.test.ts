@@ -7,12 +7,15 @@ import { getVulnerabilityDetail } from '../../apps/web/app/lib/api';
 import { VulnerabilityReportView } from '../../apps/web/app/components/VulnerabilityDetail';
 
 import {
+  PUBLIC_ANALYSIS_PENDING_NOTICE,
   WITHHELD_FORBIDDEN_AI_FIELDS,
   WITHHELD_FORBIDDEN_FIELDS,
   WITHHELD_SAFE_AI_FIELDS,
   WITHHELD_SAFE_FIELDS,
+  buildAuthoritativeAdvisory,
   decodeStoredAnalysis,
   decodeStoredStructuredReport,
+  projectVulnerabilityReportPublicRead,
   projectVulnerabilityReportRead,
   reportAnalysisAvailability,
 } from '../../packages/intelligence/src/vulnerability/reportIntegrity';
@@ -114,7 +117,7 @@ async function runDetailRoute(row: Record<string, unknown> | null, options: { re
     env.TELEGRAM_COLLECTOR_SERVICE = { fetch: async () => jsonResponse({ status: 'SUCCESS', report: options.collectorReport, reports: options.feed ?? [options.collectorReport] }) };
   }
   const body = transpiler.transformSync(`async function readRoute() {\n${DETAIL_BLOCK}\n}`);
-  const route = new AsyncFunction('path', 'request', 'env', 'jsonResponse', 'errorResponse', 'decodeStoredAnalysis', 'decodeStoredStructuredReport', 'projectVulnerabilityReportRead', 'computeClaimMetrics', 'verifyClaimMetricConsistency', `${body}\nreturn readRoute();`);
+  const route = new AsyncFunction('path', 'request', 'env', 'jsonResponse', 'errorResponse', 'decodeStoredAnalysis', 'decodeStoredStructuredReport', 'projectVulnerabilityReportRead', 'projectVulnerabilityReportPublicRead', 'reportAnalysisAvailability', 'buildAuthoritativeAdvisory', 'computeClaimMetrics', 'verifyClaimMetricConsistency', `${body}\nreturn readRoute();`);
   const response: Response = await route(
     '/api/v1/intelligence/CVE-2022-24706',
     new Request('http://localhost/api/v1/intelligence/CVE-2022-24706'),
@@ -124,6 +127,9 @@ async function runDetailRoute(row: Record<string, unknown> | null, options: { re
     decodeStoredAnalysis,
     decodeStoredStructuredReport,
     projectVulnerabilityReportRead,
+    projectVulnerabilityReportPublicRead,
+    reportAnalysisAvailability,
+    buildAuthoritativeAdvisory,
     noop,
     () => [],
   );
@@ -278,19 +284,15 @@ describe('WITHHELD DISCLOSURE GUARD — the live detail route serves no dossier'
     expect(payload.report.severity).toBe('HIGH');
     expect(payload.report.created_at).toBe('2026-10-11T02:50:43Z');
     expect(payload.report.categories).toEqual(['vulnerabilities']);
-    // Diagnostics establish WHY the analysis is withheld, without shipping the analysis.
-    expect(payload.report.ai_analysis?.status).toBe('FAIL');
-    expect(payload.report.ai_analysis?.error_code).toBe('JSON_PARSE_ERROR');
-    expect(payload.report.ai_analysis?.provider).toBe('gemini');
-    // ...and the availability verdict survives redaction so the client need not reconstruct it.
+    // Gate 3A.3 — the PUBLIC response carries no provider/model diagnostics at all:
+    // provider name, model id and error codes are operator data. The server keeps the
+    // full rationale; the visitor gets one calm, stable notice.
+    expect(payload.report.ai_analysis).toBeUndefined();
     expect(payload.report.analysis_availability.state).not.toBe('AVAILABLE');
-    expect(payload.report.analysis_availability.reasons.length).toBeGreaterThan(0);
-    expect(serialized(payload.report.analysis_availability)).toContain('Structured analysis BLOCKED');
-    // The gate RATIONALE is a deliberate, bounded channel and must survive redaction: the
-    // caller is told why the report is withheld without receiving the report.
+    expect(payload.report.analysis_availability.reasons).toEqual([PUBLIC_ANALYSIS_PENDING_NOTICE]);
     const reasons = serialized(payload.report.analysis_availability);
-    for (const marker of ['REASON_grounding_error_code_5d19', 'REASON_semantic_gate_violations_5d19', 'REASON_claims_verification_5d19', 'REASON_diagnostics_warnings_5d19']) {
-      expect(reasons).toContain(marker);
+    for (const marker of ['REASON_grounding_error_code_5d19', 'REASON_semantic_gate_violations_5d19', 'REASON_claims_verification_5d19', 'REASON_diagnostics_warnings_5d19', 'JSON_PARSE_ERROR', 'gemini', 'provider circuit open']) {
+      expect(reasons).not.toContain(marker);
     }
   });
 
@@ -463,7 +465,7 @@ describe('WITHHELD DISCLOSURE GUARD — the allowlist itself', () => {
 });
 
 describe('WITHHELD DISCLOSURE GUARD — end to end: API response to rendered UI', () => {
-  it('the withheld API response renders the withheld panel, keeps the reasons, and never the dossier', async () => {
+  it('the withheld API response renders the advisory notice with no internal rationale and never the dossier', async () => {
     const { payload } = await runDetailRoute(withheldRow());
     const originalFetch = globalThis.fetch;
     globalThis.fetch = (async (input: unknown) => {
@@ -477,13 +479,14 @@ describe('WITHHELD DISCLOSURE GUARD — end to end: API response to rendered UI'
       const html = renderToStaticMarkup(
         React.createElement(VulnerabilityReportView as any, { report: result.data, id: 'CVE-2022-24706' }),
       );
-      // The withheld presentation is rendered ...
-      expect(html).toContain('PUBLICATION WITHHELD');
+      // The withheld presentation is a clean advisory, not an error dump.
       expect(html).toContain('Apache CouchDB');
-      // ... the gate RATIONALE still reaches the user (the client must not lose it when the
-      // dossier it was derived from is redacted) ...
-      expect(html).toContain('REASON_semantic_gate_violations_5d19');
-      expect(html).toContain('REASON_grounding_error_code_5d19');
+      expect(html).toContain('DEEP ANALYST ASSESSMENT PENDING VERIFICATION');
+      expect(html).toContain(PUBLIC_ANALYSIS_PENDING_NOTICE);
+      // ... the internal gate rationale never reaches public HTML ...
+      expect(html).not.toContain('REASON_semantic_gate_violations_5d19');
+      expect(html).not.toContain('REASON_grounding_error_code_5d19');
+      expect(html).not.toContain('Gemini');
       // ... and no dossier sentinel is rendered anywhere.
       expect(html).not.toContain('SENTINEL_');
     } finally {

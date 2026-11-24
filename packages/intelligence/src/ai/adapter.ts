@@ -630,7 +630,35 @@ export function allowsAutomaticFailover(failureClass: AIErrorClass, environment?
 export const PREVIEW_AUTOMATIC_FAILOVER_CLASSES: ReadonlySet<AIErrorClass> = new Set<AIErrorClass>([
   'QUOTA_EXHAUSTED', 'RATE_LIMITED', 'TIMEOUT', 'UNAVAILABLE',
 ]);
-const PROVIDER_CIRCUITS = new Map<AIProviderAttempt['provider'], number>();
+/**
+ * Isolate-local provider circuit.
+ *
+ * HARDENING (Gate 3A.3). The previous implementation stored only a `blockedUntil`
+ * timestamp and re-armed it from EVERY failed attempt — including the attempt it
+ * had itself rejected. A circuit-open rejection was therefore classified
+ * `UNAVAILABLE`, written back into the circuit, and extended for another full
+ * cooldown on every request. Under continuous traffic (a crawl, a retry loop, a
+ * burst of CVE dispatches) the circuit could never close: the observed
+ * `provider circuit open` withholdings were self-perpetuating.
+ *
+ * The state machine is now explicit:
+ *   CLOSED    — provider is attempted normally
+ *   OPEN      — provider is skipped until the cooldown elapses
+ *   HALF_OPEN — cooldown elapsed; exactly ONE probe request is admitted, all
+ *               concurrent callers wait. A probe success closes the circuit; a
+ *               probe failure re-opens it with bounded exponential backoff.
+ * A local circuit decision is never recorded as a new provider failure.
+ */
+interface ProviderCircuitState {
+  /** Instant until which the circuit is OPEN. */
+  until: number;
+  /** Consecutive real failures since the last success (drives the backoff). */
+  trips: number;
+  /** Instant a half-open probe was admitted; `0` when no probe is in flight. */
+  probe_at: number;
+}
+
+const PROVIDER_CIRCUITS = new Map<AIProviderAttempt['provider'], ProviderCircuitState>();
 const CIRCUIT_COOLDOWN_MS: Record<AIErrorClass, number> = {
   QUOTA_EXHAUSTED: 5 * 60_000,
   RATE_LIMITED: 60_000,
@@ -641,27 +669,89 @@ const CIRCUIT_COOLDOWN_MS: Record<AIErrorClass, number> = {
   INVALID_REQUEST: 0,
   UNKNOWN: 0,
 };
+/** Hard ceiling so repeated failures can never park a provider indefinitely. */
+const CIRCUIT_MAX_COOLDOWN_MS = 5 * 60_000;
+/** A probe that never reports back stops blocking after this window. */
+const CIRCUIT_PROBE_WINDOW_MS = 15_000;
 
+export type ProviderCircuitStatus = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+
+/**
+ * Decide whether the provider may be attempted. Admitting a half-open probe
+ * mutates the circuit (it marks the probe in flight), so exactly one caller wins.
+ */
 function providerCircuitOpen(provider: AIProviderAttempt['provider']): boolean {
-  const blockedUntil = PROVIDER_CIRCUITS.get(provider) || 0;
-  if (blockedUntil <= Date.now()) {
-    PROVIDER_CIRCUITS.delete(provider);
-    return false;
-  }
-  return true;
+  const state = PROVIDER_CIRCUITS.get(provider);
+  if (!state) return false;
+  const now = Date.now();
+  if (now < state.until) return true;
+  // Cooldown elapsed → HALF_OPEN. One probe at a time.
+  if (state.probe_at > 0 && now - state.probe_at < CIRCUIT_PROBE_WINDOW_MS) return true;
+  state.probe_at = now;
+  return false;
 }
 
-function recordProviderHealth(provider: AIProviderAttempt['provider'], failureClass: AIErrorClass | null): void {
+/**
+ * Record the outcome of a REAL provider attempt.
+ *
+ * `origin` is the thrown error (when there is one). A local circuit-open or
+ * caller-supplied skip is not provider health information: recording it would
+ * re-arm the very circuit that produced it.
+ */
+function recordProviderHealth(
+  provider: AIProviderAttempt['provider'],
+  failureClass: AIErrorClass | null,
+  origin?: unknown,
+): void {
+  const originCode = providerAttemptErrorCode(origin);
+  if (originCode === 'CIRCUIT_OPEN' || originCode === 'PROVIDER_SKIPPED') return;
   if (!failureClass) {
     PROVIDER_CIRCUITS.delete(provider);
     return;
   }
-  const cooldown = CIRCUIT_COOLDOWN_MS[failureClass];
-  if (cooldown > 0) PROVIDER_CIRCUITS.set(provider, Date.now() + cooldown);
+  const base = CIRCUIT_COOLDOWN_MS[failureClass];
+  if (base <= 0) return;
+  const previous = PROVIDER_CIRCUITS.get(provider);
+  const trips = (previous?.trips ?? 0) + 1;
+  const cooldown = Math.min(CIRCUIT_MAX_COOLDOWN_MS, base * Math.pow(2, Math.min(trips - 1, 3)));
+  PROVIDER_CIRCUITS.set(provider, { until: Date.now() + cooldown, trips, probe_at: 0 });
 }
 
 export function __resetAIProviderCircuits(): void {
   PROVIDER_CIRCUITS.clear();
+}
+
+/**
+ * Deterministic test seam for the half-open transition. Production code never
+ * calls this; it exists because the circuit clock is `Date.now()`.
+ */
+export function __setAIProviderCircuitForTest(
+  provider: AIProviderAttempt['provider'],
+  options: { retry_in_ms: number; trips?: number; probe_at?: number },
+): void {
+  PROVIDER_CIRCUITS.set(provider, {
+    until: Date.now() + options.retry_in_ms,
+    trips: options.trips ?? 1,
+    probe_at: options.probe_at ?? 0,
+  });
+}
+
+/** Read-only circuit diagnostics for operator surfaces (no secrets, no prompts). */
+export function __aiProviderCircuitDiagnostics(): Array<{
+  provider: AIProviderAttempt['provider'];
+  status: ProviderCircuitStatus;
+  trips: number;
+  retry_in_ms: number;
+}> {
+  const now = Date.now();
+  const out: Array<{ provider: AIProviderAttempt['provider']; status: ProviderCircuitStatus; trips: number; retry_in_ms: number }> = [];
+  for (const [provider, state] of PROVIDER_CIRCUITS) {
+    if (now < state.until) out.push({ provider, status: 'OPEN', trips: state.trips, retry_in_ms: state.until - now });
+    else if (state.probe_at > 0 && now - state.probe_at < CIRCUIT_PROBE_WINDOW_MS) {
+      out.push({ provider, status: 'HALF_OPEN', trips: state.trips, retry_in_ms: 0 });
+    } else out.push({ provider, status: 'CLOSED', trips: state.trips, retry_in_ms: 0 });
+  }
+  return out;
 }
 
 /**
@@ -824,7 +914,7 @@ export async function runGroundedInterpretation(
     // from a real upstream failure HERE (the CVE boundary already recorded it).
     origin?: unknown,
   ) => {
-    recordProviderHealth(provider, failureClass);
+    recordProviderHealth(provider, failureClass, origin);
     try {
       await input.onProviderAttempt?.({
         provider, model,
@@ -871,7 +961,7 @@ export async function runGroundedInterpretation(
     } catch (error) {
       const failureClass = (error as any)?.normalizedClass || classifyAIError(error, (error as any)?.status);
       await recordAttempt(false, failureClass, undefined, error);
-      return fail(failureClass, error instanceof Error ? error.message : String(error));
+      return fail(failureClass, providerAttemptErrorCode(error) || (error instanceof Error ? error.message : String(error)));
     }
   }
 
@@ -918,7 +1008,9 @@ export async function runGroundedInterpretation(
   } catch (error) {
     primaryError = error;
     primaryFailure = (error as any)?.normalizedClass || classifyAIError(error, (error as any)?.status);
-    primaryFailureMessage = error instanceof Error ? error.message : String(error);
+    // Machine-readable origin first (`CIRCUIT_OPEN`, `HTTP_503`, …) so a local
+    // circuit rejection is distinguishable from an upstream message.
+    primaryFailureMessage = providerAttemptErrorCode(error) || (error instanceof Error ? error.message : String(error));
     await recordAttempt(false, primaryFailure, undefined, error);
   }
 
@@ -951,7 +1043,7 @@ export async function runGroundedInterpretation(
   } catch (error) {
     const failureClass = (error as any)?.normalizedClass || classifyAIError(error, (error as any)?.status);
     await recordAttempt(false, failureClass, undefined, error);
-    return fail(failureClass, error instanceof Error ? error.message : String(error));
+    return fail(failureClass, providerAttemptErrorCode(error) || (error instanceof Error ? error.message : String(error)));
   }
 }
 
@@ -1086,7 +1178,7 @@ Return ONLY this JSON object:
     usage?: { input_tokens: number | null; output_tokens: number | null },
     origin?: unknown,
   ) => {
-    recordProviderHealth(provider, failureClass);
+    recordProviderHealth(provider, failureClass, origin);
     try {
       await input.onProviderAttempt?.({
         provider,
@@ -1134,7 +1226,7 @@ Return ONLY this JSON object:
     } catch (error) {
       const failureClass = (error as any)?.normalizedClass || classifyAIError(error, (error as any)?.status);
       await recordAttempt(false, failureClass, undefined, error);
-      return makeFailure(failureClass, error instanceof Error ? error.message : String(error));
+      return makeFailure(failureClass, providerAttemptErrorCode(error) || (error instanceof Error ? error.message : String(error)));
     }
   } else {
     let primaryFailure: AIErrorClass | null = null;
@@ -1185,7 +1277,9 @@ Return ONLY this JSON object:
     } catch (error) {
       primaryError = error;
       primaryFailure = (error as any)?.normalizedClass || classifyAIError(error, (error as any)?.status);
-      primaryFailureMessage = error instanceof Error ? error.message : String(error);
+      // Machine-readable origin first (`CIRCUIT_OPEN`, `HTTP_503`, …) so a local
+    // circuit rejection is distinguishable from an upstream message.
+    primaryFailureMessage = providerAttemptErrorCode(error) || (error instanceof Error ? error.message : String(error));
       await recordAttempt(false, primaryFailure, undefined, error);
     }
 
@@ -1220,7 +1314,7 @@ Return ONLY this JSON object:
       } catch (error) {
         const failureClass = (error as any)?.normalizedClass || classifyAIError(error, (error as any)?.status);
         await recordAttempt(false, failureClass, undefined, error);
-        return makeFailure(failureClass, error instanceof Error ? error.message : String(error));
+        return makeFailure(failureClass, providerAttemptErrorCode(error) || (error instanceof Error ? error.message : String(error)));
       }
     }
   }

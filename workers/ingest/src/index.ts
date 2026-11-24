@@ -26,6 +26,8 @@ import {
 } from './analysisDispatch';
 import { checkAIAvailability } from './aiAvailability';
 import { assessExploitationEvidence } from './exploitationEvidence';
+import { filterSaneHashes } from './hashSanity';
+import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -38,6 +40,8 @@ export interface Env {
   TELEGRAM_COLLECTOR_SERVICE?: Fetcher;
   TELEGRAM_TARGET_CHANNEL?: string;
   LEGACY_FREEZE?: string;
+  /** Optional NVD API key — raises the public rate limit, never required. */
+  NVD_API_KEY?: string;
   RESEARCH_WORKFLOW?: any;
   KNOWLEDGE_PROCESSOR?: any;
   KNOWLEDGE_BUCKET?: R2Bucket;
@@ -270,6 +274,16 @@ const ingestHandlers = {
       }
     } catch (kevErr) {
       console.warn('[INGEST] CISA KEV scheduled feed check error:', kevErr);
+    }
+
+    // Gate 3A.3 — authoritative CVE ingestion (NVD + CISA KEV + FIRST EPSS) into
+    // the operational corpus. Runs from the existing schedule; a failure is
+    // reported in the log/trace and never takes down the rest of the pass.
+    try {
+      const authoritative = await runAuthoritativeVulnIngest(env, { limit: 25, days: 30 });
+      console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_INGEST', ...authoritative }));
+    } catch (authoritativeError) {
+      console.error('[INGEST] authoritative CVE ingestion failed:', authoritativeError);
     }
 
     const msrcResponse = await fetch('https://api.msrc.microsoft.com/update-guide/rss', { headers: { accept: 'application/rss+xml, application/xml' } });
@@ -795,8 +809,22 @@ CRITICAL RULES:
               id, cve_id, title, description, severity, is_exploited_in_wild, published_at, created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
             ON CONFLICT(cve_id) DO UPDATE SET
-              is_exploited_in_wild = CASE WHEN ? = -1 THEN vulnerabilities.is_exploited_in_wild ELSE ? END,
-              severity = CASE WHEN excluded.severity = 'CRITICAL' THEN 'CRITICAL' ELSE vulnerabilities.severity END,
+              -- Gate 3A.3 — a verified row is owned by its authority: unverified
+              -- prose can neither raise its exploitation flag nor replace its facts.
+              is_exploited_in_wild = CASE
+                WHEN vulnerabilities.provenance_state = 'AUTHORITATIVE_VERIFIED' THEN vulnerabilities.is_exploited_in_wild
+                WHEN ? = -1 THEN vulnerabilities.is_exploited_in_wild
+                ELSE ? END,
+              -- The sticky CRITICAL ratchet is DELETED. Severity is a CVSS band,
+              -- written by the authoritative path; an ingestion narrative may not
+              -- promote an existing severity at all.
+              description = CASE
+                WHEN vulnerabilities.provenance_state = 'AUTHORITATIVE_VERIFIED' THEN vulnerabilities.description
+                WHEN vulnerabilities.description IS NOT NULL AND vulnerabilities.description <> ''
+                  AND vulnerabilities.description NOT LIKE 'CRITICAL ADVISORY%'
+                  AND excluded.description LIKE 'CRITICAL ADVISORY%'
+                THEN vulnerabilities.description
+                ELSE excluded.description END,
               updated_at = datetime('now')`
           )
             .bind(
@@ -846,7 +874,8 @@ CRITICAL RULES:
             .run();
         }
 
-        for (const sha of result.entities.sha256s.slice(0, 5)) {
+        // IOC/HASH SANITY GATE — a degenerate digest is not an indicator.
+        for (const sha of filterSaneHashes(result.entities.sha256s).slice(0, 5)) {
           const iocId = `ioc_${crypto.randomUUID().slice(0, 12)}`;
           await env.DB.prepare(
             `INSERT INTO iocs (id, type, normalized_value, event_id, confidence, created_at, updated_at)
@@ -1456,6 +1485,45 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
 
   async scheduled(controller: ScheduledController): Promise<void> {
     return ingestHandlers.scheduled(controller, this.env);
+  }
+
+  /**
+   * Operator trigger for the authoritative ingestion pass.
+   *
+   * PREVIEW ONLY. Production runs the identical work from its schedule; exposing
+   * a public write trigger there would be a new attack surface. The freeze check
+   * keeps the production kill-switch authoritative in every environment.
+   */
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname !== '/internal/authoritative-cve-ingest') {
+      return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
+    }
+    if (this.env.ENVIRONMENT === 'production') {
+      return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
+    }
+    if (this.env.LEGACY_FREEZE === 'true') {
+      return new Response(JSON.stringify({ error: 'LEGACY_FREEZE_ACTIVE' }), { status: 409, headers: { 'content-type': 'application/json' } });
+    }
+    if (request.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'METHOD_NOT_ALLOWED' }), { status: 405, headers: { 'content-type': 'application/json', allow: 'POST' } });
+    }
+    const requested = Number(url.searchParams.get('limit'));
+    try {
+      const summary = await runAuthoritativeVulnIngest(this.env, {
+        limit: Number.isFinite(requested) && requested > 0 ? requested : 5,
+        days: 30,
+      });
+      return new Response(JSON.stringify(summary), {
+        status: summary.persisted > 0 ? 200 : 502,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    } catch (error) {
+      return new Response(JSON.stringify({ error: String((error as Error)?.message || error).slice(0, 300) }), {
+        status: 502,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
   }
 
   async queue(batch: MessageBatch<IngestionMessagePayload>, _env?: Env, ctx?: ExecutionContext): Promise<void> {
