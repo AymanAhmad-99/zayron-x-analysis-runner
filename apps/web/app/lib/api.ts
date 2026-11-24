@@ -106,6 +106,25 @@ export interface MalwarePublicPresentation {
   index_reason: string;
 }
 
+/**
+ * Phase 4B — `malware_strategic_brief.v1`: model-authored strategic synthesis.
+ * Absent (null) until a report has been briefed; the UI renders nothing then.
+ */
+export interface MalwareStrategicBrief {
+  executive_bluf: string;
+  capability_chain: string;
+  soc_hunting_playbook: {
+    triage_checks: string[];
+    hunting_checks: string[];
+    containment: string[];
+  };
+  family_and_limits: {
+    family_provenance: string;
+    static_limits: string[];
+  };
+  prompt_version?: string;
+}
+
 export interface CanonicalMalwareReportMeta {
   report_id: string;
   sha256: string | null;
@@ -168,15 +187,28 @@ export async function getCanonicalMalwareReports(): Promise<ApiResult<{ items: C
 
 export interface CanonicalMalwareReportResult extends ApiResult<CanonicalMalwareReport> {
   meta?: CanonicalMalwareReportMeta;
+  strategic_brief?: MalwareStrategicBrief | null;
+  strategic_brief_generated_at?: string | null;
 }
 
 export async function getCanonicalMalwareReport(id: string): Promise<CanonicalMalwareReportResult> {
   try {
     const response = await apiFetch(`${getApiBaseUrl()}/malware/intelligence/reports/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
     if (!response.ok) return { state: response.status === 404 ? "empty" : "error", data: null, error: `API returned HTTP ${response.status}` };
-    const payload = await response.json() as { report?: CanonicalMalwareReport; meta?: CanonicalMalwareReportMeta };
+    const payload = await response.json() as {
+      report?: CanonicalMalwareReport;
+      meta?: CanonicalMalwareReportMeta;
+      strategic_brief?: MalwareStrategicBrief | null;
+      strategic_brief_generated_at?: string | null;
+    };
     if (!payload.report) return { state: "empty", data: null };
-    return { state: "success", data: payload.report, meta: payload.meta };
+    return {
+      state: "success",
+      data: payload.report,
+      meta: payload.meta,
+      strategic_brief: payload.strategic_brief ?? null,
+      strategic_brief_generated_at: payload.strategic_brief_generated_at ?? null,
+    };
   } catch { return { state: "error", data: null, error: "Canonical malware report API is unavailable" }; }
 }
 

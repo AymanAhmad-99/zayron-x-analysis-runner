@@ -125,6 +125,7 @@ import { createD1ProviderStatePort } from './aiProviderState';
 import { attackMappingClaim } from '../../../packages/intelligence/src/sources/adapters';
 import { assessDetectionEvidence, buildAuthoritativeAdvisory, classifyPublicationWriteResult, decodeStoredAnalysis, decodeStoredStructuredReport, evaluatePublicationWrite, projectVulnerabilityReportPublicRead, projectVulnerabilityReportRead, publicationOverwriteGuardSql, reportAnalysisAvailability } from '../../../packages/intelligence/src/vulnerability/reportIntegrity';
 import { runStrategicCveAnalysis } from '../../../packages/intelligence/src/vulnerability/strategicRunner';
+import { runMalwareStrategicBrief, parseStoredMalwareBrief } from './malwareStrategicAnalyst';
 import { projectAnalystServiceResult, type AnalystServiceResult } from './analystResult';
 import { AI_ANALYST_PROMPT_VERSION, parseAiAssessmentOutput } from './aiAssessmentContract';
 import { WorkerEntrypoint, WorkflowEntrypoint, WorkflowEvent, WorkflowStep } from 'cloudflare:workers';
@@ -156,6 +157,8 @@ export interface Env {
   TELEGRAM_TARGET_CHANNEL?: string;
   RESEARCH_WORKFLOW?: any;
   KNOWLEDGE_INTERNAL_TOKEN?: string;
+  /** Phase 4B — MalwareBazaar Auth-Key. Read only by the transport relay. */
+  MALWAREBAZAAR_AUTH_KEY?: string;
   LEGACY_FREEZE?: string;
   /** Wave 4C: public-read edge cache TTL in seconds (Free-Tier Survival Mode). */
   PUBLIC_EDGE_CACHE_TTL_SECONDS?: string;
@@ -5574,6 +5577,13 @@ const worker = {
           // brief. The browser renders it; it does not re-derive any of it.
           return jsonResponse({
             report: JSON.parse(row.report_json),
+            // Phase 4B — additive strategic synthesis. Null (never a placeholder)
+            // when the report has not been briefed, so the UI renders nothing.
+            strategic_brief: parseStoredMalwareBrief(
+              (row as any).strategic_brief_json,
+              (row as any).strategic_brief_version,
+            ),
+            strategic_brief_generated_at: (row as any).strategic_brief_generated_at ?? null,
             meta: {
               report_id: row.id,
               sha256: row.sha256,
@@ -6383,6 +6393,60 @@ export class VulnerabilityAnalyst extends WorkerEntrypoint<Env> {
 export class StrategicCveAnalyst extends WorkerEntrypoint<Env> {
   async analyze(input: { limit?: number } = {}): Promise<Awaited<ReturnType<typeof runStrategicCveAnalysis>>> {
     return runStrategicCveAnalysis(this.env as any, { limit: input?.limit });
+  }
+}
+
+/**
+ * Phase 4B — Cloudflare-internal RPC for the malware strategic synthesis.
+ *
+ * The validation worker materializes canonical static reports but holds no AI
+ * binding and no MalwareBazaar key; both live here. Exposing them through a
+ * service binding keeps `fetch()` unchanged, so there is no public surface and
+ * no GET can trigger generation or acquisition.
+ */
+export class MalwareStrategicAnalyst extends WorkerEntrypoint<Env> {
+  async analyze(input: { reportId: string; force?: boolean }): Promise<Awaited<ReturnType<typeof runMalwareStrategicBrief>>> {
+    return runMalwareStrategicBrief(this.env as any, String(input?.reportId || ''), { force: input?.force === true });
+  }
+}
+
+/**
+ * Phase 4B — bounded MalwareBazaar transport relay.
+ *
+ * The Auth-Key exists on THIS worker only. The validation worker sends the exact
+ * read-only form it already uses (`get_recent` / `get_info` / `get_file`) and
+ * receives the bounded response bytes, so the key never leaves this binding and
+ * no second credential copy is required.
+ */
+export class MalwareBazaarFeed extends WorkerEntrypoint<Env> {
+  async fetchForm(input: { form: string; maxBytes?: number }): Promise<{ status: number; code?: string; bytes?: ArrayBuffer }> {
+    const key = typeof this.env.MALWAREBAZAAR_AUTH_KEY === 'string' ? this.env.MALWAREBAZAAR_AUTH_KEY.trim() : '';
+    if (!key) return { status: 503, code: 'MALWAREBAZAAR_KEY_UNCONFIGURED' };
+
+    const form = String(input?.form || '');
+    // Read-only queries only, and a bounded shape: never a caller-composed URL.
+    if (!/^query=(get_recent|get_info|get_file)(&[a-z_]+=[A-Za-z0-9._:-]{1,128}){0,2}$/.test(form)) {
+      return { status: 400, code: 'FORM_REJECTED' };
+    }
+    const maxBytes = typeof input?.maxBytes === 'number' && Number.isFinite(input.maxBytes)
+      ? Math.min(Math.max(Math.floor(input.maxBytes), 1024), 32 * 1024 * 1024)
+      : 8 * 1024 * 1024;
+
+    try {
+      const response = await fetch('https://mb-api.abuse.ch/api/v1/', {
+        method: 'POST',
+        headers: { 'Auth-Key': key, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form,
+        redirect: 'manual',
+      });
+      if (response.status >= 300 && response.status < 400) return { status: 502, code: 'MALWAREBAZAAR_REDIRECT_REJECTED' };
+      if (!response.ok) return { status: response.status, code: `MALWAREBAZAAR_HTTP_${response.status}` };
+      const bytes = await response.arrayBuffer();
+      if (bytes.byteLength > maxBytes) return { status: 413, code: 'MALWAREBAZAAR_RESPONSE_TOO_LARGE' };
+      return { status: 200, bytes };
+    } catch (error) {
+      return { status: 502, code: `MALWAREBAZAAR_UNREACHABLE:${String((error as Error)?.message || error).slice(0, 80)}` };
+    }
   }
 }
 

@@ -49,6 +49,7 @@ const SUITES = [
   // guarded production web deploy config.
   'tests/unit/phase4a_authoritative_cron.test.ts',
   'tests/unit/phase4a_strategic_brief.test.ts',
+  'tests/unit/phase4b_malware_strategic.test.ts',
   'tests/unit/phase4a_web_prod_deploy.test.ts',
   // Verified malware pipeline suites (Phase 12.27 Task 5: all green locally):
   'tests/unit/m14_4_report_materialization.test.ts',
