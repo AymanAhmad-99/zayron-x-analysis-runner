@@ -47,10 +47,18 @@ export interface Env {
   AUTHORITATIVE_CVE_CRON_ENABLED?: string;
   /** Optional NVD API key — raises the public rate limit, never required. */
   NVD_API_KEY?: string;
-  /** Phase 4A — strategic brief generation. Absent means a clean skip. */
+  /**
+   * Phase 4A/4A.2 — strategic brief generation. The engine itself is Workers AI
+   * (`env.AI`); a provider is absent only when BOTH `AI` and the explicitly
+   * enabled Gemini fallback are missing, which is the documented clean skip.
+   */
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
-  /** Preview-only RPC into the API worker's strategic engine (owns the key). */
+  /** Opt-in only: `true` makes the authenticated Gemini path a third provider. */
+  GEMINI_STRATEGIC_FALLBACK?: string;
+  /** Operator bearer token for the PRODUCTION strategic trigger (never a public route). */
+  STRATEGIC_OPERATOR_TOKEN?: string;
+  /** RPC into the API worker's strategic engine (owns the AI/credential bindings). */
   STRATEGIC_ANALYST?: { analyze(input: { limit?: number }): Promise<any> };
   RESEARCH_WORKFLOW?: any;
   KNOWLEDGE_PROCESSOR?: any;
@@ -1536,17 +1544,29 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
    */
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname !== '/internal/authoritative-cve-ingest' && url.pathname !== '/internal/strategic-cve-analysis') {
+    const isStrategic = url.pathname === '/internal/strategic-cve-analysis';
+    if (!isStrategic && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
-    }
-    if (this.env.ENVIRONMENT === 'production') {
-      return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
-    }
-    if (this.env.LEGACY_FREEZE === 'true') {
-      return new Response(JSON.stringify({ error: 'LEGACY_FREEZE_ACTIVE' }), { status: 409, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
       return new Response(JSON.stringify({ error: 'METHOD_NOT_ALLOWED' }), { status: 405, headers: { 'content-type': 'application/json', allow: 'POST' } });
+    }
+    if (this.env.ENVIRONMENT === 'production') {
+      // Production exposes EXACTLY ONE operator action: the bounded strategic
+      // pass. It is never a public write trigger — it requires the operator
+      // bearer token AND an open authoritative pulse. The ingestion write route
+      // stays Preview-only, and no legacy path becomes reachable.
+      if (!isStrategic) {
+        return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
+      }
+      if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
+        return new Response(JSON.stringify({ error: 'AUTHORITATIVE_PULSE_DISABLED' }), { status: 409, headers: { 'content-type': 'application/json' } });
+      }
+      if (!isAuthorizedStrategicOperator(request, this.env.STRATEGIC_OPERATOR_TOKEN)) {
+        return new Response(JSON.stringify({ error: 'UNAUTHORIZED' }), { status: 403, headers: { 'content-type': 'application/json' } });
+      }
+    } else if (this.env.LEGACY_FREEZE === 'true') {
+      return new Response(JSON.stringify({ error: 'LEGACY_FREEZE_ACTIVE' }), { status: 409, headers: { 'content-type': 'application/json' } });
     }
     const requested = Number(url.searchParams.get('limit'));
     // Phase 4A operator hook: run the budgeted strategic pass alone. Preview
@@ -1587,6 +1607,25 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
   async queue(batch: MessageBatch<IngestionMessagePayload>, _env?: Env, ctx?: ExecutionContext): Promise<void> {
     return ingestHandlers.queue(batch, this.env, ctx);
   }
+}
+
+/**
+ * Constant-time bearer comparison for the production operator trigger.
+ * A length mismatch or an unset configured token always fails closed.
+ */
+function constantTimeTokenMatch(provided: string, expected: string): boolean {
+  if (provided.length === 0 || expected.length === 0 || provided.length !== expected.length) return false;
+  let diff = 0;
+  for (let index = 0; index < provided.length; index += 1) {
+    diff |= provided.charCodeAt(index) ^ expected.charCodeAt(index);
+  }
+  return diff === 0;
+}
+
+function isAuthorizedStrategicOperator(request: Request, expectedToken: string | undefined): boolean {
+  const header = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  const expected = (expectedToken || '').trim();
+  return constantTimeTokenMatch(header, expected);
 }
 
 export { ingestHandlers };

@@ -1,12 +1,13 @@
 /**
  * Phase 4A — the authoritative pulse uses ONE strategic engine, wherever the
- * credential lives.
+ * provider binding lives.
  *
- * `workers/api` holds the model credential in Preview and exposes it through a
- * service-binding entrypoint, so the ingest cron prefers that binding when it
- * exists. In production no such binding is configured: the engine then runs
- * in-worker against `env.GEMINI_API_KEY`, and an absent key is the documented
- * clean `MISSING_CREDENTIAL` skip (deterministic advisories are unaffected).
+ * `workers/api` owns the Workers AI binding (Phase 4A.2: `@cf/google/gemma-4-26b-a4b-it`
+ * primary, `@cf/ibm-granite/granite-4.0-h-micro` fallback) and exposes the pass through a
+ * service-binding entrypoint, so the ingest cron prefers that binding when it exists. When
+ * it is absent the engine runs in-worker, which works because ingest also holds `env.AI`;
+ * only a worker with NO provider binding reports the documented clean
+ * `MISSING_CREDENTIAL` skip, and the deterministic advisories are unaffected.
  */
 import {
   runStrategicCveAnalysis as runInWorker,

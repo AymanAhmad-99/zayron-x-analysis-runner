@@ -84,8 +84,13 @@ Always prefer existing infrastructure over creating new abstractions:
 ---
 
 ## 10. CLOUDFLARE AI RUNTIME MODEL
-- ZAYRON-X runtime AI model remains strictly: `@cf/meta/llama-3.1-8b-instruct`.
-- Coding-agent model switch is completely separate from the ZAYRON-X runtime engine. Do NOT change the runtime model.
+- **§10 UPDATE (authorised 2026-11-24, Phase 4A.2):** the ZAYRON-X strategic intelligence runtime model is
+  `@cf/google/gemma-4-26b-a4b-it` (Workers AI, primary) with `@cf/ibm-granite/granite-4.0-h-micro` as the
+  ultra-light fallback. `@cf/meta/llama-3.1-8b-instruct` was retired upstream (`5028` deprecated) and must not be
+  used for new work. Gemini is an OPTIONAL, explicitly enabled fallback only.
+- Any further change to the runtime model requires an explicit, written executive authorisation recorded here.
+- Coding-agent model switch is completely separate from the ZAYRON-X runtime engine. Do NOT change the runtime
+  model without that authorisation.
 
 ---
 

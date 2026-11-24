@@ -2,7 +2,7 @@
  * Phase 4A — `ai_analyst_assessment.v3` contract.
  *
  * These tests pin the four things that make the strategic layer safe:
- *   - the eligibility/budget policy (high-impact only, 20 paid calls per day);
+ *   - the eligibility/budget policy (high-impact only, 150 paid calls per day);
  *   - the strict schema (a malformed brief is rejected, never repaired);
  *   - the semantic isolation gate (KEV / exploit-code / CVE / version fidelity);
  *   - the clean skip when the model credential is absent.
@@ -23,9 +23,19 @@ import {
   type StrategicCveFacts,
 } from '../../packages/intelligence/src/vulnerability/strategicAssessment';
 import {
+  CLOUDFLARE_STRATEGIC_FALLBACK_MODEL,
+  CLOUDFLARE_STRATEGIC_MODEL,
   STRATEGIC_WORKFLOW,
   runStrategicCveAnalysis,
 } from '../../packages/intelligence/src/vulnerability/strategicRunner';
+import { readFileSync } from 'node:fs';
+
+/** Models retired upstream or explicitly superseded; the strategic path may not use them. */
+const DEPRECATED_STRATEGIC_MODEL_IDS = [
+  '@cf/meta/llama-3.1-8b-instruct',
+  '@cf/meta/llama-3.1-8b-instruct-fp8',
+  '@cf/meta/infire-llama-3.1-8b-instruct',
+] as const;
 
 const facts = (overrides: Partial<StrategicCveFacts> = {}): StrategicCveFacts => ({
   cve_id: 'CVE-2026-90001',
@@ -80,14 +90,14 @@ describe('1 — high-impact eligibility', () => {
     expect(isHighImpactCve({ cvss_score: null, epss_score: null, known_exploited: false })).toBe(false);
   });
 
-  it('the daily cap is 20 and can never go negative or be exceeded', () => {
-    expect(MAX_DAILY_AI_CVE_ANALYSES).toBe(20);
-    expect(remainingDailyBudget(0)).toBe(20);
-    expect(remainingDailyBudget(19)).toBe(1);
-    expect(remainingDailyBudget(20)).toBe(0);
-    expect(remainingDailyBudget(50)).toBe(0);
-    expect(remainingDailyBudget(-4)).toBe(20);
-    expect(remainingDailyBudget(Number.NaN)).toBe(20);
+  it('the daily cap is 150 and can never go negative or be exceeded', () => {
+    expect(MAX_DAILY_AI_CVE_ANALYSES).toBe(150);
+    expect(remainingDailyBudget(0)).toBe(150);
+    expect(remainingDailyBudget(149)).toBe(1);
+    expect(remainingDailyBudget(150)).toBe(0);
+    expect(remainingDailyBudget(500)).toBe(0);
+    expect(remainingDailyBudget(-4)).toBe(150);
+    expect(remainingDailyBudget(Number.NaN)).toBe(150);
   });
 
   it('prompt version is pinned to v3', () => {
@@ -256,6 +266,67 @@ describe('5 — the runner is bounded and skips cleanly', () => {
     fixed_versions_json: JSON.stringify(['4.2.9']),
   };
 
+  /** Workers AI fake that records the model it was asked to run. */
+  function fakeAI(handler: (model: string, call: number) => any) {
+    const models: string[] = [];
+    return {
+      models,
+      ai: {
+        run: async (model: string) => {
+          models.push(model);
+          return handler(model, models.length);
+        },
+      },
+    };
+  }
+
+  it('uses the authorised primary model @cf/google/gemma-4-26b-a4b-it', async () => {
+    expect(CLOUDFLARE_STRATEGIC_MODEL).toBe('@cf/google/gemma-4-26b-a4b-it');
+    expect(CLOUDFLARE_STRATEGIC_FALLBACK_MODEL).toBe('@cf/ibm-granite/granite-4.0-h-micro');
+
+    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const { ai, models } = fakeAI(() => ({ response: JSON.stringify(brief()), usage: { prompt_tokens: 900, completion_tokens: 620 } }));
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, { limit: 1 });
+
+    expect(result.generated).toBe(1);
+    expect(models).toEqual(['@cf/google/gemma-4-26b-a4b-it']);
+    expect(result.providers[0]).toBe('CVE-2026-90001:@cf/google/gemma-4-26b-a4b-it');
+    const ledgerInsert = statements.find((sql) => sql.includes('INSERT INTO ai_runs')) || '';
+    expect(ledgerInsert).toContain('prompt_version');
+  });
+
+  it('never consults Gemini while Workers AI answers — no key exists in the engine path', async () => {
+    const { db } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const { ai } = fakeAI(() => ({ response: JSON.stringify(brief()) }));
+    let fetchCalls = 0;
+    const fetchFn = (async () => {
+      fetchCalls += 1;
+      return new Response('{}', { status: 200 });
+    }) as unknown as typeof fetch;
+
+    const result = await runStrategicCveAnalysis(
+      { DB: db, AI: ai, GEMINI_API_KEY: 'present-but-not-authorised', GEMINI_STRATEGIC_FALLBACK: 'true' },
+      { fetchFn, limit: 1 },
+    );
+    expect(result.generated).toBe(1);
+    expect(fetchCalls).toBe(0);
+    expect(result.providers[0]).toContain('gemma-4-26b-a4b-it');
+  });
+
+  it('falls back to @cf/ibm-granite/granite-4.0-h-micro only after a primary failure', async () => {
+    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const { ai, models } = fakeAI((model) => {
+      if (model === '@cf/google/gemma-4-26b-a4b-it') throw new Error('5006: capacity temporarily exceeded');
+      return { response: JSON.stringify(brief()), usage: { prompt_tokens: 10, completion_tokens: 20 } };
+    });
+
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, { limit: 1 });
+    expect(models).toEqual(['@cf/google/gemma-4-26b-a4b-it', '@cf/ibm-granite/granite-4.0-h-micro']);
+    expect(result.generated).toBe(1);
+    expect(result.providers[0]).toBe('CVE-2026-90001:@cf/ibm-granite/granite-4.0-h-micro');
+    expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(true);
+  });
+
   it('MISSING_CREDENTIAL is a clean skip: no provider call, no ai_runs row, no budget use', async () => {
     const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
     const result = await runStrategicCveAnalysis({ DB: db }, {});
@@ -268,78 +339,136 @@ describe('5 — the runner is bounded and skips cleanly', () => {
     expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(false);
   });
 
-  it('stops entirely once the daily budget is spent', async () => {
-    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: MAX_DAILY_AI_CVE_ANALYSES });
-    const result = await runStrategicCveAnalysis({ DB: db, GEMINI_API_KEY: 'test-key-not-used' }, {});
+  it('a Gemini credential alone is NOT a provider unless explicitly enabled', async () => {
+    const { db } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    let fetchCalls = 0;
+    const fetchFn = (async () => {
+      fetchCalls += 1;
+      return new Response('{}', { status: 200 });
+    }) as unknown as typeof fetch;
+    const result = await runStrategicCveAnalysis(
+      { DB: db, GEMINI_API_KEY: 'key-without-opt-in' },
+      { fetchFn, limit: 1 },
+    );
     expect(result.generated).toBe(0);
-    expect(result.skipped.BUDGET_EXHAUSTED).toBe(1);
-    expect(result.budget_remaining).toBe(0);
-    expect(statements.some((sql) => sql.includes('FROM vulnerabilities'))).toBe(false);
+    expect(result.skipped.MISSING_CREDENTIAL).toBe(1);
+    expect(fetchCalls).toBe(0);
   });
 
-  it('uses the bounded selection SQL: authoritative rows only, no already-analyzed rows', async () => {
-    const { db, statements } = fakeDb({ rows: [], runsToday: 0 });
-    await runStrategicCveAnalysis({ DB: db, GEMINI_API_KEY: 'test-key-not-used' }, {});
-    const selection = statements.find((sql) => sql.includes('FROM vulnerabilities')) || '';
-    expect(selection).toContain("provenance_state = 'AUTHORITATIVE_VERIFIED'");
-    expect(selection).toContain("COALESCE(strategic_brief_json, '') = ''");
-    expect(selection).toContain('COALESCE(cvss_score, 0) >= 7.0');
-    expect(selection).toContain('COALESCE(epss_score, 0) >= 0.05');
-  });
-
-  it('persists a validated brief and records one paid ai_runs attempt', async () => {
-    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+  it('uses Gemini only when explicitly enabled and Workers AI is absent', async () => {
+    const { db } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
     const fetchFn = (async () => new Response(JSON.stringify({
       candidates: [{ content: { parts: [{ text: JSON.stringify(brief()) }] } }],
       usageMetadata: { promptTokenCount: 900, candidatesTokenCount: 500 },
     }), { status: 200 })) as unknown as typeof fetch;
 
-    const result = await runStrategicCveAnalysis({ DB: db, GEMINI_API_KEY: 'test-key-not-used' }, { fetchFn, limit: 1 });
+    const result = await runStrategicCveAnalysis(
+      { DB: db, GEMINI_API_KEY: 'explicit-opt-in-key', GEMINI_STRATEGIC_FALLBACK: 'true' },
+      { fetchFn, limit: 1 },
+    );
+    expect(result.generated).toBe(1);
+    expect(result.providers[0]).toContain('gemini');
+  });
+
+  it('stops entirely once the daily budget is spent', async () => {
+    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: MAX_DAILY_AI_CVE_ANALYSES });
+    const { ai, models } = fakeAI(() => ({ response: JSON.stringify(brief()) }));
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, {});
+    expect(result.generated).toBe(0);
+    expect(result.skipped.BUDGET_EXHAUSTED).toBe(1);
+    expect(result.budget_remaining).toBe(0);
+    expect(models).toEqual([]);
+    expect(statements.some((sql) => sql.includes('FROM vulnerabilities'))).toBe(false);
+  });
+
+  it('uses the bounded selection SQL: authoritative rows only, no already-analyzed rows', async () => {
+    const { db, statements } = fakeDb({ rows: [], runsToday: 0 });
+    const { ai } = fakeAI(() => ({ response: '{}' }));
+    await runStrategicCveAnalysis({ DB: db, AI: ai }, {});
+    const selection = statements.find((sql) => sql.includes('FROM vulnerabilities')) || '';
+    expect(selection).toContain("provenance_state = 'AUTHORITATIVE_VERIFIED'");
+    expect(selection).toContain("COALESCE(strategic_brief_json, '') = ''");
+    expect(selection).toContain('COALESCE(cvss_score, 0) >= 7.0');
+    expect(selection).toContain('COALESCE(epss_score, 0) >= 0.05');
+    expect(selection).toContain('COALESCE(epss_score, 0) DESC');
+  });
+
+  it('persists a validated brief and records one paid ai_runs attempt', async () => {
+    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const { ai } = fakeAI(() => ({
+      response: JSON.stringify(brief()),
+      usage: { prompt_tokens: 900, completion_tokens: 500 },
+    }));
+
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, { limit: 1 });
     expect(result.generated).toBe(1);
     expect(result.cves).toEqual(['CVE-2026-90001']);
-    expect(result.providers[0]).toContain('gemini');
     expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(true);
     expect(statements.some((sql) => sql.includes('INSERT INTO ai_runs'))).toBe(true);
     expect(STRATEGIC_WORKFLOW).toBe('ai_strategic_cve');
   });
 
-  it('falls back to the runtime model when the deep provider is unavailable', async () => {
-    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
-    const fetchFn = (async () => new Response(JSON.stringify({ error: { status: 'UNAVAILABLE', message: 'high demand' } }), { status: 503 })) as unknown as typeof fetch;
-    const ai = {
-      run: async () => ({ response: JSON.stringify(brief()), usage: { prompt_tokens: 10, completion_tokens: 20 } }),
-    };
+  it('performs EXACTLY ONE structured repair retry on a malformed completion', async () => {
+    const { db } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const { ai, models } = fakeAI((_model, call) => ({
+      response: call === 1 ? 'Here is the brief: not json at all' : JSON.stringify(brief()),
+    }));
 
-    const result = await runStrategicCveAnalysis(
-      { DB: db, GEMINI_API_KEY: 'test-key-not-used', AI: ai },
-      { fetchFn, limit: 1 },
-    );
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, { limit: 1 });
     expect(result.generated).toBe(1);
-    expect(result.providers[0]).toContain('@cf/meta/llama-3.1-8b-instruct');
-    expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(true);
+    expect(models).toHaveLength(2);
+    expect(result.budget_used_today).toBe(2);
+  });
+
+  it('gives up after the single repair retry instead of looping', async () => {
+    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const { ai, models } = fakeAI(() => ({ response: 'still not json' }));
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, { limit: 1 });
+    expect(result.generated).toBe(0);
+    expect(models).toHaveLength(2);
+    expect(result.errors.join(' ')).toContain('REPAIR_FAILED');
+    expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(false);
   });
 
   it('drops a semantically hostile brief instead of persisting it', async () => {
     const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
     const hostile = brief({
-      exploitation_mechanics: {
-        ...brief().exploitation_mechanics,
-        upgrade_targets: undefined as any,
-        attack_path: 'Send a crafted body to the parser endpoint to overwrite the return address and execute code as root.',
-      },
       defender_playbook: {
         ...brief().defender_playbook,
         upgrade_targets: [{ branch: '4.x', target: '9.9.9' }],
       },
     });
-    const fetchFn = (async () => new Response(JSON.stringify({
-      candidates: [{ content: { parts: [{ text: JSON.stringify(hostile) }] } }],
-    }), { status: 200 })) as unknown as typeof fetch;
+    const { ai } = fakeAI(() => ({ response: JSON.stringify(hostile) }));
 
-    const result = await runStrategicCveAnalysis({ DB: db, GEMINI_API_KEY: 'test-key-not-used' }, { fetchFn, limit: 1 });
+    const result = await runStrategicCveAnalysis({ DB: db, AI: ai }, { limit: 1 });
     expect(result.generated).toBe(0);
     expect(result.errors.join(' ')).toContain('SEMANTIC_GATE');
     expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(false);
+  });
+});
+
+describe('7 — no deprecated model ids remain in the strategic path', () => {
+  const files = [
+    'packages/intelligence/src/vulnerability/strategicRunner.ts',
+    'packages/intelligence/src/vulnerability/strategicAssessment.ts',
+  ];
+
+  it('pins the deprecated ids so reintroducing one is a test failure', () => {
+    for (const id of DEPRECATED_STRATEGIC_MODEL_IDS) {
+      expect(CLOUDFLARE_STRATEGIC_MODEL).not.toBe(id);
+      expect(CLOUDFLARE_STRATEGIC_FALLBACK_MODEL).not.toBe(id);
+    }
+  });
+
+  it('contains zero deprecated or throttled-default model ids', () => {
+    for (const file of files) {
+      const source = readFileSync(file, 'utf8');
+      for (const id of DEPRECATED_STRATEGIC_MODEL_IDS) {
+        expect(source.includes(id)).toBe(false);
+      }
+      expect(source.includes('infire-llama')).toBe(false);
+      expect(source.includes('gemini-3.8-flash')).toBe(false);
+    }
   });
 });
 

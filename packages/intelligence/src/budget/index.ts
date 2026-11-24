@@ -39,11 +39,17 @@ export const DEFAULT_BUDGET_CONFIG: BudgetConfig = {
 /**
  * Estimates neurons consumed for an AI operation based on model and token counts.
  * Cloudflare Workers AI pricing:
+ * - @cf/google/gemma-4-26b-a4b-it: ~0.0091 neurons per input token, ~0.0273 neurons
+ *   per output token ($0.10/$0.30 per M tokens at $0.011 per 1,000 neurons) — the
+ *   Phase 4A.2 primary strategic model.
  * - @cf/meta/llama-3.1-8b-instruct: ~0.025 neurons per input token, ~0.05 neurons per output token
  * - @cf/meta/llama-3.2-1b-instruct: ~0.005 neurons per input token, ~0.01 neurons per output token
  * - @cf/baai/bge-base-en-v1.5: ~0.001 neurons per input token
  */
 export function estimateNeurons(modelId: string, promptTokens: number, completionTokens: number): number {
+  if (modelId.includes('gemma-4-26b-a4b')) {
+    return Math.ceil((promptTokens * 0.0091) + (completionTokens * 0.0273));
+  }
   if (modelId.includes('llama-3.1-8b')) {
     return Math.ceil((promptTokens * 0.025) + (completionTokens * 0.05));
   }
