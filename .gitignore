@@ -585,3 +585,4 @@ packages/intelligence-kernel/target_test/
 .zayron/knowledge/canonical-v1/canonical-v1-chunks.ndjson
 # 62 MB of chunked DOC04 forensic dumps; no test or workflow references them.
 /docs/forensics/DOC04_CHUNKED_SEED_REMEDIATION_2026-09-09/
+tmp/
