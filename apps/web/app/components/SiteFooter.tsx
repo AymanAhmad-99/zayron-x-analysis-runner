@@ -9,7 +9,8 @@ const platform = [
 // Wave 4B — /research and /news are placeholder surfaces; they are not linked
 // from the launch footer until they serve real content.
 const resources = [
-  { label: "Methodology", href: "/#foundry" },
+  { label: "Methodology", href: "/methodology" },
+  { label: "Trust Center", href: "/company/trust" },
   { label: "Signal Index", href: "/#latest-intelligence" },
 ];
 

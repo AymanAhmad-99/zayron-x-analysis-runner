@@ -35,6 +35,7 @@ export const STATIC_PATHS = [
   "/intelligence/campaigns",
   "/intelligence/iocs",
   "/search",
+  "/methodology",
   "/company/about",
   "/company/trust",
   "/company/contact",

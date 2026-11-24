@@ -1,5 +1,7 @@
-Contact: mailto:support@zayron-x.co
-Expires: 2027-10-04T00:00:00.000Z
-Preferred-Languages: en
-Canonical: https://zayron-x.co/.well-known/security.txt
+# ZAYRON-X security contact (RFC 9116)
+Contact: mailto:security@zayron-x.co
+Contact: https://zayron-x.co/company/contact
 Policy: https://zayron-x.co/legal/vulnerability-disclosure
+Preferred-Languages: en
+Expires: 2027-11-24T00:00:00.000Z
+Canonical: https://zayron-x.co/.well-known/security.txt

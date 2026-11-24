@@ -82,6 +82,9 @@ const SUITES = [
   // Gate 3A.4: infrastructure hygiene, CAPA grouping, tool-derived ATT&CK,
   // static triage signal, grounded brief, sha256 dedupe + SEO indexation gate.
   'tests/unit/gate3a4_malware_report_elevation.test.ts',
+  // Gate 3A.5: preview noindex precedence, CVE title/branch formatting,
+  // pending-notice threshold, /methodology, security.txt, waitlist pricing.
+  'tests/unit/gate3a5_launch_polish.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

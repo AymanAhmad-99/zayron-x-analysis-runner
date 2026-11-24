@@ -4,7 +4,8 @@ import { cache } from "react";
 import { VulnerabilityDetail } from "../../../components/VulnerabilityDetail";
 import { getVulnerabilityDetail, type VulnerabilityDetail as Detail } from "../../../lib/api";
 import { articleJsonLd, serializeJsonLd } from "../../../lib/jsonLd";
-import { getSiteUrl } from "../../../lib/siteConfig";
+import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
+import { resolvePageRobots, vulnerabilitySeoTitle } from "../../../lib/seo";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -49,19 +50,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!report || isWithheld(report)) {
     return {
       title: "Vulnerability unavailable",
-      robots: { index: false, follow: false },
+      robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: false }),
       alternates: { canonical: canonicalPath(id) },
     };
   }
 
   const identifier = report.intelligence_id || id;
-  const title = report.title ? `${identifier} — ${report.title}` : identifier;
-  const description = clampDescription(realDescription(report));
+  const advisory = report.public_advisory;
+  // Gate 3A.5 — entity-rich title (CVE · vendor/product · CVSS band) instead of
+  // the generic "CVE-x Security Advisory" ingest title.
+  const title = advisory
+    ? vulnerabilitySeoTitle({
+        cveId: advisory.cve_id || identifier,
+        vendor: advisory.affected_vendor,
+        product: advisory.affected_product,
+        cvss: advisory.cvss_score,
+      })
+    : report.title
+      ? `${identifier} — ${report.title}`
+      : identifier;
+  const description = clampDescription(advisory?.description ?? realDescription(report));
   const path = canonicalPath(id);
 
   return {
     title,
     description,
+    // Preview ALWAYS wins here: verified CVE or not, a preview host is never indexable.
+    robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
     alternates: { canonical: path },
     openGraph: {
       type: "article",

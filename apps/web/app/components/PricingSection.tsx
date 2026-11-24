@@ -9,6 +9,9 @@ type Tier = {
   builtFor?: string;
   footerNote?: string;
   cta: string;
+  ctaHref: string;
+  /** Gate 3A.5 — paid tiers are waitlist-only until the Montana entity exists. */
+  waitlist?: boolean;
   featured?: boolean;
 };
 
@@ -31,8 +34,9 @@ const tiers: Tier[] = [
       "Evidence and source provenance on public reports",
       "Access to the public intelligence feed",
     ],
-    footerNote: "Free public intelligence. No account or credit card required today.",
-    cta: "Explore Free",
+    footerNote: "Free public intelligence. No account or credit card required — open access during the 2026–2027 burn-in.",
+    cta: "Explore Free Intelligence",
+    ctaHref: "/intelligence",
   },
   {
     label: "ANALYST",
@@ -57,7 +61,9 @@ const tiers: Tier[] = [
       "Higher investigation limits",
     ],
     builtFor: "SOC analysts · IT security · cybersecurity students · security practitioners · independent defenders",
-    cta: "Contact for availability",
+    cta: "Early Access / Waitlist — Commercial Billing Opens Upon Entity Registration",
+    ctaHref: "/company/contact",
+    waitlist: true,
     featured: true,
   },
   {
@@ -82,7 +88,9 @@ const tiers: Tier[] = [
       "Extended fair-use allowance for intensive research workflows",
     ],
     builtFor: "Independent researchers · educators · advanced students · threat intelligence researchers · security engineers",
-    cta: "Contact for availability",
+    cta: "Early Access / Waitlist — Commercial Billing Opens Upon Entity Registration",
+    ctaHref: "/company/contact",
+    waitlist: true,
   },
 ];
 
@@ -148,7 +156,19 @@ export function PricingSection() {
               {tier.builtFor && <p className="pricing-built-for">{tier.builtFor}</p>}
               {tier.footerNote && <p className="pricing-footer-note">{tier.footerNote}</p>}
             </div>
-            <a className="button primary pricing-cta-btn" href="#contact">{tier.cta} <span aria-hidden="true">↗</span></a>
+            <a
+              className={`button ${tier.waitlist ? "secondary" : "primary"} pricing-cta-btn`}
+              href={tier.ctaHref}
+              aria-label={tier.waitlist ? `${tier.name}: early access waitlist, commercial billing opens upon entity registration` : `${tier.name}: ${tier.cta}`}
+            >
+              {tier.cta} <span aria-hidden="true">↗</span>
+            </a>
+            {tier.waitlist && (
+              <p className="pricing-footer-note" style={{ marginTop: ".5rem" }}>
+                No checkout and no charge today. Public CVE and malware intelligence stays 100% free during the
+                2026–2027 burn-in.
+              </p>
+            )}
           </article>
         ))}
       </div>
@@ -185,8 +205,9 @@ export function PricingSection() {
       </div>
 
       <p className="pricing-footer-note" role="note">
-        Indicative pricing only. ZAYRON-X does not currently offer checkout, subscriptions, or payment, and no charge is
-        taken. Paid tiers are shown for planning and require confirmation of availability. See the{" "}
+        Pre-registration pricing. ZAYRON-X does not currently offer checkout, subscriptions, or payment and takes no
+        charge; commercial billing opens only after the Montana entity registration completes. Paid tiers are labelled
+        early access / waitlist and every public CVE and malware report remains free during the 2026–2027 burn-in. See the{" "}
         <a href="/legal/refunds">Refund, Cancellation &amp; Billing Policy</a>.
       </p>
     </section>
