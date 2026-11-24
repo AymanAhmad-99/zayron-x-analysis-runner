@@ -15,6 +15,7 @@
  * Telegram, or calls the collector.
  */
 import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
+import { runCtiEnrichmentPass, type CtiEnrichmentSummary } from './ctiEnrichment';
 import { runStrategicPass, type StrategicSummary } from './strategicCveAnalysis';
 
 export const AUTHORITATIVE_CRON_FLAG = 'AUTHORITATIVE_CVE_CRON_ENABLED';
@@ -40,6 +41,10 @@ export interface PulseSummary {
   upserted: number;
   epss_matched: number;
   kev_matched: number;
+  /** CVE ids persisted by this pass (the enrichment input set). */
+  cves: string[];
+  /** Phase 5A — keyless CVE.org + OSV.dev enrichment of the ingested batch. */
+  enrichment: CtiEnrichmentSummary | null;
   strategic: StrategicSummary | null;
   errors: string[];
 }
@@ -68,6 +73,8 @@ export async function runAuthoritativePulse(
     upserted: 0,
     epss_matched: 0,
     kev_matched: 0,
+    cves: [],
+    enrichment: null,
     strategic: null,
     errors: [],
   };
@@ -82,9 +89,23 @@ export async function runAuthoritativePulse(
     summary.upserted = ingest.persisted;
     summary.epss_matched = ingest.epss_matched;
     summary.kev_matched = ingest.kev_matched;
+    summary.cves = [...ingest.cves];
     summary.errors.push(...ingest.errors);
   } catch (error) {
     summary.errors.push(`INGEST_FAILED:${String((error as Error)?.message || error).slice(0, 160)}`);
+  }
+
+  // Phase 5A — enrich BEFORE briefing. The strategic pass must read the CWE,
+  // SSVC, provider attribution and distro/package matrix that the keyless
+  // authorities publish; briefing first would freeze the pre-enrichment facts
+  // into the prompt for a whole day.
+  if (summary.cves.length > 0) {
+    try {
+      summary.enrichment = await runCtiEnrichmentPass(env as any, summary.cves, { fetchFn: options.fetchFn });
+      summary.errors.push(...summary.enrichment.errors);
+    } catch (error) {
+      summary.errors.push(`ENRICHMENT_FAILED:${String((error as Error)?.message || error).slice(0, 160)}`);
+    }
   }
 
   try {

@@ -28,6 +28,7 @@ import { checkAIAvailability } from './aiAvailability';
 import { assessExploitationEvidence } from './exploitationEvidence';
 import { filterSaneHashes } from './hashSanity';
 import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
+import { runCtiEnrichmentPass } from './ctiEnrichment';
 import { authoritativeCronEnabled, runAuthoritativePulse } from './authoritativePulse';
 import { runStrategicPass } from './strategicCveAnalysis';
 import { WorkerEntrypoint } from 'cloudflare:workers';
@@ -58,6 +59,8 @@ export interface Env {
   GEMINI_STRATEGIC_FALLBACK?: string;
   /** Operator bearer token for the PRODUCTION strategic trigger (never a public route). */
   STRATEGIC_OPERATOR_TOKEN?: string;
+  /** Phase 5A — operator bearer for the bounded CTI enrichment backfill. */
+  CTI_OPERATOR_TOKEN?: string;
   /** RPC into the API worker's strategic engine (owns the AI/credential bindings). */
   STRATEGIC_ANALYST?: { analyze(input: { limit?: number }): Promise<any> };
   RESEARCH_WORKFLOW?: any;
@@ -1545,7 +1548,10 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const isStrategic = url.pathname === '/internal/strategic-cve-analysis';
-    if (!isStrategic && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // Phase 5A — bounded backfill: enrich the existing authoritative corpus and
+    // re-brief rows that still carry a superseded contract version.
+    const isEnrichment = url.pathname === '/internal/cti-enrichment';
+    if (!isStrategic && !isEnrichment && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1556,19 +1562,51 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic) {
+      if (!isStrategic && !isEnrichment) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
         return new Response(JSON.stringify({ error: 'AUTHORITATIVE_PULSE_DISABLED' }), { status: 409, headers: { 'content-type': 'application/json' } });
       }
-      if (!isAuthorizedStrategicOperator(request, this.env.STRATEGIC_OPERATOR_TOKEN)) {
+      // Two operators are accepted: the Phase 4A strategic token and the Phase 5A
+      // enrichment token. Neither is ever logged or echoed.
+      if (!isAuthorizedStrategicOperator(request, this.env.STRATEGIC_OPERATOR_TOKEN)
+        && !isAuthorizedStrategicOperator(request, this.env.CTI_OPERATOR_TOKEN)) {
         return new Response(JSON.stringify({ error: 'UNAUTHORIZED' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
     } else if (this.env.LEGACY_FREEZE === 'true') {
       return new Response(JSON.stringify({ error: 'LEGACY_FREEZE_ACTIVE' }), { status: 409, headers: { 'content-type': 'application/json' } });
     }
     const requested = Number(url.searchParams.get('limit'));
+
+    // Phase 5A operator hook — enrich + upgrade briefs in ONE bounded action.
+    // Body: { cves?: string[], limit?: number, brief?: boolean, force?: boolean }
+    if (isEnrichment) {
+      let body: { cves?: string[]; limit?: number; brief?: boolean; force?: boolean } = {};
+      try {
+        body = JSON.parse(new TextDecoder().decode(await request.arrayBuffer())) as typeof body;
+      } catch { /* empty body → defaults below */ }
+      const limit = Number.isFinite(body.limit) && Number(body.limit) > 0 ? Math.min(Number(body.limit), 100) : 25;
+      let cves = Array.isArray(body.cves) ? body.cves.filter((id) => typeof id === 'string') : [];
+      if (cves.length === 0) {
+        // Default set: authoritative rows that have never been enriched.
+        const rows = await this.env.DB.prepare(
+          `SELECT cve_id FROM vulnerabilities
+            WHERE provenance_state = 'AUTHORITATIVE_VERIFIED' AND COALESCE(last_checked_at, '') = ''
+            ORDER BY cve_id ASC LIMIT ?`,
+        ).bind(limit).all().catch(() => ({ results: [] })) as { results?: Array<{ cve_id?: string }> };
+        cves = (rows.results || []).map((row) => String(row.cve_id || '')).filter(Boolean);
+      }
+      const enrichment = await runCtiEnrichmentPass(this.env as any, cves, { limit });
+      // The strategic pass is version-aware: every superseded brief is eligible
+      // again without a force flag, so `brief: true` upgrades the stale rows.
+      const strategic = body.brief ? await runStrategicPass(this.env as any, { limit }) : null;
+      return new Response(JSON.stringify({ enrichment, strategic }, null, 0), {
+        status: enrichment.enriched > 0 || (strategic && strategic.generated > 0) ? 200 : 202,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
+
     // Phase 4A operator hook: run the budgeted strategic pass alone. Preview
     // only, same freeze guard, and never reachable in production.
     if (url.pathname === '/internal/strategic-cve-analysis') {

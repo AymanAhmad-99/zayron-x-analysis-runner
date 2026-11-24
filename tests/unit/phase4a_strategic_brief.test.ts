@@ -101,8 +101,8 @@ describe('1 — high-impact eligibility', () => {
     expect(remainingDailyBudget(Number.NaN)).toBe(150);
   });
 
-  it('prompt version is pinned to v3', () => {
-    expect(AI_STRATEGIC_PROMPT_VERSION).toBe('ai_analyst_assessment.v3');
+  it('prompt version is pinned to v4', () => {
+    expect(AI_STRATEGIC_PROMPT_VERSION).toBe('ai_analyst_assessment.v4');
   });
 });
 
@@ -148,9 +148,15 @@ describe('3 — strict schema', () => {
     (badPriority.operational_prioritization as any).priority = 'URGENT';
     expect(validateStrategicBriefShape(badPriority)).toBe('SCHEMA_INVALID:priority');
 
+    // Phase 5A — an EMPTY list is the correct answer when no fix exists; a
+    // placeholder branch is what the contract now rejects.
     const noTargets = brief();
     (noTargets.defender_playbook as any).upgrade_targets = [];
-    expect(validateStrategicBriefShape(noTargets)).toBe('SCHEMA_INVALID:upgrade_targets');
+    expect(validateStrategicBriefShape(noTargets)).toBeNull();
+
+    const placeholderBranch = brief();
+    (placeholderBranch.defender_playbook as any).upgrade_targets = [{ branch: 'NOT_ESTABLISHED', target: 'NOT_ESTABLISHED' }];
+    expect(validateStrategicBriefShape(placeholderBranch)).toBe('SCHEMA_INVALID:upgrade_targets_branch');
   });
 
   it('parses a clean, fenced completion and rejects prose-only output', () => {

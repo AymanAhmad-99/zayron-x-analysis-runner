@@ -6440,7 +6440,26 @@ export class MalwareBazaarFeed extends WorkerEntrypoint<Env> {
         redirect: 'manual',
       });
       if (response.status >= 300 && response.status < 400) return { status: 502, code: 'MALWAREBAZAAR_REDIRECT_REJECTED' };
-      if (!response.ok) return { status: response.status, code: `MALWAREBAZAAR_HTTP_${response.status}` };
+      if (!response.ok) {
+        // Phase 5A — bounded, secret-free diagnostics. `key_length` and the
+        // upstream `query_status` distinguish a rejected key from a malformed
+        // request; the key VALUE is never logged, returned or stored.
+        let upstream = '';
+        try {
+          const body = (await response.text()).slice(0, 220);
+          const parsed = JSON.parse(body) as { query_status?: string; message?: string };
+          upstream = String(parsed?.query_status || parsed?.message || '').slice(0, 80);
+        } catch { /* non-JSON upstream body */ }
+        console.warn(JSON.stringify({
+          type: 'MALWAREBAZAAR_RELAY_REJECTED',
+          http_status: response.status,
+          key_length: key.length,
+          key_shape: /^[0-9a-f]{64}$/i.test(key) ? 'hex64' : 'other',
+          query_status: upstream,
+          form_shape: form.split('&')[0] || '',
+        }));
+        return { status: response.status, code: `MALWAREBAZAAR_HTTP_${response.status}` };
+      }
       const bytes = await response.arrayBuffer();
       if (bytes.byteLength > maxBytes) return { status: 413, code: 'MALWAREBAZAAR_RESPONSE_TOO_LARGE' };
       return { status: 200, bytes };

@@ -483,6 +483,16 @@ export interface StructuredVulnerabilityReport {
 export interface StrategicBrief {
   prompt_version?: string;
   executive_bluf?: string;
+  /** Phase 5A — deterministic separated exploitation posture. */
+  exploitation_posture?: {
+    public_poc_status?: "OBSERVED" | "NOT_OBSERVED";
+    poc_validation?: "NOT_VALIDATED" | "VALIDATED";
+    in_the_wild_exploitation?: "CONFIRMED" | "UNKNOWN";
+    cisa_ssvc?: { exploitation?: string | null; automatable?: string | null; technical_impact?: string | null } | null;
+    cisa_kev?: "LISTED" | "NOT_LISTED";
+  };
+  /** Phase 5A — the exact rule that produced the band. */
+  priority_basis?: string;
   exploitation_mechanics?: {
     attack_path?: string;
     preconditions?: string[];
