@@ -452,9 +452,11 @@ describe("Wave 4B — sitemap id parity and D1 row-read safety", () => {
     const gate = readFileSync("workers/api/src/malwareReportReadGate.ts", "utf8");
     const sqlLine = gate
       .split("\n")
-      .find((line) => line.includes("updated_at, report_json FROM malware_reports"));
+      .find((line) => line.includes("report_json FROM malware_reports") && line.includes("MALWARE_REPORT_SITEMAP_SCAN_LIMIT"));
     expect(sqlLine).toBeDefined();
-    expect(sqlLine).toContain("SELECT id, sha256, updated_at, report_json FROM malware_reports");
+    // Gate 3A.4 adds `published_at` so the shard can keep the LATEST validated
+    // report per sha256; the projection stays minimal (no presentation columns).
+    expect(sqlLine).toContain("SELECT id, sha256, published_at, updated_at, report_json FROM malware_reports");
     expect(sqlLine).toContain("LIMIT ${MALWARE_REPORT_SITEMAP_SCAN_LIMIT}");
     expect(sqlLine).not.toContain("SELECT *");
     // Presentation columns are NOT read by the sitemap seam.

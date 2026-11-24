@@ -78,6 +78,44 @@ export interface CanonicalMalwareReportListItem {
   source: string;
   severity: string | null;
   published_at: string;
+  // Gate 3A.4 — sha256 canonicalisation + indexation verdict.
+  canonical_report_id?: string;
+  is_canonical?: boolean;
+  indexable?: boolean;
+  static_triage_signal?: MalwareTriageSignal;
+}
+
+export type MalwareTriageSignal = "ELEVATED" | "MODERATE" | "LOW" | "INFORMATIONAL";
+
+/** Derived server-side (workers/api/src/malwarePublicSignals.ts); never re-derived in the browser. */
+export interface MalwarePublicPresentation {
+  brief: string;
+  brief_word_count: number;
+  static_triage_signal: MalwareTriageSignal;
+  static_triage_reasons: string[];
+  source_reported_family: string | null;
+  capa_reported_count: number;
+  capa_groups: { category: string; capabilities: string[] }[];
+  static_attack_candidates: { technique_id: string; name: string; derived_from: string }[];
+  static_attack_note: string;
+  infrastructure_primary: { value: string; type: string; role: string | null }[];
+  infrastructure_low_signal: { value: string; type: string; role: string | null; reason?: string }[];
+  infrastructure_primary_count: number;
+  infrastructure_demoted_count: number;
+  indexable: boolean;
+  index_reason: string;
+}
+
+export interface CanonicalMalwareReportMeta {
+  report_id: string;
+  sha256: string | null;
+  source: string;
+  published_at: string;
+  canonical_report_id: string;
+  is_canonical: boolean;
+  indexable: boolean;
+  index_reason: string;
+  public_presentation: MalwarePublicPresentation;
 }
 
 export interface CanonicalMalwareToolResult {
@@ -128,13 +166,17 @@ export async function getCanonicalMalwareReports(): Promise<ApiResult<{ items: C
   } catch { return { state: "error", data: null, error: "Canonical malware report API is unavailable" }; }
 }
 
-export async function getCanonicalMalwareReport(id: string): Promise<ApiResult<CanonicalMalwareReport>> {
+export interface CanonicalMalwareReportResult extends ApiResult<CanonicalMalwareReport> {
+  meta?: CanonicalMalwareReportMeta;
+}
+
+export async function getCanonicalMalwareReport(id: string): Promise<CanonicalMalwareReportResult> {
   try {
     const response = await apiFetch(`${getApiBaseUrl()}/malware/intelligence/reports/${encodeURIComponent(id)}`, PUBLIC_READ_INIT);
     if (!response.ok) return { state: response.status === 404 ? "empty" : "error", data: null, error: `API returned HTTP ${response.status}` };
-    const payload = await response.json() as { report?: CanonicalMalwareReport };
+    const payload = await response.json() as { report?: CanonicalMalwareReport; meta?: CanonicalMalwareReportMeta };
     if (!payload.report) return { state: "empty", data: null };
-    return { state: "success", data: payload.report };
+    return { state: "success", data: payload.report, meta: payload.meta };
   } catch { return { state: "error", data: null, error: "Canonical malware report API is unavailable" }; }
 }
 

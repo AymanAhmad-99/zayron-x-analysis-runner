@@ -79,6 +79,9 @@ const SUITES = [
   // Gate 3A.3: VER-006 projection, bounded provider circuit (half-open probe),
   // IOC/hash sanity, public error-leak shield, sitemap parity, ai_runs contract.
   'tests/unit/gate3a3_cve_trust_engine.test.ts',
+  // Gate 3A.4: infrastructure hygiene, CAPA grouping, tool-derived ATT&CK,
+  // static triage signal, grounded brief, sha256 dedupe + SEO indexation gate.
+  'tests/unit/gate3a4_malware_report_elevation.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

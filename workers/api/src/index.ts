@@ -5229,6 +5229,8 @@ const worker = {
             // Same canonical invariant gate as the list/detail endpoints, but
             // through the minimal projection so a crawl cannot pull full report
             // payloads and presentation columns into Worker memory.
+            // Gate 3A.4 — the shard already applies canonical validity, sha256
+            // dedupe and the same indexation verdict as `<meta name="robots">`.
             const gate = await loadServableMalwareReportIndex(env.DB as unknown as MalwareReportStore);
             total = gate.rows.length;
             items = gate.rows.slice(offset, offset + limit).map((row) => ({
@@ -5497,6 +5499,9 @@ const worker = {
           const gate = await loadServableMalwareReports(
             zx as unknown as MalwareReportStore,
           );
+          // Gate 3A.4 — one public entry per distinct sha256 (latest validated
+          // run). Duplicate run ids stay servable by id for hash lookups and
+          // carry a canonical pointer; nothing is deleted.
           const rows = gate.rows.map((row) => ({
             report_id: row.id,
             title: row.title,
@@ -5505,6 +5510,10 @@ const worker = {
             source: row.source,
             severity: row.severity || null,
             published_at: row.published_at,
+            canonical_report_id: row.canonical_report_id,
+            is_canonical: row.is_canonical,
+            indexable: row.presentation.indexable,
+            static_triage_signal: row.presentation.static_triage_signal,
           }));
           if (gate.excluded > 0) {
             console.warn(
@@ -5513,7 +5522,14 @@ const worker = {
           }
           return jsonResponse({
             data: rows,
-            meta: { total: rows.length, source: 'malware_reports', excluded_invalid: gate.excluded },
+            meta: {
+              total: rows.length,
+              source: 'malware_reports',
+              excluded_invalid: gate.excluded,
+              duplicates_collapsed: gate.duplicates_collapsed,
+              total_before_dedupe: gate.total_before_dedupe,
+              indexable: rows.filter((row) => row.indexable).length,
+            },
           });
         } catch (dbErr: any) {
           console.warn('[API] canonical malware reports fetch degraded:', dbErr?.message);
@@ -5542,7 +5558,24 @@ const worker = {
             return errorResponse(`Canonical malware report ${reportId} not found`, 404, 'NOT_FOUND');
           }
           const row = gate.row;
-          return jsonResponse({ report: JSON.parse(row.report_json), meta: { report_id: row.id, sha256: row.sha256, source: row.source, published_at: row.published_at } });
+          // `public_presentation` is derived once, server-side, from the canonical
+          // payload: infrastructure hygiene, CAPA grouping, tool-derived static
+          // ATT&CK candidates, the deterministic triage signal and the grounded
+          // brief. The browser renders it; it does not re-derive any of it.
+          return jsonResponse({
+            report: JSON.parse(row.report_json),
+            meta: {
+              report_id: row.id,
+              sha256: row.sha256,
+              source: row.source,
+              published_at: row.published_at,
+              canonical_report_id: gate.canonical_report_id ?? row.id,
+              is_canonical: gate.canonical_report_id === row.id || gate.canonical_report_id === null,
+              indexable: row.presentation.indexable,
+              index_reason: row.presentation.index_reason,
+              public_presentation: row.presentation,
+            },
+          });
         } catch (dbErr: any) {
           console.warn('[API] canonical malware report detail degraded:', dbErr?.message);
           return errorResponse('Canonical malware report store unavailable', 503, 'STORE_UNAVAILABLE');
