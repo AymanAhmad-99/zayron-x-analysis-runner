@@ -26,17 +26,17 @@ export type { StrategicEnv, StrategicSummary } from '../../../packages/intellige
 
 export interface StrategicDispatcherEnv extends StrategicEnv {
   /** Preview-only internal RPC into the API worker's strategic engine. */
-  STRATEGIC_ANALYST?: { analyze(input: { limit?: number }): Promise<StrategicSummary> };
+  STRATEGIC_ANALYST?: { analyze(input: { limit?: number; cveIds?: string[] }): Promise<StrategicSummary> };
 }
 
 /** Prefer the credential-owning worker; fall back to the in-worker engine. */
 export async function runStrategicPass(
   env: StrategicDispatcherEnv,
-  options: { limit?: number; fetchFn?: typeof fetch } = {},
+  options: { limit?: number; fetchFn?: typeof fetch; cveIds?: string[] } = {},
 ): Promise<StrategicSummary> {
   if (env.STRATEGIC_ANALYST && typeof env.STRATEGIC_ANALYST.analyze === 'function') {
     try {
-      return await env.STRATEGIC_ANALYST.analyze({ limit: options.limit });
+      return await env.STRATEGIC_ANALYST.analyze({ limit: options.limit, cveIds: options.cveIds });
     } catch (error) {
       console.error(JSON.stringify({
         type: 'STRATEGIC_ANALYST_RPC_FAILED',

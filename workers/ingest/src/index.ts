@@ -1600,7 +1600,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       const enrichment = await runCtiEnrichmentPass(this.env as any, cves, { limit });
       // The strategic pass is version-aware: every superseded brief is eligible
       // again without a force flag, so `brief: true` upgrades the stale rows.
-      const strategic = body.brief ? await runStrategicPass(this.env as any, { limit }) : null;
+      const strategic = body.brief
+        ? await runStrategicPass(this.env as any, { limit, cveIds: cves.length > 0 ? cves : undefined })
+        : null;
       return new Response(JSON.stringify({ enrichment, strategic }, null, 0), {
         status: enrichment.enriched > 0 || (strategic && strategic.generated > 0) ? 200 : 202,
         headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },

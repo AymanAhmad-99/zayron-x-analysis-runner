@@ -6391,8 +6391,8 @@ export class VulnerabilityAnalyst extends WorkerEntrypoint<Env> {
  * daily budget are enforced there, so an RPC caller cannot widen them.
  */
 export class StrategicCveAnalyst extends WorkerEntrypoint<Env> {
-  async analyze(input: { limit?: number } = {}): Promise<Awaited<ReturnType<typeof runStrategicCveAnalysis>>> {
-    return runStrategicCveAnalysis(this.env as any, { limit: input?.limit });
+  async analyze(input: { limit?: number; cveIds?: string[] } = {}): Promise<Awaited<ReturnType<typeof runStrategicCveAnalysis>>> {
+    return runStrategicCveAnalysis(this.env as any, { limit: input?.limit, cveIds: input?.cveIds });
   }
 }
 
