@@ -314,7 +314,7 @@ def main():
         },
         'p2_fts5_result': {
             'migration_created': True,
-            'migration_file': 'db/migrations/0016_knowledge_objects_v3_fts.sql',
+            'migration_file': 'workers/source-fabric/migrations/0016_knowledge_objects_v3_fts.sql',
             'objects_indexed': ko_count,
             'legacy_chunks_indexed': 0,
             'fts_queries_successful': len(CANONICAL_QUERIES),

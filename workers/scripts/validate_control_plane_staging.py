@@ -4,7 +4,7 @@ import json, sqlite3, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-MIGRATION = ROOT / "db/migrations/0018_v3_control_plane.sql"
+MIGRATION = ROOT / "workers/source-fabric/migrations/0018_v3_control_plane.sql"
 OUT = ROOT / "docs/forensics/doc04_control_plane_staging_validation_2026-09-09.json"
 
 def attempt(db, sql, params=()):
@@ -38,7 +38,7 @@ def main():
     valid["deployment_missing_corpus"] = attempt(db, "INSERT INTO v3_deployment_revisions VALUES (?,?,?,?,?,?,?,?,?)", ("dr-bad","c","b","w","STAGING","missing","operator","2026-09-09","UNKNOWN"))
     valid["deployment"] = attempt(db, "INSERT INTO v3_deployment_revisions VALUES (?,?,?,?,?,?,?,?,?)", ("dr-1","c","b","w","STAGING","cr-1","operator","2026-09-09","PARTIAL"))
     valid["dataset"] = attempt(db, "INSERT INTO v3_production_dataset_states VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", ("ds-1","db","SOURCE_STATE","STAGING","dr-1","cr-1","sr-1","digest-1",1,1,0,"2026-09-09","PASSED","evidence"))
-    result = {"artifact_type":"control-plane-staging-validation","staging":"in_memory_sqlite","production_touched":False,"migration":"db/migrations/0018_v3_control_plane.sql","before_schema":before,"after_schema":after,"first_execution":first,"second_execution":second,"idempotency":"PASS" if second == "PASS" else "FAIL","v3_compatibility":"PASS" if "knowledge_objects_v3" in after and "knowledge_objects_v3_fts" in after else "FAIL","governance_tests":valid,"expected_control_plane_tables":["v3_document_identities","v3_document_identity_relations","v3_corpus_revisions","v3_corpus_documents","v3_ingestion_revisions","v3_seed_revisions","v3_deployment_revisions","v3_production_dataset_states"],"notes":["Historical production provenance was not backfilled.","SQLite staging validates SQL/constraints only; it is not a D1 runtime deployment test."]}
+    result = {"artifact_type":"control-plane-staging-validation","staging":"in_memory_sqlite","production_touched":False,"migration":"workers/source-fabric/migrations/0018_v3_control_plane.sql","before_schema":before,"after_schema":after,"first_execution":first,"second_execution":second,"idempotency":"PASS" if second == "PASS" else "FAIL","v3_compatibility":"PASS" if "knowledge_objects_v3" in after and "knowledge_objects_v3_fts" in after else "FAIL","governance_tests":valid,"expected_control_plane_tables":["v3_document_identities","v3_document_identity_relations","v3_corpus_revisions","v3_corpus_documents","v3_ingestion_revisions","v3_seed_revisions","v3_deployment_revisions","v3_production_dataset_states"],"notes":["Historical production provenance was not backfilled.","SQLite staging validates SQL/constraints only; it is not a D1 runtime deployment test."]}
     OUT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
 

@@ -3,11 +3,23 @@ main = "src/index.ts"
 compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat"]
 
+# Gate 2A.4 — ONE DATABASE, ONE MIGRATIONS DIRECTORY.
+#
+# This binding previously pointed at `../../db/migrations`, the directory owned by
+# `zayron-x-db` (workers/api). The two databases were therefore sharing a single
+# ordering: `0000..0013` are the API database's schema and `0014..0020` are this
+# worker's source-fabric / v3 control-plane schema. Applying the shared directory
+# against either database was always wrong, and on `zayron-x-db` it aborted at
+# 0014 (`CREATE INDEX idx_fabric_evidence_entity ON evidence(entity_id)` — that
+# database's `evidence` comes from 0000 and has no `entity_id`).
+#
+# The source-fabric chain now lives in `workers/source-fabric/migrations/`,
+# numbered 0014..0020 to preserve their published identity.
 [[d1_databases]]
 binding = "SOURCE_STATE"
 database_name = "zayron-x-intelligence-db"
 database_id = "91ed8f95-95ad-4451-bb18-e0d1dbadbe53"
-migrations_dir = "../../db/migrations"
+migrations_dir = "./migrations"
 
 [[r2_buckets]]
 binding = "RAW_ARTIFACTS"
@@ -57,7 +69,7 @@ name = "zayron-x-source-fabric-staging"
 binding = "SOURCE_STATE"
 database_name = "zayron-x-preview-db"
 database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
-migrations_dir = "../../db/migrations"
+migrations_dir = "./migrations"
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
