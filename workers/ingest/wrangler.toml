@@ -172,8 +172,15 @@ crons = []
 # ZX-33 Free-Tier Survival Mode: `*/10` meant 144 runs/day, each paying D1 reads
 # and writes against a 100k-write/day budget. Every 4 hours is 6 runs/day (96%
 # less burn) and still keeps the corpus fresh while the corpus is bootstrapping.
-[env.production.triggers]
-# Free-Tier Survival Mode (every 4h); restore */10 or */30 after Workers Paid upgrade.
+# Phase 4A — the schedule must live on the TOP-LEVEL worker (`zayron-x-ingest`),
+# which is what `wrangler deploy` actually publishes. It previously sat in
+# `[env.production.triggers]`, i.e. on a DIFFERENT (never deployed) worker, so
+# the live production loop had no cron at all and no amount of unfreezing could
+# have produced a pulse.
+#
+# Free-Tier Survival Mode (every 4h); restore */10 or */30 after a Workers Paid
+# upgrade. Under LEGACY_FREEZE=true this fires ONLY the authoritative pulse.
+[triggers]
 crons = ["0 */4 * * *"]
 
 # ZX-28: Workers Logs / traces for queue and cron invocations. CPU limits are

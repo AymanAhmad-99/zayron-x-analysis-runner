@@ -297,9 +297,26 @@ describe('5 — the runner is bounded and skips cleanly', () => {
     const result = await runStrategicCveAnalysis({ DB: db, GEMINI_API_KEY: 'test-key-not-used' }, { fetchFn, limit: 1 });
     expect(result.generated).toBe(1);
     expect(result.cves).toEqual(['CVE-2026-90001']);
+    expect(result.providers[0]).toContain('gemini');
     expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(true);
     expect(statements.some((sql) => sql.includes('INSERT INTO ai_runs'))).toBe(true);
     expect(STRATEGIC_WORKFLOW).toBe('ai_strategic_cve');
+  });
+
+  it('falls back to the runtime model when the deep provider is unavailable', async () => {
+    const { db, statements } = fakeDb({ rows: [eligibleRow], runsToday: 0 });
+    const fetchFn = (async () => new Response(JSON.stringify({ error: { status: 'UNAVAILABLE', message: 'high demand' } }), { status: 503 })) as unknown as typeof fetch;
+    const ai = {
+      run: async () => ({ response: JSON.stringify(brief()), usage: { prompt_tokens: 10, completion_tokens: 20 } }),
+    };
+
+    const result = await runStrategicCveAnalysis(
+      { DB: db, GEMINI_API_KEY: 'test-key-not-used', AI: ai },
+      { fetchFn, limit: 1 },
+    );
+    expect(result.generated).toBe(1);
+    expect(result.providers[0]).toContain('@cf/meta/llama-3.1-8b-instruct');
+    expect(statements.some((sql) => sql.includes('UPDATE vulnerabilities'))).toBe(true);
   });
 
   it('drops a semantically hostile brief instead of persisting it', async () => {
