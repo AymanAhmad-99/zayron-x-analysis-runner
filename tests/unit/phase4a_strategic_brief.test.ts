@@ -26,6 +26,7 @@ import {
   CLOUDFLARE_STRATEGIC_FALLBACK_MODEL,
   CLOUDFLARE_STRATEGIC_MODEL,
   STRATEGIC_WORKFLOW,
+  extractWorkersAIText,
   runStrategicCveAnalysis,
 } from '../../packages/intelligence/src/vulnerability/strategicRunner';
 import { readFileSync } from 'node:fs';
@@ -183,6 +184,33 @@ describe('4 — semantic isolation gate (VER-006)', () => {
     expect(violations).toContain('FABRICATED_KEV_CLAIM');
   });
 
+  it('does NOT treat a denial as a fabrication ("no public exploit is established")', () => {
+    const honest = brief({
+      exploitation_mechanics: {
+        ...brief().exploitation_mechanics,
+        public_exploitation: 'NOT_CONFIRMED',
+        attack_path: 'The flaw is remotely reachable, but no public exploit code is established and no CISA KEV listing exists.',
+      },
+      defender_playbook: {
+        ...brief().defender_playbook,
+        immediate_actions: ['Treat management interfaces as untrusted: there is not a public PoC at this time.'],
+      },
+    });
+    expect(validateStrategicBriefGrounding(honest, facts({ known_exploited: false, exploit_code_public: false }))).toEqual([]);
+  });
+
+  it('still rejects an affirmative claim after a negated clause', () => {
+    const hostile = brief({
+      exploitation_mechanics: {
+        ...brief().exploitation_mechanics,
+        public_exploitation: 'NOT_CONFIRMED',
+        attack_path: 'No vendor advisory exists. A working exploit is publicly available and used against exposed gateways.',
+      },
+    });
+    expect(validateStrategicBriefGrounding(hostile, facts({ known_exploited: false, exploit_code_public: false })))
+      .toContain('FABRICATED_EXPLOIT_CODE_CLAIM');
+  });
+
   it('rejects an exploitation state above what the facts support', () => {
     const violations = validateStrategicBriefGrounding(brief(), facts({ known_exploited: false }));
     expect(violations).toContain('UNSUPPORTED_EXPLOITATION_STATE:CONFIRMED_KEV');
@@ -208,6 +236,27 @@ describe('4 — semantic isolation gate (VER-006)', () => {
       },
     });
     expect(validateStrategicBriefGrounding(hostile, facts())).toContain('INVENTED_UPGRADE_TARGET:4.9.99');
+  });
+
+  it('accepts a target that names several STORED fixed versions', () => {
+    const multi = brief({
+      defender_playbook: {
+        ...brief().defender_playbook,
+        upgrade_targets: [{ branch: '6.9.x / 7.x', target: '6.9.13-58 or 7.1.2-33' }],
+      },
+    });
+    expect(validateStrategicBriefGrounding(multi, facts({ fixed_versions: ['6.9.13-58', '7.1.2-33'] }))).toEqual([]);
+  });
+
+  it('rejects a composite target that smuggles in an unlisted version', () => {
+    const hostile = brief({
+      defender_playbook: {
+        ...brief().defender_playbook,
+        upgrade_targets: [{ branch: '6.9.x / 7.x', target: '6.9.13-58 or 7.1.2-99' }],
+      },
+    });
+    expect(validateStrategicBriefGrounding(hostile, facts({ fixed_versions: ['6.9.13-58', '7.1.2-33'] })))
+      .toContain('INVENTED_UPGRADE_TARGET:6.9.13-58 or 7.1.2-99');
   });
 
   it('rejects an invented target when the source never established a fixed version', () => {
@@ -447,7 +496,19 @@ describe('5 — the runner is bounded and skips cleanly', () => {
   });
 });
 
-describe('7 — no deprecated model ids remain in the strategic path', () => {
+describe('7 — Workers AI completion shapes', () => {
+  it('extracts text from every served shape and refuses an unknown one', () => {
+    expect(extractWorkersAIText({ response: '{"a":1}' })).toBe('{"a":1}');
+    expect(extractWorkersAIText({ response: { a: 1 } })).toBe('{"a":1}');
+    expect(extractWorkersAIText({ choices: [{ message: { content: 'x' } }] })).toBe('x');
+    expect(extractWorkersAIText({ choices: [{ message: { content: [{ text: 'a' }, { text: 'b' }] } }] })).toBe('ab');
+    expect(extractWorkersAIText({ output_text: 'y' })).toBe('y');
+    expect(extractWorkersAIText({})).toBe('');
+    expect(extractWorkersAIText(null)).toBe('');
+  });
+});
+
+describe('8 — no deprecated model ids remain in the strategic path', () => {
   const files = [
     'packages/intelligence/src/vulnerability/strategicRunner.ts',
     'packages/intelligence/src/vulnerability/strategicAssessment.ts',
