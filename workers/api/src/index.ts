@@ -124,6 +124,7 @@ import { backfillCandidateSelectionSql } from './vulnerabilityPriority';
 import { createD1ProviderStatePort } from './aiProviderState';
 import { attackMappingClaim } from '../../../packages/intelligence/src/sources/adapters';
 import { assessDetectionEvidence, buildAuthoritativeAdvisory, classifyPublicationWriteResult, decodeStoredAnalysis, decodeStoredStructuredReport, evaluatePublicationWrite, projectVulnerabilityReportPublicRead, projectVulnerabilityReportRead, publicationOverwriteGuardSql, reportAnalysisAvailability } from '../../../packages/intelligence/src/vulnerability/reportIntegrity';
+import { runStrategicCveAnalysis } from '../../../packages/intelligence/src/vulnerability/strategicRunner';
 import { projectAnalystServiceResult, type AnalystServiceResult } from './analystResult';
 import { AI_ANALYST_PROMPT_VERSION, parseAiAssessmentOutput } from './aiAssessmentContract';
 import { WorkerEntrypoint, WorkflowEntrypoint, WorkflowEvent, WorkflowStep } from 'cloudflare:workers';
@@ -4788,7 +4789,12 @@ const worker = {
               published_at: eventRow?.first_seen_at || vulnRow?.published_at || eventRow?.created_at,
               // Authoritative source facts a public page may render without any
               // analyst assessment. Null when the row has no verified fact.
-              public_advisory: buildAuthoritativeAdvisory(vulnRow)
+              public_advisory: buildAuthoritativeAdvisory(vulnRow),
+              // Phase 4A — `ai_analyst_assessment.v3`. Model-authored, so it is a
+              // SEPARATE member: `public_advisory` must stay a pure source-fact
+              // projection. Null when no v3 brief has been generated yet.
+              strategic_brief: parseStrategicBriefRecord(vulnRow?.strategic_brief_json, vulnRow?.strategic_brief_version),
+              strategic_brief_generated_at: vulnRow?.strategic_brief_generated_at || null
             };
             return jsonResponse({ status: 'SUCCESS', report: reportObj });
           }
@@ -5367,6 +5373,10 @@ const worker = {
           return jsonResponse({
             data: {
               ...vuln,
+              // Phase 4A — parsed v3 strategic brief. The raw column stays in the
+              // payload for compatibility; `strategic_brief` is the projection the
+              // page consumes, and it is null until a brief actually exists.
+              strategic_brief: parseStrategicBriefRecord((vuln as any)?.strategic_brief_json, (vuln as any)?.strategic_brief_version),
               linked_events: events.results,
               related_evidence: evidence,
               related_iocs: iocs,
@@ -6310,6 +6320,32 @@ async function invokeAnalystGradeCve(env: Env, ctx: ExecutionContext, cveId: str
  * vulnerability. Consumed by the continuous ingestion worker via a service binding;
  * exposed ONLY through a Worker service-binding entrypoint, never a public route.
  */
+/**
+ * Phase 4A — decode a stored `ai_analyst_assessment.v3` brief.
+ *
+ * A missing, blank, malformed or structurally invalid brief projects to null:
+ * the page then renders the deterministic advisory alone. Nothing here is
+ * repaired or guessed, so a truncated write can never render as analysis.
+ */
+function parseStrategicBriefRecord(raw: unknown, version: unknown): Record<string, unknown> | null {
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const brief = parsed as Record<string, unknown>;
+    if (typeof brief.executive_bluf !== 'string') return null;
+    if (!brief.exploitation_mechanics || typeof brief.exploitation_mechanics !== 'object') return null;
+    if (!brief.operational_prioritization || typeof brief.operational_prioritization !== 'object') return null;
+    if (!brief.defender_playbook || typeof brief.defender_playbook !== 'object') return null;
+    return {
+      ...brief,
+      prompt_version: typeof version === 'string' && version.trim() ? version : 'ai_analyst_assessment.v3',
+    };
+  } catch {
+    return null;
+  }
+}
+
 export class VulnerabilityAnalyst extends WorkerEntrypoint<Env> {
   async analyzeVulnerability(input: { cveId: string }): Promise<AnalystServiceResult> {
     const cveId = String(input?.cveId || '').trim().toUpperCase();
@@ -6330,6 +6366,23 @@ export class VulnerabilityAnalyst extends WorkerEntrypoint<Env> {
       error: response.ok ? undefined : (payload?.error || payload?.message || `HTTP ${response.status}`),
       latency_ms: Date.now() - started,
     });
+  }
+}
+
+/**
+ * Phase 4A — Cloudflare-internal RPC that runs the BOUNDED strategic brief pass.
+ *
+ * Exposed ONLY through a Worker service binding, never an HTTP route: `fetch()`
+ * does not route to this class, so there is no public surface and no GET can
+ * trigger generation. `workers/ingest` calls it from its background cron when
+ * the binding exists (Preview), because this worker owns the model credential.
+ *
+ * Every bound lives in the shared engine: eligibility, idempotency and the
+ * daily budget are enforced there, so an RPC caller cannot widen them.
+ */
+export class StrategicCveAnalyst extends WorkerEntrypoint<Env> {
+  async analyze(input: { limit?: number } = {}): Promise<Awaited<ReturnType<typeof runStrategicCveAnalysis>>> {
+    return runStrategicCveAnalysis(this.env as any, { limit: input?.limit });
   }
 }
 

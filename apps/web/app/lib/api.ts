@@ -441,6 +441,34 @@ export interface StructuredVulnerabilityReport {
   };
 }
 
+/**
+ * Phase 4A — `ai_analyst_assessment.v3` strategic brief.
+ *
+ * Model-synthesized and grounded in verified NVD / CISA KEV / FIRST EPSS facts.
+ * Every field is optional at the type level so a partial or older payload
+ * degrades to the deterministic advisory instead of breaking the page.
+ */
+export interface StrategicBrief {
+  prompt_version?: string;
+  executive_bluf?: string;
+  exploitation_mechanics?: {
+    attack_path?: string;
+    preconditions?: string[];
+    blast_radius?: string;
+    public_exploitation?: string;
+  };
+  operational_prioritization?: {
+    rationale?: string;
+    remediation_sla?: string;
+    priority?: string;
+  };
+  defender_playbook?: {
+    immediate_actions?: string[];
+    upgrade_targets?: Array<{ branch?: string; target?: string }>;
+    detection_focus?: string[];
+  };
+}
+
 export interface VulnerabilityDetail {
   intelligence_id?: string;
   schema_version?: string;
@@ -457,6 +485,9 @@ export interface VulnerabilityDetail {
   analysis_availability?: AnalysisAvailability;
   /** Gate 3A.3 — verified NVD/KEV/EPSS facts, safe on a withheld public page. */
   public_advisory?: AuthoritativeAdvisory | null;
+  /** Phase 4A — additive strategic brief. Null until one has been generated. */
+  strategic_brief?: StrategicBrief | null;
+  strategic_brief_generated_at?: string | null;
   knowledge_trace?: any[];
   epistemic_breakdown?: any;
   entities?: Array<{ id?: string; name?: string; type?: string }>;
@@ -518,6 +549,9 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
             created_at: (d.created_at as string) || undefined,
             updated_at: (d.updated_at as string) || (d.created_at as string) || undefined,
             published_at: (d.published_at as string) || undefined,
+            // Phase 4A — the strategic brief is additive: absent means the page
+            // renders the deterministic advisory alone, never a placeholder.
+            strategic_brief: (d.strategic_brief as StrategicBrief | null | undefined) ?? null,
             evidence: (Array.isArray(d.related_evidence) ? d.related_evidence : []) as VulnerabilityEvidence[],
             relations: [],
           }

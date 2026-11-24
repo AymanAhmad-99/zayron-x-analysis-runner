@@ -16,6 +16,7 @@
     "test:unit": "node tools/run-unit-tests.mjs",
     "check:provenance": "node tools/check-build-provenance.mjs",
     "check:worker-compat": "node tools/check-worker-compatibility.mjs",
+  "deploy:web:prod": "node tools/deploy-web-production.mjs",
     "ingest": "bun run scripts/corpus_pipeline_ingest.ts",
     "verify": "bun run scripts/corpus_pipeline_verify.ts"
   },

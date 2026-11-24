@@ -28,6 +28,8 @@ import { checkAIAvailability } from './aiAvailability';
 import { assessExploitationEvidence } from './exploitationEvidence';
 import { filterSaneHashes } from './hashSanity';
 import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
+import { authoritativeCronEnabled, runAuthoritativePulse } from './authoritativePulse';
+import { runStrategicPass } from './strategicCveAnalysis';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -40,8 +42,16 @@ export interface Env {
   TELEGRAM_COLLECTOR_SERVICE?: Fetcher;
   TELEGRAM_TARGET_CHANNEL?: string;
   LEGACY_FREEZE?: string;
+  /** Phase 4A — opens ONLY the authoritative NVD/KEV/EPSS pulse while the legacy
+   *  surface stays frozen. Any other value (including absent) keeps it closed. */
+  AUTHORITATIVE_CVE_CRON_ENABLED?: string;
   /** Optional NVD API key — raises the public rate limit, never required. */
   NVD_API_KEY?: string;
+  /** Phase 4A — strategic brief generation. Absent means a clean skip. */
+  GEMINI_API_KEY?: string;
+  GEMINI_MODEL?: string;
+  /** Preview-only RPC into the API worker's strategic engine (owns the key). */
+  STRATEGIC_ANALYST?: { analyze(input: { limit?: number }): Promise<any> };
   RESEARCH_WORKFLOW?: any;
   KNOWLEDGE_PROCESSOR?: any;
   KNOWLEDGE_BUCKET?: R2Bucket;
@@ -203,7 +213,28 @@ async function persistEvidence(env: Env, input: {
 
 const ingestHandlers = {
   async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
-    if (env.LEGACY_FREEZE === 'true') return;
+    // ── Phase 4A: SELECTIVE UNFREEZE ─────────────────────────────────────────
+    // The freeze stays authoritative for the LEGACY surface. It no longer also
+    // disables authoritative facts: with AUTHORITATIVE_CVE_CRON_ENABLED="true"
+    // this pass runs the NVD + CISA KEV + FIRST EPSS pipeline (and the bounded
+    // strategic layer) and returns BEFORE any legacy path below — no RSS/KEV/
+    // MSRC queue enqueue, no AI smoke test, no outbound publication.
+    if (env.LEGACY_FREEZE === 'true') {
+      if (!authoritativeCronEnabled(env)) {
+        console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_PULSE_DISABLED', reason: 'FLAG_ABSENT' }));
+        return;
+      }
+      try {
+        const pulse = await runAuthoritativePulse(env as any, { trigger: _controller?.cron || 'scheduled' });
+        console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_PULSE', ...pulse }));
+      } catch (error) {
+        console.error(JSON.stringify({
+          type: 'AUTHORITATIVE_CVE_PULSE_FAILED',
+          error: String((error as Error)?.message || error).slice(0, 300),
+        }));
+      }
+      return;
+    }
     const smokeTraceId = `trace_${crypto.randomUUID().slice(0, 12)}`;
     const smokeTelemetry = await checkAIAvailability(
       env.KNOWLEDGE_PROCESSOR ? () => env.KNOWLEDGE_PROCESSOR!.smokeTest({ trace_id: smokeTraceId }) : undefined,
@@ -284,6 +315,15 @@ const ingestHandlers = {
       console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_INGEST', ...authoritative }));
     } catch (authoritativeError) {
       console.error('[INGEST] authoritative CVE ingestion failed:', authoritativeError);
+    }
+
+    // Phase 4A — budgeted strategic briefs for high-impact authoritative CVEs.
+    // Background only; a missing credential is a clean skip, never a failure.
+    try {
+      const strategic = await runStrategicPass(env as any);
+      console.log(JSON.stringify({ type: 'STRATEGIC_CVE_ANALYSIS', ...strategic }));
+    } catch (strategicError) {
+      console.error('[INGEST] strategic CVE analysis failed:', strategicError);
     }
 
     const msrcResponse = await fetch('https://api.msrc.microsoft.com/update-guide/rss', { headers: { accept: 'application/rss+xml, application/xml' } });
@@ -1496,7 +1536,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
    */
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname !== '/internal/authoritative-cve-ingest') {
+    if (url.pathname !== '/internal/authoritative-cve-ingest' && url.pathname !== '/internal/strategic-cve-analysis') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (this.env.ENVIRONMENT === 'production') {
@@ -1509,6 +1549,24 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       return new Response(JSON.stringify({ error: 'METHOD_NOT_ALLOWED' }), { status: 405, headers: { 'content-type': 'application/json', allow: 'POST' } });
     }
     const requested = Number(url.searchParams.get('limit'));
+    // Phase 4A operator hook: run the budgeted strategic pass alone. Preview
+    // only, same freeze guard, and never reachable in production.
+    if (url.pathname === '/internal/strategic-cve-analysis') {
+      try {
+        const summary = await runStrategicPass(this.env as any, {
+          limit: Number.isFinite(requested) && requested > 0 ? requested : 1,
+        });
+        return new Response(JSON.stringify(summary), {
+          status: summary.generated > 0 ? 200 : 202,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: String((error as Error)?.message || error).slice(0, 300) }), {
+          status: 502,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      }
+    }
     try {
       const summary = await runAuthoritativeVulnIngest(this.env, {
         limit: Number.isFinite(requested) && requested > 0 ? requested : 5,

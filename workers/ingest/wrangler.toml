@@ -37,6 +37,15 @@ bucket_name = "zayron-x-knowledge"
 binding = "TELEGRAM_COLLECTOR_SERVICE"
 service = "zayron-telegram-collector-do"
 
+# Phase 4A — the strategic engine runs in the worker that owns the model
+# credential. A service binding is internal-only (no HTTP surface), and the
+# engine itself enforces eligibility, idempotency and the daily budget, so a
+# missing `GEMINI_API_KEY` degrades to the documented clean skip.
+[[services]]
+binding = "STRATEGIC_ANALYST"
+service = "zayron-x-api"
+entrypoint = "StrategicCveAnalyst"
+
 [[services]]
 binding = "KNOWLEDGE_PROCESSOR"
 service = "zayron-x-api"
@@ -58,6 +67,12 @@ script_name = "zayron-x-api"
 ENVIRONMENT = "production"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 LEGACY_FREEZE = "true"
+# Phase 4A — SELECTIVE UNFREEZE. This opens ONLY the authoritative
+# NVD + CISA KEV + FIRST EPSS pulse (and its bounded strategic layer) from
+# `scheduled()`. Every legacy path stays closed because the freeze branch
+# returns before the RSS/KEV/MSRC enqueues, the AI smoke test and any outbound
+# work. Absent or any other value leaves the pulse disabled.
+AUTHORITATIVE_CVE_CRON_ENABLED = "true"
 
 [env.preview]
 name = "zayron-x-ingest-preview"
@@ -88,6 +103,7 @@ queue = "zayron-publish-queue-preview"
 ENVIRONMENT = "preview"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 LEGACY_FREEZE = "false"
+AUTHORITATIVE_CVE_CRON_ENABLED = "true"
 
 [[env.preview.vectorize]]
 binding = "VECTORIZE"
@@ -129,6 +145,15 @@ entrypoint = "KnowledgeProcessor"
 binding = "VULNERABILITY_ANALYST"
 service = "zayron-x-api-preview"
 entrypoint = "VulnerabilityAnalyst"
+
+# Phase 4A — the strategic-brief engine lives where the model credential is
+# provisioned (the API Preview worker). The cron dispatches into it instead of
+# duplicating a second AI path. Production has no such binding: the in-worker
+# engine then performs the documented MISSING_CREDENTIAL clean skip.
+[[env.preview.services]]
+binding = "STRATEGIC_ANALYST"
+service = "zayron-x-api-preview"
+entrypoint = "StrategicCveAnalyst"
 
 [env.preview.ai]
 binding = "AI"

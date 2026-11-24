@@ -45,6 +45,11 @@ const SUITES = [
   'tests/unit/gemini_timeout_bound.test.ts',
   'tests/unit/grounded_cve_analysis.test.ts',
   'tests/unit/web_preview_target_guard.test.ts',
+  // Phase 4A — selective authoritative cron, ai_analyst_assessment.v3 and the
+  // guarded production web deploy config.
+  'tests/unit/phase4a_authoritative_cron.test.ts',
+  'tests/unit/phase4a_strategic_brief.test.ts',
+  'tests/unit/phase4a_web_prod_deploy.test.ts',
   // Verified malware pipeline suites (Phase 12.27 Task 5: all green locally):
   'tests/unit/m14_4_report_materialization.test.ts',
   'tests/unit/m14_malware_production_pipeline.test.ts',
