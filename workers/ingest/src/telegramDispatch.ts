@@ -19,6 +19,13 @@
  *
  * Kill switch: `TELEGRAM_OUTBOUND_ENABLED="true"` only. Any other value (absent
  * included) returns `DISABLED` without a single outbound request.
+ *
+ * PACING — the 4-hourly cron publishes AT MOST `TELEGRAM_MAX_PER_TICK` (default
+ * `1`) post, and only when no `SENT` row landed in the previous
+ * `TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES` (180). A tick can therefore never
+ * drop a burst, whatever the corpus backlog. The operator route
+ * `/internal/telegram-dispatch` passes no `automated` flag: an explicit
+ * invocation is the authorised override and is still bounded by the daily cap.
  */
 import {
   formatCveTelegramDispatch,
@@ -32,6 +39,10 @@ export const TELEGRAM_DISPATCH_CHANNEL_VAR = 'TELEGRAM_TARGET_CHANNEL';
 export const TELEGRAM_OUTBOUND_FLAG = 'TELEGRAM_OUTBOUND_ENABLED';
 export const TELEGRAM_DAILY_CAP_VAR = 'TELEGRAM_MAX_DAILY_DISPATCHES';
 export const TELEGRAM_DEFAULT_DAILY_CAP = 6;
+export const TELEGRAM_PER_TICK_VAR = 'TELEGRAM_MAX_PER_TICK';
+export const TELEGRAM_DEFAULT_PER_TICK = 1;
+/** Anti-burst spacing that applies to AUTOMATED (cron) runs only. */
+export const TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES = 180;
 export const TELEGRAM_API_BASE = 'https://api.telegram.org';
 
 export interface TelegramDispatchEnv {
@@ -40,6 +51,7 @@ export interface TelegramDispatchEnv {
   TELEGRAM_TARGET_CHANNEL?: string;
   TELEGRAM_OUTBOUND_ENABLED?: string;
   TELEGRAM_MAX_DAILY_DISPATCHES?: string;
+  TELEGRAM_MAX_PER_TICK?: string;
   [key: string]: unknown;
 }
 
@@ -59,6 +71,11 @@ export interface TelegramDispatchSummary {
   enabled: boolean;
   dry_run: boolean;
   daily_cap: number;
+  automated: boolean;
+  per_tick: number;
+  min_spacing_minutes: number;
+  last_sent_at: string | null;
+  spacing_remaining_minutes: number;
   sent_today: number;
   remaining: number;
   dispatched: TelegramDispatchResult[];
@@ -76,6 +93,17 @@ export function resolveDailyCap(env: TelegramDispatchEnv): number {
   const raw = Number(String(env?.[TELEGRAM_DAILY_CAP_VAR] ?? '').trim());
   if (!Number.isFinite(raw) || raw <= 0) return TELEGRAM_DEFAULT_DAILY_CAP;
   return Math.min(Math.max(Math.floor(raw), 1), TELEGRAM_DEFAULT_DAILY_CAP);
+}
+
+/**
+ * Per-tick ceiling. Default 1 and clamped to 1..dailyCap, so a single cron
+ * invocation can never publish two posts even if the corpus has a backlog.
+ */
+export function resolvePerTick(env: TelegramDispatchEnv, dailyCap = resolveDailyCap(env)): number {
+  const ceiling = Math.max(1, Math.floor(dailyCap));
+  const raw = Number(String(env?.[TELEGRAM_PER_TICK_VAR] ?? '').trim());
+  if (!Number.isFinite(raw) || raw <= 0) return Math.min(TELEGRAM_DEFAULT_PER_TICK, ceiling);
+  return Math.min(Math.max(Math.floor(raw), 1), ceiling);
 }
 
 /** `zayronxai` → `@zayronxai`; an explicit `@…` or numeric chat id is kept. */
@@ -128,6 +156,18 @@ export const TELEGRAM_MALWARE_SELECTION_SQL = `
 export const TELEGRAM_DAILY_COUNT_SQL = `
   SELECT COUNT(*) AS total FROM telegram_dispatches
    WHERE channel = ? AND status = 'SENT' AND substr(dispatched_at, 1, 10) = ?`;
+
+/** Newest public post on the channel: the anti-burst clock for cron runs. */
+export const TELEGRAM_LAST_SENT_SQL = `
+  SELECT MAX(dispatched_at) AS last_sent_at FROM telegram_dispatches
+   WHERE channel = ? AND status = 'SENT'`;
+
+/** D1 can echo `YYYY-MM-DD HH:MM:SS.sss`; without this `Date.parse` reads it as
+ *  local time and the 180-minute guard would drift by the colo's offset. */
+function parseDispatchedAt(raw: string): number {
+  const iso = raw.includes('T') ? raw : raw.replace(' ', 'T');
+  return Date.parse(/[Zz]$|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`);
+}
 
 const parseJson = <T>(raw: unknown, fallback: T): T => {
   if (typeof raw !== 'string' || !raw.trim()) return fallback;
@@ -201,14 +241,26 @@ async function sendTelegramMessage(
  */
 export async function runTelegramDispatchPass(
   env: TelegramDispatchEnv,
-  options: { dryRun?: boolean; limit?: number; entityType?: 'cve' | 'malware' | 'both'; fetchFn?: typeof fetch } = {},
+  options: {
+    dryRun?: boolean;
+    limit?: number;
+    entityType?: 'cve' | 'malware' | 'both';
+    /** Cron path: applies the per-tick ceiling and the anti-burst spacing. */
+    automated?: boolean;
+    fetchFn?: typeof fetch;
+  } = {},
 ): Promise<TelegramDispatchSummary> {
   const fetchFn = options.fetchFn ?? fetch;
   const channel = resolveChatId(env);
   const dailyCap = resolveDailyCap(env);
+  const perTick = resolvePerTick(env, dailyCap);
+  const automated = options.automated === true;
   const dryRun = options.dryRun === true;
   const requested = Number(options.limit);
-  const limit = Number.isFinite(requested) && requested > 0 ? Math.min(Math.floor(requested), dailyCap) : dailyCap;
+  // An automated pass is additionally capped at one post per tick; the operator
+  // route keeps the full daily ceiling and can ask for more explicitly.
+  const runCeiling = automated ? Math.min(dailyCap, perTick) : dailyCap;
+  const limit = Number.isFinite(requested) && requested > 0 ? Math.min(Math.floor(requested), runCeiling) : runCeiling;
   const entityType = options.entityType === 'cve' || options.entityType === 'malware' ? options.entityType : 'both';
 
   const summary: TelegramDispatchSummary = {
@@ -217,6 +269,11 @@ export async function runTelegramDispatchPass(
     enabled: telegramOutboundEnabled(env),
     dry_run: dryRun,
     daily_cap: dailyCap,
+    automated,
+    per_tick: perTick,
+    min_spacing_minutes: TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES,
+    last_sent_at: null,
+    spacing_remaining_minutes: 0,
     sent_today: 0,
     remaining: 0,
     dispatched: [],
@@ -254,6 +311,25 @@ export async function runTelegramDispatchPass(
       summary.skipped.push({ entity_type: 'all', entity_id: 'all', reason: 'DAILY_CAP_REACHED' });
       return summary;
     }
+    // ── Anti-burst spacing (automated only) ──────────────────────────────────
+    // The cron is every 4 hours, so nominal ticks are already 240 minutes
+    // apart. This guard exists for the abnormal cases — a retried or doubled
+    // invocation, a manual deploy-triggered tick, a backlog drain — where two
+    // runs land close together and would otherwise publish back-to-back.
+    if (automated && TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES > 0) {
+      const lastRow = await env.DB.prepare(TELEGRAM_LAST_SENT_SQL)
+        .bind(channel).first().catch(() => null) as { last_sent_at?: string | null } | null;
+      summary.last_sent_at = lastRow?.last_sent_at ? String(lastRow.last_sent_at) : null;
+      if (summary.last_sent_at) {
+        const elapsedMs = Date.now() - parseDispatchedAt(summary.last_sent_at);
+        const spacingMs = TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES * 60 * 1000;
+        if (Number.isFinite(elapsedMs) && elapsedMs < spacingMs) {
+          summary.spacing_remaining_minutes = Math.ceil((spacingMs - elapsedMs) / 60000);
+          summary.skipped.push({ entity_type: 'all', entity_id: 'all', reason: 'AUTOMATED_SPACING_COOLDOWN' });
+          return summary;
+        }
+      }
+    }
   }
 
   const budget = dryRun ? Math.min(limit, 3) : Math.min(limit, summary.remaining);
@@ -262,7 +338,7 @@ export async function runTelegramDispatchPass(
   if (entityType !== 'malware') {
     const rows = await env.DB.prepare(TELEGRAM_CVE_SELECTION_SQL)
       .bind(channel, budget).all().catch(() => ({ results: [] })) as { results?: any[] };
-    for (const row of rows.results ?? []) {
+    for (const row of (rows.results ?? []).slice(0, budget)) {
       const brief = parseJson<Record<string, any> | null>(row?.strategic_brief_json, null);
       if (!brief) {
         summary.skipped.push({ entity_type: 'cve', entity_id: String(row?.cve_id ?? ''), reason: 'BRIEF_UNPARSEABLE' });
@@ -293,7 +369,7 @@ export async function runTelegramDispatchPass(
   if (entityType !== 'cve' && payloads.length < budget) {
     const rows = await env.DB.prepare(TELEGRAM_MALWARE_SELECTION_SQL)
       .bind(channel, budget - payloads.length).all().catch(() => ({ results: [] })) as { results?: any[] };
-    for (const row of rows.results ?? []) {
+    for (const row of (rows.results ?? []).slice(0, budget - payloads.length)) {
       const report = parseJson<Record<string, any> | null>(row?.report_json, null);
       const brief = parseJson<Record<string, any> | null>(row?.strategic_brief_json, null);
       const reportId = String(row?.id ?? '');

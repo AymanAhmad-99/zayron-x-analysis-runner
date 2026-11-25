@@ -80,6 +80,13 @@ AUTHORITATIVE_CVE_CRON_ENABLED = "true"
 # closed (dry run only). The cap is a hard ceiling (dispatcher clamps to 1..6).
 TELEGRAM_OUTBOUND_ENABLED = "true"
 TELEGRAM_MAX_DAILY_DISPATCHES = "6"
+# Phase 4C.3 — ANTI-BURST PACING. The cron is `0 */4 * * *` (6 ticks/day), so the
+# daily cap alone still allowed a single tick to publish the whole backlog at
+# once (04:07 UTC shipped three posts in one second). One post per tick, plus a
+# 180-minute minimum spacing between automated posts, makes a burst structurally
+# impossible. `/internal/telegram-dispatch` is exempt: an explicit operator
+# invocation is the authorised override, still bounded by the 6/day cap.
+TELEGRAM_MAX_PER_TICK = "1"
 
 [env.preview]
 name = "zayron-x-ingest-preview"
@@ -114,6 +121,7 @@ AUTHORITATIVE_CVE_CRON_ENABLED = "true"
 # Preview must never publish to the production channel: dry run only.
 TELEGRAM_OUTBOUND_ENABLED = "false"
 TELEGRAM_MAX_DAILY_DISPATCHES = "6"
+TELEGRAM_MAX_PER_TICK = "1"
 
 [[env.preview.vectorize]]
 binding = "VECTORIZE"

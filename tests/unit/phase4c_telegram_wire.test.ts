@@ -22,10 +22,13 @@ import {
   validateTelegramDispatch,
 } from '../../packages/intelligence/src/syndication/telegramFormatter';
 import {
+  TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES,
   TELEGRAM_DEFAULT_DAILY_CAP,
+  TELEGRAM_DEFAULT_PER_TICK,
   isDispatchableDossier,
   resolveChatId,
   resolveDailyCap,
+  resolvePerTick,
   runTelegramDispatchPass,
   telegramOutboundEnabled,
 } from '../../workers/ingest/src/telegramDispatch';
@@ -333,7 +336,7 @@ function malwareRow() {
   };
 }
 
-function makeDb(seed: { cves?: any[]; malware?: any[]; sentToday?: number }) {
+function makeDb(seed: { cves?: any[]; malware?: any[]; sentToday?: number; lastSentAt?: string | null }) {
   const ledger: Array<{ args: unknown[] }> = [];
   const db = {
     prepare(sql: string) {
@@ -347,6 +350,7 @@ function makeDb(seed: { cves?: any[]; malware?: any[]; sentToday?: number }) {
             },
             async first() {
               if (sql.includes('COUNT(*)')) return { total: seed.sentToday ?? 0 };
+              if (sql.includes('MAX(dispatched_at)')) return { last_sent_at: seed.lastSentAt ?? null };
               return null;
             },
             async run() {
@@ -472,6 +476,115 @@ describe('telegram dispatcher — dry run and idempotency', () => {
     expect(html).toContain('single-source feed tag');
     expect(html).toContain('ddb637300173…ce13b973');
     expect(summary.dispatched[0].entity_type).toBe('malware');
+  });
+});
+
+/* ────────────────────────── cron pacing (anti-burst) ──────────────────────── */
+
+function okFetch(sent: any[]) {
+  return (async (url: string, init: any) => {
+    sent.push({ url, body: JSON.parse(init.body) });
+    return { ok: true, status: 200, json: async () => ({ ok: true, result: { message_id: 5000 + sent.length } }) };
+  }) as any;
+}
+
+function threeCves() {
+  return [cveRow(), cveRow({ cve_id: 'CVE-2026-000002' }), cveRow({ cve_id: 'CVE-2026-000003' })];
+}
+
+const OPEN_ENV = {
+  TELEGRAM_TARGET_CHANNEL: 'zayronxai',
+  TELEGRAM_OUTBOUND_ENABLED: 'true',
+  TELEGRAM_BOT_TOKEN: 'T',
+};
+
+describe('telegram dispatcher — cron pacing', () => {
+  test('per-tick defaults to 1 and can never exceed the daily cap', () => {
+    expect(TELEGRAM_DEFAULT_PER_TICK).toBe(1);
+    expect(resolvePerTick({ DB: null })).toBe(1);
+    expect(resolvePerTick({ DB: null, TELEGRAM_MAX_PER_TICK: '0' })).toBe(1);
+    expect(resolvePerTick({ DB: null, TELEGRAM_MAX_PER_TICK: 'abc' })).toBe(1);
+    expect(resolvePerTick({ DB: null, TELEGRAM_MAX_PER_TICK: '2' })).toBe(2);
+    expect(resolvePerTick({ DB: null, TELEGRAM_MAX_PER_TICK: '99' })).toBe(TELEGRAM_DEFAULT_DAILY_CAP);
+    // A per-tick value above a lowered daily cap is clamped to that cap.
+    expect(resolvePerTick({ DB: null, TELEGRAM_MAX_PER_TICK: '5', TELEGRAM_MAX_DAILY_DISPATCHES: '2' })).toBe(2);
+  });
+
+  test('an automated tick publishes ONE post even with a three-CVE backlog', async () => {
+    const { db, ledger } = makeDb({ cves: threeCves() });
+    const sent: any[] = [];
+    const summary = await runTelegramDispatchPass(
+      { DB: db, ...OPEN_ENV } as any,
+      { automated: true, fetchFn: okFetch(sent) },
+    );
+    expect(sent).toHaveLength(1);
+    expect(ledger).toHaveLength(1);
+    expect(summary.automated).toBe(true);
+    expect(summary.per_tick).toBe(1);
+    expect(summary.dispatched).toHaveLength(1);
+    expect(summary.sent_today).toBe(1);
+  });
+
+  test('automated dispatch is suppressed inside the 180-minute anti-burst window', async () => {
+    const elevenMinutesAgo = new Date(Date.now() - 11 * 60 * 1000).toISOString();
+    const { db, ledger } = makeDb({ cves: threeCves(), lastSentAt: elevenMinutesAgo });
+    let called = 0;
+    const summary = await runTelegramDispatchPass(
+      { DB: db, ...OPEN_ENV } as any,
+      { automated: true, fetchFn: (async () => { called += 1; throw new Error('must not send'); }) as any },
+    );
+    expect(called).toBe(0);
+    expect(ledger).toHaveLength(0);
+    expect(summary.dispatched).toHaveLength(0);
+    expect(summary.skipped[0].reason).toBe('AUTOMATED_SPACING_COOLDOWN');
+    expect(summary.last_sent_at).toBe(elevenMinutesAgo);
+    expect(summary.spacing_remaining_minutes).toBeGreaterThan(0);
+    expect(summary.spacing_remaining_minutes).toBeLessThanOrEqual(TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES);
+  });
+
+  test('the window is exactly 180 minutes: 179 blocks, 181 allows one post', async () => {
+    const blocked = makeDb({ cves: threeCves(), lastSentAt: new Date(Date.now() - 179 * 60 * 1000).toISOString() });
+    let blockedCalls = 0;
+    const held = await runTelegramDispatchPass(
+      { DB: blocked.db, ...OPEN_ENV } as any,
+      { automated: true, fetchFn: (async () => { blockedCalls += 1; throw new Error('must not send'); }) as any },
+    );
+    expect(blockedCalls).toBe(0);
+    expect(held.skipped[0].reason).toBe('AUTOMATED_SPACING_COOLDOWN');
+
+    const clear = makeDb({ cves: threeCves(), lastSentAt: new Date(Date.now() - 181 * 60 * 1000).toISOString() });
+    const sent: any[] = [];
+    const released = await runTelegramDispatchPass(
+      { DB: clear.db, ...OPEN_ENV } as any,
+      { automated: true, fetchFn: okFetch(sent) },
+    );
+    expect(sent).toHaveLength(1);
+    expect(released.dispatched[0].status).toBe('SENT');
+  });
+
+  test('the operator route ignores the cooldown and the per-tick ceiling', async () => {
+    const { db } = makeDb({
+      cves: threeCves(),
+      lastSentAt: new Date(Date.now() - 60 * 1000).toISOString(),
+    });
+    const sent: any[] = [];
+    const summary = await runTelegramDispatchPass(
+      { DB: db, ...OPEN_ENV } as any,
+      { limit: 3, fetchFn: okFetch(sent) },
+    );
+    expect(summary.automated).toBe(false);
+    expect(sent).toHaveLength(3);
+    expect(summary.skipped).toHaveLength(0);
+  });
+
+  test('a dry run stays exempt from the cooldown so the payload is still reviewable', async () => {
+    const { db } = makeDb({ cves: threeCves(), lastSentAt: new Date(Date.now() - 60 * 1000).toISOString() });
+    const summary = await runTelegramDispatchPass(
+      { DB: db, ...OPEN_ENV } as any,
+      { automated: true, dryRun: true },
+    );
+    expect(summary.dispatched).toHaveLength(1);
+    expect(summary.dispatched[0].error_code).toBe('DRY_RUN');
   });
 });
 

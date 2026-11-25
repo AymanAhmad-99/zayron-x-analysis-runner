@@ -258,7 +258,11 @@ const ingestHandlers = {
       // briefed, so a dispatch can never publish a pre-enrichment fact. It is
       // independently fallible and closed unless TELEGRAM_OUTBOUND_ENABLED=true.
       try {
-        const dispatch = await runTelegramDispatchPass(env as any, {});
+        // `automated: true` applies the cron pacing contract: at most
+        // TELEGRAM_MAX_PER_TICK (1) post, and only when no SENT row landed in
+        // the previous 180 minutes. The operator route omits it and keeps the
+        // explicit override.
+        const dispatch = await runTelegramDispatchPass(env as any, { automated: true });
         console.log(JSON.stringify({ type: 'TELEGRAM_DISPATCH_PASS', ...dispatch }));
       } catch (error) {
         console.error(JSON.stringify({
