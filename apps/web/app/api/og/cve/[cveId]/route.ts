@@ -29,11 +29,11 @@ export async function GET(_request: Request, { params }: Props) {
 
   const vendor = text(advisory?.affected_vendor, "");
   const product = text(advisory?.affected_product, "");
-  // Deduplicate: a vendor that already names the product must not appear twice.
-  const headline = [vendor, product]
-    .filter(Boolean)
-    .filter((part, index, all) => all.findIndex((other) => other.toLowerCase() === part.toLowerCase()) === index)
-    .join(" / ") || "VERIFIED ADVISORY";
+  // Deduplicate: a product that already names its vendor ("Red Hat" /
+  // "Red Hat Enterprise Linux 10") must not repeat it in the headline.
+  const headline = product.toLowerCase().startsWith(vendor.toLowerCase()) && vendor
+    ? product
+    : [vendor, product].filter(Boolean).join(" / ") || "VERIFIED ADVISORY";
 
   const kev = advisory?.cisa_kev
     ? String(advisory.cisa_kev)

@@ -83,6 +83,8 @@ const GLYPHS: Record<string, string> = {
   '?': '01110 10001 00010 00100 00100 00000 00100',
   '*': '00000 10101 01110 11111 01110 10101 00000',
   '=': '00000 00000 11111 00000 11111 00000 00000',
+  // Middle dot: the institutional separator (subtitle / footer).
+  '·': '00000 00000 01100 01100 00000 00000 00000',
 };
 
 const GLYPH_ROWS = 7;
@@ -347,7 +349,8 @@ export function paintCard(spec: OgCardSpec): Uint8Array {
   cells.forEach((cell, index) => {
     const x = MARGIN + index * cellWidth;
     canvas.text(String(cell.label ?? '').toUpperCase(), x, cellTop, 2, COLOR_MUTED);
-    canvas.textFit(String(cell.value ?? 'N/A'), x, cellTop + 34, 5, cellWidth - 24, COLOR_TEXT);
+    // Long values (NOT_LISTED, UNBRIEFED) shrink a step instead of clipping.
+    canvas.textFitScale(String(cell.value ?? 'N/A'), x, cellTop + 34, 3, 5, cellWidth - 24, COLOR_TEXT);
     if (index > 0) canvas.rect(x - 12, cellTop, 1, 96, COLOR_GRID);
   });
 

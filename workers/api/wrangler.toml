@@ -5,8 +5,11 @@ compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 routes = [
-  { pattern = "zayron-x.co/api/*", zone_name = "zayron-x.co" },
-  { pattern = "www.zayron-x.co/api/*", zone_name = "zayron-x.co" },
+  # PHASE 7D — scoped to /api/v1: everything this worker serves lives there, so
+  # /api/og/* (the 1200×630 telemetry cards) now reaches zayron-x-web instead of
+  # being answered by this worker's operator auth gate.
+  { pattern = "zayron-x.co/api/v1/*", zone_name = "zayron-x.co" },
+  { pattern = "www.zayron-x.co/api/v1/*", zone_name = "zayron-x.co" },
   # Wave 4B.2 — dedicated API hostname: the web worker reaches the API over a
   # DISTINCT origin, so a server-side fetch is never a same-zone subrequest to
   # its own hostname (Cloudflare Error 1042). Browser calls stay on
