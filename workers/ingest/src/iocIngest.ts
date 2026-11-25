@@ -26,6 +26,7 @@
  * downloads or runs a sample.
  */
 
+import { syncDetectionRules } from './detectionRules';
 import {
   MAX_SUBREQUESTS_PER_RUN,
   baseConfidenceFor,
@@ -100,6 +101,8 @@ export interface SourceTelemetry {
 
 export interface IocIngestTelemetry {
   status: 'OK' | 'NOT_CONFIGURED';
+  /** PHASE 7C — Sigma/Nuclei index sync (max once / 24h, 2 requests). */
+  detection?: { status: string; nuclei: number; sigma: number; written: number; reason?: string } | null;
   subrequestsUsed: number;
   subrequestBudget: number;
   sources: SourceTelemetry[];
@@ -265,7 +268,10 @@ export function mapOsvMaliciousRecord(record: Record<string, unknown>): OsvMalic
   return {
     report: {
       id,
-      title: summary.startsWith('Malicious code') ? `${packages[0] || id}: ${summary}` : `${id}: ${summary}`,
+      // Human-readable H1: the OSV summary already reads
+      // "Malicious code in @pkg/name (npm)", so prefixing the id would only
+      // repeat it. The id stays as copyable metadata in the dossier header.
+      title: summary,
       sha256: hashes[0] ?? null,
       family: packages[0] ?? null,
       summary: (details || summary).slice(0, 2000),
@@ -371,6 +377,9 @@ export async function runIocIngestPass(
   let malwareReportsWritten = 0;
   let radarEnriched = 0;
   let radarPulse: IocIngestTelemetry['radarPulse'] = 'SKIPPED';
+
+  // ── 0. PHASE 7C — Sigma/Nuclei coverage index (2 requests, 24h cached) ──
+  const detection = await syncDetectionRules({ DB: env.DB }, { budget, now }).catch(() => null);
 
   const incoming: IncomingIoc[] = [];
   const noteRejections = (rejected: Array<{ value: string; type: string; reason: string }>) => {
@@ -658,6 +667,7 @@ export async function runIocIngestPass(
 
   return {
     status: 'OK',
+    detection,
     subrequestsUsed: budget.used,
     subrequestBudget: budget.limit,
     sources,

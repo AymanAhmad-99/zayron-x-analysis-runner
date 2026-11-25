@@ -706,3 +706,191 @@ export async function searchIntelligence(query: string): Promise<ApiResult<Intel
     return { state: items.length ? "success" : "empty", data: { items } };
   } catch { return { state: "error", data: null, error: "Search API is unavailable" }; }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 7C — live IOC workspace, detection coverage and malware family hubs.
+//
+// Every indicator field consumed by the UI is the API's `defanged` projection.
+// `value` is never requested by the workspace and never rendered.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const IOC_READ_INIT = { headers: { accept: "application/json" } } as RequestInit;
+
+export interface IocStats {
+  active_total: number;
+  active_by_type: Record<string, number>;
+  top_families_24h: Array<{ family: string; count: number }>;
+  openssf_dossiers: number;
+  malware_reports_total: number;
+  edl_ready: number;
+  last_ingest_at: string | null;
+  latest_radar_pulse: { pulse_date: string; created_at: string | null } | null;
+  generated_at: string;
+}
+
+export interface IocFeedItem {
+  type: string;
+  defanged: string;
+  confidence: number;
+  status: string;
+  family?: string | null;
+  sources: string[];
+  seen_count?: number;
+  expires_at?: string | null;
+}
+
+export interface IocLookupRecord extends IocFeedItem {
+  seen_count: number;
+  asn?: string | null;
+  asn_name?: string | null;
+  country?: string | null;
+  radar_enriched_at?: string | null;
+}
+
+export interface IocLookupResult {
+  query: string;
+  status: "ACTIVE" | "EXPIRED" | "NOT_FOUND";
+  found: boolean;
+  data: IocLookupRecord | null;
+}
+
+export interface DetectionRule {
+  source: "nuclei" | "sigma";
+  rule_id: string;
+  name: string;
+  path: string;
+  severity: string | null;
+  url: string;
+}
+
+export interface DetectionRuleMatch {
+  cve: string | null;
+  family: string | null;
+  rules: DetectionRule[];
+  synced_at: string | null;
+}
+
+export interface MalwareFamilySummary {
+  family: string;
+  slug: string;
+  active_count: number;
+  edl_ready: number;
+  by_type: Record<string, number>;
+  sources: string[];
+  first_seen: string | null;
+  last_seen: string | null;
+  iocs: Array<{ type: string; defanged: string; confidence: number; status: string; expires_at: string | null; sources: string[] }>;
+  detection_rules: DetectionRule[];
+}
+
+export interface MalwareFamilyIndexEntry {
+  family: string;
+  slug: string;
+  active_count: number;
+}
+
+export async function getIocStats(): Promise<ApiResult<IocStats>> {
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/iocs/stats`, IOC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `IOC telemetry returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: IocStats };
+    return payload.data ? { state: "success", data: payload.data } : { state: "empty", data: null, error: "No telemetry" };
+  } catch {
+    return { state: "error", data: null, error: "IOC telemetry is unavailable" };
+  }
+}
+
+/** Anonymous, capped sample of the live feed (`preview=1`, max 100 rows). */
+export async function getIocPreview(params: {
+  type?: string;
+  minConfidence?: number;
+  limit?: number;
+} = {}): Promise<ApiResult<{ items: IocFeedItem[]; total: number }>> {
+  const query = new URLSearchParams({ preview: "1", format: "json" });
+  if (params.type) query.set("type", params.type);
+  if (typeof params.minConfidence === "number") query.set("min_confidence", String(params.minConfidence));
+  query.set("limit", String(Math.min(params.limit ?? 100, 100)));
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/iocs/feed?${query.toString()}`, IOC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `Indicator feed returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: IocFeedItem[]; count?: number };
+    const items = Array.isArray(payload.data) ? payload.data : [];
+    return { state: items.length ? "success" : "empty", data: { items, total: payload.count ?? items.length } };
+  } catch {
+    return { state: "error", data: null, error: "The indicator feed is unavailable" };
+  }
+}
+
+/** A 404 is a real verdict here (`NOT_FOUND`), not a transport failure. */
+export async function lookupIocValue(value: string): Promise<ApiResult<IocLookupResult>> {
+  try {
+    const response = await apiFetch(
+      `${getApiBaseUrl()}/iocs/lookup?q=${encodeURIComponent(value)}`,
+      IOC_READ_INIT,
+    );
+    if (response.status === 404) {
+      const payload = (await response.json().catch(() => ({}))) as Partial<IocLookupResult>;
+      return {
+        state: "empty",
+        data: { query: payload.query ?? value, status: "NOT_FOUND", found: false, data: null },
+      };
+    }
+    if (!response.ok) return { state: "error", data: null, error: `Lookup returned HTTP ${response.status}` };
+    const payload = (await response.json()) as Partial<IocLookupResult>;
+    return {
+      state: payload.found ? "success" : "empty",
+      data: {
+        query: payload.query ?? value,
+        status: payload.status ?? "NOT_FOUND",
+        found: Boolean(payload.found),
+        data: payload.data ?? null,
+      },
+    };
+  } catch {
+    return { state: "error", data: null, error: "Lookup is unavailable" };
+  }
+}
+
+export async function getDetectionRules(params: { cve?: string; family?: string }): Promise<ApiResult<DetectionRuleMatch>> {
+  const query = new URLSearchParams();
+  if (params.cve) query.set("cve", params.cve);
+  if (params.family) query.set("family", params.family);
+  if (!query.size) return { state: "empty", data: null };
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/detection/rules?${query.toString()}`, IOC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `Detection rules returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: DetectionRuleMatch };
+    const rules = payload.data?.rules ?? [];
+    return rules.length > 0
+      ? { state: "success", data: payload.data ?? null }
+      : { state: "empty", data: payload.data ?? null };
+  } catch {
+    return { state: "error", data: null, error: "Detection rules are unavailable" };
+  }
+}
+
+export async function getIocFamilies(): Promise<ApiResult<MalwareFamilyIndexEntry[]>> {
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/iocs/families`, IOC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `Family index returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: MalwareFamilyIndexEntry[] };
+    const items = Array.isArray(payload.data) ? payload.data : [];
+    return { state: items.length ? "success" : "empty", data: items };
+  } catch {
+    return { state: "error", data: null, error: "The family index is unavailable" };
+  }
+}
+
+export async function getIocFamily(slug: string): Promise<ApiResult<MalwareFamilySummary>> {
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/iocs/families/${encodeURIComponent(slug)}`, IOC_READ_INIT);
+    if (response.status === 404) return { state: "empty", data: null, error: "FAMILY_NOT_FOUND" };
+    if (!response.ok) return { state: "error", data: null, error: `Family returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: MalwareFamilySummary };
+    return payload.data
+      ? { state: "success", data: payload.data }
+      : { state: "empty", data: null, error: "FAMILY_NOT_FOUND" };
+  } catch {
+    return { state: "error", data: null, error: "The family summary is unavailable" };
+  }
+}

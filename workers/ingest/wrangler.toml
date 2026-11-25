@@ -73,6 +73,12 @@ LEGACY_FREEZE = "true"
 # returns before the RSS/KEV/MSRC enqueues, the AI smoke test and any outbound
 # work. Absent or any other value leaves the pulse disabled.
 AUTHORITATIVE_CVE_CRON_ENABLED = "true"
+# PHASE 7C — AUTOMATED IOC / OPENSSF CADENCE.
+# The pass is self-limiting (`MAX_SUBREQUESTS_PER_RUN = 25`; the first live run
+# used 8) AND staggered: it only runs on the first tick of each 8-hour block
+# (00:xx / 08:xx / 16:xx UTC), so it never shares a tick's subrequest budget
+# with the Telegram wire and the NVD pulse. Remove this line to disable.
+IOC_INGEST_ENABLED = "true"
 # Phase 4C.2 — EXECUTIVE TELEGRAM WIRE IS OPEN. Publishing to a public channel
 # is a live, unrecallable action, so it opens only on an explicit operator
 # decision: the Phase 4C.2 ruling, with TELEGRAM_BOT_TOKEN provisioned as a

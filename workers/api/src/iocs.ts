@@ -379,3 +379,189 @@ export async function buildEdl(
   const text = toEdlText(clean.map(toRecord), limit);
   return { text, count: text ? text.trim().split('\n').length : 0, total: clean.length };
 }
+
+// ── detection rules (Phase 7C) ───────────────────────────────────────────────
+
+export interface DetectionRuleRow {
+  id: string;
+  source: string;
+  rule_id: string;
+  kind: string;
+  match_key: string;
+  name: string;
+  path: string;
+  severity: string | null;
+  repo: string;
+  url: string;
+  synced_at: string;
+}
+
+export interface DetectionRule {
+  source: string;
+  rule_id: string;
+  name: string;
+  path: string;
+  severity: string | null;
+  url: string;
+}
+
+const RULE_COLUMNS = 'id, source, rule_id, kind, match_key, name, path, severity, repo, url, synced_at';
+
+function projectRule(row: DetectionRuleRow): DetectionRule {
+  return {
+    source: row.source,
+    rule_id: row.rule_id,
+    name: row.name,
+    path: row.path,
+    severity: row.severity,
+    url: row.url,
+  };
+}
+
+/**
+ * Verified GitHub rule/template matches for ONE cve or ONE family.
+ * Never synthesized: a row exists only because the rule file exists upstream.
+ */
+export async function queryDetectionRules(
+  db: D1Database,
+  query: { cve?: string | null; family?: string | null },
+): Promise<{ cve: string | null; family: string | null; rules: DetectionRule[]; synced_at: string | null }> {
+  const cve = String(query.cve || '').trim().toUpperCase();
+  const family = String(query.family || '').trim().toLowerCase();
+  if (!cve && !family) return { cve: null, family: null, rules: [], synced_at: null };
+
+  const clauses: string[] = [];
+  const binds: unknown[] = [];
+  if (cve && /^CVE-\d{4}-\d{4,}$/.test(cve)) {
+    clauses.push("(kind = 'cve' AND match_key = ?)");
+    binds.push(cve);
+  }
+  if (family) {
+    clauses.push("(kind = 'family' AND match_key = ?)");
+    binds.push(family);
+  }
+  if (clauses.length === 0) return { cve: cve || null, family: family || null, rules: [], synced_at: null };
+
+  const rows = await db
+    .prepare(
+      `SELECT ${RULE_COLUMNS} FROM detection_rules WHERE ${clauses.join(' OR ')}
+        ORDER BY CASE source WHEN 'nuclei' THEN 0 ELSE 1 END, name ASC LIMIT 25`,
+    )
+    .bind(...binds)
+    .all<DetectionRuleRow>();
+
+  const rules = (rows.results || []).map(projectRule);
+  const syncedAt = (rows.results || []).map((r) => r.synced_at).filter(Boolean).sort().pop() ?? null;
+  return { cve: cve || null, family: family || null, rules, synced_at: syncedAt };
+}
+
+// ── malware family hubs (Phase 7C) ──────────────────────────────────────────
+
+export function familySlug(value: string): string {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
+export interface FamilySummary {
+  family: string;
+  slug: string;
+  active_count: number;
+  edl_ready: number;
+  by_type: Record<string, number>;
+  sources: string[];
+  first_seen: string | null;
+  last_seen: string | null;
+  iocs: Array<{
+    type: string;
+    defanged: string;
+    confidence: number;
+    status: string;
+    expires_at: string | null;
+    sources: string[];
+  }>;
+  detection_rules: DetectionRule[];
+}
+
+let familyCache: { at: number; rows: Array<{ family: string; count: number }> } | null = null;
+
+/** Distinct families with active indicators, cached in-isolate for 60s. */
+export async function listIocFamilies(db: D1Database): Promise<Array<{ family: string; slug: string; active_count: number }>> {
+  if (familyCache && Date.now() - familyCache.at < 60_000) {
+    return familyCache.rows.map((row) => ({ ...row, slug: familySlug(row.family) }));
+  }
+  const rows = await db
+    .prepare(
+      `SELECT family, COUNT(*) AS count FROM iocs
+        WHERE status = 'ACTIVE' AND family IS NOT NULL AND family <> ''
+        GROUP BY family ORDER BY count DESC LIMIT 60`,
+    )
+    .all<{ family: string; count: number }>();
+  const clean = (rows.results || [])
+    .map((row) => ({ family: String(row.family), count: Number(row.count) || 0 }))
+    .filter((row) => row.family.trim().length > 0);
+  familyCache = { at: Date.now(), rows: clean };
+  return clean.map((row) => ({ ...row, slug: familySlug(row.family), active_count: row.count } as any));
+}
+
+/** Resolve a slug against the live family list, then build the hub payload. */
+export async function buildFamilySummary(db: D1Database, slug: string): Promise<FamilySummary | null> {
+  const wanted = familySlug(slug);
+  const families = await listIocFamilies(db);
+  const match = families.find((entry) => (entry as any).slug === wanted);
+  if (!match) return null;
+
+  const rows = await db
+    .prepare(
+      `SELECT type, normalized_value, confidence, status, expires_at, sources_json, created_at, updated_at
+         FROM iocs WHERE status = 'ACTIVE' AND LOWER(family) = LOWER(?)
+         ORDER BY confidence DESC, updated_at DESC LIMIT 100`,
+    )
+    .bind(match.family)
+    .all<{
+      type: string;
+      normalized_value: string;
+      confidence: number;
+      status: string;
+      expires_at: string | null;
+      sources_json: string;
+      created_at: string | null;
+      updated_at: string | null;
+    }>();
+
+  const all = rows.results || [];
+  const byType: Record<string, number> = {};
+  const sources = new Set<string>();
+  let edlReady = 0;
+  for (const row of all) {
+    byType[row.type] = (byType[row.type] || 0) + 1;
+    for (const source of parseSources(row.sources_json)) sources.add(source);
+    if (Number(row.confidence) >= EDL_MIN_CONFIDENCE) edlReady += 1;
+  }
+
+  const detection = await queryDetectionRules(db, { family: match.family }).catch(() => ({ rules: [] as DetectionRule[] }));
+
+  return {
+    family: match.family,
+    slug: wanted,
+    active_count: all.length,
+    edl_ready: edlReady,
+    by_type: byType,
+    sources: Array.from(sources).sort(),
+    first_seen: all.map((r) => r.created_at).filter(Boolean).sort()[0] ?? null,
+    last_seen: all.map((r) => r.updated_at).filter(Boolean).sort().pop() ?? null,
+    // Public HTML consumes ONLY `defanged`. The raw value never leaves this
+    // function into a rendered page.
+    iocs: all.slice(0, 25).map((row) => ({
+      type: row.type,
+      defanged: defangIndicator(row.normalized_value),
+      confidence: Number(row.confidence) || 0,
+      status: row.status,
+      expires_at: row.expires_at,
+      sources: parseSources(row.sources_json),
+    })),
+    detection_rules: detection.rules,
+  };
+}

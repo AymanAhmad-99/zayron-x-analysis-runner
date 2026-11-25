@@ -33,6 +33,7 @@ import { authoritativeCronEnabled, runAuthoritativePulse } from './authoritative
 import { runStrategicPass } from './strategicCveAnalysis';
 import { runTelegramDispatchPass } from './telegramDispatch';
 import { runIocIngestPass } from './iocIngest';
+import { isIocIngestSlot } from './detectionRules';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -309,7 +310,10 @@ const ingestHandlers = {
       // of external calls, and a Worker invocation shares one subrequest budget
       // with the wire and the pulse above, so it only joins the scheduled tick
       // on an explicit `IOC_INGEST_ENABLED="true"`. Never throws into the cron.
-      if (env.IOC_INGEST_ENABLED === 'true') {
+      // STAGGERED SLOT: only the first tick of each 8-hour block runs the pass,
+      // so its bounded subrequest set never competes with the wire or the pulse
+      // for the same invocation's budget.
+      if (env.IOC_INGEST_ENABLED === 'true' && isIocIngestSlot(new Date(), 8)) {
         try {
           const ioc = await runIocIngestPass(env as any, {});
           console.log(JSON.stringify({ type: 'IOC_INGEST_PASS', ...ioc }));

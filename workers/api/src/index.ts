@@ -118,9 +118,12 @@ import { buildOpenApiDocument } from './openapi';
 import {
   EDL_PREVIEW_MAX_LINES,
   buildEdl,
+  buildFamilySummary,
   buildIocStats,
   formatIocFeed,
+  listIocFamilies,
   lookupIoc,
+  queryDetectionRules,
   queryIocFeed,
   resolveEdlType,
 } from './iocs';
@@ -830,6 +833,36 @@ const worker = {
           iocContext = { tier: resolved.tier, limit: allowance.limit, keyPrefix: resolved.keyPrefix };
         }
 
+        // ── GET /api/v1/iocs/families ────────────────────────────────
+        // Live family index for the workspace, the sitemap and the hubs.
+        if (path === '/api/v1/iocs/families') {
+          try {
+            const families = await listIocFamilies(env.DB);
+            return jsonResponse({ status: 'SUCCESS', count: families.length, data: families });
+          } catch (err: any) {
+            console.error('[API] ioc families failed', { site: 'api.iocs.families', error: err?.message ?? String(err) });
+            return errorResponse('Malware families temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+          }
+        }
+
+        // ── GET /api/v1/iocs/families/:slug ──────────────────────────
+        if (path.startsWith('/api/v1/iocs/families/')) {
+          const slug = decodeURIComponent(path.slice('/api/v1/iocs/families/'.length)).trim();
+          if (!slug || slug.length > 80) {
+            return developerError(400, 'INVALID_FAMILY', 'A family slug is required');
+          }
+          try {
+            const summary = await buildFamilySummary(env.DB, slug);
+            if (!summary) {
+              return developerError(404, 'FAMILY_NOT_FOUND', 'No live indicators are tracked for this family');
+            }
+            return jsonResponse({ status: 'SUCCESS', data: summary });
+          } catch (err: any) {
+            console.error('[API] ioc family failed', { site: 'api.iocs.family', error: err?.message ?? String(err) });
+            return errorResponse('Malware family temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+          }
+        }
+
         // ── GET /api/v1/iocs/stats ────────────────────────────────────
         if (path === '/api/v1/iocs/stats') {
           try {
@@ -866,20 +899,30 @@ const worker = {
 
         // ── GET /api/v1/iocs/feed ─────────────────────────────────────
         if (path === '/api/v1/iocs/feed') {
-          if (!iocContext) {
+          // An anonymous caller may sample the feed with `?preview=1`, capped at
+          // 100 rows in JSON only. That is the same trade the EDL makes: a
+          // developer can evaluate the data shape before holding a credential,
+          // and no unauthenticated caller can bulk-export the corpus.
+          const preview = (url.searchParams.get('preview') || '') === '1';
+          const anonymousPreview = !iocContext && preview;
+          if (!iocContext && !preview) {
             return developerError(401, 'API_KEY_REQUIRED', 'A `zx_live_…` bearer token is required for the IOC feed');
           }
           const format = (url.searchParams.get('format') || 'json').trim().toLowerCase();
           if (!['json', 'csv', 'stix'].includes(format)) {
             return developerError(400, 'INVALID_FORMAT', 'format must be one of json, csv, stix');
           }
+          if (anonymousPreview && format !== 'json') {
+            return developerError(401, 'API_KEY_REQUIRED', 'csv and stix exports require a bearer token');
+          }
           try {
+            const requestedLimit = Number(url.searchParams.get('limit') ?? 500);
             const feed = await queryIocFeed(env.DB, {
               type: url.searchParams.get('type'),
               family: url.searchParams.get('family'),
               minConfidence: Number(url.searchParams.get('min_confidence') ?? 70),
               status: url.searchParams.get('status'),
-              limit: Number(url.searchParams.get('limit') ?? 500),
+              limit: anonymousPreview ? Math.min(requestedLimit || 100, 100) : requestedLimit,
             });
             const rendered = formatIocFeed(feed.rows, format);
             return withApiKeyHeaders(
@@ -945,6 +988,24 @@ const worker = {
         }
 
         return developerError(404, 'UNKNOWN_IOC_ROUTE', 'Unknown IOC resource');
+      }
+
+      // ── GET /api/v1/detection/rules?vendor=cve|family ──────────────
+      // PHASE 7C — VERIFIED GitHub rule matches only. A row exists because the
+      // upstream Sigma/Nuclei file exists; nothing is synthesised here.
+      if (path === '/api/v1/detection/rules' && request.method === 'GET') {
+        const cve = url.searchParams.get('cve');
+        const family = url.searchParams.get('family');
+        if (!cve && !family) {
+          return developerError(400, 'MISSING_MATCH_KEY', 'Provide `cve` or `family`');
+        }
+        try {
+          const match = await queryDetectionRules(env.DB, { cve, family });
+          return jsonResponse({ status: 'SUCCESS', data: match });
+        } catch (err: any) {
+          console.error('[API] detection rules failed', { site: 'api.detection.rules', error: err?.message ?? String(err) });
+          return errorResponse('Detection rules temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
       }
 
       // ── POST /api/v1/keys/self-serve ─────────────────────────────────

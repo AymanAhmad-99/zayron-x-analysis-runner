@@ -67,3 +67,64 @@
 .dev-section code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--orange)}
 @media(max-width:900px){.dev-hero{grid-template-columns:1fr;gap:36px;align-items:start}.dev-section-head{display:block}.dev-section-head>p{margin-top:16px}.dev-key-grid{grid-template-columns:1fr}.dev-tier-grid{grid-template-columns:1fr}.dev-lead-form{grid-template-columns:1fr}}
 @media(max-width:600px){.dev-hero{padding:56px 0 44px}.dev-section{padding:52px 0}.dev-submit{width:100%;justify-content:center}.dev-live-head{display:block}.dev-live-head .button{margin-top:12px;width:100%;justify-content:center}}
+
+/* ── PHASE 7C — live IOC workspace, detection readiness, family hubs ── */
+.ioc-telemetry{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin:0 0 26px}
+.ioc-telemetry-card{background:var(--surface);padding:16px 14px;display:flex;flex-direction:column;gap:6px}
+.ioc-telemetry-card span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.ioc-telemetry-card strong{font-size:19px;line-height:1.15;color:var(--text);font-weight:600;word-break:break-word}
+.ioc-telemetry-card small{font-size:11px;color:var(--muted)}
+.ioc-note{font-size:12px;color:var(--muted);margin:8px 0 0}
+.ioc-note.error{color:var(--orange)}
+.ioc-lookup{border:1px solid var(--border);background:var(--surface);padding:20px;margin:0 0 26px}
+.ioc-lookup-form label{display:block;font-size:10px;letter-spacing:.12em;color:var(--muted);font-weight:700;margin-bottom:10px}
+.ioc-lookup-form>div{display:flex;gap:8px}
+.ioc-lookup-form input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 12px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.ioc-lookup-form input:focus{outline:2px solid var(--orange);outline-offset:1px}
+.ioc-lookup-submit{background:var(--orange);color:#0b0b0b;border:0;padding:0 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.ioc-lookup-submit:disabled{opacity:.6;cursor:default}
+.ioc-lookup-result{margin-top:18px;border-top:1px solid var(--border);padding-top:16px}
+.ioc-lookup-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ioc-lookup-head code{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--orange);word-break:break-all}
+.ioc-verdict{font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 9px;border:1px solid var(--border);text-transform:uppercase}
+.ioc-verdict.active{color:#7ee2a8;border-color:#2c6b47}
+.ioc-verdict.expired{color:#e2c37e;border-color:#6b5c2c}
+.ioc-verdict.unknown{color:var(--muted)}
+.ioc-copy,.ioc-copy:focus{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;cursor:pointer;font-family:inherit}
+.ioc-copy:hover{color:var(--orange);border-color:var(--orange)}
+.ioc-confidence{display:flex;align-items:center;gap:10px;margin:14px 0}
+.ioc-confidence span{font-size:10px;letter-spacing:.1em;color:var(--muted)}
+.ioc-confidence>div{flex:1;height:6px;background:var(--bg);border:1px solid var(--border);max-width:320px}
+.ioc-confidence i{display:block;height:100%;background:var(--orange)}
+.ioc-confidence strong{font-size:12px;color:var(--text)}
+.ioc-lookup-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0}
+.ioc-lookup-facts dt{font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.ioc-lookup-facts dd{margin:3px 0 0;font-size:12px;color:var(--text);word-break:break-word}
+.ioc-table-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.ioc-filters{display:flex;gap:6px;flex-wrap:wrap}
+.ioc-filter{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:6px 12px;cursor:pointer;letter-spacing:.04em;font-family:inherit}
+.ioc-filter.active{background:var(--orange);border-color:var(--orange);color:#0b0b0b;font-weight:700}
+.ioc-cta{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--orange);text-decoration:none;font-weight:700}
+.ioc-cta:hover{text-decoration:underline}
+.ioc-value{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--text);word-break:break-all;margin-right:8px}
+.ioc-section-title{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
+.det-readiness{border:1px solid var(--border);border-left:2px solid var(--orange);background:var(--surface);padding:16px 18px;margin:0 0 22px}
+.det-readiness header{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:10px}
+.det-readiness header span{font-size:10px;letter-spacing:.12em;color:var(--orange);font-weight:700}
+.det-readiness header p{font-size:12px;color:var(--muted);margin:6px 0 0;line-height:1.55;max-width:70ch}
+.det-readiness header small{font-size:10px;color:var(--muted);white-space:nowrap}
+.det-readiness ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.det-readiness li{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:12px}
+.det-readiness code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--text);word-break:break-all}
+.det-readiness a{font-size:11px;color:var(--orange);text-decoration:none}
+.det-readiness a:hover{text-decoration:underline}
+.det-source{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--border);color:var(--muted)}
+.det-source.nuclei{color:#8fb8ff;border-color:#2c3f6b}
+.det-source.sigma{color:#c9a6ff;border-color:#4a2c6b}
+.mr-human-title{font-size:15px;color:var(--text);font-weight:600;margin:0 0 6px;line-height:1.4}
+.home-source-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border)}
+.home-source-strip span{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);padding:4px 9px}
+.home-source-strip .home-source-label{color:var(--orange);border:0;padding:0;font-weight:700}
+.latest-intelligence-actions{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:1100px){.ioc-telemetry{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ioc-telemetry{grid-template-columns:repeat(2,minmax(0,1fr))}.ioc-lookup-form>div{flex-direction:column}.ioc-lookup-submit{padding:11px 20px}}

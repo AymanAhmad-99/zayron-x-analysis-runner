@@ -1,4 +1,6 @@
 import { apiFetch, getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../../lib/siteConfig";
+import { getIocFamilies } from "../../lib/api";
+import { familyHubPath } from "../../lib/iocSeo";
 import {
   buildUrlset,
   isSitemapPageWithinCap,
@@ -48,7 +50,12 @@ export async function GET(
   }
 
   if (parsed.kind === "static") {
-    return xmlResponse(buildUrlset(staticSitemapEntries(getSiteUrl())));
+    // PHASE 7C — TIER 2. Only families with LIVE indicators are advertised: a
+    // hub that 404s must never appear in the sitemap, or the crawl budget buys
+    // a soft-404 instead of a page.
+    const families = await getIocFamilies();
+    const familyEntries = (families.data ?? []).map((entry) => ({ loc: `${getSiteUrl()}${familyHubPath(entry.slug)}` }));
+    return xmlResponse(buildUrlset([...staticSitemapEntries(getSiteUrl()), ...familyEntries]));
   }
 
   // Wave 4C — Free-Tier Survival Mode: a shard outside the configured cap is not

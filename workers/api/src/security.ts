@@ -220,6 +220,9 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/graph",
   "/api/v1/graph/edges",
   "/api/v1/iocs",
+  // PHASE 7C — read-only detection coverage and the malware family index.
+  "/api/v1/detection/rules",
+  "/api/v1/iocs/families",
   "/api/v1/regulations",
   "/api/v1/reports",
   "/api/v1/search",
@@ -240,6 +243,7 @@ const PUBLIC_READ_PREFIXES = [
   "/api/v1/articles/",
   "/api/v1/campaigns/",
   "/api/v1/iocs/",
+  "/api/v1/detection/",
   "/api/v1/reports/",
   "/api/v1/threats/",
 ];

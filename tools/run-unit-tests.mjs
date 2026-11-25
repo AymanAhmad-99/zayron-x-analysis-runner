@@ -89,6 +89,10 @@ const SUITES = [
   // bundle validity, EDL >= 85 gate, OpenSSF/abuse.ch/Spamhaus mappers and the
   // 25-subrequest Free-tier ceiling. Local-only: pure modules, no D1, no network.
   'tests/ioc_engine_v2.test.ts',
+  // Phase 7C: SAFE-RENDER guarantee (no indicator in an href), Sigma/Nuclei
+  // matcher, staggered ingest slot, family hub Dataset JSON-LD + indexability,
+  // transient-lookup noindex and /llms.txt. Local-only, no network.
+  'tests/phase7c_ioc_workspace_seo.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).

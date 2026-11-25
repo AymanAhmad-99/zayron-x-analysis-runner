@@ -80,14 +80,24 @@ const PUBLIC_PAGE_CACHE = new Set([
   "/",
   "/intelligence/vulnerabilities",
   "/intelligence/malware",
+  // PHASE 7C — the live IOC workspace and the server-rendered family hubs.
+  "/intelligence/iocs",
   "/pricing",
   "/developers",
 ]);
 
+/**
+ * Prefix-cached page families. A family hub is a stable, anonymous, SSR
+ * document keyed only by its slug, so it inherits the same 300s edge policy as
+ * the catalog roots rather than the Worker serving every crawler hit.
+ */
+const PUBLIC_PAGE_CACHE_PREFIXES = ["/intelligence/malware/families/"];
+
 const PUBLIC_PAGE_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
 
 function withPageCache(response: NextResponse, pathname: string): NextResponse {
-  if (PUBLIC_PAGE_CACHE.has(normalizePath(pathname))) {
+  const path = normalizePath(pathname);
+  if (PUBLIC_PAGE_CACHE.has(path) || PUBLIC_PAGE_CACHE_PREFIXES.some((prefix) => path.startsWith(prefix))) {
     response.headers.set("Cache-Control", PUBLIC_PAGE_CACHE_CONTROL);
   }
   return response;
