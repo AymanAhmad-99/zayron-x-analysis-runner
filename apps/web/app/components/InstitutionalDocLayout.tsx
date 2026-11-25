@@ -25,6 +25,7 @@ export function InstitutionalDocLayout({
   summary,
   sections,
   contact = "contact@zayron-x.co",
+  statusSlot,
 }: {
   /** Document category badge, e.g. `GOVERNANCE`, `LEGAL`, `COMPANY`. */
   category: string;
@@ -32,6 +33,8 @@ export function InstitutionalDocLayout({
   summary: string;
   sections: DocSection[];
   contact?: string;
+  /** PHASE 7D — optional live status line (pipeline health) under the summary. */
+  statusSlot?: React.ReactNode;
 }) {
   return (
     <main className="site-atmosphere">
@@ -42,6 +45,7 @@ export function InstitutionalDocLayout({
             <p className="doc-badge">{category}</p>
             <h1 id="doc-title">{title}</h1>
             <p className="doc-summary">{summary}</p>
+            {statusSlot}
             <dl className="doc-meta">
               <div>
                 <dt>Document</dt>

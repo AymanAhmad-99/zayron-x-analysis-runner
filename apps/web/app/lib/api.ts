@@ -921,3 +921,36 @@ export async function getSupplyChainDossiers(limit = 12): Promise<ApiResult<Supp
     return { state: "error", data: null, error: "Supply-chain dossiers are unavailable" };
   }
 }
+
+export interface PipelineStage {
+  last_at: string | null;
+  total?: number;
+  active_total?: number;
+  rules?: number;
+  status?: string | null;
+}
+
+export interface PipelineHealth {
+  healthy: boolean;
+  last_verified_at: string | null;
+  generated_at: string;
+  cve_ingest: PipelineStage;
+  openssf_malware_ingest: PipelineStage;
+  ioc_ingest: PipelineStage;
+  detection_sync: PipelineStage;
+  telegram_dispatch: PipelineStage;
+}
+
+/** Aggregate pipeline status (edge-cached 60s) for the status badge. */
+export async function getPipelineHealth(): Promise<ApiResult<PipelineHealth>> {
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/health/pipeline`, IOC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `Pipeline health returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: PipelineHealth };
+    return payload.data
+      ? { state: "success", data: payload.data }
+      : { state: "error", data: null, error: "Pipeline health payload was empty" };
+  } catch {
+    return { state: "error", data: null, error: "Pipeline health is unavailable" };
+  }
+}

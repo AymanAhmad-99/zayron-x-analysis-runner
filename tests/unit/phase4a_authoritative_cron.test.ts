@@ -104,9 +104,14 @@ describe('2 — the freeze branch runs ONLY the authoritative pulse', () => {
     const returnAfterPulse = scheduled.slice(pulseCall, scheduled.indexOf('const smokeTraceId'));
     expect(branch).toContain('AUTHORITATIVE_CVE_PULSE_DISABLED');
     expect(returnAfterPulse).toContain('return;');
-    // No outbound publication, no collector call, no Telegram read in the branch.
-    expect(branch).not.toContain('telegram');
+    // No outbound publication and no collector call in the branch. PHASE 7D
+    // added the bounded 10-slot wire here (one post per tick, before the pulse),
+    // so the assertion is that the branch publishes ONLY through that wire —
+    // never through the legacy Telegram collector or the publish queue.
+    expect(branch).toContain('runTelegramWireSlot');
+    expect(branch).toContain("type: 'TELEGRAM_WIRE_SLOT'");
     expect(branch).not.toContain('PUBLISH_QUEUE');
+    expect(branch).not.toContain('cybersecurity-advisories');
   });
 
   it('the operator trigger remains preview-only', () => {

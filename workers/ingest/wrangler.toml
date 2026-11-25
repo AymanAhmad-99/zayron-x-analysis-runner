@@ -85,7 +85,7 @@ IOC_INGEST_ENABLED = "true"
 # Worker Secret and the bot added as an admin of @zayronxai. Preview stays
 # closed (dry run only). The cap is a hard ceiling (dispatcher clamps to 1..6).
 TELEGRAM_OUTBOUND_ENABLED = "true"
-TELEGRAM_MAX_DAILY_DISPATCHES = "6"
+TELEGRAM_MAX_DAILY_DISPATCHES = "10"
 # Phase 4C.3 — ANTI-BURST PACING. The cron is `0 */4 * * *` (6 ticks/day), so the
 # daily cap alone still allowed a single tick to publish the whole backlog at
 # once (04:07 UTC shipped three posts in one second). One post per tick, plus a
@@ -126,7 +126,7 @@ LEGACY_FREEZE = "false"
 AUTHORITATIVE_CVE_CRON_ENABLED = "true"
 # Preview must never publish to the production channel: dry run only.
 TELEGRAM_OUTBOUND_ENABLED = "false"
-TELEGRAM_MAX_DAILY_DISPATCHES = "6"
+TELEGRAM_MAX_DAILY_DISPATCHES = "10"
 TELEGRAM_MAX_PER_TICK = "1"
 
 [[env.preview.vectorize]]
@@ -205,7 +205,7 @@ crons = []
 # Free-Tier Survival Mode (every 4h); restore */10 or */30 after a Workers Paid
 # upgrade. Under LEGACY_FREEZE=true this fires ONLY the authoritative pulse.
 [triggers]
-crons = ["0 */4 * * *"]
+crons = ["0,20,40 * * * *"]
 
 # ZX-28: Workers Logs / traces for queue and cron invocations. CPU limits are
 # deliberately untouched: a cap would throttle AI/ingest workloads.

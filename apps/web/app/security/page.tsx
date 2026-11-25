@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DocTable, InstitutionalDocLayout, type DocSection } from "../components/InstitutionalDocLayout";
+import { PipelineHealthBadge } from "../components/PipelineHealthBadge";
 import { isPreviewDeployment } from "../lib/siteConfig";
 import { resolvePageRobots } from "../lib/seo";
 
@@ -164,6 +165,7 @@ export default function SecurityPage() {
       title="Trust, Security &amp; Disclosure"
       summary="Platform security architecture, the read/write boundary, and a formal vulnerability disclosure policy with safe harbor."
       sections={sections}
+      statusSlot={<PipelineHealthBadge />}
     />
   );
 }

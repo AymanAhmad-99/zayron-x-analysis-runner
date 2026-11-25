@@ -196,6 +196,8 @@ const EXPENSIVE_PATHS = new Set([
  */
 const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/health",
+  // PHASE 7D — public pipeline health (status badge on /developers & /security).
+  "/api/v1/health/pipeline",
   // PHASE 7A — developer specification and self-serve catalog roots.
   "/api/v1/openapi.json",
   "/api/v1/intelligence",

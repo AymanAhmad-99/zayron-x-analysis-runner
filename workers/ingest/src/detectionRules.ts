@@ -160,10 +160,16 @@ export function parseSigmaFamilyRules(entries: TreeEntry[], options: { max?: num
  * (00:xx, 08:xx, 16:xx UTC) — three times a day, minutes away from every other
  * heavy pass.
  */
+/**
+ * PHASE 7D — COLLISION GUARD. The IOC ingest pass runs at **:20** of every 8th
+ * UTC hour (`00:20`, `08:20`, `16:20`), never on the `:00` Telegram/NVD slot and
+ * never on a `:40` wire slot, so no invocation pays for both a full ingest pass
+ * and a post.
+ */
 export function isIocIngestSlot(when: Date = new Date(), slotHours = 8): boolean {
   const hour = when.getUTCHours();
   const minute = when.getUTCMinutes();
-  return hour % Math.max(1, slotHours) === 0 && minute < 30;
+  return minute === 20 && hour % Math.max(1, slotHours) === 0;
 }
 
 export interface DetectionSyncResult {

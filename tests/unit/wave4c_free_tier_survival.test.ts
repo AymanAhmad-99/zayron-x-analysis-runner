@@ -585,14 +585,20 @@ describe("Wave 4C — ingest cron throttle", () => {
     expect(preview).not.toMatch(/^crons = \[.*\*\/10.*\]$/m);
   });
 
-  test("production runs every 4 hours, not every 10 minutes", () => {
+  test("production runs the 20-minute wire grid, not a 10-minute hammer", () => {
     // Phase 4A — the schedule must sit on the TOP-LEVEL worker, because that is
     // the name `wrangler deploy` publishes. A schedule under [env.production]
     // targets `<name>-production`, which is never deployed, so the live loop had
     // no cron at all while this assertion passed.
     const production = tomlSection(ingest, "[triggers]");
-    expect(production).toMatch(/^crons = \["0 \*\/4 \* \* \*"\]$/m);
+    // PHASE 7D — ONE cron expression drives the ten business-hours wire slots.
+    // The heavy NVD/KEV/EPSS pulse is gated inside the handler to the original
+    // 4-hourly `:00` ticks (`isAuthoritativePulseTick`), so the extra `:20`/`:40`
+    // ticks cost no ingest subrequests.
+    expect(production).toMatch(/^crons = \["0,20,40 \* \* \* \*"\]$/m);
     expect(production).not.toMatch(/^crons = \[.*\*\/10.*\]$/m);
+    // Exactly one trigger: the Free plan allows five and the wire needs none extra.
+    expect(production.match(/^crons = \[/gm)?.length).toBe(1);
     expect(ingest).toContain("Free-Tier Survival Mode (every 4h)");
     // 6 runs/day instead of 144.
     expect(production).not.toContain('"*/30 * * * *"');

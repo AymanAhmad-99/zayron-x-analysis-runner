@@ -94,8 +94,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       siteName: "ZAYRON-X",
+      // PHASE 7D — programmatic edge card, rendered once and CDN-cached a day.
+      images: [{ url: `/api/og/cve/${encodeURIComponent(identifier)}`, width: 1200, height: 630, alt: title }],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`/api/og/cve/${encodeURIComponent(identifier)}`],
+    },
   };
 }
 

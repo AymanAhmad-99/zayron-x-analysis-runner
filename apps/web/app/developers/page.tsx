@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Navbar } from "../components/Navbar";
 import { DeveloperPortal } from "../components/DeveloperPortal";
 import { SiteFooter } from "../components/SiteFooter";
+import { PipelineHealthBadge } from "../components/PipelineHealthBadge";
 import { isPreviewDeployment } from "../lib/siteConfig";
 import { resolvePageRobots } from "../lib/seo";
 
@@ -29,6 +30,7 @@ export default function DevelopersPage() {
     <main className="site-atmosphere">
       <div className="page-content">
         <Navbar />
+        <PipelineHealthBadge />
         <DeveloperPortal turnstileSiteKey={turnstileSiteKey} />
         <SiteFooter />
       </div>

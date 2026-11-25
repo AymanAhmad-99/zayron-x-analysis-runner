@@ -135,3 +135,9 @@
 .sc-dossiers span{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
 .sc-dossiers code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted)}
 .sc-dossiers time{font-size:11px;color:var(--muted);white-space:nowrap}
+.pipeline-badge{display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:6px 12px;border:1px solid var(--border);background:rgba(255,255,255,.02);font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pipeline-badge strong{color:var(--text);font-weight:600}
+.pipeline-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.pipeline-badge-ok .pipeline-badge-dot{background:#3ad07a;box-shadow:0 0 8px rgba(58,208,122,.7)}
+.pipeline-badge-warn .pipeline-badge-dot{background:#ff5500}
+.pipeline-badge-unknown .pipeline-badge-dot{background:#6c6c78}

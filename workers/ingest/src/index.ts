@@ -32,6 +32,9 @@ import { runCtiEnrichmentPass } from './ctiEnrichment';
 import { authoritativeCronEnabled, runAuthoritativePulse } from './authoritativePulse';
 import { runStrategicPass } from './strategicCveAnalysis';
 import { runTelegramDispatchPass } from './telegramDispatch';
+// PHASE 7D — the 10-slot business-hours wire owns the scheduled Telegram tick.
+import { runTelegramWireSlot } from './telegramWireSlot';
+import { isAuthoritativePulseTick } from './telegramSlots';
 import { runIocIngestPass } from './iocIngest';
 import { isIocIngestSlot } from './detectionRules';
 import { WorkerEntrypoint } from 'cloudflare:workers';
@@ -282,13 +285,14 @@ const ingestHandlers = {
       //
       // Each pass is independently fallible: neither a failed wire nor a failed
       // pulse can prevent the other from running.
+      // PHASE 7D — TEN FIXED BUSINESS-HOURS SLOTS. One `0,20,40 * * * *` cron
+      // drives all of them: this call resolves the slot that owns the current
+      // UTC minute (quiet hours included, where only a breaking P0 may speak)
+      // and publishes at most one post. `runTelegramDispatchPass` stays the
+      // operator override on `/internal/telegram-dispatch`.
       try {
-        // `automated: true` applies the cron pacing contract: at most
-        // TELEGRAM_MAX_PER_TICK (1) post, and only when no SENT row landed in
-        // the previous 180 minutes. The operator route omits it and keeps the
-        // explicit override.
-        const dispatch = await runTelegramDispatchPass(env as any, { automated: true });
-        console.log(JSON.stringify({ type: 'TELEGRAM_DISPATCH_PASS', ...dispatch }));
+        const slotDispatch = await runTelegramWireSlot(env as any, { when: new Date() });
+        console.log(JSON.stringify({ type: 'TELEGRAM_WIRE_SLOT', ...slotDispatch }));
       } catch (error) {
         console.error(JSON.stringify({
           type: 'TELEGRAM_DISPATCH_PASS_FAILED',
@@ -296,7 +300,10 @@ const ingestHandlers = {
         }));
       }
 
-      try {
+      // The heavy NVD/KEV/EPSS/briefing pulse keeps its original 4-hourly
+      // cadence; the extra :20/:40 ticks exist only for the wire and the IOC
+      // pass, so a Free-plan invocation never pays for two heavy passes.
+      if (isAuthoritativePulseTick(new Date())) try {
         const pulse = await runAuthoritativePulse(env as any, { trigger: _controller?.cron || 'scheduled' });
         console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_PULSE', ...pulse }));
       } catch (error) {
@@ -326,6 +333,10 @@ const ingestHandlers = {
       }
       return;
     }
+    // The `0,20,40 * * * *` grid exists for the business-hours wire. The legacy
+    // (unfrozen) path keeps its original 4-hourly semantics: the extra ticks
+    // return immediately instead of running the full legacy pipeline 72×/day.
+    if (!isAuthoritativePulseTick(new Date())) return;
     const smokeTraceId = `trace_${crypto.randomUUID().slice(0, 12)}`;
     const smokeTelemetry = await checkAIAvailability(
       env.KNOWLEDGE_PROCESSOR ? () => env.KNOWLEDGE_PROCESSOR!.smokeTest({ trace_id: smokeTraceId }) : undefined,

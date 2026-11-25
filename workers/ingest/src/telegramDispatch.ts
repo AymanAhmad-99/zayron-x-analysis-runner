@@ -38,7 +38,9 @@ import {
 export const TELEGRAM_DISPATCH_CHANNEL_VAR = 'TELEGRAM_TARGET_CHANNEL';
 export const TELEGRAM_OUTBOUND_FLAG = 'TELEGRAM_OUTBOUND_ENABLED';
 export const TELEGRAM_DAILY_CAP_VAR = 'TELEGRAM_MAX_DAILY_DISPATCHES';
-export const TELEGRAM_DEFAULT_DAILY_CAP = 6;
+/** PHASE 7D — the wire publishes ten business-hours slots per day. */
+export const TELEGRAM_DEFAULT_DAILY_CAP = 10;
+export const TELEGRAM_MAX_DAILY_CAP = 10;
 export const TELEGRAM_PER_TICK_VAR = 'TELEGRAM_MAX_PER_TICK';
 export const TELEGRAM_DEFAULT_PER_TICK = 1;
 /** Anti-burst spacing that applies to AUTOMATED (cron) runs only. */
@@ -92,7 +94,7 @@ export function telegramOutboundEnabled(env: TelegramDispatchEnv): boolean {
 export function resolveDailyCap(env: TelegramDispatchEnv): number {
   const raw = Number(String(env?.[TELEGRAM_DAILY_CAP_VAR] ?? '').trim());
   if (!Number.isFinite(raw) || raw <= 0) return TELEGRAM_DEFAULT_DAILY_CAP;
-  return Math.min(Math.max(Math.floor(raw), 1), TELEGRAM_DEFAULT_DAILY_CAP);
+  return Math.min(Math.max(Math.floor(raw), 1), TELEGRAM_MAX_DAILY_CAP);
 }
 
 /**
@@ -169,7 +171,7 @@ function parseDispatchedAt(raw: string): number {
   return Date.parse(/[Zz]$|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`);
 }
 
-const parseJson = <T>(raw: unknown, fallback: T): T => {
+export const parseJson = <T>(raw: unknown, fallback: T): T => {
   if (typeof raw !== 'string' || !raw.trim()) return fallback;
   try {
     const parsed = JSON.parse(raw);
@@ -179,7 +181,7 @@ const parseJson = <T>(raw: unknown, fallback: T): T => {
   }
 };
 
-const stringArray = (raw: unknown): string[] => {
+export const stringArray = (raw: unknown): string[] => {
   const parsed = parseJson<unknown>(raw, []);
   return Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === 'string') : [];
 };
@@ -194,7 +196,7 @@ export function isDispatchableDossier(signals: {
   return signals.capability_candidates >= 5 || signals.primary_network_indicators >= 1;
 }
 
-async function sendTelegramMessage(
+export async function sendTelegramMessage(
   token: string,
   chatId: string,
   html: string,

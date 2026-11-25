@@ -36,7 +36,17 @@ export async function generateMetadata({
     robots: transientState
       ? { index: false, follow: true }
       : resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
-    openGraph: { title: "Live IOC intelligence | ZAYRON-X", url: "/intelligence/iocs" },
+    openGraph: {
+      title: "Live IOC intelligence | ZAYRON-X",
+      url: "/intelligence/iocs",
+      // PHASE 7D — one card for the whole workbench, shared by every post.
+      images: [{ url: "/api/og/ioc-pulse", width: 1200, height: 630, alt: "ZAYRON-X live IOC pulse" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Live IOC intelligence | ZAYRON-X",
+      images: ["/api/og/ioc-pulse"],
+    },
   };
 }
 

@@ -276,10 +276,13 @@ describe('telegram dispatcher — closed by default', () => {
     expect(telegramOutboundEnabled({ DB: null, TELEGRAM_OUTBOUND_ENABLED: 'yes' } as any)).toBe(false);
   });
 
-  test('daily cap defaults to 6 and can never be raised above it', () => {
+  // PHASE 7D — the business-hours wire publishes ten slots, so the ceiling is 10
+  // and can still never be raised above it by environment configuration.
+  test('daily cap defaults to 10 and can never be raised above it', () => {
+    expect(TELEGRAM_DEFAULT_DAILY_CAP).toBe(10);
     expect(resolveDailyCap({ DB: null })).toBe(TELEGRAM_DEFAULT_DAILY_CAP);
-    expect(resolveDailyCap({ DB: null, TELEGRAM_MAX_DAILY_DISPATCHES: '50' })).toBe(6);
-    expect(resolveDailyCap({ DB: null, TELEGRAM_MAX_DAILY_DISPATCHES: '0' })).toBe(6);
+    expect(resolveDailyCap({ DB: null, TELEGRAM_MAX_DAILY_DISPATCHES: '50' })).toBe(10);
+    expect(resolveDailyCap({ DB: null, TELEGRAM_MAX_DAILY_DISPATCHES: '0' })).toBe(10);
     expect(resolveDailyCap({ DB: null, TELEGRAM_MAX_DAILY_DISPATCHES: '2' })).toBe(2);
   });
 
@@ -436,15 +439,15 @@ describe('telegram dispatcher — dry run and idempotency', () => {
     expect(ledger[0].args).toContain('4242');
   });
 
-  test('the daily cap stops dispatch at 6, and a reached cap sends nothing', async () => {
-    const atCap = makeDb({ cves: [cveRow()], sentToday: 6 });
+  test('the daily cap stops dispatch at 10, and a reached cap sends nothing', async () => {
+    const atCap = makeDb({ cves: [cveRow()], sentToday: 10 });
     let called = 0;
     const reached = await runTelegramDispatchPass(
       { DB: atCap.db, TELEGRAM_TARGET_CHANNEL: 'zayronxai', TELEGRAM_OUTBOUND_ENABLED: 'true', TELEGRAM_BOT_TOKEN: 'T' } as any,
       { fetchFn: (async () => { called += 1; throw new Error('must not send'); }) as any },
     );
     expect(called).toBe(0);
-    expect(reached.sent_today).toBe(6);
+    expect(reached.sent_today).toBe(10);
     expect(reached.remaining).toBe(0);
     expect(reached.skipped[0].reason).toBe('DAILY_CAP_REACHED');
   });
@@ -611,7 +614,8 @@ describe('telegram ledger migration', () => {
 describe('cron ordering — the wire runs before the heavy pulse', () => {
   test('the scheduled handler dispatches before any ingest subrequest', async () => {
     const source = await Bun.file(new URL('../../workers/ingest/src/index.ts', import.meta.url)).text();
-    const dispatch = source.indexOf('runTelegramDispatchPass(env as any, { automated: true })');
+    // PHASE 7D — the scheduled tick dispatches through the slot router.
+    const dispatch = source.indexOf('runTelegramWireSlot(env as any, { when: new Date() })');
     const pulse = source.indexOf('runAuthoritativePulse(env as any');
     // Both calls must exist in this exact order: a Worker invocation shares one
     // subrequest budget, so a pulse that runs first can starve the wire (this is

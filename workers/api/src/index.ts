@@ -1079,6 +1079,68 @@ const worker = {
       // ZX-13: the status is COMPUTED from real dependency state, never a
       // literal. `HEALTHY` requires a reachable D1 and a readable
       // `ai_provider_state` ledger whose provider is actually usable.
+      // PHASE 7D — public pipeline health. One row per stage, best effort: a
+      // stage that cannot be read reports `null` rather than failing the whole
+      // document, so a single degraded table never hides the others.
+      if (path === '/api/v1/health/pipeline') {
+        const read = async <T>(sql: string): Promise<T | null> => {
+          try {
+            return await env.DB.prepare(sql).first<T>();
+          } catch {
+            return null;
+          }
+        };
+        const [cve, openssf, ioc, detection, telegram] = await Promise.all([
+          read<{ last_at: string | null }>(
+            `SELECT MAX(updated_at) AS last_at FROM vulnerabilities WHERE provenance_state = 'AUTHORITATIVE_VERIFIED'`,
+          ),
+          read<{ last_at: string | null; total: number }>(
+            `SELECT MAX(published_at) AS last_at, COUNT(*) AS total FROM malware_reports WHERE source = 'openssf-osv'`,
+          ),
+          read<{ last_at: string | null; total: number }>(
+            `SELECT MAX(updated_at) AS last_at, COUNT(*) AS total FROM iocs WHERE status = 'ACTIVE'`,
+          ),
+          read<{ last_at: string | null; total: number }>(
+            `SELECT MAX(synced_at) AS last_at, COUNT(*) AS total FROM detection_rules`,
+          ),
+          read<{ dispatched_at: string | null; status: string | null }>(
+            `SELECT dispatched_at, status FROM telegram_dispatches ORDER BY dispatched_at DESC LIMIT 1`,
+          ),
+        ]);
+        const stages = {
+          cve_ingest: { last_at: cve?.last_at ?? null },
+          openssf_malware_ingest: { last_at: openssf?.last_at ?? null, total: Number(openssf?.total ?? 0) || 0 },
+          ioc_ingest: { last_at: ioc?.last_at ?? null, active_total: Number(ioc?.total ?? 0) || 0 },
+          detection_sync: { last_at: detection?.last_at ?? null, rules: Number(detection?.total ?? 0) || 0 },
+          telegram_dispatch: {
+            last_at: telegram?.dispatched_at ?? null,
+            status: telegram?.status ?? null,
+          },
+        };
+        const timestamps = Object.values(stages).map((stage) => stage.last_at);
+        const newest = timestamps
+          .filter((value): value is string => typeof value === 'string' && value.length > 0)
+          .sort()
+          .pop() ?? null;
+        const body = JSON.stringify({
+          status: 'SUCCESS',
+          data: {
+            healthy: Object.values(stages).every((stage) => stage.last_at !== null),
+            last_verified_at: newest,
+            generated_at: new Date().toISOString(),
+            ...stages,
+          },
+        });
+        return new Response(body, {
+          status: 200,
+          headers: {
+            'content-type': 'application/json',
+            // Edge-cached for a minute: this is a status badge, not a metric feed.
+            'cache-control': 'public, max-age=60, s-maxage=60',
+          },
+        });
+      }
+
       if (path === '/api/v1/health') {
         let d1Reachable = false;
         let d1Error: string | null = null;

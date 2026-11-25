@@ -141,13 +141,17 @@ describe('Sigma / Nuclei matcher', () => {
 });
 
 describe('staggered ingest cadence', () => {
-  test('only the first slot of each 8-hour block runs', () => {
-    expect(isIocIngestSlot(new Date('2026-11-25T00:05:00Z'))).toBe(true);
-    expect(isIocIngestSlot(new Date('2026-11-25T08:10:00Z'))).toBe(true);
-    expect(isIocIngestSlot(new Date('2026-11-25T16:00:00Z'))).toBe(true);
-    expect(isIocIngestSlot(new Date('2026-11-25T04:00:00Z'))).toBe(false);
+  // PHASE 7D moved the pass to :20 so it never shares a tick with the 08:00 /
+  // 16:00 Telegram or NVD slots (the cron grid is `0,20,40 * * * *`).
+  test('only the :20 tick of each 8-hour block runs', () => {
+    expect(isIocIngestSlot(new Date('2026-11-25T00:20:00Z'))).toBe(true);
+    expect(isIocIngestSlot(new Date('2026-11-25T08:20:00Z'))).toBe(true);
+    expect(isIocIngestSlot(new Date('2026-11-25T16:20:00Z'))).toBe(true);
+    expect(isIocIngestSlot(new Date('2026-11-25T00:05:00Z'))).toBe(false);
+    expect(isIocIngestSlot(new Date('2026-11-25T08:00:00Z'))).toBe(false);
+    expect(isIocIngestSlot(new Date('2026-11-25T16:00:00Z'))).toBe(false);
+    expect(isIocIngestSlot(new Date('2026-11-25T04:20:00Z'))).toBe(false);
     expect(isIocIngestSlot(new Date('2026-11-25T08:45:00Z'))).toBe(false);
-    expect(isIocIngestSlot(new Date('2026-11-25T09:00:00Z'))).toBe(false);
   });
 
   test('the flag is declared in the deployed ingestion config', () => {
