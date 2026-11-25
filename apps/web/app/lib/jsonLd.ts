@@ -44,11 +44,12 @@ export function serializeJsonLd(data: unknown): string {
  * two entities.
  */
 export const BRAND_DESCRIPTION =
-  "Authoritative Cyber Threat Intelligence platform delivering source-verified CVE advisories (NVD, CVE.org, CISA ADP, CISA KEV, FIRST EPSS, OSV.dev) and static malware dossiers.";
+  "Independent cyber threat intelligence research practice publishing source-verified CVE advisories (NVD, CVE.org, CISA ADP, CISA KEV, FIRST EPSS, OSV.dev) and static malware dossiers. Truth Is the Perimeter.";
 
 export const BRAND_ALTERNATE_NAMES = ["Zayron-X", "zayron-x.co", "ZAYRON-X Cyber Threat Intelligence"];
 
-export const BRAND_SAME_AS = ["https://t.me/zayronxai"];
+/** Verified public channels only. No placeholder profile is ever emitted. */
+export const BRAND_SAME_AS = ["https://t.me/zayronxai", "https://www.linkedin.com/company/zayron-x"];
 
 /** Absolute brand mark (every icon path is served from the apex origin). */
 export function brandLogoUrl(siteUrl: string): string {
@@ -65,6 +66,12 @@ export function organizationJsonLd(siteUrl: string): JsonLd {
     logo: brandLogoUrl(siteUrl),
     description: BRAND_DESCRIPTION,
     sameAs: [...BRAND_SAME_AS],
+    address: {
+      "@type": "PostalAddress",
+      addressRegion: "Montana",
+      addressCountry: "US",
+    },
+    areaServed: "Global",
   };
 }
 

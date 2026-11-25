@@ -69,9 +69,9 @@ export function RouteShell({
       <div className="legal-inline-notice" role="note">
         <p>{contextNotice ?? DEFAULT_NOTICE}</p>
         <nav aria-label="Related policies">
-          <a href="/legal/intelligence-disclaimer">Intelligence disclaimer</a>
-          <a href="/legal/malware-research">Malware handling</a>
-          <a href="/legal/ai">AI policy</a>
+          <a href="/legal">Intelligence disclaimer</a>
+          <a href="/malware-handling">Malware handling</a>
+          <a href="/methodology">Methodology &amp; Governance</a>
         </nav>
       </div>
     </IntelligenceShellFrame>

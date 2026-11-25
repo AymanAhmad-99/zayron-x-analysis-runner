@@ -35,8 +35,17 @@ export const STATIC_PATHS = [
   "/intelligence/campaigns",
   "/intelligence/iocs",
   "/search",
+  // Institutional surfaces (Phase 6). `/ai-policy` and the legacy `/legal/*`
+  // aliases are permanently redirected, so they are never advertised here.
+  "/pricing",
+  "/about",
   "/methodology",
-  "/company/about",
+  "/signal-index",
+  "/malware-handling",
+  "/security",
+  "/privacy",
+  "/cookies",
+  "/legal",
   "/company/trust",
   "/company/contact",
   "/company/careers",

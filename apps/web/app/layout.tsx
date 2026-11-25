@@ -11,11 +11,13 @@ import "./vulnerability-detail.css";
 import "./hero-rebuild.css";
 import "./malware-report.css";
 import "./legal.css";
+import "./institutional.css";
 import { getSiteUrl, isPreviewDeployment } from "./lib/siteConfig";
 import { organizationJsonLd, serializeJsonLd, webSiteJsonLd } from "./lib/jsonLd";
 
 const SITE_NAME = "ZAYRON-X";
-const SITE_DESCRIPTION = "See the threat. Understand the evidence. Act with confidence.";
+const SITE_DESCRIPTION =
+  "Independent cyber threat intelligence research. Source-verified CVE advisories, exploitation evidence and static malware dossiers. Truth Is the Perimeter.";
 const DEFAULT_TITLE = "ZAYRON-X — Cyber Threat Intelligence, CVE Advisories & Malware Dossiers";
 
 /**

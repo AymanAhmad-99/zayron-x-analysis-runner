@@ -1,0 +1,452 @@
+/* Phase 6 — institutional documentation, pricing, sources strip, executive footer. */
+
+/* ── Hero doctrine ─────────────────────────────────────────────────────────── */
+.hero-motto {
+  margin: 0 0 14px;
+  font-size: clamp(13px, 1.1vw, 15px);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--color-accent, #ff7a2f);
+}
+
+/* ── Institutional document shell ─────────────────────────────────────────── */
+.doc-shell {
+  padding-block: clamp(28px, 4vw, 56px) 72px;
+}
+
+.doc-header {
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  padding-bottom: 28px;
+}
+
+.doc-badge {
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 2px;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .72);
+}
+
+.doc-header h1 {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.01em;
+  color: #fff;
+}
+
+.doc-summary {
+  margin: 18px 0 0;
+  max-width: 74ch;
+  font-size: 1.03rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, .74);
+}
+
+.doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 40px;
+  margin: 26px 0 0;
+}
+
+.doc-meta div {
+  display: grid;
+  gap: 4px;
+}
+
+.doc-meta dt {
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .45);
+}
+
+.doc-meta dd {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .86);
+}
+
+.doc-grid {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 64px);
+  margin-top: 36px;
+  align-items: start;
+}
+
+.doc-toc {
+  position: sticky;
+  top: 96px;
+  border-left: 1px solid rgba(255, 255, 255, .12);
+  padding-left: 18px;
+}
+
+.doc-toc p {
+  margin: 0 0 12px;
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .45);
+}
+
+.doc-toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+  counter-reset: toc;
+}
+
+.doc-toc li {
+  counter-increment: toc;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.doc-toc a {
+  color: rgba(255, 255, 255, .6);
+  text-decoration: none;
+}
+
+.doc-toc a::before {
+  content: counter(toc, decimal-leading-zero) "  ";
+  color: rgba(255, 255, 255, .3);
+}
+
+.doc-toc a:hover,
+.doc-toc a:focus-visible {
+  color: #fff;
+}
+
+.doc-body {
+  max-width: 78ch;
+}
+
+.doc-body > section {
+  scroll-margin-top: 96px;
+}
+
+.doc-body > section + section {
+  margin-top: 34px;
+}
+
+.doc-body h2 {
+  margin: 0 0 12px;
+  font-size: 1.14rem;
+  letter-spacing: .005em;
+  color: #fff;
+}
+
+.doc-body h3 {
+  margin: 22px 0 8px;
+  font-size: .98rem;
+  color: rgba(255, 255, 255, .92);
+}
+
+.doc-body p,
+.doc-body li {
+  font-size: .955rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, .76);
+}
+
+.doc-body p {
+  margin: 0 0 12px;
+}
+
+.doc-body ul,
+.doc-body ol {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+
+.doc-body li + li {
+  margin-top: 6px;
+}
+
+.doc-body a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255, 255, 255, .32);
+}
+
+.doc-body a:hover,
+.doc-body a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.doc-callout {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-left: 2px solid rgba(255, 255, 255, .35);
+  background: rgba(255, 255, 255, .035);
+  font-size: .925rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, .8);
+}
+
+.doc-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 18px;
+  border: 1px solid rgba(255, 255, 255, .1);
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+  min-width: 520px;
+}
+
+.doc-table th,
+.doc-table td {
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .78);
+}
+
+.doc-table thead th {
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .5);
+  background: rgba(255, 255, 255, .03);
+  white-space: nowrap;
+}
+
+.doc-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.doc-table td strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.doc-contact {
+  margin: 44px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  font-size: .86rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, .55);
+}
+
+.doc-contact a {
+  color: rgba(255, 255, 255, .82);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .doc-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .doc-toc {
+    position: static;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+    padding: 18px 0 0;
+  }
+}
+
+/* ── Upstream telemetry strip ─────────────────────────────────────────────── */
+.sources-strip {
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  padding-block: 34px;
+}
+
+.sources-strip-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.sources-strip-title {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .58);
+}
+
+.sources-strip-note {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .42);
+}
+
+.sources-strip-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 22px 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sources-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  color: rgba(255, 255, 255, .74);
+}
+
+.sources-strip-item svg {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, .78);
+}
+
+.sources-strip-name {
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, .8);
+  white-space: nowrap;
+}
+
+.sources-strip-foot {
+  margin: 26px 0 0;
+  font-size: 11px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, .36);
+}
+
+/* ── Pricing ──────────────────────────────────────────────────────────────── */
+.pricing-page-head {
+  padding-block: clamp(28px, 4vw, 52px) 0;
+}
+
+.pricing-page-head h1 {
+  margin: 10px 0 14px;
+  font-size: clamp(30px, 3.6vw, 46px);
+  color: #fff;
+  letter-spacing: -.01em;
+}
+
+.pricing-page-head p {
+  max-width: 68ch;
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, .72);
+}
+
+.pricing-institutional {
+  padding-bottom: 72px;
+}
+
+.pricing-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .pricing-institutional .pricing-card,
+  .pricing-institutional .pricing-card-featured {
+    height: auto;
+    min-height: 0;
+  }
+}
+
+.pricing-motto {
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--color-accent, #ff7a2f);
+  margin: 0 0 12px;
+}
+
+.procurement-faq {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px 32px;
+}
+
+.procurement-faq h3 {
+  margin: 0 0 8px;
+  font-size: .96rem;
+  color: #fff;
+}
+
+.procurement-faq p {
+  margin: 0;
+  font-size: .9rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, .68);
+}
+
+/* ── Executive footer ─────────────────────────────────────────────────────── */
+.footer-motto {
+  margin: 12px 0 0;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-accent, #ff7a2f);
+}
+
+.footer-social {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, .72);
+  transition: color .16s ease, border-color .16s ease;
+}
+
+.footer-social a:hover,
+.footer-social a:focus-visible {
+  color: #fff;
+  border-color: rgba(255, 255, 255, .5);
+}
+
+.footer-social svg {
+  width: 16px;
+  height: 16px;
+}
+
+.footer-entity {
+  display: block;
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .4);
+}
+
+/* ── Commit hash formatting in version tables ─────────────────────────────── */
+.vx-sha em {
+  font-style: normal;
+  opacity: .55;
+  font-size: .85em;
+}

@@ -18,14 +18,51 @@ import { NextResponse, type NextRequest } from "next/server";
 const CANONICAL_HOST = "zayron-x.co";
 const REDIRECT_HOSTS = new Set(["www.zayron-x.co"]);
 
-export function middleware(request: NextRequest): NextResponse {
-  const host = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
-  if (!REDIRECT_HOSTS.has(host)) return NextResponse.next();
+/**
+ * Phase 6 — permanent path consolidation.
+ *
+ * Institutional documents moved to canonical top-level routes, and the former
+ * "AI Policy" document was replaced by Methodology & Governance. Every legacy URL
+ * resolves with a 301 to its successor, so no indexed or externally linked path
+ * breaks or returns 404. Query strings are preserved.
+ */
+const PATH_REDIRECTS: Record<string, string> = {
+  "/ai-policy": "/methodology",
+  "/legal/ai": "/methodology",
+  "/legal/privacy": "/privacy",
+  "/legal/cookies": "/cookies",
+  "/legal/security": "/security",
+  "/legal/vulnerability-disclosure": "/security",
+  "/legal/terms": "/legal",
+  "/company/about": "/about",
+  // `/malware` is the institutional entry point for malware dossiers; the dossier
+  // library itself lives under the intelligence tree.
+  "/malware": "/intelligence/malware",
+};
 
+function normalizePath(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith("/")) return pathname.replace(/\/+$/, "");
+  return pathname;
+}
+
+export function middleware(request: NextRequest): NextResponse {
   const url = new URL(request.url);
-  const target = new URL(`https://${CANONICAL_HOST}${url.pathname}`);
-  target.search = url.search;
-  return NextResponse.redirect(target, 301);
+  const host = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
+
+  if (REDIRECT_HOSTS.has(host)) {
+    const target = new URL(`https://${CANONICAL_HOST}${url.pathname}`);
+    target.search = url.search;
+    return NextResponse.redirect(target, 301);
+  }
+
+  const destination = PATH_REDIRECTS[normalizePath(url.pathname)];
+  if (destination) {
+    const target = new URL(destination, url.origin);
+    target.search = url.search;
+    return NextResponse.redirect(target, 301);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

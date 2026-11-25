@@ -139,15 +139,22 @@ describe('Gate 3A.5 — trust surfaces', () => {
     for (const field of ['Contact:', 'Policy:', 'Preferred-Languages:', 'Expires:', 'Canonical:']) {
       expect(file).toContain(field);
     }
-    expect(file).toContain('2027-11-24');
+    // Phase 6 — the policy URL is the canonical /security route, not a legacy
+    // /legal slug, and the expiry is a rolling one-year window.
+    expect(file).toContain('2027-11-25');
     expect(file).toContain('mailto:security@zayron-x.co');
+    expect(file).toContain('Policy: https://zayron-x.co/security');
     expect(file).not.toContain('2027-10-04');
   });
 
   it('labels paid tiers as waitlist instead of a dead checkout', () => {
     const pricing = fs.readFileSync(path.join(root, 'apps/web/app/components/PricingSection.tsx'), 'utf-8');
-    expect(pricing).toContain('Early Access / Waitlist');
-    expect(pricing).toContain('Commercial Billing Opens Upon Entity Registration');
+    // Phase 6 — the four institutional tiers, with paid access still gated.
+    for (const tier of ['Public Intelligence', 'Analyst', 'SOC & Vulnerability Teams', 'Enterprise & Custom Feeds']) {
+      expect(pricing).toContain(tier);
+    }
+    expect(pricing).toContain('waitlist: true');
+    expect(pricing).toContain('No checkout and no charge today');
     expect(pricing).not.toContain('href="#contact"');
     expect(pricing).toContain('ctaHref: "/intelligence"');
   });

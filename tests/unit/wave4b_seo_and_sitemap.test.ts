@@ -506,11 +506,15 @@ describe("Wave 4B — clean launch navigation", () => {
     }
   });
 
-  test("the navbar links Home, Intelligence, News and Research — and no unbuilt surface", () => {
+  test("the navbar links the institutional surfaces — and no unbuilt surface", () => {
+    // Phase 6: placeholder editorial surfaces left the primary navigation; the
+    // institutional routes (methodology, pricing, about) carry it instead.
     const navbar = readFileSync("apps/web/app/components/Navbar.tsx", "utf8");
-    expect(navbar).toContain("routes.news");
-    expect(navbar).toContain("routes.research");
+    expect(navbar).not.toContain("routes.news");
+    expect(navbar).not.toContain("routes.research");
     expect(navbar).not.toContain("routes.graph");
+    expect(navbar).toContain('href="/methodology"');
+    expect(navbar).toContain('href="/about"');
     expect(navbar).toContain("routes.pricing");
   });
 

@@ -72,12 +72,12 @@ export function Navbar() {
             {intelligenceRoutes.map((item) => <a href={item.href} role="menuitem" key={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
           </div>
         </div>
-        {/* Gate 3A.3 — News and Research are first-class top-level surfaces next to
-            Home and Intelligence. They are static editorial pages that render on
-            every viewport (no client-only data dependency). */}
-        <a href={routes.news.href}>{routes.news.label}</a>
-        <a href={routes.research.href}>{routes.research.label}</a>
+        {/* Institutional navigation: the research and company surfaces sit beside
+            the intelligence tree, and pricing is a standalone route rather than a
+            homepage anchor. */}
+        <a href="/methodology">Methodology</a>
         <a href={routes.pricing.href}>Pricing</a>
+        <a href="/about">About</a>
       </nav>
       <button className="nav-search-pill" type="button" onClick={() => setSearchOpen(true)} aria-label="Open search">
         <span aria-hidden="true">⌕</span>
