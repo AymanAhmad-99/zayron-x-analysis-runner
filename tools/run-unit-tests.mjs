@@ -85,6 +85,10 @@ const SUITES = [
   // D1), 60s key-metadata cache, tier/edge rate-limit + 429 contract, and the
   // OpenAPI 3.1 document. Local-only: injected D1 shim and cache double.
   'tests/api_key_vault.test.ts',
+  // Phase 7B: IOC normalization/dedup, allowlist shield, decay TTLs, STIX 2.1
+  // bundle validity, EDL >= 85 gate, OpenSSF/abuse.ch/Spamhaus mappers and the
+  // 25-subrequest Free-tier ceiling. Local-only: pure modules, no D1, no network.
+  'tests/ioc_engine_v2.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).

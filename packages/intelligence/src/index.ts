@@ -187,3 +187,6 @@ export * from './vulnerability/analysisAuthority';
 export * from './vulnerability/recentNvdCve';
 export * from './vulnerability/nonKevAuthorityProjection';
 export * from './sources/cwe_catalog';
+
+export * from './iocs/hygiene';
+export * from './iocs/stix';

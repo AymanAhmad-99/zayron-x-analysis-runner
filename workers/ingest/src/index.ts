@@ -32,6 +32,7 @@ import { runCtiEnrichmentPass } from './ctiEnrichment';
 import { authoritativeCronEnabled, runAuthoritativePulse } from './authoritativePulse';
 import { runStrategicPass } from './strategicCveAnalysis';
 import { runTelegramDispatchPass } from './telegramDispatch';
+import { runIocIngestPass } from './iocIngest';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -62,6 +63,19 @@ export interface Env {
   STRATEGIC_OPERATOR_TOKEN?: string;
   /** Phase 5A — operator bearer for the bounded CTI enrichment backfill. */
   CTI_OPERATOR_TOKEN?: string;
+  /**
+   * PHASE 7B — bulk IOC engine.
+   *
+   * `CF_RADAR_TOKEN` is the Cloudflare Radar API token used for ASN/country
+   * enrichment and the daily pulse. Absent ⇒ the enrichment is a clean skip.
+   * `IOC_INGEST_ENABLED="true"` additionally lets the scheduled tick run the
+   * pass; absent keeps the pass operator-triggered only, so it can never eat
+   * the subrequest budget the executive wire and authoritative pulse rely on.
+   */
+  CF_RADAR_TOKEN?: string;
+  ABUSECH_AUTH_KEY?: string;
+  IOC_INGEST_ENABLED?: string;
+  IOC_INGEST_MAX_SUBREQUESTS?: string;
   /**
    * Phase 4C — executive outbound wire. The token is input-only: it is never
    * logged, echoed, returned or written to the dispatch ledger.
@@ -283,6 +297,22 @@ const ingestHandlers = {
           type: 'AUTHORITATIVE_CVE_PULSE_FAILED',
           error: String((error as Error)?.message || error).slice(0, 300),
         }));
+      }
+
+      // PHASE 7B — bulk IOC engine. OPT-IN: the pass makes its own bounded set
+      // of external calls, and a Worker invocation shares one subrequest budget
+      // with the wire and the pulse above, so it only joins the scheduled tick
+      // on an explicit `IOC_INGEST_ENABLED="true"`. Never throws into the cron.
+      if (env.IOC_INGEST_ENABLED === 'true') {
+        try {
+          const ioc = await runIocIngestPass(env as any, {});
+          console.log(JSON.stringify({ type: 'IOC_INGEST_PASS', ...ioc }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'IOC_INGEST_PASS_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
       }
       return;
     }
@@ -1595,7 +1625,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     // pass). Renders stored briefs only; never invents a fact and never posts
     // twice for one entity because the ledger is the idempotency boundary.
     const isTelegramDispatch = url.pathname === '/internal/telegram-dispatch';
-    if (!isStrategic && !isEnrichment && !isTelegramDispatch && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // PHASE 7B — bounded bulk IOC + OpenSSF ingest. Never dispatches to Telegram.
+    const isIocIngest = url.pathname === '/internal/ioc-ingest';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1606,7 +1638,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment && !isTelegramDispatch) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1669,6 +1701,32 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
         status: enrichment.enriched > 0 || (strategic && strategic.generated > 0) ? 200 : 202,
         headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
       });
+    }
+
+    // PHASE 7B operator hook — one bounded bulk IOC pass. Reads/writes the IOC
+    // and OpenSSF tables only; it never touches the Telegram wire.
+    if (isIocIngest) {
+      const requestedSubrequests = Number(url.searchParams.get('max_subrequests'));
+      try {
+        const summary = await runIocIngestPass(
+          {
+            ...(this.env as any),
+            IOC_INGEST_MAX_SUBREQUESTS: Number.isFinite(requestedSubrequests) && requestedSubrequests > 0
+              ? String(requestedSubrequests)
+              : this.env.IOC_INGEST_MAX_SUBREQUESTS,
+          },
+          {},
+        );
+        return new Response(JSON.stringify(summary), {
+          status: 200,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: String((error as Error)?.message || error).slice(0, 300) }), {
+          status: 502,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      }
     }
 
     // Phase 4A operator hook: run the budgeted strategic pass alone. Preview

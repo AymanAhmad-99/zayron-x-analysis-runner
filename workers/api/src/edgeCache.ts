@@ -76,6 +76,10 @@ const AUTH_SENSITIVE_HEADERS = ["authorization", "cookie", "x-api-key"] as const
 const PUBLIC_READ_CACHE_EXACT = new Set<string>([
   // PHASE 7A — the versioned developer specification is a static public read.
   "/api/v1/openapi.json",
+  // PHASE 7B — the IOC fleet rollup is byte-identical for every caller, so a
+  // repeat read costs zero D1 reads. Per-indicator lookups carry `q` and are
+  // therefore never cached; the feed and EDL are credentialed.
+  "/api/v1/iocs/stats",
   "/api/v1/intelligence",
   "/api/v1/vulnerabilities",
   "/api/v1/malware/intelligence/reports",

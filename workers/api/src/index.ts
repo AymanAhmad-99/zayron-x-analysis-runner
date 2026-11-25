@@ -115,6 +115,15 @@ import {
   type ApiKeyTier,
 } from './apiKeys';
 import { buildOpenApiDocument } from './openapi';
+import {
+  EDL_PREVIEW_MAX_LINES,
+  buildEdl,
+  buildIocStats,
+  formatIocFeed,
+  lookupIoc,
+  queryIocFeed,
+  resolveEdlType,
+} from './iocs';
 import { publishApprovedIntelligence, type PublicationInput, type PublicationResult } from './publication';
 import { buildFeedQuery } from './feedQuery';
 import {
@@ -795,6 +804,147 @@ const worker = {
       // ── GET /api/v1/openapi.json ─────────────────────────────────────
       if (path === '/api/v1/openapi.json' && request.method === 'GET') {
         return jsonResponse(buildOpenApiDocument({ origin: url.origin }));
+      }
+
+      // ═════════════════════════════════════════════════════════════════
+      // PHASE 7B — IOC / EDL / STIX surface (`/api/v1/iocs/*`)
+      //
+      // stats and lookup are anonymous reads (IP-limited by the boundary, and
+      // /stats is on the shared edge cache). feed and edl are credentialed: a
+      // 48-character bearer key, or — for edl only — an explicit `?preview=1`
+      // capped at 25 lines so a firewall rule can be tried before a key exists.
+      // ═════════════════════════════════════════════════════════════════
+      if (path.startsWith('/api/v1/iocs/') && request.method === 'GET') {
+        const authorization = (request.headers.get('Authorization') || '').trim();
+        let iocContext: DeveloperContext | null = null;
+        if (authorization) {
+          const token = authorization.replace(/^Bearer\s+/i, '').trim();
+          const resolved = await resolveApiKey({ db: env.DB, token, pepper: env.API_KEY_PEPPER });
+          if (!resolved) {
+            return developerError(401, 'INVALID_API_KEY', 'The supplied API token is invalid, revoked or expired');
+          }
+          const allowance = await enforceDeveloperRateLimit(env, resolved.tier, resolved.keyPrefix);
+          if (!allowance.allowed) {
+            return rateLimitedResponse(request.headers.get('Origin'), allowance.limit, resolved.tier);
+          }
+          iocContext = { tier: resolved.tier, limit: allowance.limit, keyPrefix: resolved.keyPrefix };
+        }
+
+        // ── GET /api/v1/iocs/stats ────────────────────────────────────
+        if (path === '/api/v1/iocs/stats') {
+          try {
+            const stats = await buildIocStats(env.DB);
+            return jsonResponse({ status: 'SUCCESS', data: stats });
+          } catch (err: any) {
+            console.error('[API] ioc stats failed', {
+              site: 'api.iocs.stats',
+              error: err?.message ?? String(err),
+            });
+            return errorResponse('IOC statistics temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+          }
+        }
+
+        // ── GET /api/v1/iocs/lookup?q=<value> ─────────────────────────
+        if (path === '/api/v1/iocs/lookup') {
+          const q = (url.searchParams.get('q') || '').trim();
+          if (!q) return developerError(400, 'MISSING_QUERY', 'The `q` query parameter is required');
+          if (q.length > 512) return developerError(400, 'INVALID_QUERY', 'The `q` value exceeds 512 characters');
+          try {
+            const result = await lookupIoc(env.DB, q);
+            return withApiKeyHeaders(
+              jsonResponse({ status: result.found ? 'SUCCESS' : 'NOT_FOUND', ...result }, result.found ? 200 : 404),
+              iocContext,
+            );
+          } catch (err: any) {
+            console.error('[API] ioc lookup failed', {
+              site: 'api.iocs.lookup',
+              error: err?.message ?? String(err),
+            });
+            return errorResponse('IOC lookup temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+          }
+        }
+
+        // ── GET /api/v1/iocs/feed ─────────────────────────────────────
+        if (path === '/api/v1/iocs/feed') {
+          if (!iocContext) {
+            return developerError(401, 'API_KEY_REQUIRED', 'A `zx_live_…` bearer token is required for the IOC feed');
+          }
+          const format = (url.searchParams.get('format') || 'json').trim().toLowerCase();
+          if (!['json', 'csv', 'stix'].includes(format)) {
+            return developerError(400, 'INVALID_FORMAT', 'format must be one of json, csv, stix');
+          }
+          try {
+            const feed = await queryIocFeed(env.DB, {
+              type: url.searchParams.get('type'),
+              family: url.searchParams.get('family'),
+              minConfidence: Number(url.searchParams.get('min_confidence') ?? 70),
+              status: url.searchParams.get('status'),
+              limit: Number(url.searchParams.get('limit') ?? 500),
+            });
+            const rendered = formatIocFeed(feed.rows, format);
+            return withApiKeyHeaders(
+              new Response(rendered.body, {
+                status: 200,
+                headers: {
+                  ...CORS_HEADERS,
+                  'Content-Type': rendered.contentType,
+                  'X-Zayron-Total-Count': String(feed.total),
+                  'X-Content-Type-Options': 'nosniff',
+                },
+              }),
+              iocContext,
+            );
+          } catch (err: any) {
+            console.error('[API] ioc feed failed', {
+              site: 'api.iocs.feed',
+              error: err?.message ?? String(err),
+            });
+            return errorResponse('IOC feed temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+          }
+        }
+
+        // ── GET /api/v1/iocs/edl/:type ────────────────────────────────
+        if (path.startsWith('/api/v1/iocs/edl/')) {
+          const segment = path.slice('/api/v1/iocs/edl/'.length);
+          const edlType = resolveEdlType(segment);
+          if (!edlType) {
+            return developerError(404, 'UNKNOWN_EDL', 'Supported EDL files: ip.txt, domain.txt, url.txt, cidr.txt');
+          }
+          const preview = (url.searchParams.get('preview') || '') === '1';
+          if (!iocContext && !preview) {
+            return developerError(
+              401,
+              'API_KEY_REQUIRED',
+              'A `zx_live_…` bearer token is required; add `?preview=1` for a capped sample',
+            );
+          }
+          try {
+            const edl = await buildEdl(env.DB, edlType, {
+              limit: preview && !iocContext ? EDL_PREVIEW_MAX_LINES : 500,
+            });
+            return withApiKeyHeaders(
+              new Response(edl.text, {
+                status: 200,
+                headers: {
+                  ...CORS_HEADERS,
+                  'Content-Type': 'text/plain; charset=utf-8',
+                  'X-Zayron-Edl-Count': String(edl.count),
+                  'X-Zayron-Edl-Min-Confidence': '85',
+                  'X-Content-Type-Options': 'nosniff',
+                },
+              }),
+              iocContext,
+            );
+          } catch (err: any) {
+            console.error('[API] ioc edl failed', {
+              site: 'api.iocs.edl',
+              error: err?.message ?? String(err),
+            });
+            return errorResponse('EDL temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+          }
+        }
+
+        return developerError(404, 'UNKNOWN_IOC_ROUTE', 'Unknown IOC resource');
       }
 
       // ── POST /api/v1/keys/self-serve ─────────────────────────────────

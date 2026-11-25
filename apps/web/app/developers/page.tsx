@@ -15,9 +15,15 @@ export const metadata: Metadata = {
 };
 
 export default function DevelopersPage() {
-  // Read on the server so the client bundle never depends on `process.env`
-  // existing in the browser. Absent → the Turnstile widget is not rendered.
-  const turnstileSiteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "").trim();
+  // Read on the server at REQUEST time so the client bundle never depends on
+  // `process.env` existing in the browser. The key is provisioned as a Worker
+  // Secret, so it must NOT be inlined at build time: a `NEXT_PUBLIC_` variable
+  // accessed as a literal is replaced by the bundler during `next build`, which
+  // would freeze whatever value (often none) existed at build time. Dynamic
+  // property access is evaluated at runtime and works identically whether the
+  // value is a Variable or a Secret. Absent → the widget is not rendered.
+  const runtimeEnv = process.env as Record<string, string | undefined>;
+  const turnstileSiteKey = (runtimeEnv["NEXT_PUBLIC_" + "TURNSTILE_SITE_KEY"] ?? "").trim();
 
   return (
     <main className="site-atmosphere">

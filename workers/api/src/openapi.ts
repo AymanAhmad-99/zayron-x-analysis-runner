@@ -351,6 +351,148 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           },
         },
       },
+      // ── PHASE 7B — IOC / EDL / STIX ──────────────────────────────────
+      "/iocs/stats": {
+        get: {
+          operationId: "getIocStats",
+          summary: "IOC fleet rollup (edge-cached 300s)",
+          tags: ["Indicators"],
+          security: [],
+          responses: {
+            "200": {
+              description: "Active indicator counts by type, top families, EDL-ready count and latest Radar pulse",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string" },
+                      data: { $ref: "#/components/schemas/IocStats" },
+                    },
+                  },
+                },
+              },
+            },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "503": { description: "Indicator store unavailable", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/iocs/lookup": {
+        get: {
+          operationId: "lookupIoc",
+          summary: "Look up one indicator (raw or defanged)",
+          tags: ["Indicators"],
+          security: [{}, { bearerAuth: [] }],
+          parameters: [
+            {
+              name: "q",
+              in: "query",
+              required: true,
+              description: "IP, CIDR, domain, URL or SHA-256. Defanged input (`hxxp://`, `[.]`) is accepted.",
+              schema: { type: "string", minLength: 1, maxLength: 512 },
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Indicator found (ACTIVE or EXPIRED)",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string", enum: ["SUCCESS"] },
+                      found: { type: "boolean" },
+                      data: { $ref: "#/components/schemas/IocRecord" },
+                    },
+                  },
+                },
+              },
+            },
+            "400": { description: "Missing or malformed q", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "401": { description: "Invalid bearer token", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "404": { description: "Indicator not found", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/iocs/feed": {
+        get: {
+          operationId: "getIocFeed",
+          summary: "Bulk indicator feed (JSON, CSV or STIX 2.1)",
+          tags: ["Indicators"],
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "type",
+              in: "query",
+              schema: { type: "string", enum: ["ip", "domain", "url", "cidr", "sha256"] },
+            },
+            { name: "family", in: "query", schema: { type: "string", maxLength: 120 } },
+            {
+              name: "min_confidence",
+              in: "query",
+              schema: { type: "integer", minimum: 0, maximum: 100, default: 70 },
+            },
+            {
+              name: "status",
+              in: "query",
+              schema: { type: "string", enum: ["active", "expired", "any"], default: "active" },
+            },
+            {
+              name: "limit",
+              in: "query",
+              schema: { type: "integer", minimum: 1, maximum: 500, default: 500 },
+            },
+            {
+              name: "format",
+              in: "query",
+              schema: { type: "string", enum: ["json", "csv", "stix"], default: "json" },
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Indicator feed in the requested format",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/IocFeed" } },
+                "text/csv": { schema: { type: "string" } },
+                "application/stix+json": { schema: { $ref: "#/components/schemas/StixBundle" } },
+              },
+            },
+            "400": { description: "Unsupported format", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "401": { description: "Missing, invalid, revoked or expired bearer token", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/iocs/edl/{type}": {
+        get: {
+          operationId: "getIocEdl",
+          summary: "Firewall EDL text file (confidence >= 85)",
+          tags: ["Indicators"],
+          security: [{}, { bearerAuth: [] }],
+          parameters: [
+            {
+              name: "type",
+              in: "path",
+              required: true,
+              schema: { type: "string", enum: ["ip.txt", "domain.txt", "url.txt", "cidr.txt"] },
+            },
+            {
+              name: "preview",
+              in: "query",
+              description: "Anonymous sample, capped at 25 lines. Ignored when a bearer token is present.",
+              schema: { type: "string", enum: ["1"] },
+            },
+          ],
+          responses: {
+            "200": { description: "One indicator per line", content: { "text/plain": { schema: { type: "string" } } } },
+            "401": { description: "A bearer token or `?preview=1` is required", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "404": { description: "Unknown EDL file", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
     },
     components: {
       securitySchemes: {
@@ -364,6 +506,67 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
       schemas: {
         Vulnerability: vulnerabilitySchema,
         Error: errorSchema,
+        IocRecord: {
+          type: "object",
+          required: ["type", "value", "confidence", "status"],
+          properties: {
+            id: { type: "string" },
+            type: { type: "string", enum: ["ip", "domain", "url", "cidr", "sha256"] },
+            value: { type: "string" },
+            defanged: { type: "string", description: "Display-safe form, e.g. `hxxp://evil[.]example`" },
+            confidence: { type: "integer", minimum: 0, maximum: 100 },
+            status: { type: "string", enum: ["ACTIVE", "EXPIRED"] },
+            family: { type: ["string", "null"] },
+            sources: { type: "array", items: { type: "string" } },
+            seen_count: { type: "integer", minimum: 1 },
+            asn: { type: ["string", "null"] },
+            asn_name: { type: ["string", "null"] },
+            country: { type: ["string", "null"] },
+            expires_at: { type: ["string", "null"] },
+            radar_enriched_at: { type: ["string", "null"] },
+          },
+        },
+        IocStats: {
+          type: "object",
+          properties: {
+            active_total: { type: "integer" },
+            active_by_type: { type: "object", additionalProperties: { type: "integer" } },
+            top_families_24h: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: { family: { type: "string" }, count: { type: "integer" } },
+              },
+            },
+            openssf_dossiers: { type: "integer" },
+            edl_ready: { type: "integer" },
+            last_ingest_at: { type: ["string", "null"] },
+            latest_radar_pulse: {
+              type: ["object", "null"],
+              properties: { pulse_date: { type: "string" }, created_at: { type: ["string", "null"] } },
+            },
+            generated_at: { type: "string", format: "date-time" },
+          },
+        },
+        IocFeed: {
+          type: "object",
+          properties: {
+            status: { type: "string" },
+            count: { type: "integer" },
+            format: { type: "string" },
+            data: { type: "array", items: { $ref: "#/components/schemas/IocRecord" } },
+          },
+        },
+        StixBundle: {
+          type: "object",
+          required: ["type", "id", "spec_version", "objects"],
+          properties: {
+            type: { type: "string", const: "bundle" },
+            id: { type: "string", pattern: "^bundle--" },
+            spec_version: { type: "string", const: "2.1" },
+            objects: { type: "array", items: { type: "object" } },
+          },
+        },
       },
     },
   };
