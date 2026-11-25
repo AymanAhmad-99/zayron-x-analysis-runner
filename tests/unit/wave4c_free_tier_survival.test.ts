@@ -626,9 +626,16 @@ describe("Wave 4C — API worker config", () => {
 
   test("the edge cache TTL is declared as configuration, not code", () => {
     const vars = tomlSection(api, "[vars]");
-    expect(vars).toContain('PUBLIC_EDGE_CACHE_TTL_SECONDS = "14400"');
-    expect(vars).toContain("Free-Tier Survival Mode (4h)");
+    // Phase 7A replaced the Wave 4C 4h value with the published developer
+    // contract: every public read advertises `s-maxage=300` plus a 600s
+    // stale-while-revalidate window, which is what /api/v1/openapi.json documents.
+    // The assertion still holds its original purpose — the TTL is configuration,
+    // never a literal in the handler — and the 14400s Free-tier default remains
+    // in `edgeCache.ts` for any environment that omits the variable.
+    expect(vars).toContain('PUBLIC_EDGE_CACHE_TTL_SECONDS = "300"');
+    expect(vars).toContain("PHASE 7A contract");
     expect(vars).toContain('ENVIRONMENT = "production"');
+    expect(api).toContain("Free-tier default");
   });
 
   test("top-level routes stay above [[rules]] (Wave 4B.2 regression guard)", () => {

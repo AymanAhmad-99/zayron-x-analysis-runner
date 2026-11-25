@@ -81,6 +81,10 @@ const SUITES = [
   // sitemap XML/shard/robots contracts, API sitemap PUBLISHED gate + clamps,
   // and the clean launch navigation surface.
   'tests/unit/wave4b_seo_and_sitemap.test.ts',
+  // Phase 7A: 48-character token geometry, HMAC-SHA256 vault (no plaintext in
+  // D1), 60s key-metadata cache, tier/edge rate-limit + 429 contract, and the
+  // OpenAPI 3.1 document. Local-only: injected D1 shim and cache double.
+  'tests/api_key_vault.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).
