@@ -74,6 +74,12 @@ export interface Env {
    */
   CF_RADAR_TOKEN?: string;
   ABUSECH_AUTH_KEY?: string;
+  /**
+   * PHASE 7B — optional dedicated operator bearer for the bounded IOC pass, so
+   * a run can be triggered without handing out the strategic or CTI token.
+   * Absent (the normal production state) ⇒ only the two existing operators work.
+   */
+  IOC_OPERATOR_TOKEN?: string;
   IOC_INGEST_ENABLED?: string;
   IOC_INGEST_MAX_SUBREQUESTS?: string;
   /**
@@ -1647,7 +1653,8 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // Two operators are accepted: the Phase 4A strategic token and the Phase 5A
       // enrichment token. Neither is ever logged or echoed.
       if (!isAuthorizedStrategicOperator(request, this.env.STRATEGIC_OPERATOR_TOKEN)
-        && !isAuthorizedStrategicOperator(request, this.env.CTI_OPERATOR_TOKEN)) {
+        && !isAuthorizedStrategicOperator(request, this.env.CTI_OPERATOR_TOKEN)
+        && !isAuthorizedStrategicOperator(request, this.env.IOC_OPERATOR_TOKEN)) {
         return new Response(JSON.stringify({ error: 'UNAUTHORIZED' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
     } else if (this.env.LEGACY_FREEZE === 'true') {
