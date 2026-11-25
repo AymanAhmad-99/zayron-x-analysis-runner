@@ -91,19 +91,46 @@ export interface CveTitleInput {
 }
 
 /**
+ * The one vendor/product subject used by H1, `<title>`, OG/Twitter and list views.
+ *
+ * A provider frequently names the product after the vendor ("Red Hat" +
+ * "Red Hat Enterprise Linux 10"). Concatenating both produces the visible defect
+ * `Red Hat Red Hat Enterprise Linux 10`, so a product that already leads with the
+ * vendor — or a vendor that already leads with the product — wins outright and
+ * the other field is never repeated.
+ */
+export function advisorySubject(vendor: string | null | undefined, product: string | null | undefined): string | null {
+  const v = displayVendor(vendor);
+  const p = displayProduct(product);
+  if (!v) return p;
+  if (!p) return v;
+  const vLower = v.toLowerCase();
+  const pLower = p.toLowerCase();
+  if (vLower === pLower) return p;
+  // Compare on a word boundary so "Red Hat" matches "Red Hat Enterprise Linux 10"
+  // but "Red" never swallows "Redshift".
+  if (pLower === vLower || pLower.startsWith(`${vLower} `)) return p;
+  if (vLower.startsWith(`${pLower} `)) return v;
+  return `${v} ${p}`;
+}
+
+/**
+ * Strict shared advisory title: `CVE-2026-129830 — Red Hat Enterprise Linux 10 Vulnerability`.
+ * Never renders the vendor twice.
+ */
+export function formatAdvisoryTitle(cveId: string, vendor?: string | null, product?: string | null): string {
+  const cve = (cveId || "").trim() || "CVE";
+  const subject = advisorySubject(vendor, product);
+  return subject ? `${cve} — ${subject} Vulnerability` : `${cve} — Vulnerability advisory`;
+}
+
+/**
  * Visible H1: short enough to scan in one or two lines. The long,
  * entity-dense variant stays in `<title>` / metadata only.
  * `CVE-2026-116160 — ImageMagick Vulnerability`
  */
 export function vulnerabilityDisplayHeading(input: CveTitleInput): string {
-  const cve = (input.cveId || "").trim() || "CVE";
-  const vendor = displayVendor(input.vendor);
-  const product = displayProduct(input.product);
-  const subject =
-    vendor && product && vendor.toLowerCase() !== product.toLowerCase()
-      ? `${vendor} ${product}`
-      : (vendor ?? product);
-  return subject ? `${cve} — ${subject} Vulnerability` : `${cve} — Vulnerability advisory`;
+  return formatAdvisoryTitle(input.cveId, input.vendor, input.product);
 }
 
 /**
@@ -113,11 +140,7 @@ export function vulnerabilityDisplayHeading(input: CveTitleInput): string {
  */
 export function vulnerabilitySeoTitle(input: CveTitleInput): string {
   const cve = (input.cveId || "").trim() || "CVE";
-  const vendor = displayVendor(input.vendor);
-  const product = displayProduct(input.product);
-  const subject = [vendor ?? product, vendor && product && vendor.toLowerCase() !== product.toLowerCase() ? product : null]
-    .filter(Boolean)
-    .join(" ");
+  const subject = advisorySubject(input.vendor, input.product) ?? "";
   const cvss = typeof input.cvss === "number" && Number.isFinite(input.cvss) ? input.cvss.toFixed(1) : null;
   const head = `${cve}: ${subject ? `${subject} ` : ""}Vulnerability${cvss ? ` (CVSS ${cvss})` : ""}`;
   const tail = subject || cvss ? " — Affected & Fixed Versions" : " — Technical Advisory";

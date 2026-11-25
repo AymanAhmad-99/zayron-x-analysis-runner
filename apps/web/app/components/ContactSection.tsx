@@ -42,14 +42,14 @@ export function ContactSection() {
           <p className="contact-card-intro">Two operational channels reach the team directly:</p>
           <ul className="contact-channels" aria-label="Contact channels">
             <li>
-              <strong>Support &amp; security</strong>
-              <span>Technical support, privacy requests, security and abuse reports, general notices.</span>
-              <a href="mailto:support@zayron-x.co">support@zayron-x.co</a>
+              <strong>Security &amp; disclosure</strong>
+              <span>Vulnerability disclosure, incident reports, abuse notices and security questionnaires.</span>
+              <a href="mailto:security@zayron-x.co">security@zayron-x.co</a>
             </li>
             <li>
-              <strong>Enterprise &amp; procurement</strong>
-              <span>Sales, contracts, DPA requests, security questionnaires, partnerships.</span>
-              <a href="mailto:enterprise@zayron-x.co">enterprise@zayron-x.co</a>
+              <strong>Institutional &amp; commercial</strong>
+              <span>General enquiries, procurement, contracts, DPA requests and partnerships.</span>
+              <a href="mailto:contact@zayron-x.co">contact@zayron-x.co</a>
             </li>
           </ul>
         </div>

@@ -49,7 +49,7 @@ export const BRAND_DESCRIPTION =
 export const BRAND_ALTERNATE_NAMES = ["Zayron-X", "zayron-x.co", "ZAYRON-X Cyber Threat Intelligence"];
 
 /** Verified public channels only. No placeholder profile is ever emitted. */
-export const BRAND_SAME_AS = ["https://t.me/zayronxai", "https://www.linkedin.com/company/zayron-x"];
+export const BRAND_SAME_AS = ["https://t.me/zayronxai", "https://www.linkedin.com/company/zayron-x", "https://x.com/zayron_x"];
 
 /** Absolute brand mark (every icon path is served from the apex origin). */
 export function brandLogoUrl(siteUrl: string): string {

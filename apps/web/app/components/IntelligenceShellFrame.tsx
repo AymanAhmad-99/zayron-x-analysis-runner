@@ -14,6 +14,9 @@ import { intelligenceRoutes, routes } from "../lib/routes";
 
 const NAV_ITEMS = [routes.intelligence, ...intelligenceRoutes];
 
+/** Routes with no live feed yet. They stay reachable but are labelled honestly. */
+const STAGED_ROUTES = new Set([routes.actors.href, routes.exploits.href, routes.campaigns.href, routes.iocs.href]);
+
 function IntelligenceNavPanel({ activeHref, onNavigate }: { activeHref: string; onNavigate: () => void }) {
   return (
     <nav className="intelligence-nav" aria-label="Intelligence workspace">
@@ -29,6 +32,7 @@ function IntelligenceNavPanel({ activeHref, onNavigate }: { activeHref: string; 
             aria-current={active ? "page" : undefined}
           >
             {item.label}
+            {STAGED_ROUTES.has(item.href) ? <small className="nav-staged">STAGED</small> : null}
             <span aria-hidden="true">↗</span>
           </a>
         );

@@ -1,12 +1,13 @@
 import { routes } from "../lib/routes";
 
 /**
- * Verified public channels. X is intentionally absent: no verified X profile
- * exists, and a placeholder link is never rendered as a live channel.
+ * Verified public channels. A placeholder link is never rendered as a live
+ * channel; every entry here is a real, verified ZAYRON-X profile.
  */
 const social = [
   { label: "ZAYRON-X on Telegram", href: "https://t.me/zayronxai", icon: "telegram" as const },
   { label: "ZAYRON-X on LinkedIn", href: "https://www.linkedin.com/company/zayron-x", icon: "linkedin" as const },
+  { label: "ZAYRON-X on X", href: "https://x.com/zayron_x", icon: "x" as const },
 ];
 
 const columns: Array<{ title: string; links: Array<{ label: string; href: string }> }> = [
@@ -45,7 +46,15 @@ const columns: Array<{ title: string; links: Array<{ label: string; href: string
   },
 ];
 
-function SocialIcon({ icon }: { icon: "telegram" | "linkedin" }) {
+function SocialIcon({ icon }: { icon: "telegram" | "linkedin" | "x" }) {
+  if (icon === "x") {
+    // Official X mark, monochrome, inheriting the footer's icon colour.
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z" />
+      </svg>
+    );
+  }
   if (icon === "telegram") {
     return (
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

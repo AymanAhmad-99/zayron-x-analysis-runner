@@ -45,6 +45,28 @@ function normalizePath(pathname: string): string {
   return pathname;
 }
 
+/**
+ * Baseline enterprise response headers.
+ *
+ * Applied to every response that leaves the Worker — redirects included — so no
+ * path can serve without them. A CSP is deliberately absent: the site inlines a
+ * vinext streaming bootstrap script, so a policy here would need a nonce plumbing
+ * change rather than a guessed directive.
+ */
+const SECURITY_HEADERS: Record<string, string> = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
+
+function harden(response: NextResponse): NextResponse {
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    response.headers.set(name, value);
+  }
+  return response;
+}
+
 export function middleware(request: NextRequest): NextResponse {
   const url = new URL(request.url);
   const host = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
@@ -52,17 +74,17 @@ export function middleware(request: NextRequest): NextResponse {
   if (REDIRECT_HOSTS.has(host)) {
     const target = new URL(`https://${CANONICAL_HOST}${url.pathname}`);
     target.search = url.search;
-    return NextResponse.redirect(target, 301);
+    return harden(NextResponse.redirect(target, 301));
   }
 
   const destination = PATH_REDIRECTS[normalizePath(url.pathname)];
   if (destination) {
     const target = new URL(destination, url.origin);
     target.search = url.search;
-    return NextResponse.redirect(target, 301);
+    return harden(NextResponse.redirect(target, 301));
   }
 
-  return NextResponse.next();
+  return harden(NextResponse.next());
 }
 
 export const config = {

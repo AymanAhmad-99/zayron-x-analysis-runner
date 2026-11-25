@@ -23,6 +23,7 @@ export function RouteShell({
   identifier,
   statusLabel,
   activeHref,
+  staged = false,
   contextNotice,
   children,
 }: {
@@ -32,9 +33,16 @@ export function RouteShell({
   identifier?: string;
   statusLabel?: string;
   activeHref?: string;
+  /**
+   * A surface with no live feed must not borrow the live pill. `staged` renders
+   * a neutral STAGED / ROADMAP label so a hollow legacy page never claims live
+   * intelligence it does not have.
+   */
+  staged?: boolean;
   contextNotice?: ReactNode;
   children?: ReactNode;
 }) {
+  const resolvedStatus = statusLabel ?? (staged ? "STAGED / ROADMAP" : DEFAULT_STATUS_LABEL());
   return (
     <IntelligenceShellFrame eyebrow={eyebrow} statusLabel={statusLabel} activeHref={activeHref}>
       <div className="workspace-heading">
@@ -55,9 +63,9 @@ export function RouteShell({
           <h1 id="route-heading">{title}</h1>
           <p>{description}</p>
         </div>
-        <span className="workspace-status">
+        <span className={`workspace-status${staged && !statusLabel ? " staged" : ""}`}>
           <i />
-          {statusLabel ?? DEFAULT_STATUS_LABEL()}
+          {resolvedStatus}
         </span>
       </div>
       {children ?? (
