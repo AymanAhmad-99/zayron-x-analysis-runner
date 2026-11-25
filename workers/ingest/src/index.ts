@@ -245,18 +245,22 @@ const ingestHandlers = {
         console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_PULSE_DISABLED', reason: 'FLAG_ABSENT' }));
         return;
       }
-      try {
-        const pulse = await runAuthoritativePulse(env as any, { trigger: _controller?.cron || 'scheduled' });
-        console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_PULSE', ...pulse }));
-      } catch (error) {
-        console.error(JSON.stringify({
-          type: 'AUTHORITATIVE_CVE_PULSE_FAILED',
-          error: String((error as Error)?.message || error).slice(0, 300),
-        }));
-      }
-      // Phase 4C — the executive wire runs AFTER the corpus is refreshed and
-      // briefed, so a dispatch can never publish a pre-enrichment fact. It is
-      // independently fallible and closed unless TELEGRAM_OUTBOUND_ENABLED=true.
+      // ── Phase 4C.4 — WIRE FIRST, PULSE SECOND ────────────────────────────
+      // A Worker invocation has ONE subrequest budget shared by every fetch it
+      // makes. On the 00:00 UTC tick the pulse (NVD + KEV + EPSS + enrichment +
+      // Gemma briefs) consumed that budget first, so all three Telegram sends
+      // threw `Too many subrequests by single Worker invocation` and the wire
+      // published nothing at all.
+      //
+      // The wire therefore runs BEFORE the pulse. A dispatch reads already
+      // briefed rows from D1 and makes exactly one outbound request per post
+      // (at most TELEGRAM_MAX_PER_TICK = 1), which is a rounding error against
+      // the budget, so delivery no longer depends on how heavy the ingest tick
+      // turns out to be. Nothing is published that was not already briefed on an
+      // earlier tick, so no pre-enrichment fact can reach the wire.
+      //
+      // Each pass is independently fallible: neither a failed wire nor a failed
+      // pulse can prevent the other from running.
       try {
         // `automated: true` applies the cron pacing contract: at most
         // TELEGRAM_MAX_PER_TICK (1) post, and only when no SENT row landed in
@@ -267,6 +271,16 @@ const ingestHandlers = {
       } catch (error) {
         console.error(JSON.stringify({
           type: 'TELEGRAM_DISPATCH_PASS_FAILED',
+          error: String((error as Error)?.message || error).slice(0, 300),
+        }));
+      }
+
+      try {
+        const pulse = await runAuthoritativePulse(env as any, { trigger: _controller?.cron || 'scheduled' });
+        console.log(JSON.stringify({ type: 'AUTHORITATIVE_CVE_PULSE', ...pulse }));
+      } catch (error) {
+        console.error(JSON.stringify({
+          type: 'AUTHORITATIVE_CVE_PULSE_FAILED',
           error: String((error as Error)?.message || error).slice(0, 300),
         }));
       }

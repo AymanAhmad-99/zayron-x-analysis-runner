@@ -33,13 +33,38 @@ export function serializeJsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+/**
+ * Brand disambiguation.
+ *
+ * "Zayron X" is also an unrelated music artist, so a bare `Organization` node
+ * loses the entity to the recording artist. The node therefore carries the
+ * platform's own logo URL, the exact product description (what the entity IS,
+ * in the words the site itself uses) and the one verified `sameAs` profile, so
+ * Google builds a knowledge node for the CTI platform rather than merging the
+ * two entities.
+ */
+export const BRAND_DESCRIPTION =
+  "Authoritative Cyber Threat Intelligence platform delivering source-verified CVE advisories (NVD, CVE.org, CISA ADP, CISA KEV, FIRST EPSS, OSV.dev) and static malware dossiers.";
+
+export const BRAND_ALTERNATE_NAMES = ["Zayron-X", "zayron-x.co", "ZAYRON-X Cyber Threat Intelligence"];
+
+export const BRAND_SAME_AS = ["https://t.me/zayronxai"];
+
+/** Absolute brand mark (every icon path is served from the apex origin). */
+export function brandLogoUrl(siteUrl: string): string {
+  return `${siteUrl.replace(/\/+$/, "")}/icon-512x512.png`;
+}
+
 export function organizationJsonLd(siteUrl: string): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "ZAYRON-X",
+    alternateName: [...BRAND_ALTERNATE_NAMES],
     url: siteUrl,
-    description: "Evidence-driven cyber threat intelligence.",
+    logo: brandLogoUrl(siteUrl),
+    description: BRAND_DESCRIPTION,
+    sameAs: [...BRAND_SAME_AS],
   };
 }
 
@@ -49,6 +74,7 @@ export function webSiteJsonLd(siteUrl: string): JsonLd {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "ZAYRON-X",
+    alternateName: [...BRAND_ALTERNATE_NAMES],
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",

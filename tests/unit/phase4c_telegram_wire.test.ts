@@ -605,3 +605,37 @@ describe('telegram ledger migration', () => {
     expect(source).toContain("strategic_brief_version = 'malware_strategic_brief.v1'");
   });
 });
+
+/* ───────────────── scheduled ordering & operator observability ─────────────── */
+
+describe('cron ordering — the wire runs before the heavy pulse', () => {
+  test('the scheduled handler dispatches before any ingest subrequest', async () => {
+    const source = await Bun.file(new URL('../../workers/ingest/src/index.ts', import.meta.url)).text();
+    const dispatch = source.indexOf('runTelegramDispatchPass(env as any, { automated: true })');
+    const pulse = source.indexOf('runAuthoritativePulse(env as any');
+    // Both calls must exist in this exact order: a Worker invocation shares one
+    // subrequest budget, so a pulse that runs first can starve the wire (this is
+    // precisely what made the 00:00 UTC tick post nothing).
+    expect(dispatch).toBeGreaterThan(-1);
+    expect(pulse).toBeGreaterThan(-1);
+    expect(dispatch).toBeLessThan(pulse);
+  });
+
+  test('each pass stays in its own try/catch so one cannot abort the other', async () => {
+    const source = await Bun.file(new URL('../../workers/ingest/src/index.ts', import.meta.url)).text();
+    expect(source).toContain("type: 'TELEGRAM_DISPATCH_PASS_FAILED'");
+    expect(source).toContain("type: 'AUTHORITATIVE_CVE_PULSE_FAILED'");
+  });
+});
+
+describe('render gate observability', () => {
+  test('a rejected payload is logged with its entity id and validator errors', async () => {
+    const source = await Bun.file(new URL('../../workers/ingest/src/telegramDispatch.ts', import.meta.url)).text();
+    expect(source).toContain('TELEGRAM_RENDER_REJECTED');
+    expect(source).toContain('reason: \'RENDER_REJECTED\'');
+    // The log must carry the failures, not just the fact that one happened.
+    const log = source.slice(source.indexOf('TELEGRAM_RENDER_REJECTED'));
+    expect(log).toContain('entity_id: payload.entity_id');
+    expect(log).toContain('errors,');
+  });
+});

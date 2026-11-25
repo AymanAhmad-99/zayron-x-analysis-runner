@@ -152,19 +152,38 @@ export function staticSitemapEntries(siteUrl: string): SitemapEntry[] {
   return STATIC_PATHS.map((path) => ({ loc: `${siteUrl}${path}` }));
 }
 
+/**
+ * Crawlers that must be able to read the site AND every brand asset. A crawler
+ * that cannot fetch `/favicon.ico` renders no site icon in the SERP.
+ *
+ * These groups are declared explicitly (not inherited from `User-agent: *`) so a
+ * Cloudflare edge-managed robots block — which prepends its own `User-agent: *`
+ * group — can never narrow what Googlebot or Bingbot is allowed to fetch: once a
+ * bot has its own group, only that group applies to it.
+ */
+export const NAMED_CRAWLERS = ["Googlebot", "Googlebot-Image", "Bingbot"] as const;
+
+/** Icon and manifest paths that must stay fetchable for every crawler. */
+export const CRAWLABLE_ASSET_PATHS = [
+  "/favicon.ico",
+  "/favicon-48x48.png",
+  "/favicon-96x96.png",
+  "/apple-touch-icon.png",
+  "/icon-192x192.png",
+  "/icon-512x512.png",
+  "/site.webmanifest",
+] as const;
+
 /** Preview is never indexed; production allows the site and advertises the index. */
 export function robotsText(isPreview: boolean, siteUrl: string): string {
   if (isPreview) return "User-agent: *\nDisallow: /\n";
-  return [
-    "User-agent: *",
-    "Allow: /",
-    "Disallow: /api/",
-    "Disallow: /admin/",
-    "Disallow: /search?*",
-    "",
-    `Sitemap: ${siteUrl}/sitemap.xml`,
-    "",
-  ].join("\n");
+  const operators = ["Disallow: /api/", "Disallow: /admin/", "Disallow: /search?*"];
+  const lines = ["User-agent: *", "Allow: /", ...operators];
+  for (const crawler of NAMED_CRAWLERS) {
+    lines.push("", `User-agent: ${crawler}`, "Allow: /", ...CRAWLABLE_ASSET_PATHS.map((p) => `Allow: ${p}`), ...operators);
+  }
+  lines.push("", `Sitemap: ${siteUrl}/sitemap.xml`, "");
+  return lines.join("\n");
 }
 
 export const SITEMAP_XML_CONTENT_TYPE = "application/xml; charset=utf-8";

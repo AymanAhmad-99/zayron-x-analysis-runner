@@ -412,6 +412,15 @@ export async function runTelegramDispatchPass(
     if (errors.length > 0) {
       summary.errors.push(`RENDER_REJECTED:${payload.entity_id}:${errors.join(',')}`);
       summary.skipped.push({ entity_type: payload.entity_type, entity_id: payload.entity_id, reason: 'RENDER_REJECTED' });
+      // A render rejection is an OPERATOR-visible event, not a silent drop: the
+      // entity stays eligible (no ledger row is written) but the exact validator
+      // failures are emitted so a high-impact CVE is never lost without a trace.
+      console.warn(JSON.stringify({
+        type: 'TELEGRAM_RENDER_REJECTED',
+        entity_type: payload.entity_type,
+        entity_id: payload.entity_id,
+        errors,
+      }));
       continue;
     }
     valid.push(payload);
