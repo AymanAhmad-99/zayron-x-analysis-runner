@@ -196,6 +196,8 @@ const EXPENSIVE_PATHS = new Set([
  */
 const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/health",
+  // PHASE 7A — developer specification and self-serve catalog roots.
+  "/api/v1/openapi.json",
   "/api/v1/intelligence",
   "/api/v1/intelligence/latest",
   "/api/v1/intelligence/stats",
@@ -276,6 +278,11 @@ export function requiredTrust(method: string, path: string): TrustRequirement {
   // Expensive / analysis writes.
   if (!isRead && EXPENSIVE_PATHS.has(path)) return "admin_or_internal";
 
+  // PHASE 7A — anonymous developer acquisition writes. These are the only
+  // public non-GET surfaces: self-serve key issuance and procurement intake.
+  // Both are rate limited by client IP in the `public_write` class.
+  if (path === "/api/v1/keys/self-serve" || path === "/api/v1/leads") return "public";
+
   // Explicit anonymous read allowlist.
   if (isPublicRead(m, path)) return "public";
 
@@ -283,13 +290,14 @@ export function requiredTrust(method: string, path: string): TrustRequirement {
   return "admin_or_internal";
 }
 
-export type EndpointClass = "public_read" | "search" | "mutation" | "expensive" | "admin" | "internal" | "webhook";
+export type EndpointClass = "public_read" | "public_write" | "search" | "mutation" | "expensive" | "admin" | "internal" | "webhook";
 
 export function classifyEndpoint(method: string, path: string, hasSearchQuery = false): EndpointClass {
   const trust = requiredTrust(method, path);
   if (trust === "webhook") return "webhook";
   if (trust === "admin") return "admin";
   if (trust === "internal") return "internal";
+  if (path === "/api/v1/keys/self-serve" || path === "/api/v1/leads") return "public_write";
   if (path === "/api/v1/search" || path === "/api/v1/knowledge/search") return "search";
   // Wave 4A: `/feed?q=...` runs an unindexed LIKE scan, so a search-bearing
   // feed request is rate-limited as `search`, not as a cheap public list read.
@@ -522,6 +530,8 @@ export interface RateLimitPolicy {
 
 export const RATE_LIMITS: Record<EndpointClass, RateLimitPolicy> = {
   public_read: { capacity: 300, refillPerSecond: 5, windowSeconds: 60 },
+  /** PHASE 7A — 15 acquisitions per minute per client IP (key issuance, leads). */
+  public_write: { capacity: 15, refillPerSecond: 0.25, windowSeconds: 60 },
   search: { capacity: 60, refillPerSecond: 1, windowSeconds: 60 },
   mutation: { capacity: 30, refillPerSecond: 0.5, windowSeconds: 60 },
   expensive: { capacity: 20, refillPerSecond: 0.33, windowSeconds: 60 },
@@ -866,7 +876,7 @@ const DB_LIMITERS = new WeakMap<object, DurableRateLimiter>();
  * 3. Durable rate limiting with graceful fallback
  * 4. Dispatch & CORS application
  */
-export async function withSecurityBoundary(
+async function runSecurityBoundary(
   request: Request,
   env: BoundaryEnv,
   dispatch: Dispatcher,
@@ -982,7 +992,12 @@ export async function withSecurityBoundary(
     // ZX-25: a 429 must be a complete backoff contract — an integer Retry-After of
     // at least 1 second, an explicitly uncacheable response, and the same value in
     // the JSON body for clients that cannot read the header.
-    const retryAfterSeconds = Math.max(1, Math.ceil(Number(decision.retryAfterSeconds) || 1));
+    // PHASE 7A — acquisition writes are a fixed 60-second window, so the
+    // advertised backoff is the whole window rather than the refill interval.
+    const retryAfterSeconds =
+      endpointClass === "public_write"
+        ? RATE_LIMITS.public_write.windowSeconds
+        : Math.max(1, Math.ceil(Number(decision.retryAfterSeconds) || 1));
     const headers = new Headers(corsHeaders(origin));
     headers.set("Content-Type", "application/json");
     headers.set("Retry-After", String(retryAfterSeconds));
@@ -1025,5 +1040,68 @@ export async function withSecurityBoundary(
     });
     return applyResponseCachePolicy(applyCors(jsonError(500, "INTERNAL_ERROR", "Internal server error"), origin), false);
   }
+}
+
+// ── PHASE 7A — enterprise rate-limit / correlation headers ───────────────
+
+/** Correlation identifier, unique per invocation and never cached. */
+export const REQUEST_ID_HEADER = "X-Request-Id";
+/** Allowance for the resolved endpoint class and credential tier, per 60s. */
+export const RATE_LIMIT_HEADER = "X-RateLimit-Limit";
+/** Resolved credential tier: anonymous | free | pro | enterprise. */
+export const TIER_HEADER = "X-Zayron-Tier";
+
+/** JSON 429 with the complete backoff contract. */
+export function rateLimitedResponse(origin: string | null, limit: number, tier: string, retryAfterSeconds = 60): Response {
+  const headers = new Headers(corsHeaders(origin));
+  headers.set("Content-Type", "application/json");
+  headers.set("Retry-After", String(retryAfterSeconds));
+  headers.set("Cache-Control", "private, no-store");
+  headers.set(RATE_LIMIT_HEADER, String(limit));
+  headers.set(TIER_HEADER, tier);
+  return new Response(
+    JSON.stringify({
+      error: { code: "RATE_LIMITED", message: `Rate limit exceeded for the ${tier} tier` },
+      retryAfter: retryAfterSeconds,
+    }),
+    { status: 429, headers },
+  );
+}
+
+/**
+ * Attach the correlation and allowance headers to an API response.
+ *
+ * A tier/limit set by the dispatcher (an authenticated API-key request) wins;
+ * otherwise the anonymous allowance for the endpoint class is reported. The
+ * values are per-request, so the edge cache strips them before storing a copy.
+ */
+function decorateApiResponse(response: Response, request: Request, url: URL): Response {
+  const headers = new Headers(response.headers);
+  headers.delete(REQUEST_ID_HEADER);
+  headers.set(REQUEST_ID_HEADER, crypto.randomUUID());
+  if (!headers.has(TIER_HEADER)) headers.set(TIER_HEADER, "anonymous");
+  if (!headers.has(RATE_LIMIT_HEADER)) {
+    const hasSearchQuery = (url.searchParams.get("q") ?? "").trim().length > 0;
+    const endpointClass = classifyEndpoint(request.method, url.pathname, hasSearchQuery);
+    headers.set(RATE_LIMIT_HEADER, String(RATE_LIMITS[endpointClass].capacity));
+  }
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
+/**
+ * Full API request boundary: OPTIONS → auth → edge cache → rate limit → CORS,
+ * plus the Phase 7A correlation/allowance headers on every `/api/v1/*` reply.
+ */
+export async function withSecurityBoundary(
+  request: Request,
+  env: BoundaryEnv,
+  dispatch: Dispatcher,
+  limiter?: RateLimiterInterface,
+  options: BoundaryOptions = {},
+): Promise<Response> {
+  const response = await runSecurityBoundary(request, env, dispatch, limiter, options);
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/api/v1/")) return response;
+  return decorateApiResponse(response, request, url);
 }
 

@@ -67,6 +67,32 @@ function harden(response: NextResponse): NextResponse {
   return response;
 }
 
+/**
+ * PHASE 7A — 50K-user edge cache shield for public SSR pages.
+ *
+ * These documents are identical for every anonymous visitor and change on an
+ * hourly (not second) cadence, so the Cloudflare CDN may serve a repeat request
+ * for 300s with a 600s stale-while-revalidate window. That removes the Worker
+ * invocation AND the API/D1 read behind it. Only the explicitly public catalog
+ * pages are listed: a personalized or operator route must never inherit this.
+ */
+const PUBLIC_PAGE_CACHE = new Set([
+  "/",
+  "/intelligence/vulnerabilities",
+  "/intelligence/malware",
+  "/pricing",
+  "/developers",
+]);
+
+const PUBLIC_PAGE_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
+
+function withPageCache(response: NextResponse, pathname: string): NextResponse {
+  if (PUBLIC_PAGE_CACHE.has(normalizePath(pathname))) {
+    response.headers.set("Cache-Control", PUBLIC_PAGE_CACHE_CONTROL);
+  }
+  return response;
+}
+
 export function middleware(request: NextRequest): NextResponse {
   const url = new URL(request.url);
   const host = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
@@ -84,7 +110,7 @@ export function middleware(request: NextRequest): NextResponse {
     return harden(NextResponse.redirect(target, 301));
   }
 
-  return harden(NextResponse.next());
+  return withPageCache(harden(NextResponse.next()), url.pathname);
 }
 
 export const config = {

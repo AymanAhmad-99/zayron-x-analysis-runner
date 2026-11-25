@@ -105,7 +105,16 @@ import {
   loadServableMalwareReportIndex,
   type MalwareReportStore,
 } from './malwareReportReadGate';
-import { withSecurityBoundary, deriveTelegramEventId, checkAndRecordReplay, updateReplayStatus } from './security';
+import { withSecurityBoundary, deriveTelegramEventId, checkAndRecordReplay, updateReplayStatus, RateLimiter, rateLimitedResponse } from './security';
+import {
+  API_KEY_TIERS,
+  ApiKeyError,
+  issueSelfServeKey,
+  recordApiAccessLead,
+  resolveApiKey,
+  type ApiKeyTier,
+} from './apiKeys';
+import { buildOpenApiDocument } from './openapi';
 import { publishApprovedIntelligence, type PublicationInput, type PublicationResult } from './publication';
 import { buildFeedQuery } from './feedQuery';
 import {
@@ -186,6 +195,18 @@ export interface Env {
    * request parameter. See `packages/intelligence/src/ai/failoverHarness.ts`.
    */
   PROVIDER_FAILOVER_HARNESS?: string;
+
+  // ── PHASE 7A — developer API surface ─────────────────────────────────
+  /** HMAC-SHA256 pepper for API token digests. Issuance is refused when unset. */
+  API_KEY_PEPPER?: string;
+  /** Optional Turnstile secret; when set, self-serve issuance requires a token. */
+  TURNSTILE_SECRET_KEY?: string;
+  /** Native Cloudflare Workers rate-limit bindings (see wrangler.toml). */
+  API_LIMITER_FREE?: { limit(input: { key: string }): Promise<{ success: boolean }> };
+  API_LIMITER_PRO?: { limit(input: { key: string }): Promise<{ success: boolean }> };
+  API_LIMITER_ENTERPRISE?: { limit(input: { key: string }): Promise<{ success: boolean }> };
+  /** Declared mode flag: "true" while the deployment runs inside Free-tier caps. */
+  FREE_TIER_MODE?: string;
 }
 
 type ResearchPayload = {
@@ -392,16 +413,129 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json',
 };
 
-function jsonResponse(data: unknown, status = 200, cacheTtlSeconds = 30) {
+function jsonResponse(data: unknown, status = 200, cacheTtlSeconds = 300) {
   const headers: Record<string, string> = {
     ...CORS_HEADERS,
   };
   if (status === 200) {
-    headers['Cache-Control'] = `public, max-age=${cacheTtlSeconds}, s-maxage=${cacheTtlSeconds * 2}, stale-while-revalidate=120`;
+    // PHASE 7A — disciplined CDN policy: a repeat read of a public catalog
+    // response is served by the Cloudflare CDN for 300s (plus a 600s
+    // stale-while-revalidate window) and costs zero D1 reads. Authenticated and
+    // non-200 responses are rewritten to `private, no-store` by the boundary.
+    headers['Cache-Control'] = `public, max-age=${cacheTtlSeconds}, s-maxage=${cacheTtlSeconds}, stale-while-revalidate=600`;
   }
   return new Response(JSON.stringify(data), {
     status,
     headers,
+  });
+}
+
+// ── PHASE 7A — developer API helpers ─────────────────────────────────────────
+
+/** Documented priority bands. The store grades by severity, so P0..P3 map onto it. */
+const V1_PRIORITY_TO_SEVERITY: Record<string, string> = {
+  P0: 'CRITICAL',
+  P1: 'HIGH',
+  P2: 'MEDIUM',
+  P3: 'LOW',
+};
+
+/** Per-isolate fallback when the native rate-limit binding is unavailable. */
+const DEVELOPER_FALLBACK_LIMITER = new RateLimiter();
+
+interface DeveloperContext {
+  tier: ApiKeyTier;
+  limit: number;
+  keyPrefix: string;
+}
+
+/** Bounded JSON body reader: acquisition payloads are tiny by contract. */
+async function readJsonBody(request: Request): Promise<Record<string, unknown> | null> {
+  let text = '';
+  try {
+    text = await request.text();
+  } catch {
+    return null;
+  }
+  if (!text || text.length > 4096) return null;
+  try {
+    const parsed: unknown = JSON.parse(text);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    return parsed as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Turnstile is OPTIONAL: when `TURNSTILE_SECRET_KEY` is absent the IP rate limit
+ * is the only acquisition gate, and the endpoint still functions.
+ */
+async function verifyTurnstileToken(env: Env, token: unknown, clientIp: string): Promise<{ ok: boolean; reason?: string }> {
+  const secret = (env.TURNSTILE_SECRET_KEY || '').trim();
+  if (!secret) return { ok: true };
+  if (typeof token !== 'string' || !token.trim()) return { ok: false, reason: 'MISSING_TURNSTILE_TOKEN' };
+  const form = new URLSearchParams({ secret, response: token.trim(), remoteip: clientIp });
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: form,
+    });
+    const payload = (await response.json()) as { success?: boolean };
+    return payload?.success ? { ok: true } : { ok: false, reason: 'TURNSTILE_FAILED' };
+  } catch {
+    return { ok: false, reason: 'TURNSTILE_UNAVAILABLE' };
+  }
+}
+
+/**
+ * Enforce the per-tier allowance.
+ *
+ * The native Workers rate-limit binding is preferred (counters live at the edge,
+ * no D1 write per call). When a binding is absent — or the account does not
+ * serve one — the existing in-isolate token bucket keeps the contract instead of
+ * failing open.
+ */
+async function enforceDeveloperRateLimit(env: Env, tier: ApiKeyTier, key: string): Promise<{ allowed: boolean; limit: number }> {
+  const policy = API_KEY_TIERS[tier];
+  const binding =
+    tier === 'free' ? env.API_LIMITER_FREE : tier === 'pro' ? env.API_LIMITER_PRO : env.API_LIMITER_ENTERPRISE;
+  if (binding && typeof binding.limit === 'function') {
+    try {
+      const result = await binding.limit({ key });
+      return { allowed: !!result?.success, limit: policy.requestsPerMinute };
+    } catch {
+      /* fall through to the in-isolate bucket */
+    }
+  }
+  const decision = DEVELOPER_FALLBACK_LIMITER.check(`api_key:${tier}:${key}`, {
+    capacity: policy.requestsPerMinute,
+    refillPerSecond: policy.requestsPerMinute / 60,
+    windowSeconds: 60,
+  });
+  return { allowed: decision.allowed, limit: policy.requestsPerMinute };
+}
+
+/**
+ * Header contract for an authenticated v1 read.
+ *
+ * A keyed response is per-caller, so it is also marked `private, no-store`: the
+ * shared edge object must never carry one subscriber's allowance or payload.
+ */
+function withApiKeyHeaders(response: Response, context: DeveloperContext | null): Response {
+  if (!context) return response;
+  const headers = new Headers(response.headers);
+  headers.set('X-Zayron-Tier', context.tier);
+  headers.set('X-RateLimit-Limit', String(context.limit));
+  headers.set('Cache-Control', 'private, no-store');
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
+/** Small JSON rejection for the developer acquisition surface. */
+function developerError(status: number, code: string, message: string): Response {
+  return new Response(JSON.stringify({ error: { code, message } }), {
+    status,
+    headers: { ...CORS_HEADERS, 'Cache-Control': 'private, no-store' },
   });
 }
 
@@ -648,11 +782,88 @@ const worker = {
     // ZX-22: no OPTIONS branch here. `withSecurityBoundary` answers every
     // preflight before dispatch is reached, so a branch in this method could
     // never run and only suggested a second, divergent CORS policy.
-    if (env.LEGACY_FREEZE === 'true' && request.method !== 'GET') {
+    // The legacy freeze covers the frozen intelligence/publish surface. The
+    // Phase 7A developer-acquisition writes are new surfaces on a different,
+    // un-frozen table set, so they are exempt rather than dead in production.
+    const developerAcquisitionWrite =
+      path === '/api/v1/keys/self-serve' || path === '/api/v1/leads';
+    if (env.LEGACY_FREEZE === 'true' && request.method !== 'GET' && !developerAcquisitionWrite) {
       return errorResponse('Legacy production mutation surface is frozen', 503, 'LEGACY_FROZEN');
     }
 
     try {
+      // ── GET /api/v1/openapi.json ─────────────────────────────────────
+      if (path === '/api/v1/openapi.json' && request.method === 'GET') {
+        return jsonResponse(buildOpenApiDocument({ origin: url.origin }));
+      }
+
+      // ── POST /api/v1/keys/self-serve ─────────────────────────────────
+      // Issues ONE free-tier 48-character credential per unique email. The
+      // plaintext token is returned once and stored only as an HMAC digest.
+      if (path === '/api/v1/keys/self-serve' && request.method === 'POST') {
+        const body = await readJsonBody(request);
+        if (!body) return developerError(400, 'MALFORMED_PAYLOAD', 'A JSON object body is required');
+
+        const clientIp = (request.headers.get('CF-Connecting-IP') || 'unknown').trim();
+        const turnstile = await verifyTurnstileToken(env, body.turnstile_token, clientIp);
+        if (!turnstile.ok) {
+          return developerError(403, turnstile.reason || 'TURNSTILE_FAILED', 'Bot verification failed');
+        }
+
+        try {
+          const issued = await issueSelfServeKey({
+            db: env.DB,
+            email: body.email,
+            organization: body.organization,
+            pepper: env.API_KEY_PEPPER,
+          });
+          return jsonResponse(
+            {
+              data: issued,
+              meta: {
+                warning: 'This token is shown once and cannot be retrieved again. Store it securely.',
+                documentation: '/api/v1/openapi.json',
+                portal: '/developers',
+              },
+            },
+            201,
+          );
+        } catch (err: any) {
+          if (err instanceof ApiKeyError) return developerError(err.status, err.code, err.message);
+          console.error('[API] self-serve key issuance failed', {
+            site: 'api.keys.self_serve',
+            cf_ray: request.headers.get('cf-ray'),
+            error: err?.message ?? String(err),
+          });
+          return developerError(503, 'KEY_SERVICE_UNAVAILABLE', 'Key issuance is temporarily unavailable');
+        }
+      }
+
+      // ── POST /api/v1/leads ───────────────────────────────────────────
+      if (path === '/api/v1/leads' && request.method === 'POST') {
+        const body = await readJsonBody(request);
+        if (!body) return developerError(400, 'MALFORMED_PAYLOAD', 'A JSON object body is required');
+        try {
+          const lead = await recordApiAccessLead({
+            db: env.DB,
+            email: body.email,
+            organization: body.organization,
+            useCase: body.use_case,
+            tierRequested: body.tier_requested,
+            source: typeof body.source === 'string' ? body.source : 'developers',
+          });
+          return jsonResponse({ data: { received: true, tier_requested: lead.tier_requested } }, 202);
+        } catch (err: any) {
+          if (err instanceof ApiKeyError) return developerError(err.status, err.code, err.message);
+          console.error('[API] access lead capture failed', {
+            site: 'api.leads.create',
+            cf_ray: request.headers.get('cf-ray'),
+            error: err?.message ?? String(err),
+          });
+          return developerError(503, 'LEAD_SERVICE_UNAVAILABLE', 'Access requests are temporarily unavailable');
+        }
+      }
+
       // ── GET /api/v1/health ──────────────────────────────────────────
       // ZX-13: the status is COMPUTED from real dependency state, never a
       // literal. `HEALTHY` requires a reachable D1 and a readable
@@ -5272,12 +5483,48 @@ const worker = {
         }
       }
 
+      // ── ZAYRON-X Intelligence API v1 — credential contract ──────────
+      // A presented bearer token is validated here (edge cache first, D1 on a
+      // miss) and its tier allowance enforced. An INVALID token is rejected
+      // rather than silently downgraded to anonymous.
+      let developerContext: DeveloperContext | null = null;
+      if (path === '/api/v1/vulnerabilities' || path.startsWith('/api/v1/vulnerabilities/')) {
+        const authorization = (request.headers.get('Authorization') || '').trim();
+        if (authorization) {
+          const token = authorization.replace(/^Bearer\s+/i, '').trim();
+          const resolved = await resolveApiKey({ db: env.DB, token, pepper: env.API_KEY_PEPPER });
+          if (!resolved) {
+            return developerError(401, 'INVALID_API_KEY', 'The supplied API token is invalid, revoked or expired');
+          }
+          const allowance = await enforceDeveloperRateLimit(env, resolved.tier, resolved.keyPrefix);
+          if (!allowance.allowed) {
+            return rateLimitedResponse(request.headers.get('Origin'), allowance.limit, resolved.tier);
+          }
+          developerContext = { tier: resolved.tier, limit: allowance.limit, keyPrefix: resolved.keyPrefix };
+        }
+      }
+
       // ── GET /api/v1/vulnerabilities ─────────────────────────────────
       if (path === '/api/v1/vulnerabilities') {
         const limit = Math.min(Number(url.searchParams.get('limit')) || 50, 100);
         const offset = Number(url.searchParams.get('offset')) || 0;
         const severity = url.searchParams.get('severity');
         const q = url.searchParams.get('q');
+
+        // v1 filters. `priority` is documented as P0..P3 and is derived from the
+        // stored severity grade because the table does not carry a priority
+        // column; `kev` maps to the confirmed in-the-wild flag.
+        const priorityBands = (url.searchParams.get('priority') || '')
+          .split(',')
+          .map((band) => band.trim().toUpperCase())
+          .map((band) => V1_PRIORITY_TO_SEVERITY[band])
+          .filter((grade): grade is string => typeof grade === 'string');
+        const kevParam = (url.searchParams.get('kev') || '').trim().toLowerCase();
+        const kevOnly = kevParam === 'true' || kevParam === '1';
+        const minEpssRaw = (url.searchParams.get('min_epss') || '').trim();
+        const minEpssNumber = minEpssRaw === '' ? NaN : Number(minEpssRaw);
+        const minEpss = Number.isFinite(minEpssNumber) ? Math.min(1, Math.max(0, minEpssNumber)) : null;
+        const vendor = (url.searchParams.get('vendor') || '').trim().slice(0, 80);
 
         // Gate 3A.3 — quarantined rows are never listed publicly.
         let query = `SELECT * FROM vulnerabilities WHERE provenance_state <> 'SYNTHETIC_UNVERIFIED'`;
@@ -5290,6 +5537,29 @@ const worker = {
           countQuery += ` AND severity = ?`;
           params.push(severity.toUpperCase());
           countParams.push(severity.toUpperCase());
+        }
+        if (priorityBands.length) {
+          const placeholders = priorityBands.map(() => '?').join(',');
+          query += ` AND UPPER(severity) IN (${placeholders})`;
+          countQuery += ` AND UPPER(severity) IN (${placeholders})`;
+          params.push(...priorityBands);
+          countParams.push(...priorityBands);
+        }
+        if (kevOnly) {
+          query += ` AND is_exploited_in_wild = 1`;
+          countQuery += ` AND is_exploited_in_wild = 1`;
+        }
+        if (minEpss !== null) {
+          query += ` AND epss_score IS NOT NULL AND epss_score >= ?`;
+          countQuery += ` AND epss_score IS NOT NULL AND epss_score >= ?`;
+          params.push(minEpss);
+          countParams.push(minEpss);
+        }
+        if (vendor) {
+          query += ` AND LOWER(COALESCE(affected_vendor, '')) LIKE ?`;
+          countQuery += ` AND LOWER(COALESCE(affected_vendor, '')) LIKE ?`;
+          params.push(`%${vendor.toLowerCase()}%`);
+          countParams.push(`%${vendor.toLowerCase()}%`);
         }
         if (q) {
           // `cve_id` is stored uppercase (see 0027 normalisation) and compared with
@@ -5318,7 +5588,10 @@ const worker = {
           ]);
           const countRow = (countResult.results?.[0] ?? {}) as { total?: number };
           const total = Number(countRow.total ?? rows.results.length);
-          return jsonResponse({ data: rows.results, meta: { total, limit, offset } });
+          return withApiKeyHeaders(
+            jsonResponse({ data: rows.results, meta: { total, limit, offset } }),
+            developerContext,
+          );
         } catch (dbErr: any) {
           // ZX-19: never disclose the raw driver message to the client.
           console.error('[API] vulnerabilities list degraded', {
@@ -5373,18 +5646,21 @@ const worker = {
             iocs = iocRes.results;
           }
 
-          return jsonResponse({
-            data: {
-              ...vuln,
-              // Phase 4A — parsed v3 strategic brief. The raw column stays in the
-              // payload for compatibility; `strategic_brief` is the projection the
-              // page consumes, and it is null until a brief actually exists.
-              strategic_brief: parseStrategicBriefRecord((vuln as any)?.strategic_brief_json, (vuln as any)?.strategic_brief_version),
-              linked_events: events.results,
-              related_evidence: evidence,
-              related_iocs: iocs,
-            },
-          });
+          return withApiKeyHeaders(
+            jsonResponse({
+              data: {
+                ...vuln,
+                // Phase 4A — parsed v3 strategic brief. The raw column stays in the
+                // payload for compatibility; `strategic_brief` is the projection the
+                // page consumes, and it is null until a brief actually exists.
+                strategic_brief: parseStrategicBriefRecord((vuln as any)?.strategic_brief_json, (vuln as any)?.strategic_brief_version),
+                linked_events: events.results,
+                related_evidence: evidence,
+                related_iocs: iocs,
+              },
+            }),
+            developerContext,
+          );
         } catch (dbErr: any) {
           console.warn('[API] D1 vulnerability detail degraded:', dbErr?.message);
           return errorResponse(`Vulnerability service degraded: ${dbErr?.message}`, 503, 'DB_DEGRADED');

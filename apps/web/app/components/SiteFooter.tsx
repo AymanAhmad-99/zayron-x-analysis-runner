@@ -23,6 +23,7 @@ const columns: Array<{ title: string; links: Array<{ label: string; href: string
     title: "Platform",
     links: [
       { label: "Pricing", href: "/pricing" },
+      { label: "API / Developers", href: "/developers" },
       { label: "Live Wire", href: "https://t.me/zayronxai" },
       { label: "Methodology & Governance", href: "/methodology" },
       { label: "Malware Handling", href: "/malware-handling" },

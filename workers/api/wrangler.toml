@@ -104,9 +104,25 @@ database_id = "34962f8f-abd1-4b0b-8bd7-b4eab59bd902"
 #   KNOWLEDGE_INTERNAL_TOKEN - internal service token (already required by /rag/*)
 #   TELEGRAM_WEBHOOK_SECRET  - Telegram webhook secret; endpoint fails closed (503) when unset
 #   GEMINI_API_KEY           - Gemini API fallback key (Preview secret only)
+[[env.preview.ratelimits]]
+name = "API_LIMITER_FREE"
+namespace_id = "71011"
+simple = { limit = 30, period = 60 }
+
+[[env.preview.ratelimits]]
+name = "API_LIMITER_PRO"
+namespace_id = "71012"
+simple = { limit = 300, period = 60 }
+
+[[env.preview.ratelimits]]
+name = "API_LIMITER_ENTERPRISE"
+namespace_id = "71013"
+simple = { limit = 1200, period = 60 }
+
 [env.preview.vars]
 ENVIRONMENT = "preview"
 LEGACY_FREEZE = "false"
+FREE_TIER_MODE = "true"
 ALLOWED_ORIGINS = "https://zayron-x.co,https://www.zayron-x.co,https://zayron-x-web-preview.aabusabih.workers.dev,http://localhost:8799,http://127.0.0.1:8799,http://localhost:8801,http://127.0.0.1:8801"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 # Gate 2C — declared explicitly so preview is not silently dependent on the
@@ -192,20 +208,49 @@ bucket_name = "zayron-x-knowledge"
 # the hardcoded 'zayronxai' fallback in publishApprovedIntelligence(), because
 # this variable was never declared for this worker. Declared here so the
 # channel is configuration, not a literal buried in code.
+# ═══════════════════════════════════════════════════════════════
+# PHASE 7A — NATIVE WORKERS RATE-LIMIT BINDINGS (Free-Tier Shield)
+#
+# Counters live in the Cloudflare edge, so a rejected request never reaches D1.
+# `period` may only be 10 or 60 seconds. `namespace_id` is an account-unique
+# integer identifying the counter namespace (it is NOT a KV/D1 resource and
+# requires no provisioning). Preview deliberately uses different namespace ids
+# so a preview test can never consume production allowance.
+# ═══════════════════════════════════════════════════════════════
+[[ratelimits]]
+name = "API_LIMITER_FREE"
+namespace_id = "71001"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "API_LIMITER_PRO"
+namespace_id = "71002"
+simple = { limit = 300, period = 60 }
+
+[[ratelimits]]
+name = "API_LIMITER_ENTERPRISE"
+namespace_id = "71003"
+simple = { limit = 1200, period = 60 }
+
 [vars]
 ENVIRONMENT = "production"
 TELEGRAM_TARGET_CHANNEL = "zayronxai"
 LEGACY_FREEZE = "true"
+# Architectural flag: keeps every choice inside Free-tier caps while remaining
+# upgrade-ready. Flipping it to "false" after the Workers Paid upgrade is the
+# only change needed to lift the protective TTLs.
+FREE_TIER_MODE = "true"
 ALLOWED_ORIGINS = "https://zayron-x.co,https://www.zayron-x.co"
-# Free-Tier Survival Mode (4h); reduce after Workers Paid upgrade.
-# Public public-read GETs are served from the edge cache for this many seconds
-# before a D1 read is paid again. Overridable per environment without a code
-# change; absent/invalid falls back to the same 14400s default in edgeCache.ts.
-PUBLIC_EDGE_CACHE_TTL_SECONDS = "14400"
+# PHASE 7A contract: public reads are served from the edge cache for 300s.
+# This is the `s-maxage` the CDN advertises on every public catalog response;
+# the 600s stale-while-revalidate window is emitted by `jsonResponse()`.
+# Overridable per environment without a code change; absent/invalid falls back
+# to the 14400s Free-tier default in edgeCache.ts.
+PUBLIC_EDGE_CACHE_TTL_SECONDS = "300"
 # Cache generation. Bump it whenever a release changes the SHAPE or MEANING of a
 # cached public record (schema migration, re-enrichment, brief contract), so the
 # new payload is served immediately instead of after the TTL above.
-PUBLIC_EDGE_CACHE_EPOCH = "cti-v4-2026-11-24"
+PUBLIC_EDGE_CACHE_EPOCH = "api-v1-2026-11-25"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # OPTIONAL DEAD-LETTER QUEUE (env.DLQ)

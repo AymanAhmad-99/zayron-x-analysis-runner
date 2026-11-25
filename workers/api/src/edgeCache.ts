@@ -74,6 +74,8 @@ const AUTH_SENSITIVE_HEADERS = ["authorization", "cookie", "x-api-key"] as const
  *   GET /api/v1/feed
  */
 const PUBLIC_READ_CACHE_EXACT = new Set<string>([
+  // PHASE 7A — the versioned developer specification is a static public read.
+  "/api/v1/openapi.json",
   "/api/v1/intelligence",
   "/api/v1/vulnerabilities",
   "/api/v1/malware/intelligence/reports",
@@ -207,6 +209,11 @@ export function buildCacheableCopy(response: Response, ttlSeconds: number): Resp
   headers.delete("Access-Control-Allow-Origin");
   headers.delete("Access-Control-Allow-Credentials");
   headers.delete("Set-Cookie");
+  // PHASE 7A — per-request correlation and allowance values must never be
+  // replayed from a shared object to a different caller.
+  headers.delete("X-Request-Id");
+  headers.delete("X-RateLimit-Limit");
+  headers.delete("X-Zayron-Tier");
   headers.set("Cache-Control", withEdgeTtl(cacheControl, ttlSeconds));
 
   // CLONE first: `new Response(response.body, ...)` would lock the live body's

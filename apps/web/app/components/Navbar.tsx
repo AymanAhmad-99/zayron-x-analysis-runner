@@ -77,6 +77,7 @@ export function Navbar() {
             homepage anchor. */}
         <a href="/methodology">Methodology</a>
         <a href={routes.pricing.href}>Pricing</a>
+        <a href={routes.developers.href} aria-label="API / Developers">API</a>
         <a href="/about">About</a>
       </nav>
       <button className="nav-search-pill" type="button" onClick={() => setSearchOpen(true)} aria-label="Open search">

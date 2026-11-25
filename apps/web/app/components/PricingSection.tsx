@@ -52,7 +52,7 @@ const tiers: Tier[] = [
     ],
     builtFor: "SOC analysts · vulnerability analysts · independent researchers",
     cta: "Request Analyst access",
-    ctaHref: "/company/contact",
+    ctaHref: "/developers?tier=pro#request-access",
     waitlist: true,
     featured: true,
   },
@@ -74,7 +74,7 @@ const tiers: Tier[] = [
     ],
     builtFor: "SOC shift teams · vulnerability management · incident response",
     cta: "Request team access",
-    ctaHref: "/company/contact",
+    ctaHref: "/developers?tier=pro#request-access",
     waitlist: true,
   },
   {
@@ -94,7 +94,7 @@ const tiers: Tier[] = [
     ],
     builtFor: "Enterprise security · government-adjacent programs · MSSPs",
     cta: "Contact institutional sales",
-    ctaHref: "mailto:contact@zayron-x.co",
+    ctaHref: "/developers?tier=enterprise#request-access",
   },
 ];
 
@@ -125,7 +125,7 @@ function CellValue({ value }: { value: Cell }) {
 const procurementFaq: Array<{ q: string; a: string }> = [
   {
     q: "Is API access included?",
-    a: "API and structured feed delivery are part of Enterprise & Custom Feeds. Analyst and Team access are delivered through the platform interface. Public records are readable without machine access.",
+    a: "A self-serve Developer API is available now at /developers with a free 48-character token. Higher-volume Pro and Enterprise feed delivery are requested through the same intake form and agreed under contract.",
   },
   {
     q: "What service levels are offered?",

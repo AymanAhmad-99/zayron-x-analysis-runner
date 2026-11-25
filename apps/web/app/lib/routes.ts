@@ -12,6 +12,7 @@ export const routes = {
   news: { label: "News", href: "/news" },
   research: { label: "Research", href: "/research" },
   pricing: { label: "Pricing", href: "/pricing" },
+  developers: { label: "API / Developers", href: "/developers" },
   methodology: { label: "Methodology & Governance", href: "/methodology" },
   about: { label: "About", href: "/about" },
   security: { label: "Security & VDP", href: "/security" },
