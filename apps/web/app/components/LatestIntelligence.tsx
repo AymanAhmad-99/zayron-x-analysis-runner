@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getCanonicalMalwareReports, getIntelligence, getVulnerabilities, type IntelligenceRecord } from "../lib/api";
+import { formatAdvisoryTitle } from "../lib/seo";
 
 function formatTimestamp(value?: string) { if (!value) return null; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(date); }
 function Skeleton() { return <div className="latest-intelligence-skeleton" aria-label="Loading latest intelligence" aria-busy="true">{[1, 2, 3].map((item) => <div className="latest-skeleton-row" key={item}><i /><div><b /><span /><span /></div><em /><em /></div>)}</div>; }
@@ -56,7 +57,11 @@ async function loadLiveFeed(): Promise<IntelligenceRecord[]> {
     .map((item) => ({
       id: (item.intelligence_id || item.id) as string,
       type: "Vulnerability",
-      title: item.title,
+      title: formatAdvisoryTitle(
+        (item.intelligence_id || item.id) as string,
+        item.affected_vendor,
+        item.affected_product,
+      ),
       summary: item.summary,
       severity: item.severity,
       status: item.status,

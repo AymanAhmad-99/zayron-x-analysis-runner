@@ -57,9 +57,18 @@ const DISPLAY_NAMES: Record<string, string> = {
   ibm: "IBM",
 };
 
+/** Provider placeholders that mean "no vendor recorded", never a subject. */
+const VENDOR_PLACEHOLDERS = new Set(["n/a", "na", "none", "null", "unknown", "not applicable", "not_established", "-", "—"]);
+
+function realSubject(raw: string | null | undefined): string {
+  const value = typeof raw === "string" ? raw.trim() : "";
+  if (!value || VENDOR_PLACEHOLDERS.has(value.toLowerCase())) return "";
+  return value;
+}
+
 /** `imagemagick` → `ImageMagick`; unknown vendors get simple title casing. */
 export function displayVendor(vendor: string | null | undefined): string | null {
-  const raw = typeof vendor === "string" ? vendor.trim() : "";
+  const raw = realSubject(vendor);
   if (!raw) return null;
   const known = DISPLAY_NAMES[raw.toLowerCase()];
   if (known) return known;
@@ -71,7 +80,7 @@ export function displayVendor(vendor: string | null | undefined): string | null 
 }
 
 export function displayProduct(product: string | null | undefined): string | null {
-  const raw = typeof product === "string" ? product.trim() : "";
+  const raw = realSubject(product);
   if (!raw) return null;
   const known = DISPLAY_NAMES[raw.toLowerCase()];
   if (known) return known;

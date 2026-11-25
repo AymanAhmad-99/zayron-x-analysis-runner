@@ -22,7 +22,7 @@ export type ApiState = "success" | "empty" | "error";
 export interface ApiResult<T> { state: ApiState; data: T | null; error?: string; }
 export interface IntelligenceRecord { id: string; title?: string; summary?: string; severity?: string; status?: string; confidence?: number; type?: string; updatedAt?: string; }
 export interface IntelligenceList { items: IntelligenceRecord[]; total?: number; nextCursor?: string | null; }
-export interface VulnerabilityRecord { id?: string; intelligence_id?: string; title?: string; summary?: string; severity?: string; confidence?: number | Record<string, unknown>; status?: string; source_title?: string; source_id?: string; updated_at?: string; created_at?: string; }
+export interface VulnerabilityRecord { id?: string; intelligence_id?: string; title?: string; summary?: string; severity?: string; confidence?: number | Record<string, unknown>; status?: string; source_title?: string; source_id?: string; updated_at?: string; created_at?: string; affected_vendor?: string; affected_product?: string; }
 export interface VulnerabilityList { items: VulnerabilityRecord[]; total: number; limit: number; offset: number; }
 export interface MalwareRecord { id?: string; intelligence_id?: string; title?: string; summary?: string; intelligence_type?: string; categories?: unknown[]; subcategories?: unknown[]; entities?: unknown[]; severity?: string; confidence?: number | Record<string, unknown>; status?: string; source_title?: string; source_id?: string; created_at?: string; updated_at?: string; }
 export interface ExploitRecord extends MalwareRecord { vulnerability_id?: string; vulnerability_ids?: string[]; cve?: string; cves?: string[]; }
@@ -665,11 +665,15 @@ export async function getVulnerabilities(params: { limit?: number; offset?: numb
     const payload = await response.json() as { data?: Record<string, unknown>[]; meta?: { total?: number; limit?: number; offset?: number } };
     const rawItems = Array.isArray(payload.data) ? payload.data : [];
     const items: VulnerabilityRecord[] = rawItems.map((r) => {
-      const cveId = (r.cve_id as string) || (r.id as string) || "";
-      const isExploited = Boolean(r.is_exploited_in_wild);
-      return {
-        id: cveId,
-        intelligence_id: cveId,
+              const cveId = (r.cve_id as string) || (r.id as string) || "";
+        const isExploited = Boolean(r.is_exploited_in_wild);
+        return {
+          id: cveId,
+          intelligence_id: cveId,
+          // Retained so every list can render the deduplicated advisory title
+          // instead of the generic ingest title.
+          affected_vendor: typeof r.affected_vendor === "string" ? r.affected_vendor : undefined,
+          affected_product: typeof r.affected_product === "string" ? r.affected_product : undefined,
         title: (r.title as string) || (cveId ? `${cveId} Security Advisory` : "Vulnerability Advisory"),
         summary: (r.description as string) || "",
         severity: (r.severity as string) || "UNKNOWN",
