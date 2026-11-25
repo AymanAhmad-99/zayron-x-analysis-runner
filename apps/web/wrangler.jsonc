@@ -19,12 +19,6 @@
       "name": "zayron-x-web",
       "workers_dev": false,
       "routes": [
-        // PHASE 7D — the OG cards are rendered by THIS worker, but
-        // `zayron-x.co/api/*` is owned by zayron-x-api (the browser API base).
-        // These two longer patterns are more specific, so /api/og/* is served
-        // here and everything else under /api/ still reaches the API worker.
-        { "pattern": "zayron-x.co/api/og/*", "zone_name": "zayron-x.co" },
-        { "pattern": "www.zayron-x.co/api/og/*", "zone_name": "zayron-x.co" },
         { "pattern": "zayron-x.co/*", "zone_name": "zayron-x.co" },
         { "pattern": "www.zayron-x.co/*", "zone_name": "zayron-x.co" }
       ],

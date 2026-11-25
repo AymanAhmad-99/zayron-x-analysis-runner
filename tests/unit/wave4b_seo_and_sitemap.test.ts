@@ -411,8 +411,10 @@ describe("Wave 4B.2 — server vs browser API base (Error 1042 closure)", () => 
     expect(routesIndex).toBeLessThan(rulesIndex);
     const routesBlock = toml.slice(routesIndex, rulesIndex);
     expect(routesBlock).toContain('pattern = "api.zayron-x.co", custom_domain = true');
-    expect(routesBlock).toContain('pattern = "zayron-x.co/api/*"');
-    expect(routesBlock).toContain('pattern = "www.zayron-x.co/api/*"');
+    // PHASE 7D narrowed the public pattern to /api/v1 — everything this worker
+    // serves lives there, and /api/og/* must reach the web worker's card routes.
+    expect(routesBlock).toContain('pattern = "zayron-x.co/api/v1/*"');
+    expect(routesBlock).toContain('pattern = "www.zayron-x.co/api/v1/*"');
 
     const web = JSON.parse(readFileSync("apps/web/wrangler.jsonc", "utf8"));
     expect(web.env.production.vars.API_BASE_URL).toBe("https://api.zayron-x.co/api/v1");
