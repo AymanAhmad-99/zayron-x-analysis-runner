@@ -212,6 +212,8 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/vulnerabilities",
   "/api/v1/malware",
   "/api/v1/malware/intelligence/reports",
+  // PHASE 7C — OpenSSF/OSV supply-chain dossiers (a distinct, non-canonical kind).
+  "/api/v1/malware/supply-chain/reports",
   "/api/v1/actors",
   "/api/v1/alerts",
   "/api/v1/articles",

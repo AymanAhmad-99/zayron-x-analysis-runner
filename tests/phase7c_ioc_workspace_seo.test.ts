@@ -134,7 +134,9 @@ describe('Sigma / Nuclei matcher', () => {
     expect(rules).toHaveLength(2);
     expect(rules.map((r) => r.match_key)).toEqual(['qakbot', 'cobalt strike']);
     expect(rules[0].kind).toBe('family');
-    expect(rules[0].url).toContain('github.com/SigmaHQ/sigma/blob/main/');
+    // SigmaHQ/sigma defaults to `master`; a `main` URL would 404 for every rule.
+    expect(rules[0].url).toContain('github.com/SigmaHQ/sigma/blob/master/');
+    expect(read('workers/ingest/src/detectionRules.ts')).toContain('git/trees/master?recursive=1');
   });
 });
 
@@ -220,5 +222,33 @@ describe('/llms.txt', () => {
     const route = read(LLMS);
     expect(route).not.toMatch(/https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/);
     expect(route).toContain('[.]');
+  });
+});
+
+describe('OpenSSF supply-chain split', () => {
+  test('dossiers have their own projection and never enter the canonical gate', () => {
+    const api = read('workers/api/src/index.ts');
+    const start = api.indexOf("path === '/api/v1/malware/supply-chain/reports'");
+    expect(start).toBeGreaterThan(-1);
+    const block = api.slice(start, start + 2200);
+    expect(block).toContain("source = 'openssf-osv'");
+    expect(block).toContain("id LIKE 'MAL-%'");
+    // a MAL-* advisory has no analysis run/artifact, so it must NOT be validated
+    // as a canonical stored report
+    expect(block).not.toContain('loadServableMalwareReports');
+    expect(block).not.toContain('validateStoredMalwareReport');
+  });
+
+  test('the projection is public and edge-cached', () => {
+    expect(read('workers/api/src/security.ts')).toContain('"/api/v1/malware/supply-chain/reports"');
+    expect(read('workers/api/src/edgeCache.ts')).toContain('"/api/v1/malware/supply-chain/reports"');
+  });
+
+  test('the list renders the human title, not the raw id, as the heading', () => {
+    const list = read('apps/web/app/components/MalwareList.tsx');
+    expect(list).toContain('<strong>{dossier.title}</strong>');
+    expect(list).toContain('<code>{dossier.report_id}</code>');
+    expect(list).not.toContain('<strong>{dossier.report_id}</strong>');
+    expect(list).toContain('getSupplyChainDossiers');
   });
 });

@@ -1726,7 +1726,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
               ? String(requestedSubrequests)
               : this.env.IOC_INGEST_MAX_SUBREQUESTS,
           },
-          {},
+          // `?force=1` re-reads the 24h-cached Sigma/Nuclei index (an explicit
+          // operator override; the scheduled pass never forces).
+          { forceDetection: url.searchParams.get('force') === '1' },
         );
         return new Response(JSON.stringify(summary), {
           status: 200,

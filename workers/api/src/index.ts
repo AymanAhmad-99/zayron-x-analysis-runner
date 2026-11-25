@@ -5984,6 +5984,50 @@ const worker = {
         }
       }
 
+      // ── OpenSSF/OSV supply-chain malicious-package dossiers ──────────────
+      // PHASE 7C — these are OSV advisories, NOT canonical static-analysis
+      // reports: they have no analysis run, artifact or run binding, so they
+      // must not (and cannot) pass the canonical gate. They are served from
+      // their own projection with their own validation (a MAL-* identity), so
+      // the canonical surface never has to pretend or be relaxed.
+      if (path === '/api/v1/malware/supply-chain/reports' && request.method === 'GET') {
+        const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || 25, 1), 50);
+        try {
+          const rows = await env.DB.prepare(
+            `SELECT id, title, family, sha256, severity, published_at
+               FROM malware_reports
+              WHERE source = 'openssf-osv' AND id LIKE 'MAL-%'
+              ORDER BY published_at DESC LIMIT ?`,
+          )
+            .bind(limit)
+            .all<{
+              id: string;
+              title: string;
+              family: string | null;
+              sha256: string | null;
+              severity: string | null;
+              published_at: string;
+            }>();
+          const data = (rows.results || [])
+            .filter((row) => /^MAL-\d{4}-\d+$/.test(String(row.id)))
+            .map((row) => ({
+              report_id: row.id,
+              // The stored title is the OSV summary, e.g.
+              // "Malicious code in @scope/pkg (npm)" — human-readable by design.
+              title: row.title,
+              family: row.family,
+              sha256: row.sha256,
+              severity: row.severity,
+              published_at: row.published_at,
+              source: 'openssf-osv',
+            }));
+          return jsonResponse({ data, meta: { total: data.length, source: 'openssf-osv' } });
+        } catch (dbErr: any) {
+          console.warn('[API] supply-chain dossiers degraded:', dbErr?.message);
+          return errorResponse('Supply-chain dossiers temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
       // ── Canonical malware intelligence reports (single source of truth) ──
       // Reads the EXACT table the pipeline's materialization step writes
       // (malware_reports in zayron-x-db) through the shared DB binding.

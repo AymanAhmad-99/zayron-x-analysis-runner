@@ -14,7 +14,8 @@ import type { Budget } from './iocIngest';
 
 export const NUCLEI_TREE =
   'https://api.github.com/repos/projectdiscovery/nuclei-templates/git/trees/main?recursive=1';
-export const SIGMA_TREE = 'https://api.github.com/repos/SigmaHQ/sigma/git/trees/main?recursive=1';
+// SigmaHQ/sigma still defaults to `master`; the tree API 404s on `main`.
+export const SIGMA_TREE = 'https://api.github.com/repos/SigmaHQ/sigma/git/trees/master?recursive=1';
 
 export const NUCLEI_REPO = 'projectdiscovery/nuclei-templates';
 export const SIGMA_REPO = 'SigmaHQ/sigma';
@@ -144,7 +145,7 @@ export function parseSigmaFamilyRules(entries: TreeEntry[], options: { max?: num
       path,
       severity: null,
       repo: SIGMA_REPO,
-      url: `https://github.com/${SIGMA_REPO}/blob/main/${path}`,
+      url: `https://github.com/${SIGMA_REPO}/blob/master/${path}`,
     });
     if (out.length >= max) break;
   }

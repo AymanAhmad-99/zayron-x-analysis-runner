@@ -83,6 +83,8 @@ const PUBLIC_READ_CACHE_EXACT = new Set<string>([
   "/api/v1/intelligence",
   "/api/v1/vulnerabilities",
   "/api/v1/malware/intelligence/reports",
+  // PHASE 7C — the OpenSSF dossier list is an anonymous catalog read.
+  "/api/v1/malware/supply-chain/reports",
   "/api/v1/feed",
 ]);
 

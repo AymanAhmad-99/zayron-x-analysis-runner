@@ -894,3 +894,30 @@ export async function getIocFamily(slug: string): Promise<ApiResult<MalwareFamil
     return { state: "error", data: null, error: "The family summary is unavailable" };
   }
 }
+
+export interface SupplyChainDossier {
+  report_id: string;
+  title: string;
+  family: string | null;
+  sha256: string | null;
+  severity: string | null;
+  published_at: string;
+  source: string;
+}
+
+/**
+ * OpenSSF/OSV malicious-package dossiers. Deliberately a DIFFERENT endpoint from
+ * the canonical report list: an OSV advisory has no analysis run or artifact, so
+ * it is never passed through the canonical static-report gate.
+ */
+export async function getSupplyChainDossiers(limit = 12): Promise<ApiResult<SupplyChainDossier[]>> {
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/malware/supply-chain/reports?limit=${limit}`, IOC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `Supply-chain dossiers returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: SupplyChainDossier[] };
+    const items = Array.isArray(payload.data) ? payload.data : [];
+    return { state: items.length ? "success" : "empty", data: items };
+  } catch {
+    return { state: "error", data: null, error: "Supply-chain dossiers are unavailable" };
+  }
+}

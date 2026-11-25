@@ -366,7 +366,7 @@ async function readExistingIocs(db: D1Database, values: string[]): Promise<Exist
 
 export async function runIocIngestPass(
   env: IocIngestEnv,
-  options: { now?: number; osvLimit?: number; skipRadar?: boolean } = {},
+  options: { now?: number; osvLimit?: number; skipRadar?: boolean; forceDetection?: boolean } = {},
 ): Promise<IocIngestTelemetry> {
   const started = Date.now();
   const now = options.now ?? Date.now();
@@ -379,7 +379,10 @@ export async function runIocIngestPass(
   let radarPulse: IocIngestTelemetry['radarPulse'] = 'SKIPPED';
 
   // ── 0. PHASE 7C — Sigma/Nuclei coverage index (2 requests, 24h cached) ──
-  const detection = await syncDetectionRules({ DB: env.DB }, { budget, now }).catch(() => null);
+  const detection = await syncDetectionRules(
+    { DB: env.DB },
+    { budget, now, force: options.forceDetection === true },
+  ).catch(() => null);
 
   const incoming: IncomingIoc[] = [];
   const noteRejections = (rejected: Array<{ value: string; type: string; reason: string }>) => {

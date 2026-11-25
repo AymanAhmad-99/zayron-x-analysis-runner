@@ -128,3 +128,10 @@
 .latest-intelligence-actions{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
 @media(max-width:1100px){.ioc-telemetry{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.ioc-telemetry{grid-template-columns:repeat(2,minmax(0,1fr))}.ioc-lookup-form>div{flex-direction:column}.ioc-lookup-submit{padding:11px 20px}}
+.sc-dossiers{border:1px solid var(--border);background:var(--surface);padding:16px 18px;margin:0 0 24px}
+.sc-dossiers ul{list-style:none;margin:12px 0 0;padding:0}
+.sc-dossiers li{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--border)}
+.sc-dossiers strong{display:block;font-size:13px;color:var(--text);font-weight:600;line-height:1.45}
+.sc-dossiers span{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.sc-dossiers code{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted)}
+.sc-dossiers time{font-size:11px;color:var(--muted);white-space:nowrap}
