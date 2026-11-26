@@ -38,6 +38,8 @@ import { isAuthoritativePulseTick } from './telegramSlots';
 import { runIocIngestPass } from './iocIngest';
 import { isIocIngestSlot } from './detectionRules';
 import { isPocSyncSlot, runPocSync } from './pocSync';
+// PHASE 8C — the CISA KEV catalog backfill owns the 04:40 quiet tick.
+import { isCisaKevSlot, quietTickBudget, runCisaKevBackfill } from './cisaKevBackfill';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -87,6 +89,8 @@ export interface Env {
   IOC_OPERATOR_TOKEN?: string;
   /** PHASE 8A — quiet-hours `02:40`/`06:40` PoC-in-GitHub sync. */
   POC_SYNC_ENABLED?: string;
+  /** PHASE 8C — one-request CISA KEV catalog backfill on the `04:40` tick. */
+  CISA_KEV_SYNC_ENABLED?: string;
   IOC_INGEST_ENABLED?: string;
   IOC_INGEST_MAX_SUBREQUESTS?: string;
   /**
@@ -335,14 +339,31 @@ const ingestHandlers = {
         }
       }
 
+      // PHASE 8C — CISA KEV catalog backfill. ONE request, `04:40` UTC only, so
+      // `/intelligence/exploits` stays dense with real in-the-wild CVEs. Never
+      // touches the `:20` IOC pass, the `:00` pulse or a Telegram slot.
+      if (env.CISA_KEV_SYNC_ENABLED === 'true' && isCisaKevSlot(new Date())) {
+        try {
+          const kev = await runCisaKevBackfill(env as any, {});
+          console.log(JSON.stringify({ type: 'CISA_KEV_BACKFILL', ...kev }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'CISA_KEV_BACKFILL_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
       // PHASE 8A — keyless PoC-in-GitHub index. STRICT SLOT ISOLATION: only the
-      // quiet-hours `02:40` and `06:40` ticks qualify, so this pass never shares
-      // an invocation with the `:20` IOC ingest, the `:00` pulse or a Telegram
-      // wire slot. Bounded to `POC_MAX_SUBREQUESTS = 4` requests.
+      // quiet-hours `02:40`, `04:40` and `06:40` ticks qualify, so this pass never
+      // shares an invocation with the `:20` IOC ingest, the `:00` pulse or a
+      // Telegram wire slot. On `04:40` the KEV pass takes 1 request, so the PoC
+      // pass is narrowed to 5 and the invocation stays within the 6 ceiling.
       if (env.POC_SYNC_ENABLED === 'true' && isPocSyncSlot(new Date())) {
         try {
-          const pocs = await runPocSync(env as any, {});
-          console.log(JSON.stringify({ type: 'POC_IN_GITHUB_SYNC', ...pocs }));
+          const budget = quietTickBudget(new Date());
+          const pocs = await runPocSync(env as any, { maxSubrequests: budget.poc });
+          console.log(JSON.stringify({ type: 'POC_IN_GITHUB_SYNC', quiet_tick_budget: budget, ...pocs }));
         } catch (error) {
           console.error(JSON.stringify({
             type: 'POC_IN_GITHUB_SYNC_FAILED',
@@ -1669,7 +1690,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     const isIocIngest = url.pathname === '/internal/ioc-ingest';
     // PHASE 8A — bounded operator sync of the keyless PoC-in-GitHub index.
     const isPocSync = url.pathname === '/internal/poc-sync';
-    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // PHASE 8C — one bounded CISA KEV catalog backfill. Writes only KEV facts.
+    const isCisaKevSync = url.pathname === '/internal/cisa-kev-backfill';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1680,7 +1703,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1700,6 +1723,14 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
 
     // PHASE 8A operator hook — one bounded PoC-in-GitHub sync. Never dispatches
     // to Telegram: it writes `cve_pocs` rows and nothing else.
+    if (isCisaKevSync) {
+      const kev = await runCisaKevBackfill(this.env as any, { force: true });
+      return new Response(JSON.stringify(kev), {
+        status: kev.entries_written > 0 ? 200 : 409,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
+
     if (isPocSync) {
       const summary = await runPocSync(this.env as any, { force: true });
       return new Response(JSON.stringify(summary), {

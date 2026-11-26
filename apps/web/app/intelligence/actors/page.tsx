@@ -1,10 +1,28 @@
 import type { Metadata } from "next";
-import { ThreatActorList } from "../../components/ThreatActorList";
+import { ThreatActorGraph } from "../../components/ThreatActorGraph";
+import { getThreatActors } from "../../lib/threatGraph";
+import { isPreviewDeployment } from "../../lib/siteConfig";
+import { resolvePageRobots } from "../../lib/seo";
 
-export const metadata: Metadata = {
-  title: "Threat actors",
-  description: "Tracked threat actors with source-grounded attribution, aliases and assessment status.",
-  alternates: { canonical: "/intelligence/actors" },
-};
+/**
+ * PHASE 8C — legacy `/intelligence/actors` alias.
+ *
+ * The canonical surface is `/intelligence/threat-actors`. This route keeps the old
+ * URL working for inbound links while pointing its canonical tag at the new one,
+ * so the two pages never compete in the index.
+ */
 
-export default function ActorsPage() { return <ThreatActorList />; }
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Connected Threat Graph — MITRE ATT&CK Groups | ZAYRON-X",
+    description:
+      "The complete MITRE ATT&CK Enterprise threat-group catalog with live ZAYRON-X correlation.",
+    alternates: { canonical: "/intelligence/threat-actors" },
+    robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: false }),
+  };
+}
+
+export default async function ActorsPage() {
+  const initial = await getThreatActors({ limit: 200 });
+  return <ThreatActorGraph initial={initial} />;
+}

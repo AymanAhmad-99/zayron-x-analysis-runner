@@ -1,5 +1,6 @@
 import { apiFetch, getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../../lib/siteConfig";
 import { getIocFamilies, getSupplyChainDossiers } from "../../lib/api";
+import { getCampaigns, getThreatActors } from "../../lib/threatGraph";
 import { familyHubPath } from "../../lib/iocSeo";
 import {
   buildUrlset,
@@ -62,8 +63,27 @@ export async function GET(
       loc: `${getSiteUrl()}/intelligence/malware/advisories/${encodeURIComponent(dossier.report_id)}`,
       lastmod: dossier.published_at ?? null,
     }));
+    // PHASE 8C — every canonical actor and campaign dossier is indexable, so the
+    // ones the API actually serves are advertised. A slug that does not exist is
+    // never listed (the API is the single source of truth for both catalogs).
+    const actors = await getThreatActors({ limit: 200 });
+    const actorEntries = (actors.data?.items ?? []).map((actor) => ({
+      loc: `${getSiteUrl()}/intelligence/threat-actors/${encodeURIComponent(actor.slug)}`,
+      lastmod: actor.last_seen ?? null,
+    }));
+    const campaignIndex = await getCampaigns({ limit: 100 });
+    const campaignEntries = (campaignIndex.data?.items ?? []).map((campaign) => ({
+      loc: `${getSiteUrl()}/intelligence/campaigns/${encodeURIComponent(campaign.slug)}`,
+      lastmod: campaign.last_seen ?? null,
+    }));
     return xmlResponse(
-      buildUrlset([...staticSitemapEntries(getSiteUrl()), ...familyEntries, ...advisoryEntries]),
+      buildUrlset([
+        ...staticSitemapEntries(getSiteUrl()),
+        ...familyEntries,
+        ...advisoryEntries,
+        ...actorEntries,
+        ...campaignEntries,
+      ]),
     );
   }
 

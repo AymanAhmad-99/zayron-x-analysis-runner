@@ -118,6 +118,125 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           },
         },
       },
+      "/threat-actors": {
+        get: {
+          operationId: "getThreatActors",
+          summary: "MITRE ATT&CK threat graph with live correlation (edge-cached 300s)",
+          description: [
+            "PHASE 8C — the canonical MITRE ATT&CK Enterprise group catalog joined to live",
+            "ZAYRON-X telemetry. `activity_tier` is a stored-fact statement:",
+            "`LIVE_OBSERVED` when at least one documented software family has active indicators",
+            "or a documented CVE is KEV-listed / has a verified public PoC, otherwise",
+            "`CANONICAL_PROFILE`. Alias search is supported (\"Cozy Bear\" resolves APT29).",
+          ].join("\n"),
+          tags: ["Threat Graph"],
+          security: [],
+          parameters: [
+            { name: "q", in: "query", description: "Name, alias, MITRE id or software search.", schema: { type: "string", maxLength: 120 } },
+            { name: "sector", in: "query", schema: { type: "string", maxLength: 80 } },
+            { name: "region", in: "query", schema: { type: "string", maxLength: 80 } },
+            { name: "tier", in: "query", schema: { type: "string", enum: ["all", "live", "canonical"], default: "all" } },
+            { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 200, default: 50 } },
+            { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
+          ],
+          responses: {
+            "200": {
+              description: "Threat-graph summary plus paginated actor rows",
+              headers: { "Cache-Control": { schema: { type: "string" }, description: "Edge-cacheable public read (300s)." } },
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string" },
+                      summary: { $ref: "#/components/schemas/ThreatActorSummary" },
+                      items: { type: "array", items: { $ref: "#/components/schemas/ThreatActor" } },
+                      meta: { type: "object", properties: { total: { type: "integer" }, limit: { type: "integer" }, offset: { type: "integer" }, tier: { type: "string" } } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/threat-actors/{slug}": {
+        get: {
+          operationId: "getThreatActorDossier",
+          summary: "Connected adversary dossier: Diamond Model, live correlation, ATT&CK matrix, hunting queries",
+          tags: ["Threat Graph"],
+          security: [],
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string", maxLength: 120 } }],
+          responses: {
+            "200": {
+              description: "Actor dossier",
+              content: { "application/json": { schema: { type: "object" } } },
+            },
+            "404": { description: "No canonical actor matches this slug", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/threat-actors/{slug}/navigator.json": {
+        get: {
+          operationId: "getThreatActorNavigatorLayer",
+          summary: "MITRE ATT&CK Navigator layer 4.5 for one actor",
+          description: "Downloadable `enterprise-attack` layer (version 4.5) with every documented technique scored and coloured `#FF4D00`.",
+          tags: ["Threat Graph"],
+          security: [],
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string", maxLength: 120 } }],
+          responses: {
+            "200": { description: "Navigator layer", content: { "application/json": { schema: { $ref: "#/components/schemas/NavigatorLayer" } } } },
+            "404": { description: "Unknown actor", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/campaigns": {
+        get: {
+          operationId: "getCampaigns",
+          summary: "MITRE ATT&CK campaign index with attribution (edge-cached 300s)",
+          tags: ["Threat Graph"],
+          security: [],
+          parameters: [
+            { name: "q", in: "query", schema: { type: "string", maxLength: 120 } },
+            { name: "actor", in: "query", description: "Restrict to one attributed actor slug.", schema: { type: "string", maxLength: 120 } },
+            { name: "sector", in: "query", schema: { type: "string", maxLength: 80 } },
+            { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 50 } },
+            { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
+          ],
+          responses: {
+            "200": {
+              description: "Paginated campaign rows",
+              content: { "application/json": { schema: { type: "object", properties: { status: { type: "string" }, items: { type: "array", items: { $ref: "#/components/schemas/Campaign" } }, meta: { type: "object" } } } } },
+            },
+          },
+        },
+      },
+      "/campaigns/{slug}": {
+        get: {
+          operationId: "getCampaignDossier",
+          summary: "Campaign dossier with attribution, techniques and hunting queries",
+          tags: ["Threat Graph"],
+          security: [],
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string", maxLength: 120 } }],
+          responses: {
+            "200": { description: "Campaign dossier", content: { "application/json": { schema: { type: "object" } } } },
+            "404": { description: "Unknown campaign", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/campaigns/{slug}/navigator.json": {
+        get: {
+          operationId: "getCampaignNavigatorLayer",
+          summary: "MITRE ATT&CK Navigator layer 4.5 for one campaign",
+          tags: ["Threat Graph"],
+          security: [],
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string", maxLength: 120 } }],
+          responses: {
+            "200": { description: "Navigator layer", content: { "application/json": { schema: { $ref: "#/components/schemas/NavigatorLayer" } } } },
+            "404": { description: "Unknown campaign", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
       "/exploits": {
         get: {
           operationId: "getExploitRadar",
@@ -634,6 +753,87 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
         },
       },
       schemas: {
+        ThreatActorSummary: {
+          type: "object",
+          properties: {
+            total_actors: { type: "integer" },
+            live_observed: { type: "integer" },
+            canonical_profiles: { type: "integer" },
+            total_campaigns: { type: "integer" },
+            mapped_techniques: { type: "integer" },
+            live_families: { type: "integer" },
+            kev_linked_actors: { type: "integer" },
+          },
+        },
+        ThreatActor: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            slug: { type: "string" },
+            name: { type: "string" },
+            aliases: { type: "array", items: { type: "string" } },
+            mitre_id: { type: ["string", "null"], example: "G0016" },
+            mitre_url: { type: ["string", "null"] },
+            motivation: { type: "string", enum: ["Espionage / State-Nexus", "Financial / Ransomware", "Destructive / Hacktivism", "Unattributed / Mixed"] },
+            target_sectors: { type: "array", items: { type: "string" } },
+            target_regions: { type: "array", items: { type: "string" } },
+            summary: { type: "string" },
+            technique_count: { type: "integer" },
+            software: { type: "array", items: { type: "string" } },
+            campaign_count: { type: "integer" },
+            activity_tier: { type: "string", enum: ["LIVE_OBSERVED", "CANONICAL_PROFILE"] },
+            live_c2_count: { type: "integer", description: "Active indicators in `iocs` for documented software families." },
+            live_malware_families: { type: "array", items: { type: "object" } },
+            linked_kev_count: { type: "integer" },
+            linked_cve_count: { type: "integer" },
+            linked_cves: { type: "array", items: { type: "object" } },
+            first_seen: { type: ["string", "null"] },
+            last_seen: { type: ["string", "null"] },
+          },
+        },
+        Campaign: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            slug: { type: "string" },
+            name: { type: "string" },
+            mitre_id: { type: ["string", "null"] },
+            mitre_url: { type: ["string", "null"] },
+            summary: { type: "string" },
+            actors: { type: "array", items: { type: "object" } },
+            technique_count: { type: "integer" },
+            software: { type: "array", items: { type: "string" } },
+            cves: { type: "array", items: { type: "string" } },
+            target_sectors: { type: "array", items: { type: "string" } },
+            target_regions: { type: "array", items: { type: "string" } },
+            activity_tier: { type: "string", enum: ["LIVE_OBSERVED", "CANONICAL_PROFILE"] },
+            linked_kev_count: { type: "integer" },
+            first_seen: { type: ["string", "null"] },
+            last_seen: { type: ["string", "null"] },
+          },
+        },
+        NavigatorLayer: {
+          type: "object",
+          required: ["name", "versions", "domain", "techniques"],
+          properties: {
+            name: { type: "string" },
+            versions: { type: "object", properties: { attack: { type: "string" }, navigator: { type: "string" }, layer: { type: "string", const: "4.5" } } },
+            domain: { type: "string", const: "enterprise-attack" },
+            description: { type: "string" },
+            techniques: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  techniqueID: { type: "string", pattern: "^T\\d{4}(?:\\.\\d{3})?$" },
+                  score: { type: "integer" },
+                  color: { type: "string" },
+                  comment: { type: "string" },
+                },
+              },
+            },
+          },
+        },
         Vulnerability: vulnerabilitySchema,
         Error: errorSchema,
         IocRecord: {

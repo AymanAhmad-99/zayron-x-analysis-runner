@@ -15,16 +15,14 @@ import { intelligenceRoutes, routes } from "../lib/routes";
 const NAV_ITEMS = [routes.intelligence, ...intelligenceRoutes];
 
 /**
- * Routes with no live feed yet. They stay reachable but are labelled honestly.
+ * No intelligence route is staged any more.
  *
- * Phase 7C promoted `/intelligence/iocs` out of this set: the workspace now reads
- * the live `/api/v1/iocs/*` surface (405 active indicators at promotion time), so
- * it carries the same LIVE INTELLIGENCE pill as Intelligence, Vulnerabilities and
- * Malware. Phase 8B promotes Exploits the same way: `/intelligence/exploits` now
- * reads the live `/api/v1/exploits` radar. Threat Actors and Campaigns stay
- * STAGED — neither has a populated store behind it.
+ * Phase 7C promoted `/intelligence/iocs`, Phase 8B promoted `/intelligence/exploits`
+ * and Phase 8C promotes the final two: `/intelligence/threat-actors` and
+ * `/intelligence/campaigns` now read the live MITRE ATT&CK threat graph. Every
+ * left-nav module therefore carries the LIVE INTELLIGENCE pill, and the badge
+ * markup that used to exist here has been deleted rather than merely disabled.
  */
-const STAGED_ROUTES = new Set([routes.actors.href, routes.campaigns.href]);
 
 function IntelligenceNavPanel({ activeHref, onNavigate }: { activeHref: string; onNavigate: () => void }) {
   return (
@@ -41,7 +39,6 @@ function IntelligenceNavPanel({ activeHref, onNavigate }: { activeHref: string; 
             aria-current={active ? "page" : undefined}
           >
             {item.label}
-            {STAGED_ROUTES.has(item.href) ? <small className="nav-staged">STAGED</small> : null}
             <span aria-hidden="true">↗</span>
           </a>
         );

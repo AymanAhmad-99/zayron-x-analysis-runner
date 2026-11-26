@@ -4,7 +4,7 @@ export const routes = {
   vulnerabilities: { label: "Vulnerabilities", href: "/intelligence/vulnerabilities" },
   malware: { label: "Malware", href: "/intelligence/malware" },
   exploits: { label: "Exploits", href: "/intelligence/exploits" },
-  actors: { label: "Threat Actors", href: "/intelligence/actors" },
+  actors: { label: "Threat Actors", href: "/intelligence/threat-actors" },
   campaigns: { label: "Campaigns", href: "/intelligence/campaigns" },
   iocs: { label: "IOCs", href: "/intelligence/iocs" },
   graph: { label: "Graph", href: "/intelligence/graph" },

@@ -117,6 +117,7 @@ import {
 import { buildOpenApiDocument } from './openapi';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import { loadExploitRadar } from './exploits';
+import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from './threatGraph';
 import {
   EDL_PREVIEW_MAX_LINES,
   IOC_BULK_MAX_ITEMS,
@@ -5888,6 +5889,84 @@ const worker = {
             error: err?.message ?? String(err),
           });
           return errorResponse('Exploit radar temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      // ═════════════════════════════════════════════════════════════════
+      // PHASE 8C — CONNECTED THREAT GRAPH (`/api/v1/threat-actors`, `/api/v1/campaigns`)
+      // Canonical MITRE ATT&CK profiles, live-correlated per read against
+      // `iocs` / `vulnerabilities` / `cve_pocs`. Public, edge-cached 300s.
+      // ═════════════════════════════════════════════════════════════════
+      if (path === '/api/v1/threat-actors' && request.method === 'GET') {
+        try {
+          const payload = await loadThreatActors(env.DB, {
+            q: url.searchParams.get('q'),
+            sector: url.searchParams.get('sector'),
+            region: url.searchParams.get('region'),
+            tier: url.searchParams.get('tier'),
+            limit: url.searchParams.get('limit'),
+            offset: url.searchParams.get('offset'),
+          });
+          return jsonResponse({ status: 'SUCCESS', ...payload }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] threat actors degraded', { site: 'api.threat-actors', error: err?.message ?? String(err) });
+          return errorResponse('Threat graph temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path.startsWith('/api/v1/threat-actors/') && request.method === 'GET') {
+        const segments = path.slice('/api/v1/threat-actors/'.length).split('/').filter(Boolean);
+        const slug = decodeURIComponent(segments[0] ?? '').trim();
+        if (!slug || slug.length > 120) {
+          return developerError(400, 'INVALID_ACTOR', 'A threat actor slug or MITRE id is required');
+        }
+        try {
+          const dossier = await loadThreatActor(env.DB, slug);
+          if (!dossier) return developerError(404, 'ACTOR_NOT_FOUND', 'No canonical MITRE ATT&CK group matches this slug');
+          if (segments[1] === 'navigator.json') {
+            return jsonResponse({ status: 'SUCCESS', layer: dossier.navigator }, 200, 300);
+          }
+          if (segments.length > 1) return developerError(404, 'NOT_FOUND', 'Unknown actor sub-resource');
+          return jsonResponse({ status: 'SUCCESS', ...dossier }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] threat actor dossier degraded', { site: 'api.threat-actor', error: err?.message ?? String(err) });
+          return errorResponse('Threat actor dossier temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path === '/api/v1/campaigns' && request.method === 'GET') {
+        try {
+          const payload = await loadCampaigns(env.DB, {
+            q: url.searchParams.get('q'),
+            actor: url.searchParams.get('actor'),
+            sector: url.searchParams.get('sector'),
+            limit: url.searchParams.get('limit'),
+            offset: url.searchParams.get('offset'),
+          });
+          return jsonResponse({ status: 'SUCCESS', ...payload }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] campaigns degraded', { site: 'api.campaigns', error: err?.message ?? String(err) });
+          return errorResponse('Campaign index temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path.startsWith('/api/v1/campaigns/') && request.method === 'GET') {
+        const segments = path.slice('/api/v1/campaigns/'.length).split('/').filter(Boolean);
+        const slug = decodeURIComponent(segments[0] ?? '').trim();
+        if (!slug || slug.length > 120) {
+          return developerError(400, 'INVALID_CAMPAIGN', 'A campaign slug or MITRE id is required');
+        }
+        try {
+          const dossier = await loadCampaign(env.DB, slug);
+          if (!dossier) return developerError(404, 'CAMPAIGN_NOT_FOUND', 'No canonical MITRE ATT&CK campaign matches this slug');
+          if (segments[1] === 'navigator.json') {
+            return jsonResponse({ status: 'SUCCESS', layer: dossier.navigator }, 200, 300);
+          }
+          if (segments.length > 1) return developerError(404, 'NOT_FOUND', 'Unknown campaign sub-resource');
+          return jsonResponse({ status: 'SUCCESS', ...dossier }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] campaign dossier degraded', { site: 'api.campaign', error: err?.message ?? String(err) });
+          return errorResponse('Campaign dossier temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 

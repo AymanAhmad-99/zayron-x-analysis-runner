@@ -85,6 +85,11 @@ IOC_INGEST_ENABLED = "true"
 # `:20` IOC pass (20/25 subrequests already), the `:00` NVD pulse or any
 # Telegram wire slot. Purge this line to disable the sync.
 POC_SYNC_ENABLED = "true"
+# PHASE 8C — CISA KEV CATALOG BACKFILL. Exactly ONE request, on the 04:40 UTC
+# tick only, so `/intelligence/exploits` stays populated with real in-the-wild
+# CVEs. On that shared tick the PoC index is narrowed to 5 requests, keeping the
+# invocation within the 6-subrequest ceiling. Purge this line to disable.
+CISA_KEV_SYNC_ENABLED = "true"
 # Phase 4C.2 — EXECUTIVE TELEGRAM WIRE IS OPEN. Publishing to a public channel
 # is a live, unrecallable action, so it opens only on an explicit operator
 # decision: the Phase 4C.2 ruling, with TELEGRAM_BOT_TOKEN provisioned as a

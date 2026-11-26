@@ -195,10 +195,11 @@ describe('family hub SEO', () => {
 
   test('the workspace is promoted out of STAGED', () => {
     const frame = read('apps/web/app/components/IntelligenceShellFrame.tsx');
-    const staged = /const STAGED_ROUTES = new Set\(\[([^\]]*)\]\)/.exec(frame)?.[1] ?? '';
-    expect(staged).not.toContain('iocs');
-    expect(staged).toContain('routes.actors.href');
-    expect(staged).toContain('routes.campaigns.href');
+    // Phase 7C promoted IOCs; Phase 8C promoted the last two modules, so the
+    // staged-route set AND its badge markup are gone from the shell entirely.
+    expect(frame).not.toMatch(/const STAGED_ROUTES = new Set\(\[/);
+    expect(frame).not.toContain('nav-staged');
+    expect(frame).not.toContain('STAGED');
   });
 });
 

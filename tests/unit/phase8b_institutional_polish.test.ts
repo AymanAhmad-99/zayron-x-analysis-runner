@@ -523,8 +523,9 @@ describe('Phase 8B — freshness-first advisories and sitemap graduation', () =>
   test('the sidebar no longer labels Exploits STAGED', () => {
     const source = fs.readFileSync(path.join(root, 'apps/web/app/components/IntelligenceShellFrame.tsx'), 'utf-8');
     expect(source).not.toContain('routes.exploits.href,');
-    expect(source).toContain('routes.actors.href');
-    expect(source).toContain('routes.campaigns.href');
+    // Phase 8C graduates the final two modules, so no staged entry survives at all.
+    expect(source).not.toMatch(/const STAGED_ROUTES = new Set\(\[/);
+    expect(source).not.toContain('routes.campaigns.href');
   });
 
   test('the exploits page is a real SSR surface and not the staged placeholder', () => {

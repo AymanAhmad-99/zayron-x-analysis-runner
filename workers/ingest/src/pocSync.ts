@@ -118,11 +118,18 @@ export interface PocSyncEnv {
  */
 export async function runPocSync(
   env: PocSyncEnv,
-  options: { fetchFn?: typeof fetch; when?: Date; force?: boolean } = {},
+  options: { fetchFn?: typeof fetch; when?: Date; force?: boolean; maxSubrequests?: number } = {},
 ): Promise<PocSyncSummary> {
   const when = options.when ?? new Date();
   const fetchFn = options.fetchFn ?? fetch;
   const year = when.getUTCFullYear();
+  // PHASE 8C — the 04:40 tick also runs the CISA KEV backfill (1 request), so the
+  // caller narrows this pass to 5 and the invocation stays within the 6 ceiling.
+  const requestedLimit = Math.floor(Number(options.maxSubrequests));
+  const subrequestLimit = Number.isFinite(requestedLimit) && requestedLimit > 0
+    ? Math.min(POC_MAX_SUBREQUESTS, requestedLimit)
+    : POC_MAX_SUBREQUESTS;
+  const maxFiles = Math.max(1, subrequestLimit - 1);
   const slot = isPocSyncSlot(when);
   const summary: PocSyncSummary = {
     status: 'OK',
@@ -131,7 +138,7 @@ export async function runPocSync(
     files_read: 0,
     pocs_written: 0,
     subrequestsUsed: 0,
-    subrequestLimit: POC_MAX_SUBREQUESTS,
+    subrequestLimit,
     cvss: [],
     errors: [],
   };
@@ -148,7 +155,7 @@ export async function runPocSync(
   }
 
   const call = async (url: string): Promise<unknown | null> => {
-    if (summary.subrequestsUsed >= POC_MAX_SUBREQUESTS) return null;
+    if (summary.subrequestsUsed >= subrequestLimit) return null;
     summary.subrequestsUsed += 1;
     try {
       const response = await fetchFn(url, {
@@ -171,7 +178,7 @@ export async function runPocSync(
   const listing = await call(
     `https://api.github.com/repos/${POC_REPO}/contents/${year}?ref=${POC_BRANCH}`,
   );
-  const names = newestPocFileNames(listing, POC_MAX_FILES);
+  const names = newestPocFileNames(listing, maxFiles);
   if (names.length === 0) {
     summary.errors.push('NO_CVE_FILES_LISTED');
     summary.status = summary.errors.length > 0 ? 'OK' : summary.status;

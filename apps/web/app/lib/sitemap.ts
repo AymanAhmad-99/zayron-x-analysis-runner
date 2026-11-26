@@ -31,7 +31,9 @@ export const STATIC_PATHS = [
   "/intelligence/vulnerabilities",
   "/intelligence/malware",
   "/intelligence/exploits",
-  "/intelligence/actors",
+  // PHASE 8C — the connected threat graph is the canonical actor surface. The
+  // legacy `/intelligence/actors` alias is noindex and deliberately not listed.
+  "/intelligence/threat-actors",
   "/intelligence/campaigns",
   "/intelligence/iocs",
   "/search",
@@ -168,6 +170,10 @@ export function staticSitemapEntries(siteUrl: string): SitemapEntry[] {
     loc: `${siteUrl}${path}`,
     // PHASE 8B — the Exploit & Weaponization Radar is a live, daily-updated hub.
     ...(path === "/intelligence/exploits" ? { priority: "0.9", changefreq: "daily" } : {}),
+    // PHASE 8C — the threat graph and campaign index are live catalogs.
+    ...(path === "/intelligence/threat-actors" || path === "/intelligence/campaigns"
+      ? { priority: "0.9", changefreq: "daily" }
+      : {}),
   }));
 }
 

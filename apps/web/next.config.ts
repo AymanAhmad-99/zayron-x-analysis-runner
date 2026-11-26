@@ -47,6 +47,20 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
         ],
       },
+      {
+        // PHASE 8C — the connected threat graph (index + every dossier) and the
+        // campaign index share the API's 300s window.
+        source: "/intelligence/threat-actors/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
+        ],
+      },
+      {
+        source: "/intelligence/campaigns/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
+        ],
+      },
     ];
   },
 };

@@ -123,6 +123,9 @@ const SUITES = [
   // sanitizer, enum labels, Telegram malware routing, PoC quiet-slot isolation and
   // the live 4-tier exploit radar.
   'tests/unit/phase8b_institutional_polish.test.ts',
+  // Phase 8C: MITRE extractor/sanitizer, two-tier live correlation, Navigator
+  // 4.5 export, CISA KEV quiet-slot isolation and the live threat graph.
+  'tests/unit/phase8c_threat_graph.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

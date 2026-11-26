@@ -234,6 +234,9 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/ai/runs",
   // PHASE 8B — the Exploit & Weaponization Radar is a public, derived read.
   "/api/v1/exploits",
+  // PHASE 8C — the canonical MITRE ATT&CK threat graph is a public catalog.
+  "/api/v1/threat-actors",
+  "/api/v1/campaigns",
 ]);
 
 /** Collection-detail prefixes that are public for READ methods only. */
@@ -252,6 +255,9 @@ const PUBLIC_READ_PREFIXES = [
   "/api/v1/detection/",
   "/api/v1/reports/",
   "/api/v1/threats/",
+  // PHASE 8C — actor/campaign dossiers and Navigator exports.
+  "/api/v1/threat-actors/",
+  "/api/v1/campaigns/",
 ];
 
 function isPublicRead(method: string, path: string): boolean {
