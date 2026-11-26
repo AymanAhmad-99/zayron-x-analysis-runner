@@ -116,6 +116,7 @@ import {
 } from './apiKeys';
 import { buildOpenApiDocument } from './openapi';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
+import { loadExploitRadar } from './exploits';
 import {
   EDL_PREVIEW_MAX_LINES,
   IOC_BULK_MAX_ITEMS,
@@ -5865,6 +5866,28 @@ const worker = {
             return rateLimitedResponse(request.headers.get('Origin'), allowance.limit, resolved.tier);
           }
           developerContext = { tier: resolved.tier, limit: allowance.limit, keyPrefix: resolved.keyPrefix };
+        }
+      }
+
+      // ── GET /api/v1/exploits ───────────────────────────────────────
+      // PHASE 8B — the Exploit & Weaponization Radar. Tiers are read from
+      // verified D1 facts (KEV, cve_pocs, detection_rules, EPSS); nothing is
+      // inferred. Edge-cached 300s like every other public catalog read.
+      if (path === '/api/v1/exploits' && request.method === 'GET') {
+        try {
+          const payload = await loadExploitRadar(env.DB, {
+            tier: url.searchParams.get('tier'),
+            q: url.searchParams.get('q'),
+            limit: url.searchParams.get('limit'),
+            offset: url.searchParams.get('offset'),
+          });
+          return jsonResponse(payload, 200, 300);
+        } catch (err: any) {
+          console.error('[API] exploit radar degraded', {
+            site: 'api.exploits',
+            error: err?.message ?? String(err),
+          });
+          return errorResponse('Exploit radar temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 

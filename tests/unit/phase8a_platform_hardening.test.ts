@@ -225,6 +225,8 @@ describe('GET /api/v1/iocs/feed incremental sync', () => {
 describe('PoC-in-GitHub sync', () => {
   test('the sync owns ONLY the quiet-hours :40 ticks', () => {
     expect(isPocSyncSlot(new Date('2026-11-26T02:40:00Z'))).toBe(true);
+    // PHASE 8B added the 04:40 quiet slot (still zero Telegram/IOC collision).
+    expect(isPocSyncSlot(new Date('2026-11-26T04:40:00Z'))).toBe(true);
     expect(isPocSyncSlot(new Date('2026-11-26T06:40:00Z'))).toBe(true);
     // Never the IOC ingest (:20 at 00/08/16)…
     expect(isPocSyncSlot(new Date('2026-11-26T00:20:00Z'))).toBe(false);
@@ -236,8 +238,8 @@ describe('PoC-in-GitHub sync', () => {
     }
     // …and never the heavy :00 pulse.
     expect(isPocSyncSlot(new Date('2026-11-26T02:00:00Z'))).toBe(false);
-    expect(isPocSyncSlot(new Date('2026-11-26T04:40:00Z'))).toBe(false);
-    expect(POC_MAX_SUBREQUESTS).toBeLessThanOrEqual(4);
+    expect(isPocSyncSlot(new Date('2026-11-26T05:40:00Z'))).toBe(false);
+    expect(POC_MAX_SUBREQUESTS).toBeLessThanOrEqual(6);
   });
 
   test('upstream entries are parsed strictly and nothing is invented', () => {

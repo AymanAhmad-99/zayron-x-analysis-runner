@@ -12,6 +12,8 @@
  * bar, a hairline grid, pure-white geometric type, four telemetry cells.
  */
 
+import { hexToRgb } from './ogCardPolicy';
+
 export const OG_CARD_WIDTH = 1200;
 export const OG_CARD_HEIGHT = 630;
 
@@ -90,6 +92,17 @@ const GLYPHS: Record<string, string> = {
 const GLYPH_ROWS = 7;
 const GLYPH_COLS = 5;
 
+/**
+ * PHASE 8B — supersampling factor.
+ *
+ * Glyph cells are still drawn on the 5×7 grid, but the canvas is rasterized at
+ * 2× and box-filtered down to 1200×630 on encode. Every edge therefore carries
+ * partial coverage instead of a hard pixel step, which removes the jagged
+ * retro-bitmap look while keeping the renderer dependency-free (no font files,
+ * no wasm, no bundle growth) and the CPU cost bounded for a Worker invocation.
+ */
+const SUPERSAMPLE = 2;
+
 function glyphFor(char: string): string {
   return GLYPHS[char] ?? GLYPHS['?'];
 }
@@ -108,13 +121,17 @@ export function measureText(text: string, scale: number): number {
 class Canvas {
   readonly width: number;
   readonly height: number;
+  private readonly innerWidth: number;
+  private readonly innerHeight: number;
   private readonly pixels: Uint8Array;
 
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
-    // RGB, three bytes per pixel.
-    this.pixels = new Uint8Array(width * height * 3);
+    this.innerWidth = width * SUPERSAMPLE;
+    this.innerHeight = height * SUPERSAMPLE;
+    // RGB, three bytes per pixel, at SUPERSAMPLE× resolution.
+    this.pixels = new Uint8Array(this.innerWidth * this.innerHeight * 3);
   }
 
   fill(color: [number, number, number]): void {
@@ -126,17 +143,25 @@ class Canvas {
     }
   }
 
-  pixel(x: number, y: number, color: [number, number, number]): void {
-    if (x < 0 || y < 0 || x >= this.width || y >= this.height) return;
-    const offset = (y * this.width + x) * 3;
+  private setInner(x: number, y: number, color: [number, number, number]): void {
+    if (x < 0 || y < 0 || x >= this.innerWidth || y >= this.innerHeight) return;
+    const offset = (y * this.innerWidth + x) * 3;
     this.pixels[offset] = color[0];
     this.pixels[offset + 1] = color[1];
     this.pixels[offset + 2] = color[2];
   }
 
+  pixel(x: number, y: number, color: [number, number, number]): void {
+    this.rect(x, y, 1, 1, color);
+  }
+
   rect(x: number, y: number, width: number, height: number, color: [number, number, number]): void {
-    for (let dy = 0; dy < height; dy += 1) {
-      for (let dx = 0; dx < width; dx += 1) this.pixel(x + dx, y + dy, color);
+    const x0 = Math.round(x * SUPERSAMPLE);
+    const y0 = Math.round(y * SUPERSAMPLE);
+    const w = Math.max(1, Math.round(width * SUPERSAMPLE));
+    const h = Math.max(1, Math.round(height * SUPERSAMPLE));
+    for (let dy = 0; dy < h; dy += 1) {
+      for (let dx = 0; dx < w; dx += 1) this.setInner(x0 + dx, y0 + dy, color);
     }
   }
 
@@ -192,8 +217,31 @@ class Canvas {
     return this.textFit(value, x, y, minScale, maxWidth, color);
   }
 
+  /** Box-filter the supersampled buffer back to the card resolution. */
   toRgb(): Uint8Array {
-    return this.pixels;
+    const out = new Uint8Array(this.width * this.height * 3);
+    const area = SUPERSAMPLE * SUPERSAMPLE;
+    for (let y = 0; y < this.height; y += 1) {
+      for (let x = 0; x < this.width; x += 1) {
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        for (let sy = 0; sy < SUPERSAMPLE; sy += 1) {
+          const rowOffset = ((y * SUPERSAMPLE + sy) * this.innerWidth + x * SUPERSAMPLE) * 3;
+          for (let sx = 0; sx < SUPERSAMPLE; sx += 1) {
+            const offset = rowOffset + sx * 3;
+            r += this.pixels[offset];
+            g += this.pixels[offset + 1];
+            b += this.pixels[offset + 2];
+          }
+        }
+        const target = (y * this.width + x) * 3;
+        out[target] = Math.round(r / area);
+        out[target + 1] = Math.round(g / area);
+        out[target + 2] = Math.round(b / area);
+      }
+    }
+    return out;
   }
 }
 
@@ -306,6 +354,12 @@ export interface OgCardSpec {
   footer?: string;
   /** Right-hand top-bar line. */
   tagline?: string;
+  /**
+   * Severity accent as `#RRGGBB`. Defaults to the brand orange. The accent
+   * drives the left bar, the badge rule and the footer rule so a MEDIUM card
+   * can never wear a CRITICAL colour.
+   */
+  accentHex?: string;
 }
 
 const MARGIN = 56;
@@ -324,14 +378,15 @@ export function paintCard(spec: OgCardSpec): Uint8Array {
     for (let x = 0; x < OG_CARD_WIDTH; x += 1) canvas.pixel(x, y, COLOR_GRID);
   }
 
-  // Razor-thin accent bar.
-  canvas.rect(0, 0, 6, OG_CARD_HEIGHT, COLOR_ACCENT);
+  // Razor-thin accent bar — severity-tinted when the caller supplied one.
+  const accent = spec.accentHex ? hexToRgb(spec.accentHex) : COLOR_ACCENT;
+  canvas.rect(0, 0, 6, OG_CARD_HEIGHT, accent);
 
   // ── Top bar ──
   canvas.text('ZAYRON-X', MARGIN, 44, 4, COLOR_TEXT);
   const badge = String(spec.badge ?? '').toUpperCase();
-  canvas.rect(MARGIN, 96, 2, 26, COLOR_ACCENT);
-  canvas.text(badge, MARGIN + 14, 96, 2, COLOR_ACCENT);
+  canvas.rect(MARGIN, 96, 2, 26, accent);
+  canvas.text(badge, MARGIN + 14, 96, 2, accent);
   const tagline = String(spec.tagline ?? 'TRUTH IS THE PERIMETER.').toUpperCase();
   const taglineWidth = measureText(tagline, 2);
   canvas.text(tagline, OG_CARD_WIDTH - MARGIN - taglineWidth, 52, 2, COLOR_MUTED);
@@ -341,23 +396,23 @@ export function paintCard(spec: OgCardSpec): Uint8Array {
   canvas.textFitScale(String(spec.title ?? ''), MARGIN, 214, 4, 12, OG_CARD_WIDTH - MARGIN * 2, COLOR_TEXT);
   canvas.textFitScale(String(spec.subtitle ?? ''), MARGIN, 360, 2, 4, OG_CARD_WIDTH - MARGIN * 2, COLOR_DIM);
 
-  // ── Bottom: four telemetry cells ──
-  const cells = (spec.cells ?? []).slice(0, 4);
+  // ── Bottom: up to five telemetry cells ──
+  const cells = (spec.cells ?? []).slice(0, 5);
   const cellTop = 470;
   const cellWidth = Math.floor((OG_CARD_WIDTH - MARGIN * 2) / Math.max(1, cells.length));
   canvas.rect(MARGIN, cellTop - 26, OG_CARD_WIDTH - MARGIN * 2, 1, COLOR_GRID);
   cells.forEach((cell, index) => {
     const x = MARGIN + index * cellWidth;
     canvas.text(String(cell.label ?? '').toUpperCase(), x, cellTop, 2, COLOR_MUTED);
-    // Long values (NOT_LISTED, UNBRIEFED) shrink a step instead of clipping.
-    canvas.textFitScale(String(cell.value ?? 'N/A'), x, cellTop + 34, 3, 5, cellWidth - 24, COLOR_TEXT);
+    // Long values (NOT LISTED, PUBLIC POC) shrink a step instead of clipping.
+    canvas.textFitScale(String(cell.value ?? 'N/A'), x, cellTop + 34, 2, 4, cellWidth - 24, COLOR_TEXT);
     if (index > 0) canvas.rect(x - 12, cellTop, 1, 96, COLOR_GRID);
   });
 
   // ── Footer ──
   canvas.rect(MARGIN, OG_CARD_HEIGHT - 84, OG_CARD_WIDTH - MARGIN * 2, 1, COLOR_GRID);
   canvas.text(spec.footer ?? FOOTER, MARGIN, OG_CARD_HEIGHT - 56, 2, COLOR_MUTED);
-  canvas.rect(OG_CARD_WIDTH - MARGIN - 120, OG_CARD_HEIGHT - 62, 120, 2, COLOR_ACCENT);
+  canvas.rect(OG_CARD_WIDTH - MARGIN - 120, OG_CARD_HEIGHT - 62, 120, 2, accent);
 
   return canvas.toRgb();
 }

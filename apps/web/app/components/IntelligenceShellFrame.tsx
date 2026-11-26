@@ -20,10 +20,11 @@ const NAV_ITEMS = [routes.intelligence, ...intelligenceRoutes];
  * Phase 7C promoted `/intelligence/iocs` out of this set: the workspace now reads
  * the live `/api/v1/iocs/*` surface (405 active indicators at promotion time), so
  * it carries the same LIVE INTELLIGENCE pill as Intelligence, Vulnerabilities and
- * Malware. Threat Actors, Exploits and Campaigns stay STAGED — none of them have
- * a populated store behind them.
+ * Malware. Phase 8B promotes Exploits the same way: `/intelligence/exploits` now
+ * reads the live `/api/v1/exploits` radar. Threat Actors and Campaigns stay
+ * STAGED — neither has a populated store behind it.
  */
-const STAGED_ROUTES = new Set([routes.actors.href, routes.exploits.href, routes.campaigns.href]);
+const STAGED_ROUTES = new Set([routes.actors.href, routes.campaigns.href]);
 
 function IntelligenceNavPanel({ activeHref, onNavigate }: { activeHref: string; onNavigate: () => void }) {
   return (

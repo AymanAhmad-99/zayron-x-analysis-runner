@@ -39,6 +39,14 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
         ],
       },
+      {
+        // PHASE 8B — the Exploit & Weaponization Radar is a live read over the
+        // same 300s API cache, so the HTML shares that window.
+        source: "/intelligence/exploits",
+        headers: [
+          { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
+        ],
+      },
     ];
   },
 };

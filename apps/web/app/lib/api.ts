@@ -64,6 +64,63 @@ export async function getExploits(params: { limit?: number; offset?: number } = 
   try { const response = await apiFetch(`${getApiBaseUrl()}/intelligence?${query}`, PUBLIC_READ_INIT); if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` }; const payload = await response.json() as Record<string, unknown>; const reports = Array.isArray(payload.reports) ? payload.reports as ExploitRecord[] : []; const total = typeof payload.total === "number" ? payload.total : reports.length; return { state: reports.length ? "success" : "empty", data: { items: reports, total, limit, offset } }; } catch { return { state: "error", data: null, error: "Exploit API is unavailable" }; }
 }
 
+// ── PHASE 8B — Exploit & Weaponization Radar (`/api/v1/exploits`) ──
+// `tier` is the strongest stored-fact tier; `tiers` carries every tier the row
+// satisfies, so a filter can never hide a fact.
+
+export type ExploitTier = "ACTIVE_KEV" | "PUBLIC_POC" | "WEAPONIZED_DETECTION" | "IMMINENT_EPSS";
+
+export interface ExploitRadarItem {
+  cve_id: string;
+  vendor: string | null;
+  product: string | null;
+  severity: string | null;
+  cvss_score: number | null;
+  epss_score: number | null;
+  epss_delta: number | null;
+  tier: ExploitTier;
+  tiers: ExploitTier[];
+  kev: { listed: boolean; due_date: string | null };
+  poc: { count: number; repo_full_name: string | null; html_url: string | null; stars: number };
+  detection: { nuclei: boolean; sigma: boolean; sources: string[] };
+}
+
+export interface ExploitRadar {
+  summary: {
+    total_tracked: number;
+    active_kev: number;
+    public_poc: number;
+    weaponized_detection: number;
+    imminent_epss: number;
+    last_poc_sync_at: string | null;
+  };
+  items: ExploitRadarItem[];
+  meta: { total: number; limit: number; offset: number; tier: string };
+}
+
+export async function getExploitRadar(): Promise<ApiResult<ExploitRadar>> {
+  const query = new URLSearchParams({ tier: "all", limit: "100", offset: "0" });
+  try {
+    const response = await apiFetch(`${getApiBaseUrl()}/exploits?${query}`, PUBLIC_READ_INIT);
+    if (!response.ok) return { state: "error", data: null, error: `API returned HTTP ${response.status}` };
+    const payload = (await response.json()) as Partial<ExploitRadar>;
+    if (!payload?.summary || !Array.isArray(payload.items)) {
+      return { state: "error", data: null, error: "Exploit radar payload was empty" };
+    }
+    const items = payload.items as ExploitRadarItem[];
+    return {
+      state: items.length ? "success" : "empty",
+      data: {
+        summary: payload.summary as ExploitRadar["summary"],
+        items,
+        meta: (payload.meta as ExploitRadar["meta"]) ?? { total: items.length, limit: 100, offset: 0, tier: "all" },
+      },
+    };
+  } catch {
+    return { state: "error", data: null, error: "Exploit radar API is unavailable" };
+  }
+}
+
 // ── Canonical malware intelligence reports (single source of truth) ──
 // Reads the EXACT canonical store the ZAYRON-X analysis pipeline materializes
 // into (zayron-x-db.malware_reports) via the API Worker's /malware/intelligence/reports
@@ -941,6 +998,8 @@ export interface SupplyChainDossierDetail extends SupplyChainDossier {
   references: Array<{ url: string; type?: string }>;
   remediation: string[];
   provenance: { database: string; advisory: string };
+  /** PHASE 8B — OSV source/category recovered from stripped boilerplate. */
+  source_classification?: { source: string | null; category: string | null };
 }
 
 export async function getSupplyChainDossier(id: string): Promise<ApiResult<SupplyChainDossierDetail>> {

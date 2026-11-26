@@ -232,6 +232,8 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/search",
   "/api/v1/threats",
   "/api/v1/ai/runs",
+  // PHASE 8B — the Exploit & Weaponization Radar is a public, derived read.
+  "/api/v1/exploits",
 ]);
 
 /** Collection-detail prefixes that are public for READ methods only. */

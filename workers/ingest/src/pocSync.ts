@@ -9,25 +9,27 @@
  *   `pocs: []` (rendered as "No verified public PoC tracked").
  *
  * WHEN IT RUNS
- *   ONLY on the quiet-hours `:40` ticks at **02:40** and **06:40 UTC**. This is
- *   the isolation invariant of Phase 8A:
+ *   ONLY on the quiet-hours `:40` ticks at **02:40**, **04:40** and **06:40 UTC**.
+ *   This is the isolation invariant:
  *     · `:20` belongs to the IOC ingest pass (`00:20`/`08:20`/`16:20`);
  *     · the ten Telegram wire slots own 08:00, 09:20, 10:40, 12:00, 13:20,
  *       14:40, 16:00, 17:20, 18:40 and 20:00;
  *     · the heavy NVD/KEV/EPSS pulse owns `:00` every fourth hour.
- *   Neither 02:40 nor 06:40 collides with any of them, so this sync never
+ *   None of 02:40, 04:40 or 06:40 collides with any of them, so this sync never
  *   competes for a shared Worker invocation subrequest budget.
  *
  * BUDGET
- *   `POC_MAX_SUBREQUESTS = 4` — one directory listing plus at most three raw
- *   CVE index files. The pass counts its own fetches and stops at the ceiling.
+ *   `POC_MAX_SUBREQUESTS = 6` — one directory listing plus at most five raw CVE
+ *   index files. A typical index file carries four repositories, so one pass
+ *   lands ~20 fresh 2026 PoC rows. The pass counts its own fetches and stops at
+ *   the ceiling.
  */
 
 export const POC_REPO = 'nomi-sec/PoC-in-GitHub';
 export const POC_BRANCH = 'master';
-export const POC_MAX_SUBREQUESTS = 4;
+export const POC_MAX_SUBREQUESTS = 6;
 export const POC_MAX_FILES = POC_MAX_SUBREQUESTS - 1;
-export const POC_QUIET_SLOT_HOURS: readonly number[] = [2, 6];
+export const POC_QUIET_SLOT_HOURS: readonly number[] = [2, 4, 6];
 
 /** The `:40` quiet-hours ticks this sync is allowed to own. */
 export function isPocSyncSlot(when: Date = new Date()): boolean {

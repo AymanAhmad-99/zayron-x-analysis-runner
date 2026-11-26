@@ -35,6 +35,8 @@ export const TELEGRAM_MANDATORY_HASHTAGS = ['#USA', '#CyberSecurity', '#ThreatIn
 
 export const TELEGRAM_CVE_BASE_URL = 'https://zayron-x.co/intelligence/vulnerabilities';
 export const TELEGRAM_MALWARE_BASE_URL = 'https://zayron-x.co/malware/intelligence/reports';
+/** PHASE 8B — OSV `MAL-*` advisories have their own canonical dossier page. */
+export const TELEGRAM_SUPPLY_CHAIN_BASE_URL = 'https://zayron-x.co/intelligence/malware/advisories';
 
 export const TELEGRAM_HAIRLINE = '─────────────────────';
 
@@ -328,7 +330,13 @@ export function formatMalwareTelegramDispatch(record: TelegramMalwareRecord): Te
   const iocs = isFiniteNumber(record?.primary_network_indicators) ? record!.primary_network_indicators! : 0;
   const formatClass = trimTo(record?.format_class, 24) || 'UNRESOLVED';
 
-  const url = `${TELEGRAM_MALWARE_BASE_URL}/${encodeURIComponent(reportId)}`;
+  // A `MAL-*` OSV advisory is not a static-analysis specimen: it has no artifact
+  // page, only the supply-chain dossier. Linking the two correctly is what stops
+  // the wire pointing at a 404.
+  const malwareBase = /^MAL-\d{4}-\d+$/i.test(reportId)
+    ? TELEGRAM_SUPPLY_CHAIN_BASE_URL
+    : TELEGRAM_MALWARE_BASE_URL;
+  const url = `${malwareBase}/${encodeURIComponent(reportId)}`;
   const executive = briefSentences(record?.brief?.executive_bluf, 2)
     || briefSentences(record?.brief?.capability_chain, 2);
 

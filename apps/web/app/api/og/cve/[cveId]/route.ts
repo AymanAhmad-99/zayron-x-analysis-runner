@@ -1,5 +1,12 @@
 import { getVulnerabilityDetail } from "../../../../lib/api";
 import { ogCardResponse } from "../../../../lib/ogCard";
+import {
+  computeOgPriority,
+  formatKevCell,
+  formatPocCell,
+  formatStoredState,
+  ogSeverityBand,
+} from "../../../../lib/ogCardPolicy";
 
 type Props = { params: Promise<{ cveId: string }> };
 
@@ -26,6 +33,7 @@ export async function GET(_request: Request, { params }: Props) {
   const report = result.data;
   const advisory = report?.public_advisory ?? null;
   const brief = (report?.strategic_brief ?? null) as Record<string, any> | null;
+  const pocs = Array.isArray((report as any)?.pocs) ? (report as any).pocs : [];
 
   const vendor = text(advisory?.affected_vendor, "");
   const product = text(advisory?.affected_product, "");
@@ -35,21 +43,30 @@ export async function GET(_request: Request, { params }: Props) {
     ? product
     : [vendor, product].filter(Boolean).join(" / ") || "VERIFIED ADVISORY";
 
-  const kev = advisory?.cisa_kev
-    ? String(advisory.cisa_kev)
-    : advisory?.known_exploited
-      ? "LISTED"
-      : "NOT LISTED";
+  const knownExploited = advisory?.known_exploited === true;
+  const cvss = advisory?.cvss_score ?? null;
+  const band = ogSeverityBand({ cvss, kev: knownExploited });
+  const pocCount = pocs.length;
+
+  // An analyst priority is used verbatim when it exists; otherwise the card
+  // carries the deterministic KEV/CVSS/EPSS/PoC band — never `UNBRIEFED`.
+  const analystPriority = text(brief?.operational_prioritization?.priority, "");
+  const priority = analystPriority || computeOgPriority({ kev: knownExploited, cvss, epss: advisory?.epss_score, pocCount });
 
   return ogCardResponse({
-    badge: advisory ? "CRITICAL ADVISORY" : "CVE ADVISORY",
+    badge: band.label,
+    accentHex: band.accentHex,
     title: id,
     subtitle: headline,
     cells: [
-      { label: "PRIORITY", value: text(brief?.operational_prioritization?.priority, "UNBRIEFED") },
-      { label: "CVSS", value: text(advisory?.cvss_score, "N/A") },
+      { label: "PRIORITY", value: priority },
+      { label: "CVSS", value: text(cvss, "N/A") },
       { label: "EPSS", value: epssPercent(advisory?.epss_score) },
-      { label: "CISA KEV", value: kev },
+      { label: "CISA KEV", value: formatKevCell(knownExploited ? "LISTED" : advisory?.cisa_kev) },
+      { label: "EXPLOIT / POC", value: formatPocCell(pocCount) },
     ],
+    footer: advisory?.provenance_state
+      ? `ZAYRON-X.CO  ·  ${formatStoredState(advisory.provenance_state)} SOURCE INTELLIGENCE`
+      : undefined,
   });
 }

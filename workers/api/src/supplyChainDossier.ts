@@ -33,6 +33,8 @@ export interface SupplyChainDossier {
   references: Array<{ url: string; type?: string }>;
   remediation: string[];
   provenance: { database: string; advisory: string };
+  /** Advisory-source metadata recovered from the OSV boilerplate, never invented. */
+  source_classification: { source: string | null; category: string | null };
   sha256: string | null;
 }
 
@@ -78,12 +80,91 @@ export function advisoryEcosystem(record: Record<string, unknown>, fallbackTitle
 }
 
 /**
+ * A package identifier is the ONLY thing interpolated into a shell command, so
+ * it is accepted only when it matches the strictest ecosystem character class.
+ * Anything else yields `null` and the step falls back to prose (never `<pkg>`).
+ */
+export function safePackageToken(name: unknown): string | null {
+  const raw = typeof name === 'string' ? name.trim() : '';
+  if (!raw || raw.length > 128) return null;
+  return /^[a-zA-Z0-9@._/-]+$/.test(raw) ? raw : null;
+}
+
+/**
+ * OSV advisories embed exporter boilerplate in their detail text:
+ *   `--- _= Per source details. Do not edit below this line.=_ ## Source: kam193 (165c4572…) --- Category: PROBABLY_PENTEST`
+ * This turns that machine residue into readable paragraphs plus a compact
+ * classification pair. It is deterministic and additive: no sentence of the
+ * advisory's own narrative is invented or dropped (only markers and hashes).
+ */
+export function formatOsvNarrative(raw: unknown): {
+  narrative: string;
+  source: string | null;
+  category: string | null;
+} {
+  let text = String(raw ?? '').replace(/\r\n?/g, '\n');
+  if (!text.trim()) return { narrative: '', source: null, category: null };
+
+  // The exporter marker has shipped in several fence spellings:
+  // `_= Per source details. Do not edit below this line.=_` and the OSV
+  // `_-= Per source details. Do not edit below this line.=-_` variant.
+  text = text.replace(
+    /[_=\-]*\s*Per source details\.?\s*Do not edit below this line\.?\s*[_=\-]*\s*/gi,
+    '\n',
+  );
+
+  let source: string | null = null;
+  const sourceMatch = /##\s*Source:\s*([^\n]+)/i.exec(text);
+  if (sourceMatch) {
+    // `kam193 (165c4572...)` → `kam193`; the hash is provenance plumbing.
+    const cleaned = sourceMatch[1]
+      // `kam193 (165c4572…) --- Category: PROBABLY_PENTEST` on one line.
+      .split(/\s*-{3,}\s*/)[0]
+      .replace(/Category:.*$/i, '')
+      .replace(/\([0-9a-f]{6,}\)/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    source = cleaned || null;
+  }
+
+  let category: string | null = null;
+  const categoryMatch = /Category:\s*([A-Za-z0-9_\-]+)/i.exec(text);
+  if (categoryMatch) {
+    category = categoryMatch[1]
+      .split(/[_\-]+/)
+      .filter(Boolean)
+      .map((token) => token.charAt(0).toUpperCase() + token.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  text = text
+    // Markdown headings, including `## Source:` and `## Category:`.
+    .replace(/^#{1,6}\s*.*$/gm, ' ')
+    .replace(/Category:\s*[A-Za-z0-9_\-]+/gi, ' ')
+    .replace(/Source:\s*[^\n]+/gi, ' ')
+    // Horizontal rules and the `---` fences OSV pastes around metadata.
+    .replace(/^\s*-{3,}\s*$/gm, ' ')
+    .replace(/-{3,}/g, ' ')
+    // Standalone hex digests (commit hashes, blob ids).
+    .replace(/\b[0-9a-f]{12,64}\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return { narrative: text, source, category };
+}
+
+/**
  * Ecosystem-accurate containment steps. These are the standard actions a
  * package consumer must take for a malicious release; they are deliberately
  * identical for every advisory in an ecosystem, because the point is
  * containment, not speculation about the payload.
+ *
+ * PHASE 8B — the real, sanitized package name is injected into the command so
+ * an operator can paste it. When the advisory names no safe package token the
+ * step stays prose; a literal `<package>` is never rendered.
  */
-export function remediationFor(ecosystem: string): string[] {
+export function remediationFor(ecosystem: string, packageName?: string | null): string[] {
+  const pkg = safePackageToken(packageName);
   const common = [
     'Treat any process that loaded this package under the malicious versions as compromised and isolate it.',
     'Rotate every credential, token and publishing secret that was reachable from the build or runtime environment.',
@@ -92,14 +173,22 @@ export function remediationFor(ecosystem: string): string[] {
   switch (String(ecosystem || '').toLowerCase()) {
     case 'npm':
       return [
-        'Remove the package from package.json and delete its entry from package-lock.json.',
-        'Run `npm cache clean --force` and reinstall with `npm ci` so no cached tarball is reused.',
-        'Run `npm audit` and `npm ls <package>` to confirm no transitive copy survives.',
+        pkg
+          ? `Remove ${pkg} from package.json and delete its entry from package-lock.json.`
+          : 'Remove the affected package from package.json and delete its entry from package-lock.json.',
+        pkg
+          ? `Run \`npm uninstall ${pkg}\`, then \`npm cache clean --force\` and reinstall with \`npm ci\` so no cached tarball is reused.`
+          : 'Run `npm cache clean --force` and reinstall with `npm ci` so no cached tarball is reused.',
+        pkg
+          ? `Run \`npm audit\` and \`npm ls ${pkg}\` to confirm no transitive copy survives.`
+          : 'Run `npm audit` and `npm ls` to confirm no transitive copy survives.',
         ...common,
       ];
     case 'pypi':
       return [
-        'Uninstall the package with `pip uninstall -y <package>` and purge the wheel cache (`pip cache purge`).',
+        pkg
+          ? `Uninstall the package with \`pip uninstall -y ${pkg}\` and purge the wheel cache (\`pip cache purge\`).`
+          : 'Uninstall the affected distribution with `pip uninstall -y` and purge the wheel cache (`pip cache purge`).',
         'Rebuild the virtualenv from hash-pinned requirements so the malicious wheel cannot be re-resolved.',
         'Run `pip-audit` (or `pip check`) after the rebuild to confirm the environment is clean.',
         ...common,
@@ -107,13 +196,17 @@ export function remediationFor(ecosystem: string): string[] {
     case 'go':
       return [
         'Run `go clean -modcache`, then re-resolve modules against the checksum database.',
-        'Pin the module to a known-good version in go.mod and verify `go mod verify` passes.',
+        pkg
+          ? `Pin ${pkg} to a known-good version in go.mod and verify \`go mod verify\` passes.`
+          : 'Pin the module to a known-good version in go.mod and verify `go mod verify` passes.',
         'Rebuild every binary that linked the affected module version.',
         ...common,
       ];
     case 'rubygems':
       return [
-        'Uninstall the gem (`gem uninstall <package>`) and clear the local gem cache.',
+        pkg
+          ? `Uninstall the gem (\`gem uninstall ${pkg}\`) and clear the local gem cache.`
+          : 'Uninstall the affected gem and clear the local gem cache.',
         'Update the Gemfile.lock to a clean version and run `bundle install` from scratch.',
         'Run `bundle audit` after the rebuild to confirm no malicious release remains.',
         ...common,
@@ -182,27 +275,40 @@ export function buildSupplyChainDossier(row: SupplyChainRow): SupplyChainDossier
   const summaryText = typeof record.summary === 'string' ? record.summary : '';
   const storedSummary = typeof row?.summary === 'string' ? row.summary : '';
 
+  const explicitPackage =
+    (typeof record.package_name === 'string' && record.package_name) ||
+    (Array.isArray(record.packages) && typeof (record.packages as unknown[])[0] === 'string'
+      ? String((record.packages as unknown[])[0])
+      : null);
+  // Fallback: the OSV title names the package (`Malicious code in <pkg>`).
+  const titlePackage = /malicious\s+code\s+in\s+([^\s,]+)/i.exec(String(rawTitle ?? ''))?.[1] ?? null;
+  const packageName = safePackageToken(explicitPackage) || safePackageToken(titlePackage) || null;
+
+  const sanitizedDetails = formatOsvNarrative(code);
+  const sanitizedSummary = formatOsvNarrative(summaryText || storedSummary);
+  const classification = {
+    source: sanitizedDetails.source ?? sanitizedSummary.source,
+    category: sanitizedDetails.category ?? sanitizedSummary.category,
+  };
+
   return {
     report_id: id,
     title: cleanAdvisoryTitle(rawTitle) || `Malicious package ${id}`,
     ecosystem,
-    package_name:
-      (typeof record.package_name === 'string' && record.package_name) ||
-      (Array.isArray(record.packages) && typeof (record.packages as unknown[])[0] === 'string'
-        ? String((record.packages as unknown[])[0])
-        : null),
+    package_name: packageName,
     affected_versions: safeVersions(record.affected_versions),
     published_at: typeof record.published_at === 'string' ? record.published_at : row?.published_at ?? null,
     modified_at: typeof record.modified_at === 'string' ? record.modified_at : null,
-    summary: summaryText || storedSummary || '',
-    details: code || summaryText || storedSummary || '',
+    summary: sanitizedSummary.narrative || sanitizedDetails.narrative || '',
+    details: sanitizedDetails.narrative || sanitizedSummary.narrative || '',
     severity: row?.severity ?? null,
     references: safeReferences(record.references),
-    remediation: remediationFor(ecosystem),
+    remediation: remediationFor(ecosystem, packageName),
     provenance: {
       database: 'OSV.dev',
       advisory: `https://osv.dev/vulnerability/${id}`,
     },
+    source_classification: classification,
     sha256: row?.sha256 ?? null,
   };
 }

@@ -95,13 +95,18 @@ export interface SitemapEntry {
   loc: string;
   /** Only ever a real API `updated_at`; omitted when the source had none. */
   lastmod?: string | null;
+  /** PHASE 8B — live hubs declare their crawl priority explicitly. */
+  priority?: string | null;
+  changefreq?: string | null;
 }
 
 export function buildUrlset(entries: SitemapEntry[]): string {
   const urls = entries
     .map((entry) => {
       const lastmod = entry.lastmod ? `\n    <lastmod>${escapeXml(entry.lastmod)}</lastmod>` : "";
-      return `  <url>\n    <loc>${escapeXml(entry.loc)}</loc>${lastmod}\n  </url>`;
+      const priority = entry.priority ? `\n    <priority>${escapeXml(entry.priority)}</priority>` : "";
+      const changefreq = entry.changefreq ? `\n    <changefreq>${escapeXml(entry.changefreq)}</changefreq>` : "";
+      return `  <url>\n    <loc>${escapeXml(entry.loc)}</loc>${lastmod}${changefreq}${priority}\n  </url>`;
     })
     .join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
@@ -159,7 +164,11 @@ export function isSitemapPageWithinCap(page: number, maxShardsPerKind: number | 
 }
 
 export function staticSitemapEntries(siteUrl: string): SitemapEntry[] {
-  return STATIC_PATHS.map((path) => ({ loc: `${siteUrl}${path}` }));
+  return STATIC_PATHS.map((path) => ({
+    loc: `${siteUrl}${path}`,
+    // PHASE 8B — the Exploit & Weaponization Radar is a live, daily-updated hub.
+    ...(path === "/intelligence/exploits" ? { priority: "0.9", changefreq: "daily" } : {}),
+  }));
 }
 
 /**

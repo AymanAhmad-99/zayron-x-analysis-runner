@@ -161,12 +161,22 @@ export const TELEGRAM_CVE_SELECTION_SQL = `
            cve_id ASC
   LIMIT ?`;
 
-/** Malware selection: canonical dossier + `v1` brief, never dispatched. */
+/**
+ * Malware selection: canonical dossier + `v1` brief, never dispatched.
+ *
+ * PHASE 8B — the wire only carries live `MAL-YYYY-*` supply-chain advisories.
+ * Legacy archived `mir_*` rows are unresolvable static samples from the old
+ * pipeline: they have no package, no advisory page and frequently an
+ * `UNRESOLVED` family, so publishing them spends a slot on stale data. They are
+ * excluded unconditionally; fresh `MAL-2026-*` records sort first.
+ */
 export const TELEGRAM_MALWARE_SELECTION_SQL = `
   SELECT id, sha256, family, severity, source, published_at, report_json, strategic_brief_json
   FROM malware_reports
   WHERE strategic_brief_version = 'malware_strategic_brief.v1'
     AND COALESCE(strategic_brief_json, '') <> ''
+    AND id LIKE 'MAL-%'
+    AND substr(lower(id), 1, 4) <> 'mir_'
     AND NOT EXISTS (
       SELECT 1 FROM telegram_dispatches d
        WHERE d.entity_type = 'malware'
@@ -176,7 +186,9 @@ export const TELEGRAM_MALWARE_SELECTION_SQL = `
          AND d.channel = ? AND d.status IN ('SENT', 'SKIPPED')
          AND d.dispatched_at >= datetime('now', '-7 days')
     )
-  ORDER BY COALESCE(published_at, created_at) DESC, id ASC
+  ORDER BY (CASE WHEN id LIKE 'MAL-2026-%' THEN 0 ELSE 1 END) ASC,
+           COALESCE(published_at, created_at) DESC,
+           id ASC
   LIMIT ?`;
 
 export const TELEGRAM_DAILY_COUNT_SQL = `

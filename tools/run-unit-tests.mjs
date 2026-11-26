@@ -119,6 +119,10 @@ const SUITES = [
   // Gate 3A.6: deterministic CVSS vector parser, triage posture, remediation
   // matrix, and the short visible CVE heading.
   'tests/unit/gate3a6_cve_analysis.test.ts',
+  // Phase 8B: honest OG severity/priority + crisp supersampled PNG, OSV narrative
+  // sanitizer, enum labels, Telegram malware routing, PoC quiet-slot isolation and
+  // the live 4-tier exploit radar.
+  'tests/unit/phase8b_institutional_polish.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

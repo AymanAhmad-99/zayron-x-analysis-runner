@@ -96,6 +96,7 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
     security: [],
     tags: [
       { name: "Vulnerabilities", description: "Published CVE advisories and their exploitation context." },
+      { name: "Exploits", description: "Live exploit & weaponization radar (KEV, public PoC, detection coverage, EPSS)." },
       { name: "Access", description: "Self-serve API key issuance and procurement intake." },
       { name: "Meta", description: "Specification and status." },
     ],
@@ -114,6 +115,78 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
               },
               content: { "application/json": { schema: { type: "object" } } },
             },
+          },
+        },
+      },
+      "/exploits": {
+        get: {
+          operationId: "getExploitRadar",
+          summary: "Exploit & weaponization radar (edge-cached 300s)",
+          description: [
+            "PHASE 8B — one unified 4-tier model computed from stored facts:",
+            "`ACTIVE_KEV` (CISA KEV), `PUBLIC_POC` (verified `cve_pocs`),",
+            "`WEAPONIZED_DETECTION` (real Nuclei/Sigma rule keys on the CVE) and",
+            "`IMMINENT_EPSS` (EPSS ≥ 0.10 or velocity ≥ 0.05).",
+            "A row may satisfy several tiers; `tier` is the strongest and `tiers` lists all of them.",
+          ].join("\n"),
+          tags: ["Exploits"],
+          security: [],
+          parameters: [
+            {
+              name: "tier",
+              in: "query",
+              description: "Restrict to one weaponization tier.",
+              schema: { type: "string", enum: ["all", "kev", "poc", "weaponized", "imminent"], default: "all" },
+            },
+            {
+              name: "q",
+              in: "query",
+              description: "Case-insensitive CVE / vendor / product search.",
+              schema: { type: "string", maxLength: 120 },
+            },
+            {
+              name: "limit",
+              in: "query",
+              schema: { type: "integer", minimum: 1, maximum: 100, default: 50 },
+            },
+            {
+              name: "offset",
+              in: "query",
+              schema: { type: "integer", minimum: 0, default: 0 },
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Tier summary plus paginated radar rows",
+              headers: {
+                "Cache-Control": { schema: { type: "string" }, description: "Edge-cacheable public read (300s)." },
+              },
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string" },
+                      summary: {
+                        type: "object",
+                        properties: {
+                          total_tracked: { type: "integer" },
+                          active_kev: { type: "integer" },
+                          public_poc: { type: "integer" },
+                          weaponized_detection: { type: "integer" },
+                          imminent_epss: { type: "integer" },
+                          last_poc_sync_at: { type: ["string", "null"] },
+                        },
+                      },
+                      items: { type: "array", items: { type: "object" } },
+                      meta: { type: "object" },
+                    },
+                  },
+                },
+              },
+            },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "503": { description: "Exploit store unavailable", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
           },
         },
       },
