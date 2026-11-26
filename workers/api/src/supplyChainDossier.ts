@@ -49,11 +49,18 @@ export interface SupplyChainRow {
 
 const ECOSYSTEM_LABELS = new Set(['npm', 'PyPI', 'Go', 'RubyGems', 'Maven', 'NuGet', 'Packagist', 'Hex', 'Pub', 'crates.io']);
 
-/** `Malicious code in @scope/pkg (npm)` → `Malicious code in @scope/pkg`. */
+/**
+ * `Malicious code in @scope/pkg (npm)` → `Malicious code in @scope/pkg`.
+ *
+ * Older rows were stored with the package name duplicated in front
+ * (`polylabel-web-lib: Malicious code in polylabel-web-lib`), so that prefix is
+ * removed at READ time too — the stored record is never rewritten.
+ */
 export function cleanAdvisoryTitle(title: unknown): string {
-  return String(title ?? '')
+  const base = String(title ?? '')
     .replace(/\s*\((?:npm|PyPI|Go|RubyGems|Maven|NuGet|Packagist|Hex|Pub|crates\.io)\)\s*$/i, '')
     .trim();
+  return base.replace(/^[^:]{1,120}:\s*(?=malicious\s+code\s+in\s)/i, '').trim();
 }
 
 /** Ecosystem of an advisory, from its explicit field or its title suffix. */

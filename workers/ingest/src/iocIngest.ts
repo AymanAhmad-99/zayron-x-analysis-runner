@@ -272,9 +272,11 @@ export function selectNewestMalListings(
  * The ecosystem becomes its own field, so the badge is not duplicated in prose.
  */
 export function cleanSupplyChainTitle(summary: string): string {
-  return String(summary || '')
+  const base = String(summary || '')
     .replace(/\s*\((?:npm|PyPI|Go|RubyGems|Maven|NuGet|Packagist|Hex|Pub|crates\.io|Linux|OSS-Fuzz)\)\s*$/i, '')
     .trim();
+  // Some OSV summaries repeat the package name in front of the phrase.
+  return base.replace(/^[^:]{1,120}:\s*(?=malicious\s+code\s+in\s)/i, '').trim();
 }
 
 /** Canonical family label from a C2 feed's free-text `ioc` column. */
