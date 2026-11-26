@@ -120,6 +120,9 @@ import { loadExploitRadar } from './exploits';
 import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from './threatGraph';
 import { loadCveLinks, loadFamilyAttribution } from './neuralMesh';
 import { loadTechnique, loadTechniqueIndex } from './techniques';
+import { loadNewsArticle, loadNewsIndex, loadNewsTelemetry, loadRelatedNews, NEWS_CACHE_SECONDS } from './newsroom';
+import { loadRegion, loadRegions, loadVendor, loadVendors, isRegionCode } from './programmaticHubs';
+import { buildLlmsFullTxt, buildLlmsTxt, collectLlmsData, LLMS_CACHE_SECONDS } from './llmsTxt';
 import {
   EDL_PREVIEW_MAX_LINES,
   IOC_BULK_MAX_ITEMS,
@@ -927,9 +930,11 @@ const worker = {
             // this family as tooling.
             const attribution = await loadFamilyAttribution(env.DB, summary.family, summary.slug)
               .catch(() => null);
+            // PHASE 9B — reverse neural feed for the family hub page.
+            const relatedNews = await loadRelatedNews(env.DB, 'malware_family', summary.slug).catch(() => []);
             return jsonResponse({
               status: 'SUCCESS',
-              data: { ...summary, attribution },
+              data: { ...summary, attribution, related_news: relatedNews },
             });
           } catch (err: any) {
             console.error('[API] ioc family failed', { site: 'api.iocs.family', error: err?.message ?? String(err) });
@@ -5936,7 +5941,9 @@ const worker = {
             return jsonResponse({ status: 'SUCCESS', layer: dossier.navigator }, 200, 300);
           }
           if (segments.length > 1) return developerError(404, 'NOT_FOUND', 'Unknown actor sub-resource');
-          return jsonResponse({ status: 'SUCCESS', ...dossier }, 200, 300);
+          // PHASE 9B — reverse neural feed: newest briefings mentioning this actor.
+          const relatedNews = await loadRelatedNews(env.DB, 'actor', dossier.actor.slug).catch(() => []);
+          return jsonResponse({ status: 'SUCCESS', ...dossier, related_news: relatedNews }, 200, 300);
         } catch (err: any) {
           console.error('[API] threat actor dossier degraded', { site: 'api.threat-actor', error: err?.message ?? String(err) });
           return errorResponse('Threat actor dossier temporarily unavailable', 503, 'STORE_UNAVAILABLE');
@@ -6150,6 +6157,8 @@ const worker = {
                 linked_campaigns: mesh?.campaigns ?? [],
                 detection_rules: mesh?.detection_rules ?? [],
                 in_exploit_radar: mesh?.in_exploit_radar ?? false,
+                // PHASE 9B — reverse neural feed: briefings that cite this CVE.
+                related_news: await loadRelatedNews(env.DB, 'cve', String((vuln as any).cve_id || cveQuery)).catch(() => []),
               },
             }),
             developerContext,
@@ -7056,10 +7065,122 @@ Return ONLY a valid JSON object matching this schema:
           if (!dossier) {
             return developerError(404, 'TECHNIQUE_NOT_FOUND', 'No MITRE ATT&CK technique matches this id');
           }
-          return jsonResponse({ status: 'SUCCESS', ...dossier }, 200, 300);
+          // PHASE 9B — reverse neural feed for the technique hub.
+          const relatedNews = await loadRelatedNews(env.DB, 'technique', dossier.id).catch(() => []);
+          return jsonResponse({ status: 'SUCCESS', ...dossier, related_news: relatedNews }, 200, 300);
         } catch (err: any) {
           console.error('[API] technique dossier degraded', { site: 'api.technique', error: err?.message ?? String(err) });
           return errorResponse('Technique dossier temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      // ── PHASE 9B — NEURAL NEWSROOM ─────────────────────────────────
+      if (path === '/api/v1/news' && request.method === 'GET') {
+        try {
+          const payload = await loadNewsIndex(env.DB, {
+            category: url.searchParams.get('category'),
+            entity_type: url.searchParams.get('entity_type'),
+            entity_slug: url.searchParams.get('entity_slug'),
+            q: url.searchParams.get('q'),
+            limit: url.searchParams.get('limit'),
+            offset: url.searchParams.get('offset'),
+          });
+          return jsonResponse({ status: 'SUCCESS', ...payload }, 200, NEWS_CACHE_SECONDS);
+        } catch (err: any) {
+          console.error('[API] news index degraded', { site: 'api.news', error: err?.message ?? String(err) });
+          return errorResponse('Newsroom index temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path === '/api/v1/news/telemetry' && request.method === 'GET') {
+        try {
+          const telemetry = await loadNewsTelemetry(env.DB);
+          return jsonResponse({ status: 'SUCCESS', data: telemetry }, 200, NEWS_CACHE_SECONDS);
+        } catch (err: any) {
+          console.error('[API] news telemetry degraded', { site: 'api.news.telemetry', error: err?.message ?? String(err) });
+          return errorResponse('Newsroom telemetry temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path.startsWith('/api/v1/news/') && request.method === 'GET') {
+        const slug = decodeURIComponent(path.slice('/api/v1/news/'.length)).trim();
+        if (!slug || slug.length > 200) {
+          return developerError(400, 'INVALID_NEWS_SLUG', 'A briefing slug is required');
+        }
+        try {
+          const article = await loadNewsArticle(env.DB, slug);
+          if (!article) return developerError(404, 'NEWS_NOT_FOUND', 'No published briefing matches this slug');
+          return jsonResponse({ status: 'SUCCESS', data: article }, 200, NEWS_CACHE_SECONDS);
+        } catch (err: any) {
+          console.error('[API] news briefing degraded', { site: 'api.news.article', error: err?.message ?? String(err) });
+          return errorResponse('Briefing temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      // ── PHASE 9B — PROGRAMMATIC VENDOR / REGION HUBS ───────────────
+      if (path === '/api/v1/vendors' && request.method === 'GET') {
+        try {
+          const items = await loadVendors(env.DB, 200);
+          return jsonResponse({ status: 'SUCCESS', items, total: items.length }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] vendor hubs degraded', { site: 'api.vendors', error: err?.message ?? String(err) });
+          return errorResponse('Vendor hubs temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path.startsWith('/api/v1/vendors/') && request.method === 'GET') {
+        const slug = decodeURIComponent(path.slice('/api/v1/vendors/'.length)).trim();
+        try {
+          const hub = await loadVendor(env.DB, slug);
+          if (!hub) return developerError(404, 'VENDOR_NOT_FOUND', 'No authoritative CVE is published for this vendor');
+          return jsonResponse({ status: 'SUCCESS', data: hub }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] vendor hub degraded', { site: 'api.vendor', error: err?.message ?? String(err) });
+          return errorResponse('Vendor hub temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path === '/api/v1/regions' && request.method === 'GET') {
+        try {
+          const items = await loadRegions(env.DB);
+          return jsonResponse({ status: 'SUCCESS', items, total: items.length }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] region hubs degraded', { site: 'api.regions', error: err?.message ?? String(err) });
+          return errorResponse('Regional hubs temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path.startsWith('/api/v1/regions/') && request.method === 'GET') {
+        const code = decodeURIComponent(path.slice('/api/v1/regions/'.length)).trim().toLowerCase();
+        if (!isRegionCode(code)) {
+          return developerError(404, 'REGION_NOT_FOUND', 'Supported regions: us, eu, me, apac, global');
+        }
+        try {
+          const hub = await loadRegion(env.DB, code);
+          if (!hub) return developerError(404, 'REGION_NOT_FOUND', 'Supported regions: us, eu, me, apac, global');
+          return jsonResponse({ status: 'SUCCESS', data: hub }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] region hub degraded', { site: 'api.region', error: err?.message ?? String(err) });
+          return errorResponse('Regional hub temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      // ── PHASE 9B — LIVE AI DISCOVERY FILES ─────────────────────────
+      if ((path === '/api/v1/llms.txt' || path === '/api/v1/llms-full.txt') && request.method === 'GET') {
+        try {
+          const site = 'https://zayron-x.co';
+          const data = await collectLlmsData(env.DB, site);
+          const body = path === '/api/v1/llms.txt' ? buildLlmsTxt(data) : buildLlmsFullTxt(data);
+          return new Response(body, {
+            status: 200,
+            headers: {
+              'content-type': 'text/plain; charset=utf-8',
+              'cache-control': `public, max-age=${LLMS_CACHE_SECONDS}, s-maxage=3600`,
+            },
+          });
+        } catch (err: any) {
+          console.error('[API] llms degraded', { site: 'api.llms', error: err?.message ?? String(err) });
+          return errorResponse('AI discovery index temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 

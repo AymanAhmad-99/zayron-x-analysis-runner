@@ -204,29 +204,34 @@ describe('family hub SEO', () => {
 });
 
 describe('/llms.txt', () => {
+  // PHASE 9B — `/llms.txt` is now a live D1-backed index served by the API and
+  // proxied by the web route, so the contract is asserted across both halves.
   test('it is a clean Markdown index of the real surfaces', () => {
     const route = read(LLMS);
+    const builder = read('workers/api/src/llmsTxt.ts');
+    const combined = `${route}\n${builder}`;
     expect(route).toContain('text/plain; charset=utf-8');
     for (const needle of [
       'Truth Is the Perimeter',
       '/intelligence/vulnerabilities',
-      '/intelligence/malware',
+      '/intelligence/malware/families/',
       '/intelligence/iocs',
-      '/developers',
       '/api/v1/openapi.json',
       'api/v1/iocs/edl/ip.txt',
-      'STIX 2.1',
-      'MAL-',
+      'stix',
+      '/news/',
     ]) {
-      expect(route).toContain(needle);
+      expect(combined).toContain(needle);
     }
     expect(route).not.toContain('<html');
   });
 
   test('it publishes no raw indicator values', () => {
-    const route = read(LLMS);
-    expect(route).not.toMatch(/https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/);
-    expect(route).toContain('[.]');
+    const combined = `${read(LLMS)}\n${read('workers/api/src/llmsTxt.ts')}`;
+    expect(combined).not.toMatch(/https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/);
+    // The defang contract is stated in the generated file, and no indicator value
+    // is ever emitted — crawlers that want IOCs must use the token-gated API.
+    expect(combined).toContain('defanged');
   });
 });
 

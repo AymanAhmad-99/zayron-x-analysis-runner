@@ -14,9 +14,10 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { extractSoftwareTechniqueEdges } from './lib/mitre-software-edges.mjs';
 
 const WORKER_DIR = path.resolve('workers/api');
 const DB = 'zayron-x-db';
@@ -85,6 +86,29 @@ function add(entityType, entity, techniques) {
 for (const row of ACTORS) add('actor', row, parseTechniques(row.techniques_json));
 for (const row of CAMPAIGNS) add('campaign', row, parseTechniques(row.techniques_json));
 
+// PHASE 9B — the final 7x7 leg: documented MITRE `malware/tool uses
+// attack-pattern` relationships, mapped onto the canonical D1 `malware.slug`.
+// Only relationships MITRE published are stored; an unmatched family stays empty.
+const MITRE_PATH = path.resolve('.zayron/knowledge/physical-15/09-mitre-attack.json');
+const FAMILIES = wranglerJson('SELECT slug, name FROM malware ORDER BY slug ASC LIMIT 500');
+const softwareSummary = { matched: [], unmatched: [], edges: 0 };
+try {
+  const bundle = JSON.parse(readFileSync(MITRE_PATH, 'utf-8'));
+  const objects = Array.isArray(bundle?.objects) ? bundle.objects : bundle;
+  const extracted = extractSoftwareTechniqueEdges(objects, FAMILIES);
+  for (const edge of extracted.edges) {
+    add('malware', { slug: edge.entity_slug, name: edge.entity_name }, [
+      { id: edge.technique_id, name: edge.technique_name, tactic: edge.tactic },
+    ]);
+  }
+  softwareSummary.matched = extracted.matched;
+  softwareSummary.unmatched = extracted.unmatched;
+  softwareSummary.edges = extracted.edges.length;
+} catch (error) {
+  console.error(`[seed-technique-edges] MITRE software extract failed: ${String(error?.message || error)}`);
+  process.exit(1);
+}
+
 const rows = [...edges.values()];
 const techniques = new Set(rows.map((row) => row.technique_id));
 console.log(
@@ -96,6 +120,9 @@ console.log(
       distinct_techniques: techniques.size,
       actor_edges: rows.filter((row) => row.entity_type === 'actor').length,
       campaign_edges: rows.filter((row) => row.entity_type === 'campaign').length,
+      malware_edges: rows.filter((row) => row.entity_type === 'malware').length,
+      malware_software: softwareSummary.matched,
+      malware_software_unmatched: softwareSummary.unmatched,
       dry_run: DRY,
     },
     null,

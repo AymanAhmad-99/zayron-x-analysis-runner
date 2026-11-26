@@ -239,6 +239,13 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/campaigns",
   // PHASE 9A — the ATT&CK technique backbone is a public catalog.
   "/api/v1/techniques",
+  // PHASE 9B — the neural newsroom, programmatic hubs and AI discovery files.
+  "/api/v1/news",
+  "/api/v1/news/telemetry",
+  "/api/v1/vendors",
+  "/api/v1/regions",
+  "/api/v1/llms.txt",
+  "/api/v1/llms-full.txt",
 ]);
 
 /** Collection-detail prefixes that are public for READ methods only. */
@@ -262,6 +269,10 @@ const PUBLIC_READ_PREFIXES = [
   "/api/v1/campaigns/",
   // PHASE 9A — technique index and `/techniques/:id` dossiers are public.
   "/api/v1/techniques/",
+  // PHASE 9B — briefings, vendor hubs and regional posture hubs are public reads.
+  "/api/v1/news/",
+  "/api/v1/vendors/",
+  "/api/v1/regions/",
 ];
 
 /**
@@ -273,7 +284,7 @@ const KNOWN_API_SEGMENTS = new Set<string>([
   "malware", "actors", "alerts", "articles", "campaigns", "feed", "graph", "iocs",
   "detection", "regulations", "reports", "search", "threats", "ai", "exploits",
   "threat-actors", "techniques", "keys", "leads", "sitemap", "canary", "publish",
-  "social", "research", "analyze", "admin", "webhook",
+  "social", "research", "analyze", "admin", "webhook", "news", "vendors", "regions", "llms.txt", "llms-full.txt",
 ]);
 
 function isPublicRead(method: string, path: string): boolean {

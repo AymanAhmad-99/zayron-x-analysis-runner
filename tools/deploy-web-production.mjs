@@ -39,8 +39,29 @@ function refuse(message, code) {
   process.exit(code || 1);
 }
 
+/**
+ * PHASE 9B — deterministic Windows build memory.
+ *
+ * The client bundle intermittently died with exit 9 (Rolldown OOM) under the
+ * default thread count. These are the exact values that made the build succeed
+ * on the first try; they are set in the child environment only, so Linux and CI
+ * inherit the same bounded profile without a shell-specific export.
+ */
+function buildEnv() {
+  return {
+    ...process.env,
+    RAYON_NUM_THREADS: process.env.RAYON_NUM_THREADS || '1',
+    NODE_OPTIONS: process.env.NODE_OPTIONS || '--max-old-space-size=6144',
+  };
+}
+
 function run(command, commandArgs, options = {}) {
-  const result = spawnSync(command, commandArgs, { stdio: 'inherit', cwd: webRoot, ...options });
+  const result = spawnSync(command, commandArgs, {
+    stdio: 'inherit',
+    cwd: webRoot,
+    env: buildEnv(),
+    ...options,
+  });
   if (result.error) refuse(`${command} failed to start: ${result.error.message}`);
   if (result.status !== 0) refuse(`${command} ${commandArgs.join(' ')} exited ${result.status}`);
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ThreatActorGraph } from "../../components/ThreatActorGraph";
 import { getThreatActors } from "../../lib/threatGraph";
 import { getSiteUrl, isPreviewDeployment } from "../../lib/siteConfig";
-import { buildOpenGraph, resolvePageRobots } from "../../lib/seo";
+import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../../lib/seo";
 
 /**
  * PHASE 8C — `/intelligence/threat-actors`.
@@ -40,15 +40,15 @@ export default async function ThreatActorsPage() {
   const initial = await getThreatActors({ limit: 200 });
   const site = getSiteUrl();
   const summary = initial.data?.summary;
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "Connected Threat Graph — MITRE ATT&CK Groups",
-    description: DESCRIPTION,
-    url: `${site}/intelligence/threat-actors`,
-    isAccessibleForFree: true,
-    publisher: { "@type": "Organization", name: "ZAYRON-X", url: site },
-    mainEntity: {
+  const jsonLd = buildLinkedJsonLdGraph({
+    siteUrl: site,
+    path: "/intelligence/threat-actors",
+    primary: {
+      "@type": "CollectionPage",
+      name: "Connected Threat Graph — MITRE ATT&CK Groups",
+      description: DESCRIPTION,
+      isAccessibleForFree: true,
+      mainEntity: {
       "@type": "Dataset",
       name: "ZAYRON-X connected threat graph",
       description:
@@ -59,9 +59,10 @@ export default async function ThreatActorsPage() {
             size: summary.total_actors,
             measurementTechnique: `LIVE_OBSERVED=${summary.live_observed}; CANONICAL_PROFILE=${summary.canonical_profiles}; CAMPAIGNS=${summary.total_campaigns}`,
           }
-        : {}),
+          : {}),
+      },
     },
-  };
+  });
 
   return (
     <>

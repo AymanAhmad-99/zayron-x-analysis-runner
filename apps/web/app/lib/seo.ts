@@ -56,6 +56,117 @@ export function buildOpenGraph(input: OpenGraphInput): OpenGraphOutput {
   };
 }
 
+/* ─────────────────── PHASE 9B — linked JSON-LD @graph ──────────────────── */
+
+/** Stable @id URIs: one entity, one identifier, on every page. */
+export const ORGANIZATION_ID = "https://zayron-x.co/#organization";
+export const WEBSITE_ID = "https://zayron-x.co/#website";
+
+/** Kept in sync with the canonical site URL; callers may override. */
+export const CANONICAL_SITE_URL = "https://zayron-x.co";
+
+/**
+ * Verified social profiles only. A configured-but-wrong URL is worse than no
+ * `sameAs` at all, so an unset variable contributes nothing.
+ */
+export function socialProfiles(env: Record<string, string | undefined> = typeof process === "undefined" || !process.env ? {} : (process.env as Record<string, string | undefined>)): string[] {
+  const profiles = ["https://t.me/zayronxai"];
+  for (const key of [
+    "NEXT_PUBLIC_SOCIAL_X_URL",
+    "NEXT_PUBLIC_SOCIAL_LINKEDIN_URL",
+    "NEXT_PUBLIC_SOCIAL_GITHUB_URL",
+  ]) {
+    const value = String(env[key] ?? "").trim();
+    if (/^https:\/\/\S+$/i.test(value)) profiles.push(value);
+  }
+  return [...new Set(profiles)];
+}
+
+export function organizationNode(siteUrl: string, social: string[]): Record<string, unknown> {
+  const site = siteUrl.replace(/\/+$/, "");
+  return {
+    "@type": "Organization",
+    "@id": `${site}/#organization`,
+    name: "ZAYRON-X",
+    url: site,
+    description:
+      "Source-verified vulnerability, malware and threat-actor intelligence with explicit provenance, confidence and decay.",
+    sameAs: social,
+  };
+}
+
+export function websiteNode(siteUrl: string): Record<string, unknown> {
+  const site = siteUrl.replace(/\/+$/, "");
+  return {
+    "@type": "WebSite",
+    "@id": `${site}/#website`,
+    url: site,
+    name: "ZAYRON-X",
+    publisher: { "@id": `${site}/#organization` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${site}/search?q={search_term_string}`,
+      "input": "required name=search_term_string",
+    },
+  };
+}
+
+/** The site-wide graph every page inherits from the root layout. */
+export function buildSiteJsonLdGraph(input: { siteUrl?: string; social?: string[] } = {}): Record<string, unknown> {
+  const site = (input.siteUrl || CANONICAL_SITE_URL).replace(/\/+$/, "");
+  return {
+    "@context": "https://schema.org",
+    "@graph": [organizationNode(site, input.social ?? socialProfiles()), websiteNode(site)],
+  };
+}
+
+export interface JsonLdGraphInput {
+  siteUrl?: string;
+  path: string;
+  /** The page's primary entity (`NewsArticle`, `TechArticle`, `CollectionPage`, …). */
+  primary: Record<string, unknown> & { "@type": string };
+  faq?: Array<{ question: string; answer: string }>;
+  social?: string[];
+}
+
+/**
+ * ONE cohesive `@graph` per page: Organization, WebSite with SearchAction, the
+ * primary entity linked to both, and an optional FAQPage. Emitting separate
+ * unlinked blocks is what makes answer engines treat the facts as unrelated.
+ */
+export function buildLinkedJsonLdGraph(input: JsonLdGraphInput): Record<string, unknown> {
+  const site = (input.siteUrl || CANONICAL_SITE_URL).replace(/\/+$/, "");
+  const orgId = `${site}/#organization`;
+  const websiteId = `${site}/#website`;
+  const primaryId = `${site}${input.path}#primary`;
+
+  const graph: Array<Record<string, unknown>> = [
+    organizationNode(site, input.social ?? socialProfiles()),
+    websiteNode(site),
+    {
+      ...input.primary,
+      "@id": primaryId,
+      url: `${site}${input.path}`,
+      publisher: { "@id": orgId },
+      isPartOf: { "@id": websiteId },
+    },
+  ];
+
+  if (input.faq && input.faq.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      "@id": `${site}${input.path}#faq`,
+      mainEntity: input.faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    });
+  }
+
+  return { "@context": "https://schema.org", "@graph": graph };
+}
+
 export interface RobotsDirective {
   index: boolean;
   follow: boolean;

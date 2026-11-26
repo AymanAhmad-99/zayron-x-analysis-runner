@@ -13,7 +13,8 @@ import "./malware-report.css";
 import "./legal.css";
 import "./institutional.css";
 import { getSiteUrl, isPreviewDeployment } from "./lib/siteConfig";
-import { organizationJsonLd, serializeJsonLd, webSiteJsonLd } from "./lib/jsonLd";
+import { serializeJsonLd } from "./lib/jsonLd";
+import { buildSiteJsonLdGraph } from "./lib/seo";
 
 const SITE_NAME = "ZAYRON-X";
 const SITE_DESCRIPTION =
@@ -94,11 +95,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             never terminate the script element. */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationJsonLd(getSiteUrl())) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(webSiteJsonLd(getSiteUrl())) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(buildSiteJsonLdGraph({ siteUrl: getSiteUrl() })) }}
         />
       </body>
     </html>

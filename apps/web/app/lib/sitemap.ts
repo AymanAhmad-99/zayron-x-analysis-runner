@@ -35,6 +35,11 @@ export const STATIC_PATHS = [
   // legacy `/intelligence/actors` alias is noindex and deliberately not listed.
   "/intelligence/threat-actors",
   "/intelligence/campaigns",
+  "/intelligence/techniques",
+  // PHASE 9B — the neural newsroom and the programmatic hubs are live surfaces.
+  "/news",
+  "/intelligence/vendors",
+  "/intelligence/regions",
   "/intelligence/iocs",
   "/search",
   // Institutional surfaces (Phase 6). `/ai-policy` and the legacy `/legal/*`
@@ -59,7 +64,6 @@ export const STATIC_PATHS = [
  * explicitly noindex) and /intelligence/relationships (no public nav entry).
  */
 export const EXCLUDED_PATHS = [
-  "/news",
   "/research",
   "/intelligence/graph",
   "/intelligence/relationships",
@@ -209,6 +213,36 @@ export function robotsText(isPreview: boolean, siteUrl: string): string {
   }
   lines.push("", `Sitemap: ${siteUrl}/sitemap.xml`, "");
   return lines.join("\n");
+}
+
+export interface NewsSitemapEntry {
+  loc: string;
+  title: string;
+  publishedAt: string;
+  sourceName?: string | null;
+}
+
+/**
+ * PHASE 9B — Google News sitemap. `publication_date` must be W3C/ISO-8601 and
+ * only stories from the last 48 hours may appear, so the caller filters.
+ */
+export function buildNewsSitemap(entries: NewsSitemapEntry[], siteUrl: string): string {
+  const items = entries
+    .filter((entry) => entry.loc.startsWith(siteUrl) && entry.title.trim() !== "")
+    .map((entry) => {
+      const publication = `<news:publication><news:name>ZAYRON-X</news:name><news:language>en</news:language></news:publication>`;
+      return `  <url>\n    <loc>${escapeXml(entry.loc)}</loc>\n    <news:news>\n      ${publication}\n      <news:publication_date>${escapeXml(entry.publishedAt)}</news:publication_date>\n      <news:title>${escapeXml(entry.title)}</news:title>\n    </news:news>\n  </url>`;
+    })
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">\n${items}\n</urlset>\n`;
+}
+
+/** 48h window, newest first, capped by the caller's crawl budget. */
+export function isNewsSitemapFresh(publishedAt: string, now = Date.now()): boolean {
+  const published = Date.parse(publishedAt);
+  if (!Number.isFinite(published)) return false;
+  const age = now - published;
+  return age >= 0 && age <= 48 * 60 * 60 * 1000;
 }
 
 export const SITEMAP_XML_CONTENT_TYPE = "application/xml; charset=utf-8";

@@ -19,7 +19,16 @@ export const routes = {
 } as const;
 
 /** Wave 4B — launch navigation: placeholder surfaces are not advertised. */
-export const intelligenceRoutes = [routes.vulnerabilities, routes.malware, routes.exploits, routes.actors, routes.campaigns, routes.iocs];
+export const intelligenceRoutes = [
+  routes.vulnerabilities,
+  routes.malware,
+  routes.exploits,
+  routes.actors,
+  routes.campaigns,
+  routes.iocs,
+  // PHASE 9B — the neural newsroom is a live, indexable surface.
+  routes.news,
+];
 
 /**
  * Legal policy links.

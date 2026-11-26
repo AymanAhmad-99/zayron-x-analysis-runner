@@ -1,6 +1,9 @@
 import { apiFetch, getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../../lib/siteConfig";
 import { getIocFamilies, getSupplyChainDossiers } from "../../lib/api";
 import { getCampaigns, getThreatActors } from "../../lib/threatGraph";
+import { getTechniques } from "../../lib/techniques";
+import { getNewsIndex } from "../../lib/news";
+import { getRegions, getVendors } from "../../lib/hubs";
 import { familyHubPath } from "../../lib/iocSeo";
 import {
   buildUrlset,
@@ -76,6 +79,33 @@ export async function GET(
       loc: `${getSiteUrl()}/intelligence/campaigns/${encodeURIComponent(campaign.slug)}`,
       lastmod: campaign.last_seen ?? null,
     }));
+    // PHASE 9B — the ATT&CK technique backbone, the newsroom and the programmatic
+    // hubs are live surfaces: only URLs the API actually serves are advertised.
+    const techniqueIndex = await getTechniques({ limit: 100 });
+    const techniqueEntries = (techniqueIndex.data?.items ?? []).map((technique) => ({
+      loc: `${getSiteUrl()}/intelligence/techniques/${encodeURIComponent(technique.id)}`,
+      priority: "0.7",
+      changefreq: "weekly",
+    }));
+    const newsIndex = await getNewsIndex({ limit: 50 });
+    const newsEntries = (newsIndex.data?.items ?? []).map((briefing) => ({
+      loc: `${getSiteUrl()}/news/${encodeURIComponent(briefing.slug)}`,
+      lastmod: briefing.published_at ?? null,
+      priority: "0.9",
+      changefreq: "daily",
+    }));
+    const vendorIndex = await getVendors();
+    const vendorEntries = (vendorIndex.data?.items ?? []).map((vendor) => ({
+      loc: `${getSiteUrl()}/intelligence/vendors/${encodeURIComponent(vendor.slug)}`,
+      priority: "0.7",
+      changefreq: "daily",
+    }));
+    const regionIndex = await getRegions();
+    const regionEntries = (regionIndex.data?.items ?? []).map((region) => ({
+      loc: `${getSiteUrl()}/intelligence/regions/${encodeURIComponent(region.code)}`,
+      priority: "0.7",
+      changefreq: "daily",
+    }));
     return xmlResponse(
       buildUrlset([
         ...staticSitemapEntries(getSiteUrl()),
@@ -83,6 +113,10 @@ export async function GET(
         ...advisoryEntries,
         ...actorEntries,
         ...campaignEntries,
+        ...techniqueEntries,
+        ...newsEntries,
+        ...vendorEntries,
+        ...regionEntries,
       ]),
     );
   }

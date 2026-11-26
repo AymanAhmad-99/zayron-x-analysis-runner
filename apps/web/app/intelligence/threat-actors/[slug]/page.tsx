@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ThreatActorDossierView } from "../../../components/ThreatActorDossierView";
 import { getThreatActor } from "../../../lib/threatGraph";
+import { RelatedBriefings } from "../../../components/RelatedBriefings";
 import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
 import { buildOpenGraph, resolvePageRobots } from "../../../lib/seo";
 
@@ -86,6 +87,7 @@ export default async function ThreatActorDossierPage({ params }: { params: Promi
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <ThreatActorDossierView dossier={dossier} />
+      <RelatedBriefings items={(dossier as any).related_news} />
     </>
   );
 }

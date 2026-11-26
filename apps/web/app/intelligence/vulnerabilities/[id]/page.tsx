@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { VulnerabilityDetail } from "../../../components/VulnerabilityDetail";
 import { getVulnerabilityDetail, type VulnerabilityDetail as Detail } from "../../../lib/api";
+import { RelatedBriefings } from "../../../components/RelatedBriefings";
+import { getRelatedNewsForEntity } from "../../../lib/news";
 import { articleJsonLd, serializeJsonLd } from "../../../lib/jsonLd";
 import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
 import { buildOpenGraph, resolvePageRobots, vulnerabilitySeoTitle } from "../../../lib/seo";
@@ -131,6 +133,10 @@ export default async function VulnerabilityDetailPage({ params }: Props) {
         })
       : null;
 
+  // PHASE 9B — the intelligence projection does not carry news edges, so the
+  // reverse feed is read from the newsroom's entity filter (cached 300s).
+  const relatedNews = await getRelatedNewsForEntity("cve", String((report as any).cve_id || id).toUpperCase()).catch(() => []);
+
   return (
     <>
       {jsonLd ? (
@@ -140,6 +146,7 @@ export default async function VulnerabilityDetailPage({ params }: Props) {
         />
       ) : null}
       <VulnerabilityDetail id={id} initial={result} />
+      <RelatedBriefings items={relatedNews} />
     </>
   );
 }

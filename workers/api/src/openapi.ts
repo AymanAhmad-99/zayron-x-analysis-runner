@@ -795,6 +795,95 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           description: BEARER_DESCRIPTION,
         },
       },
+      // PHASE 9B — neural newsroom, programmatic hubs and AI discovery files.
+      "/news": {
+        get: {
+          operationId: "getNewsIndex",
+          summary: "Graph-enriched intelligence briefings (edge-cached 300s)",
+          description: [
+            "Published ZAYRON-X briefings synthesized from a verified official source plus",
+            "catalog telemetry. Filter by category or by the entity a briefing mentions;",
+            "`total` is the unfiltered-by-page count.",
+          ].join("\n"),
+          tags: ["Newsroom"],
+          security: [],
+          parameters: [
+            { name: "category", in: "query", schema: { type: "string", enum: ["VULNERABILITY", "EXPLOITATION", "MALWARE", "THREAT_ACTOR", "SUPPLY_CHAIN", "ADVISORY"] } },
+            { name: "entity_type", in: "query", schema: { type: "string" } },
+            { name: "entity_slug", in: "query", schema: { type: "string" } },
+            { name: "q", in: "query", schema: { type: "string", maxLength: 80 } },
+            { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 50, default: 20 } },
+            { name: "offset", in: "query", schema: { type: "integer", minimum: 0, default: 0 } },
+          ],
+          responses: { "200": { description: "Briefing index", content: { "application/json": { schema: { type: "object" } } } } },
+        },
+      },
+      "/news/{slug}": {
+        get: {
+          operationId: "getNewsBriefing",
+          summary: "One briefing with verified mentions, related briefings and graph telemetry",
+          tags: ["Newsroom"],
+          security: [],
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string" } }],
+          responses: {
+            "200": { description: "Briefing payload", content: { "application/json": { schema: { type: "object" } } } },
+            "404": { description: "No published briefing matches this slug" },
+          },
+        },
+      },
+      "/vendors": {
+        get: {
+          operationId: "getVendorHubs",
+          summary: "Vendor security hubs (authoritative CVEs only)",
+          tags: ["Programmatic Hubs"],
+          security: [],
+          responses: { "200": { description: "Vendor hub index", content: { "application/json": { schema: { type: "object" } } } } },
+        },
+      },
+      "/vendors/{slug}": {
+        get: {
+          operationId: "getVendorHub",
+          summary: "One vendor hub with verified CVEs, KEV due dates and PoC coverage",
+          tags: ["Programmatic Hubs"],
+          security: [],
+          parameters: [{ name: "slug", in: "path", required: true, schema: { type: "string" } }],
+          responses: {
+            "200": { description: "Vendor hub", content: { "application/json": { schema: { type: "object" } } } },
+            "404": { description: "No authoritative CVE is published for this vendor" },
+          },
+        },
+      },
+      "/regions": {
+        get: {
+          operationId: "getRegionHubs",
+          summary: "Regional threat posture hubs (live C2 geography + MITRE target regions)",
+          tags: ["Programmatic Hubs"],
+          security: [],
+          responses: { "200": { description: "Region index", content: { "application/json": { schema: { type: "object" } } } } },
+        },
+      },
+      "/regions/{code}": {
+        get: {
+          operationId: "getRegionHub",
+          summary: "One regional posture hub",
+          tags: ["Programmatic Hubs"],
+          security: [],
+          parameters: [{ name: "code", in: "path", required: true, schema: { type: "string", enum: ["us", "eu", "me", "apac", "global"] } }],
+          responses: {
+            "200": { description: "Region hub", content: { "application/json": { schema: { type: "object" } } } },
+            "404": { description: "Unsupported region code" },
+          },
+        },
+      },
+      "/llms.txt": {
+        get: {
+          operationId: "getLlmsTxt",
+          summary: "Live AI discovery index (Markdown, edge-cached)",
+          tags: ["Discovery"],
+          security: [],
+          responses: { "200": { description: "Markdown index", content: { "text/plain": { schema: { type: "string" } } } } },
+        },
+      },
       schemas: {
         ThreatActorSummary: {
           type: "object",

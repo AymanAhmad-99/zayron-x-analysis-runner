@@ -242,7 +242,11 @@ describe("Wave 4B — sitemap XML builders", () => {
   test("static entries exist and exclude placeholder surfaces", () => {
     const paths = STATIC_PATHS as readonly string[];
     expect(paths).toContain("/intelligence/vulnerabilities");
-    for (const placeholder of ["/news", "/research", "/intelligence/graph"]) {
+    // PHASE 9B — `/news` and the programmatic hubs are real indexable surfaces now.
+    for (const live of ["/news", "/intelligence/vendors", "/intelligence/regions", "/intelligence/techniques"]) {
+      expect(paths).toContain(live);
+    }
+    for (const placeholder of ["/research", "/intelligence/graph"]) {
       expect(paths).not.toContain(placeholder);
     }
     expect(staticSitemapEntries("https://zayron-x.co")[0].loc).toBe("https://zayron-x.co/");
@@ -503,7 +507,9 @@ describe("Wave 4B — clean launch navigation", () => {
   test("primary intelligence navigation has no graph placeholder", () => {
     const hrefs = intelligenceRoutes.map((route) => route.href);
     expect(hrefs).not.toContain("/intelligence/graph");
-    for (const placeholder of ["/news", "/research", "/graph"]) {
+    // PHASE 9B — `/news` is a live indexable surface and is now advertised.
+    expect(hrefs).toContain("/news");
+    for (const placeholder of ["/research", "/graph"]) {
       expect(hrefs).not.toContain(placeholder);
     }
   });
@@ -522,7 +528,6 @@ describe("Wave 4B — clean launch navigation", () => {
 
   test("placeholder routes are noindex but still built", () => {
     for (const file of [
-      "apps/web/app/news/page.tsx",
       "apps/web/app/research/page.tsx",
       "apps/web/app/intelligence/graph/page.tsx",
     ]) {
@@ -530,5 +535,11 @@ describe("Wave 4B — clean launch navigation", () => {
       expect(source).toContain("index: false");
       expect(source).toContain("follow: false");
     }
+  });
+
+  test("PHASE 9B — the newsroom is indexable and canonical", () => {
+    const source = readFileSync("apps/web/app/news/page.tsx", "utf8");
+    expect(source).toContain("canonical: \"/news\"");
+    expect(source).not.toContain("index: false");
   });
 });

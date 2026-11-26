@@ -42,10 +42,14 @@ import { isPocSyncSlot, runPocSync } from './pocSync';
 import { isRadarBackfillSlot, runRadarBackfill } from './radarBackfill';
 // PHASE 8C — the CISA KEV catalog backfill owns the 04:40 quiet tick.
 import { isCisaKevSlot, quietTickBudget, runCisaKevBackfill } from './cisaKevBackfill';
+// PHASE 9B — graph-enriched neural newsroom (own :40 ticks, <= 6 subrequests).
+import { isNewsIngestSlot, runNewsIngestPass } from './newsIngest';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
   DB: D1Database;
+  NEWS_INGEST_ENABLED?: string;
+  INDEXNOW_KEY?: string;
   INGEST_QUEUE?: Queue;
   STORAGE?: R2Bucket;
   AI?: any;
@@ -366,6 +370,21 @@ const ingestHandlers = {
         } catch (error) {
           console.error(JSON.stringify({
             type: 'RADAR_ASN_BACKFILL_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 9B — neural newsroom ingest. OWN TICKS ONLY (00:40, 08:40, 12:40,
+      // 16:40, 20:40). Four feed reads plus at most one IndexNow POST, hard-capped
+      // at 6, so the invocation never competes with any other pipeline slot.
+      if (env.NEWS_INGEST_ENABLED !== 'false' && isNewsIngestSlot(new Date())) {
+        try {
+          const news = await runNewsIngestPass(env as any, {});
+          console.log(JSON.stringify({ type: 'NEWS_INGEST_PASS', ...news }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'NEWS_INGEST_PASS_FAILED',
             error: String((error as Error)?.message || error).slice(0, 300),
           }));
         }
@@ -1711,7 +1730,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     const isCisaKevSync = url.pathname === '/internal/cisa-kev-backfill';
     // PHASE 9A — bounded Radar ASN backfill (operator-triggered, <= 12 requests).
     const isRadarBackfill = url.pathname === '/internal/radar-backfill';
-    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // PHASE 9B — bounded newsroom ingest (4 feeds + <= 1 IndexNow POST).
+    const isNewsIngest = url.pathname === '/internal/news-ingest';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && !isNewsIngest && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1722,7 +1743,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && !isNewsIngest) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1754,6 +1775,16 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       const summary = await runPocSync(this.env as any, { force: true });
       return new Response(JSON.stringify(summary), {
         status: summary.status === 'OK' ? 200 : 409,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
+
+    // PHASE 9B operator hook — one bounded newsroom ingest pass. Writes only
+    // published briefings and mention edges; never dispatches to Telegram.
+    if (isNewsIngest) {
+      const news = await runNewsIngestPass(this.env as any, { force: true } as any);
+      return new Response(JSON.stringify(news), {
+        status: news.status === 'OK' ? 200 : 409,
         headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
       });
     }

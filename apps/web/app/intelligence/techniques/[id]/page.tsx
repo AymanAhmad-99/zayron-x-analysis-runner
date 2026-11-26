@@ -4,7 +4,8 @@ import { RouteShell } from "../../../components/RouteShell";
 import { CodeTabs } from "../../../components/CodeTabs";
 import { getTechnique, tacticLabel } from "../../../lib/techniques";
 import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
-import { buildOpenGraph, resolvePageRobots } from "../../../lib/seo";
+import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../../../lib/seo";
+import { RelatedBriefings } from "../../../components/RelatedBriefings";
 
 /**
  * PHASE 9A — `/intelligence/techniques/:id`.
@@ -59,17 +60,21 @@ export default async function TechniquePage({ params }: Props) {
   if (!technique) throw new Error("Technique dossier temporarily unavailable");
 
   const site = getSiteUrl();
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    headline: `${technique.id} — ${technique.name}`,
-    description: `MITRE ATT&CK technique ${technique.id} with the threat actors and campaigns that document it.`,
-    url: `${site}/intelligence/techniques/${technique.id}`,
-    isAccessibleForFree: true,
-    publisher: { "@type": "Organization", name: "ZAYRON-X", url: site },
-    about: { "@type": "Thing", name: technique.name, sameAs: technique.mitre_url },
-    keywords: ["MITRE ATT&CK", technique.id, technique.name, tacticLabel(technique.tactic)].join(", "),
-  };
+  const jsonLd = buildLinkedJsonLdGraph({
+    siteUrl: site,
+    path: `/intelligence/techniques/${technique.id}`,
+    primary: {
+      "@type": "TechArticle",
+      headline: `${technique.id} — ${technique.name}`,
+      description: `MITRE ATT&CK technique ${technique.id} with the threat actors and campaigns that document it.`,
+      isAccessibleForFree: true,
+      about: [
+        { "@type": "Thing", name: technique.name, sameAs: technique.mitre_url },
+        ...technique.malware_families.map((family) => ({ "@type": "Thing", name: family.name })),
+      ],
+      keywords: ["MITRE ATT&CK", technique.id, technique.name, tacticLabel(technique.tactic)].join(", "),
+    },
+  });
 
   return (
     <RouteShell
@@ -176,6 +181,7 @@ export default async function TechniquePage({ params }: Props) {
           ]}
         />
       </section>
+      <RelatedBriefings items={(technique as any).related_news} />
     </RouteShell>
   );
 }
