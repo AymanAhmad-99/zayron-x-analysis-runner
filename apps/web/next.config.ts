@@ -17,7 +17,11 @@ const securityHeaders = [
   {
     key: "Content-Security-Policy",
     value:
-      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+      // PHASE 7.2 — Cloudflare Turnstile (self-serve key form) loads its script
+      // from challenges.cloudflare.com, frames the challenge in an iframe and
+      // calls back to that origin. Without these three directives the widget is
+      // blocked by CSP and the form submits with no token.
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
   },
 ];
 

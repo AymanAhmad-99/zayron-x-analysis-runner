@@ -59,7 +59,11 @@ export const OPENPHISH_FEED = 'https://openphish.com/feed.txt';
 export const FEODO_BLOCKLIST = 'https://feodotracker.abuse.ch/downloads/ipblocklist.json';
 export const SPAMHAUS_DROP = 'https://www.spamhaus.org/drop/drop_v4.json';
 export const RADAR_IP_ENTITY = 'https://api.cloudflare.com/client/v4/radar/entities/ip';
-export const RADAR_ATTACK_SUMMARY = 'https://api.cloudflare.com/client/v4/radar/attacks/summary/layer3?dateRange=1d&format=json';
+// PHASE 7.2 — the L3 protocol summary is a real Radar endpoint. The previous
+// `/radar/attacks/summary/layer3` path does not exist and answered non-2xx even
+// with a valid token, so no pulse was ever stored.
+export const RADAR_ATTACK_SUMMARY =
+  'https://api.cloudflare.com/client/v4/radar/attacks/layer3/summary/protocol?dateRange=1d&format=json';
 
 /** Hard caps that keep a single free-tier tick small and predictable. */
 const MAX_ROWS_PER_SOURCE = 200;
@@ -636,6 +640,9 @@ export async function runIocIngestPass(
             .run();
           radarPulse = 'STORED';
         } else {
+          // Status only: the body can echo request metadata, and this is the
+          // signal an operator needs to tell a token problem from a path one.
+          console.warn(`[ioc-ingest] radar pulse request failed status=${response.status}`);
           radarPulse = 'FAILED';
         }
       }

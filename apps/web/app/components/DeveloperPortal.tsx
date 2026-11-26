@@ -30,6 +30,12 @@ const TABS: Array<{ id: TabId; label: string }> = [
 
 const TOKEN_PLACEHOLDER = "zx_live_XXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
+/** The subset of the Turnstile browser API this form drives (explicit render). */
+interface TurnstileApi {
+  render: (container: HTMLElement, options: Record<string, unknown>) => string;
+  reset: (widgetId?: string) => void;
+}
+
 const SNIPPETS: Record<TabId, string> = {
   curl: `curl -s "https://zayron-x.co/api/v1/vulnerabilities?priority=P0,P1&kev=true&limit=50" \\
   -H "Authorization: Bearer ${TOKEN_PLACEHOLDER}" \\
@@ -99,6 +105,8 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
   const [issued, setIssued] = useState<IssuedKey | null>(null);
   const [issueError, setIssueError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [turnstileValue, setTurnstileValue] = useState("");
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
 
   const [tab, setTab] = useState<TabId>("curl");
   const [testing, setTesting] = useState(false);
@@ -114,6 +122,71 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
   const [leadError, setLeadError] = useState<string | null>(null);
 
   const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
+
+  // PHASE 7.2 — the widget is mounted EXPLICITLY. Cloudflare's implicit
+  // rendering only scans for `.cf-turnstile`, so a bare `data-sitekey` div
+  // renders nothing and the form submits with no token (403 MISSING_TURNSTILE_TOKEN).
+  // Explicit render also exposes the completion state the submit guard needs.
+  useEffect(() => {
+    if (!turnstileSiteKey) return;
+    let cancelled = false;
+
+    const mount = () => {
+      const api = (window as unknown as { turnstile?: TurnstileApi }).turnstile;
+      const container = turnstileRef.current;
+      if (cancelled || !api || !container || turnstileWidgetId.current) return;
+      container.innerHTML = "";
+      turnstileWidgetId.current = api.render(container, {
+        sitekey: turnstileSiteKey,
+        theme: "dark",
+        callback: (token: string) => {
+          setTurnstileValue(token);
+          setTurnstileError(null);
+        },
+        "expired-callback": () => setTurnstileValue(""),
+        "error-callback": () => {
+          setTurnstileValue("");
+          setTurnstileError("Bot verification could not be completed. Reload the page and try again.");
+        },
+      });
+    };
+
+    const existing = document.querySelector<HTMLScriptElement>("script[data-zayron-turnstile]");
+    if (existing) {
+      if ((window as unknown as { turnstile?: TurnstileApi }).turnstile) mount();
+      else existing.addEventListener("load", mount);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const script = document.createElement("script");
+    // `render=explicit` stops Turnstile from scanning the DOM behind our back.
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.dataset.zayronTurnstile = "true";
+    script.addEventListener("load", mount);
+    document.head.appendChild(script);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [turnstileSiteKey]);
+
+  // Tokens are single use, so every submit attempt starts from a clean widget.
+  const resetTurnstile = useCallback(() => {
+    setTurnstileValue("");
+    const api = (window as unknown as { turnstile?: TurnstileApi }).turnstile;
+    if (api && turnstileWidgetId.current) {
+      try {
+        api.reset(turnstileWidgetId.current);
+      } catch {
+        /* the iframe may already be gone; a fresh page load remounts it */
+      }
+    }
+  }, []);
 
   // /pricing CTAs deep-link here with ?tier=... so the intake form opens
   // pre-scoped to the tier the visitor actually clicked.
@@ -125,25 +198,6 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
       document.getElementById("request-access")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, []);
-
-  useEffect(() => {
-    if (!turnstileSiteKey || !turnstileRef.current) return;
-    const existing = document.querySelector<HTMLScriptElement>("script[data-zayron-turnstile]");
-    if (existing) return;
-    const script = document.createElement("script");
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-    script.async = true;
-    script.defer = true;
-    script.dataset.zayronTurnstile = "true";
-    document.head.appendChild(script);
-  }, [turnstileSiteKey]);
-
-  const turnstileToken = useCallback((): string | undefined => {
-    if (!turnstileSiteKey) return undefined;
-    const runtime = (window as unknown as { turnstile?: { getResponse: (el?: HTMLElement) => string | undefined } }).turnstile;
-    if (!runtime || !turnstileRef.current) return undefined;
-    return runtime.getResponse(turnstileRef.current) || undefined;
-  }, [turnstileSiteKey]);
 
   const copy = useCallback(async (label: string, value: string) => {
     try {
@@ -158,6 +212,10 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
   const issueKey = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      if (turnstileSiteKey && !turnstileValue) {
+        setIssueError("Finish the bot-verification check above before generating a token.");
+        return;
+      }
       setIssuing(true);
       setIssueError(null);
       setIssued(null);
@@ -168,7 +226,7 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
           body: JSON.stringify({
             email,
             organization: organization || undefined,
-            turnstile_token: turnstileToken(),
+            turnstile_token: turnstileSiteKey ? turnstileValue : undefined,
           }),
         });
         const payload = (await response.json().catch(() => null)) as
@@ -183,9 +241,10 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
         setIssueError("The key service is unreachable. Try again shortly.");
       } finally {
         setIssuing(false);
+        resetTurnstile();
       }
     },
-    [email, organization, turnstileToken],
+    [email, organization, resetTurnstile, turnstileSiteKey, turnstileValue],
   );
 
   const runTest = useCallback(async () => {
@@ -319,7 +378,21 @@ export function DeveloperPortal({ turnstileSiteKey = "" }: { turnstileSiteKey?: 
             {turnstileSiteKey && (
               <div className="dev-turnstile" ref={turnstileRef} data-sitekey={turnstileSiteKey} />
             )}
-            <button className="button primary dev-submit" type="submit" disabled={issuing}>
+            {turnstileSiteKey && !turnstileValue && (
+              <p className="dev-note" role="status">
+                Complete the bot-verification check above to unlock token generation.
+              </p>
+            )}
+            {turnstileError && (
+              <p className="dev-error" role="alert">
+                {turnstileError}
+              </p>
+            )}
+            <button
+              className="button primary dev-submit"
+              type="submit"
+              disabled={issuing || (Boolean(turnstileSiteKey) && !turnstileValue)}
+            >
               {issuing ? "Issuing…" : "Generate 48-character token"}
             </button>
             <p className="dev-note" id="dev-key-note">

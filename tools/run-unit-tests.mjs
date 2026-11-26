@@ -95,6 +95,9 @@ const SUITES = [
   'tests/phase7c_ioc_workspace_seo.test.ts',
   'tests/phase7d_telegram_wire_og.test.ts',
   'apps/web/tests/phase71_malware_dossier_render.test.ts',
+  // Phase 7.2: Turnstile render + CSP allowlist on /developers, and the
+  // corrected Cloudflare Radar L3 pulse endpoint. Local-only reads.
+  'tests/unit/phase72_turnstile_and_radar.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).
