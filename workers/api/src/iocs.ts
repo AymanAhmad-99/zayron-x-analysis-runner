@@ -245,12 +245,44 @@ export interface IocFeedParams {
   minConfidence?: number;
   status?: string | null;
   limit?: number;
+  /** PHASE 8A — incremental sync: only rows with `updated_at >= since`. */
+  since?: string | null;
+  /** PHASE 8A — offset pagination, clamped to a non-negative integer. */
+  offset?: number | null;
 }
 
 export interface IocFeedResult {
   rows: IocRow[];
   total: number;
-  filters: { type: string | null; family: string | null; min_confidence: number; status: string; limit: number };
+  nextOffset: number | null;
+  filters: {
+    type: string | null;
+    family: string | null;
+    min_confidence: number;
+    status: string;
+    limit: number;
+    offset: number;
+    since: string | null;
+  };
+}
+
+/**
+ * PHASE 8A — `?since=` normalization.
+ *
+ * D1 stores `updated_at` as `datetime('now')` → `YYYY-MM-DD HH:MM:SS`. A caller
+ * sends ISO-8601 (`2026-11-01T00:00:00Z`), which is NOT lexicographically
+ * comparable to that shape (`T` sorts after a space), so an unnormalized value
+ * would silently match everything. Anything unparseable is rejected rather
+ * than ignored: a bad checkpoint must not turn into a full re-pull.
+ */
+export function normalizeSinceParam(raw: string | null | undefined): { ok: boolean; value: string | null } {
+  const text = String(raw ?? '').trim();
+  if (!text) return { ok: true, value: null };
+  const iso = text.includes('T') ? text : text.replace(' ', 'T');
+  const withZone = /[Zz]$|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso}Z`;
+  const parsed = Date.parse(withZone);
+  if (!Number.isFinite(parsed)) return { ok: false, value: null };
+  return { ok: true, value: new Date(parsed).toISOString().slice(0, 19).replace('T', ' ') };
 }
 
 export function resolveFeedStatus(value: string | null | undefined): 'ACTIVE' | 'EXPIRED' | 'ANY' {
@@ -266,6 +298,8 @@ export async function queryIocFeed(db: D1Database, params: IocFeedParams = {}): 
   const status = resolveFeedStatus(params.status);
   const minConfidence = Math.max(0, Math.min(100, Number(params.minConfidence ?? 70) || 0));
   const family = params.family ? String(params.family).trim() : null;
+  const offset = Math.max(0, Math.floor(Number(params.offset) || 0));
+  const since = normalizeSinceParam(params.since).value;
 
   const where: string[] = [];
   const binds: unknown[] = [];
@@ -283,6 +317,12 @@ export async function queryIocFeed(db: D1Database, params: IocFeedParams = {}): 
     where.push('LOWER(COALESCE(family, \'\')) = ?');
     binds.push(family.toLowerCase());
   }
+  // Incremental sync: `updated_at` is the checkpoint column an OpenCTI/MISP/
+  // Splunk connector can safely resume from.
+  if (since) {
+    where.push('updated_at >= ?');
+    binds.push(since);
+  }
   const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
 
   const countRow = await db
@@ -294,20 +334,149 @@ export async function queryIocFeed(db: D1Database, params: IocFeedParams = {}): 
       `SELECT id, type, normalized_value, confidence, status, seen_count, sources_json, family,
               asn, asn_name, country, expires_at, radar_enriched_at, created_at, updated_at
          FROM iocs ${whereSql}
-         ORDER BY confidence DESC, updated_at DESC LIMIT ?`,
+         ORDER BY confidence DESC, updated_at DESC LIMIT ? OFFSET ?`,
     )
-    .bind(...binds, limit)
+    .bind(...binds, limit, offset)
     .all<IocRow>();
 
+  const clean = (rows.results || []).filter(isCleanRow);
+  const total = Number(countRow?.total ?? 0) || 0;
   return {
-    rows: (rows.results || []).filter(isCleanRow),
-    total: Number(countRow?.total ?? 0) || 0,
+    rows: clean,
+    total,
+    nextOffset: offset + clean.length < total ? offset + clean.length : null,
     filters: {
       type: type ?? null,
       family,
       min_confidence: minConfidence,
       status,
       limit,
+      offset,
+      since,
+    },
+  };
+}
+
+// ── bulk lookup (PHASE 8A) ──────────────────────────────────────────────────
+
+export const IOC_BULK_MAX_ITEMS = 50;
+
+export interface IocBulkMatch {
+  input: string;
+  type: string;
+  value: string;
+  defanged: string;
+  confidence: number;
+  family: string | null;
+  sources: string[];
+  asn: string | null;
+  asn_name: string | null;
+  country: string | null;
+  status: string;
+}
+
+export interface IocBulkResult {
+  matched: IocBulkMatch[];
+  unmatched: string[];
+  summary: { requested: number; found: number; active: number };
+}
+
+const BULK_SELECT = `SELECT id, type, normalized_value, confidence, status, seen_count, sources_json, family,
+       asn, asn_name, country, expires_at, radar_enriched_at, created_at, updated_at
+  FROM iocs WHERE `;
+
+/**
+ * Batched multi-indicator lookup.
+ *
+ * ONE `db.batch()` round trip: the candidate predicates are chunked only to stay
+ * inside D1's bound-parameter ceiling (never one query per input), so a 50-item
+ * request is a constant number of statements regardless of payload size.
+ * Defanged input (`hxxp://`, `[.]`) is refanged before matching, exactly as a
+ * single lookup does.
+ */
+export async function bulkLookupIocs(db: D1Database, raw: unknown): Promise<IocBulkResult> {
+  const inputs = (Array.isArray(raw) ? raw : [])
+    .map((value) => String(value ?? '').trim())
+    .filter(Boolean);
+
+  const candidates: Array<{ input: string; type: IocType; value: string }> = [];
+  for (const input of inputs) {
+    const refanged = refangIndicator(input);
+    for (const type of ['ip', 'cidr', 'domain', 'url', 'sha256'] as IocType[]) {
+      const value = normalizeIndicator(type, refanged);
+      if (value) candidates.push({ input, type, value });
+    }
+  }
+
+  const key = (type: string, value: string) => `${type}:${value}`;
+  const found = new Map<string, IocRow>();
+
+  if (candidates.length > 0) {
+    // 2 bound values per predicate, capped at 80 parameters per statement.
+    const chunkSize = 40;
+    const statements: Array<ReturnType<D1Database['prepare']>> = [];
+    for (let i = 0; i < candidates.length; i += chunkSize) {
+      const chunk = candidates.slice(i, i + chunkSize);
+      const clauses = chunk.map(() => '(type = ? AND normalized_value = ?)').join(' OR ');
+      const binds = chunk.flatMap((candidate) => [candidate.type, candidate.value]);
+      statements.push(
+        db.prepare(`${BULK_SELECT}${clauses} ORDER BY confidence DESC, updated_at DESC LIMIT 200`).bind(...binds),
+      );
+    }
+    const batched = await db.batch(statements);
+    for (const result of batched as Array<{ results?: IocRow[] }>) {
+      for (const row of result?.results ?? []) {
+        if (!isCleanRow(row)) continue;
+        const k = key(row.type, row.normalized_value);
+        const existing = found.get(k);
+        if (!existing || Number(row.confidence) > Number(existing.confidence)) found.set(k, row);
+      }
+    }
+  }
+
+  const matched: IocBulkMatch[] = [];
+  const unmatched: string[] = [];
+  const seenInputs = new Set<string>();
+  for (const input of inputs) {
+    if (seenInputs.has(input)) continue;
+    seenInputs.add(input);
+    const refanged = refangIndicator(input);
+    let row: IocRow | undefined;
+    for (const type of ['ip', 'cidr', 'domain', 'url', 'sha256'] as IocType[]) {
+      const value = normalizeIndicator(type, refanged);
+      if (!value) continue;
+      const hit = found.get(key(type, value));
+      if (hit) {
+        row = hit;
+        break;
+      }
+    }
+    if (!row) {
+      unmatched.push(input);
+      continue;
+    }
+    matched.push({
+      input,
+      type: row.type,
+      value: row.normalized_value,
+      defanged: defangIndicator(row.normalized_value),
+      confidence: Number(row.confidence) || 0,
+      family: row.family,
+      sources: parseSources(row.sources_json),
+      asn: row.asn,
+      asn_name: row.asn_name,
+      country: row.country,
+      status: String(row.status || '').toUpperCase(),
+    });
+  }
+
+  return {
+    matched,
+    unmatched,
+    summary: {
+      requested: seenInputs.size,
+      found: matched.length,
+      active: matched.filter((entry) => entry.status === 'ACTIVE').length,
     },
   };
 }

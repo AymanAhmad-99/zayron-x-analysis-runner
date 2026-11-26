@@ -37,6 +37,7 @@ import { runTelegramWireSlot } from './telegramWireSlot';
 import { isAuthoritativePulseTick } from './telegramSlots';
 import { runIocIngestPass } from './iocIngest';
 import { isIocIngestSlot } from './detectionRules';
+import { isPocSyncSlot, runPocSync } from './pocSync';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -84,6 +85,8 @@ export interface Env {
    * Absent (the normal production state) ⇒ only the two existing operators work.
    */
   IOC_OPERATOR_TOKEN?: string;
+  /** PHASE 8A — quiet-hours `02:40`/`06:40` PoC-in-GitHub sync. */
+  POC_SYNC_ENABLED?: string;
   IOC_INGEST_ENABLED?: string;
   IOC_INGEST_MAX_SUBREQUESTS?: string;
   /**
@@ -327,6 +330,22 @@ const ingestHandlers = {
         } catch (error) {
           console.error(JSON.stringify({
             type: 'IOC_INGEST_PASS_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 8A — keyless PoC-in-GitHub index. STRICT SLOT ISOLATION: only the
+      // quiet-hours `02:40` and `06:40` ticks qualify, so this pass never shares
+      // an invocation with the `:20` IOC ingest, the `:00` pulse or a Telegram
+      // wire slot. Bounded to `POC_MAX_SUBREQUESTS = 4` requests.
+      if (env.POC_SYNC_ENABLED === 'true' && isPocSyncSlot(new Date())) {
+        try {
+          const pocs = await runPocSync(env as any, {});
+          console.log(JSON.stringify({ type: 'POC_IN_GITHUB_SYNC', ...pocs }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'POC_IN_GITHUB_SYNC_FAILED',
             error: String((error as Error)?.message || error).slice(0, 300),
           }));
         }
@@ -1648,7 +1667,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     const isTelegramDispatch = url.pathname === '/internal/telegram-dispatch';
     // PHASE 7B — bounded bulk IOC + OpenSSF ingest. Never dispatches to Telegram.
     const isIocIngest = url.pathname === '/internal/ioc-ingest';
-    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // PHASE 8A — bounded operator sync of the keyless PoC-in-GitHub index.
+    const isPocSync = url.pathname === '/internal/poc-sync';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1659,7 +1680,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1676,6 +1697,16 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       return new Response(JSON.stringify({ error: 'LEGACY_FREEZE_ACTIVE' }), { status: 409, headers: { 'content-type': 'application/json' } });
     }
     const requested = Number(url.searchParams.get('limit'));
+
+    // PHASE 8A operator hook — one bounded PoC-in-GitHub sync. Never dispatches
+    // to Telegram: it writes `cve_pocs` rows and nothing else.
+    if (isPocSync) {
+      const summary = await runPocSync(this.env as any, { force: true });
+      return new Response(JSON.stringify(summary), {
+        status: summary.status === 'OK' ? 200 : 409,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
 
     // Phase 4C operator hook — one bounded executive dispatch pass.
     // Body: { dryRun?: boolean, limit?: number, entityType?: 'cve' | 'malware' | 'both' }

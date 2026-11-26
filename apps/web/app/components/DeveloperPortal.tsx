@@ -19,13 +19,15 @@ interface IssuedKey {
   created_at: string;
 }
 
-type TabId = "curl" | "python" | "splunk" | "edl";
+type TabId = "curl" | "python" | "splunk" | "edl" | "bulk" | "sync";
 
 const TABS: Array<{ id: TabId; label: string }> = [
   { id: "curl", label: "cURL" },
   { id: "python", label: "Python" },
   { id: "splunk", label: "Splunk / SIEM" },
   { id: "edl", label: "Palo Alto EDL" },
+  { id: "bulk", label: "Bulk lookup" },
+  { id: "sync", label: "Incremental sync" },
 ];
 
 const TOKEN_PLACEHOLDER = "zx_live_XXXXXXXX_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
@@ -68,6 +70,23 @@ for record in feed["data"]:
 curl -s "https://zayron-x.co/api/v1/vulnerabilities?kev=true&limit=100" \\
   -H "Authorization: Bearer ${TOKEN_PLACEHOLDER}" \\
 | python3 -c "import json,sys; [print(r['cve_id']) for r in json.load(sys.stdin)['data']]"`,
+  bulk: `# POST /api/v1/iocs/bulk — up to 50 indicators in one batched lookup.
+# Defanged input is accepted and refanged before matching.
+curl -s -X POST "https://zayron-x.co/api/v1/iocs/bulk" \\
+  -H "Authorization: Bearer ${TOKEN_PLACEHOLDER}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"indicators":["45.9.168.10","hxxp://evil[.]example/payload","45.9.168.0/24"]}'
+
+# → { matched: [{ value, defanged, confidence, family, asn, country, … }],
+#     unmatched: ["…"], summary: { requested, found, active } }`,
+  sync: `# GET /api/v1/iocs/feed — incremental sync from a checkpoint (ISO-8601 UTC).
+# Send the previous run's X-Zayron-Next-Cursor back as ?offset= until it is empty.
+curl -s -D headers.txt \\
+  "https://zayron-x.co/api/v1/iocs/feed?since=2026-11-01T00:00:00Z&limit=500&offset=0&format=stix" \\
+  -H "Authorization: Bearer ${TOKEN_PLACEHOLDER}" \\
+  -o feed.stix.json
+
+grep -i "x-zayron-next-cursor\|x-zayron-total-count" headers.txt`,
 };
 
 const TIERS: Array<{ name: string; badge: string; limit: string; quota: string; note: string }> = [

@@ -79,6 +79,12 @@ AUTHORITATIVE_CVE_CRON_ENABLED = "true"
 # (00:xx / 08:xx / 16:xx UTC), so it never shares a tick's subrequest budget
 # with the Telegram wire and the NVD pulse. Remove this line to disable.
 IOC_INGEST_ENABLED = "true"
+# PHASE 8A — KEYLESS PoC-in-GitHub INDEX.
+# Bounded to `POC_MAX_SUBREQUESTS = 4` and isolated onto the quiet-hours `:40`
+# ticks at 02:40 and 06:40 UTC only, so it never shares an invocation with the
+# `:20` IOC pass (20/25 subrequests already), the `:00` NVD pulse or any
+# Telegram wire slot. Purge this line to disable the sync.
+POC_SYNC_ENABLED = "true"
 # Phase 4C.2 — EXECUTIVE TELEGRAM WIRE IS OPEN. Publishing to a public channel
 # is a live, unrecallable action, so it opens only on an explicit operator
 # decision: the Phase 4C.2 ruling, with TELEGRAM_BOT_TOKEN provisioned as a

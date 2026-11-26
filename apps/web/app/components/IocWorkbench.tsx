@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ThreatPivots } from "./ThreatPivots";
 import {
   getIocPreview,
   getIocStats,
@@ -226,6 +227,9 @@ export function IocWorkbench({ initialQuery = "" }: { initialQuery?: string }) {
               <code>{lookup.data ? lookup.data.defanged : lookup.query}</code>
               {lookup.data ? <CopyButton text={lookup.data.defanged} /> : null}
             </div>
+            {/* PHASE 8A — safe external pivots. The anchor points ONLY at a
+                vetted lookup service; the indicator itself is never a link. */}
+            {lookup.data ? <ThreatPivots value={lookup.data.defanged} /> : null}
             {lookup.data ? (
               <>
                 <div className="ioc-confidence">

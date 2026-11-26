@@ -405,6 +405,16 @@ ON CONFLICT(cve_id) DO UPDATE SET
   severity = excluded.severity,
   cvss_score = COALESCE(excluded.cvss_score, vulnerabilities.cvss_score),
   cvss_vector = COALESCE(excluded.cvss_vector, vulnerabilities.cvss_vector),
+  -- PHASE 8A — EPSS VELOCITY. The previous score is preserved and the delta
+  -- computed from the STORED value (SQLite evaluates every SET against the
+  -- pre-update row), so a rising score shows as a surge instead of an absolute.
+  previous_epss = CASE
+    WHEN excluded.epss_score IS NOT NULL AND vulnerabilities.epss_score IS NOT NULL
+     AND excluded.epss_score <> vulnerabilities.epss_score
+    THEN vulnerabilities.epss_score ELSE vulnerabilities.previous_epss END,
+  epss_delta = CASE
+    WHEN excluded.epss_score IS NOT NULL AND vulnerabilities.epss_score IS NOT NULL
+    THEN excluded.epss_score - vulnerabilities.epss_score ELSE vulnerabilities.epss_delta END,
   epss_score = COALESCE(excluded.epss_score, vulnerabilities.epss_score),
   epss_percentile = COALESCE(excluded.epss_percentile, vulnerabilities.epss_percentile),
   is_exploited_in_wild = excluded.is_exploited_in_wild,

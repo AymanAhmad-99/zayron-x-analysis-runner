@@ -445,6 +445,20 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
               schema: { type: "integer", minimum: 1, maximum: 500, default: 500 },
             },
             {
+              name: "offset",
+              in: "query",
+              description:
+                "PHASE 8A — pagination offset. The response carries `X-Zayron-Next-Cursor` with the next offset, or an empty value at the end of the set.",
+              schema: { type: "integer", minimum: 0, default: 0 },
+            },
+            {
+              name: "since",
+              in: "query",
+              description:
+                "PHASE 8A — incremental sync checkpoint (ISO-8601 UTC). Only indicators with `last_seen >= since` are returned, so an OpenCTI, MISP or Splunk connector can resume without re-pulling the corpus.",
+              schema: { type: "string", format: "date-time", examples: ["2026-11-01T00:00:00Z"] },
+            },
+            {
               name: "format",
               in: "query",
               schema: { type: "string", enum: ["json", "csv", "stix"], default: "json" },
@@ -453,6 +467,10 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           responses: {
             "200": {
               description: "Indicator feed in the requested format",
+              headers: {
+                "X-Zayron-Total-Count": { schema: { type: "integer" }, description: "Rows matching the filters before pagination." },
+                "X-Zayron-Next-Cursor": { schema: { type: "string" }, description: "Offset of the next page; empty at the end of the set." },
+              },
               content: {
                 "application/json": { schema: { $ref: "#/components/schemas/IocFeed" } },
                 "text/csv": { schema: { type: "string" } },
@@ -461,6 +479,45 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
             },
             "400": { description: "Unsupported format", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
             "401": { description: "Missing, invalid, revoked or expired bearer token", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/iocs/bulk": {
+        post: {
+          operationId: "bulkLookupIocs",
+          summary: "Look up up to 50 indicators in one batched request",
+          description:
+            "PHASE 8A — one batched D1 lookup (no N+1 queries). Defanged input (`hxxp://`, `[.]`) is refanged before matching. Requires a `zx_live_…` bearer token.",
+          tags: ["Indicators"],
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["indicators"],
+                  properties: {
+                    indicators: {
+                      type: "array",
+                      minItems: 1,
+                      maxItems: 50,
+                      items: { type: "string", minLength: 1, maxLength: 512 },
+                      examples: [["45.9.168.10", "hxxp://evil[.]example/payload", "d41d8cd98f00b204e9800998ecf8427e"]],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "200": {
+              description: "Matched and unmatched indicators with a requested/found/active summary",
+              content: { "application/json": { schema: { type: "object" } } },
+            },
+            "400": { description: "Empty, malformed or oversized `indicators` array", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "401": { description: "Missing or invalid bearer token", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
             "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
           },
         },

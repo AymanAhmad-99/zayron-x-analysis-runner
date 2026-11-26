@@ -99,6 +99,10 @@ const SUITES = [
   // corrected Cloudflare Radar L3 pulse endpoint. Local-only reads.
   'tests/unit/phase72_turnstile_and_radar.test.ts',
   'tests/unit/phase73_malware_workspace.test.ts',
+  // Phase 8A: Telegram dedupe normalization + 7-day lock, bulk lookup + ?since=
+  // incremental sync, PoC-in-GitHub slot isolation, EPSS velocity, KQL/SPL and
+  // MITRE ATT&CK mapping, and the zero-raw-IOC anchor invariant.
+  'tests/unit/phase8a_platform_hardening.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).

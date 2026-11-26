@@ -45,6 +45,22 @@ export const TELEGRAM_PER_TICK_VAR = 'TELEGRAM_MAX_PER_TICK';
 export const TELEGRAM_DEFAULT_PER_TICK = 1;
 /** Anti-burst spacing that applies to AUTOMATED (cron) runs only. */
 export const TELEGRAM_AUTOMATED_MIN_SPACING_MINUTES = 180;
+/** PHASE 8A — one entity may never be published twice inside this window. */
+export const TELEGRAM_DEDUPE_WINDOW_DAYS = 7;
+
+/**
+ * PHASE 8A — the canonical ledger key.
+ *
+ * The Phase 7D wire writes per-slot rows (`CVE-2026-65879@08:00`) so an IOC /
+ * radar edition stays idempotent within a day. Every dedupe decision must
+ * compare the BASE id, otherwise a second slot never sees the first post and
+ * publishes the exact same advisory again — the duplicate-post defect.
+ */
+export function normalizeTelegramEntityId(raw: unknown): string {
+  const value = String(raw ?? '').trim();
+  const at = value.indexOf('@');
+  return at > 0 ? value.slice(0, at) : value;
+}
 export const TELEGRAM_API_BASE = 'https://api.telegram.org';
 
 export interface TelegramDispatchEnv {
@@ -130,8 +146,12 @@ export const TELEGRAM_CVE_SELECTION_SQL = `
     AND COALESCE(strategic_brief_json, '') <> ''
     AND NOT EXISTS (
       SELECT 1 FROM telegram_dispatches d
-       WHERE d.entity_type = 'cve' AND d.entity_id = vulnerabilities.cve_id
+       WHERE d.entity_type = 'cve'
+         AND (d.base_entity_id = vulnerabilities.cve_id
+              OR d.entity_id = vulnerabilities.cve_id
+              OR d.entity_id LIKE vulnerabilities.cve_id || '@%')
          AND d.channel = ? AND d.status IN ('SENT', 'SKIPPED')
+         AND d.dispatched_at >= datetime('now', '-7 days')
     )
   ORDER BY (CASE WHEN is_exploited_in_wild = 1 THEN 0 ELSE 1 END) ASC,
            (CASE json_extract(strategic_brief_json, '$.operational_prioritization.priority')
@@ -149,8 +169,12 @@ export const TELEGRAM_MALWARE_SELECTION_SQL = `
     AND COALESCE(strategic_brief_json, '') <> ''
     AND NOT EXISTS (
       SELECT 1 FROM telegram_dispatches d
-       WHERE d.entity_type = 'malware' AND d.entity_id = malware_reports.id
+       WHERE d.entity_type = 'malware'
+         AND (d.base_entity_id = malware_reports.id
+              OR d.entity_id = malware_reports.id
+              OR d.entity_id LIKE malware_reports.id || '@%')
          AND d.channel = ? AND d.status IN ('SENT', 'SKIPPED')
+         AND d.dispatched_at >= datetime('now', '-7 days')
     )
   ORDER BY COALESCE(published_at, created_at) DESC, id ASC
   LIMIT ?`;
@@ -453,21 +477,25 @@ export async function runTelegramDispatchPass(
     const messageId = send.messageId;
     const link = messageId ? `https://t.me/${channel.replace(/^@/, '')}/${messageId}` : null;
     await env.DB.prepare(
-      `INSERT INTO telegram_dispatches (id, entity_type, entity_id, channel, telegram_message_id, status, error_code, dispatched_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO telegram_dispatches (id, entity_type, entity_id, base_entity_id, channel, telegram_message_id, status, error_code, delivery_mode, dispatched_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(entity_type, entity_id, channel) DO UPDATE SET
+         base_entity_id = excluded.base_entity_id,
          telegram_message_id = excluded.telegram_message_id,
          status = excluded.status,
          error_code = excluded.error_code,
+         delivery_mode = excluded.delivery_mode,
          dispatched_at = excluded.dispatched_at`,
     ).bind(
       `td_${crypto.randomUUID().slice(0, 16)}`,
       payload.entity_type,
       payload.entity_id,
+      normalizeTelegramEntityId(payload.entity_id),
       channel,
       messageId,
       send.ok ? 'SENT' : 'FAILED',
       send.errorCode,
+      'text',
       dispatchedAt,
     ).run().catch((error: unknown) => {
       summary.errors.push(`LEDGER_WRITE_FAILED:${payload.entity_id}:${String((error as Error)?.message || error).slice(0, 80)}`);

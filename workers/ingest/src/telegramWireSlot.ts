@@ -26,6 +26,7 @@ import {
   TELEGRAM_DAILY_COUNT_SQL,
   TELEGRAM_MALWARE_SELECTION_SQL,
   isDispatchableDossier,
+  normalizeTelegramEntityId,
   parseJson,
   resolveChatId,
   resolveDailyCap,
@@ -382,23 +383,29 @@ async function finishWireDispatch(
 
   const dispatchedAt = new Date().toISOString();
   await env.DB.prepare(
-    `INSERT INTO telegram_dispatches (id, entity_type, entity_id, channel, telegram_message_id, status, error_code, dispatched_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO telegram_dispatches (id, entity_type, entity_id, base_entity_id, channel, telegram_message_id, status, error_code, delivery_mode, dispatched_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(entity_type, entity_id, channel) DO UPDATE SET
+       base_entity_id = excluded.base_entity_id,
        telegram_message_id = excluded.telegram_message_id,
        status = excluded.status,
        error_code = excluded.error_code,
+       delivery_mode = excluded.delivery_mode,
        dispatched_at = excluded.dispatched_at`,
   ).bind(
     `td_${crypto.randomUUID().slice(0, 16)}`,
     payload.entity_type,
     // The schema only allows 'cve'/'malware'; a wire slot namespaces the id so
-    // IOC/radar editions are idempotent per slot per day.
+    // IOC/radar editions are idempotent per slot per day. `base_entity_id` is
+    // the NORMALIZED key every dedupe decision reads (Phase 8A), so the same
+    // advisory can never be published again from another slot.
     ctx.slot ? `${payload.entity_id}@${ctx.slot.utc}` : payload.entity_id,
+    normalizeTelegramEntityId(payload.entity_id),
     channel,
     send.messageId,
     send.ok ? 'SENT' : 'FAILED',
     send.errorCode,
+    send.viaPhoto ? 'photo' : 'text',
     dispatchedAt,
   ).run().catch((error: unknown) => {
     result.errors.push(`LEDGER_WRITE_FAILED:${String((error as Error)?.message || error).slice(0, 80)}`);

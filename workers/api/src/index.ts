@@ -118,12 +118,15 @@ import { buildOpenApiDocument } from './openapi';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import {
   EDL_PREVIEW_MAX_LINES,
+  IOC_BULK_MAX_ITEMS,
   buildEdl,
   buildFamilySummary,
   buildIocStats,
+  bulkLookupIocs,
   formatIocFeed,
   listIocFamilies,
   lookupIoc,
+  normalizeSinceParam,
   queryDetectionRules,
   queryIocFeed,
   resolveEdlType,
@@ -800,7 +803,11 @@ const worker = {
     // un-frozen table set, so they are exempt rather than dead in production.
     const developerAcquisitionWrite =
       path === '/api/v1/keys/self-serve' || path === '/api/v1/leads';
-    if (env.LEGACY_FREEZE === 'true' && request.method !== 'GET' && !developerAcquisitionWrite) {
+    // PHASE 8A — the bulk lookup is a READ expressed as POST (a 50-indicator
+    // body does not belong in a URL). It writes nothing, so it is exempt from
+    // the legacy mutation freeze exactly like the developer acquisition routes.
+    const readOnlyPost = path === '/api/v1/iocs/bulk';
+    if (env.LEGACY_FREEZE === 'true' && request.method !== 'GET' && !developerAcquisitionWrite && !readOnlyPost) {
       return errorResponse('Legacy production mutation surface is frozen', 503, 'LEGACY_FROZEN');
     }
 
@@ -808,6 +815,61 @@ const worker = {
       // ── GET /api/v1/openapi.json ─────────────────────────────────────
       if (path === '/api/v1/openapi.json' && request.method === 'GET') {
         return jsonResponse(buildOpenApiDocument({ origin: url.origin }));
+      }
+
+      // ── POST /api/v1/iocs/bulk ───────────────────────────────────────
+      // PHASE 8A — up to 50 indicators in ONE batched D1 round trip. Requires a
+      // `zx_live_…` bearer key (same HMAC vault and rate limiter as the feed);
+      // defanged input is refanged before matching.
+      if (path === '/api/v1/iocs/bulk' && request.method === 'POST') {
+        const authorization = (request.headers.get('Authorization') || '').trim();
+        if (!authorization) {
+          return developerError(401, 'API_KEY_REQUIRED', 'A `zx_live_…` bearer token is required for bulk lookup');
+        }
+        const token = authorization.replace(/^Bearer\s+/i, '').trim();
+        const resolved = await resolveApiKey({ db: env.DB, token, pepper: env.API_KEY_PEPPER });
+        if (!resolved) {
+          return developerError(401, 'INVALID_API_KEY', 'The supplied API token is invalid, revoked or expired');
+        }
+        const allowance = await enforceDeveloperRateLimit(env, resolved.tier, resolved.keyPrefix);
+        if (!allowance.allowed) {
+          return rateLimitedResponse(request.headers.get('Origin'), allowance.limit, resolved.tier);
+        }
+        const body = await readJsonBody(request);
+        if (!body || !Array.isArray(body.indicators)) {
+          return developerError(400, 'MALFORMED_PAYLOAD', 'Body must be `{ "indicators": ["…"] }`');
+        }
+        if (body.indicators.length === 0) {
+          return developerError(400, 'EMPTY_INDICATORS', '`indicators` must contain at least one value');
+        }
+        if (body.indicators.length > IOC_BULK_MAX_ITEMS) {
+          return developerError(
+            400,
+            'TOO_MANY_INDICATORS',
+            `A request may carry at most ${IOC_BULK_MAX_ITEMS} indicators (received ${body.indicators.length})`,
+          );
+        }
+        try {
+          const result = await bulkLookupIocs(env.DB, body.indicators);
+          return withApiKeyHeaders(
+            new Response(JSON.stringify({ status: 'SUCCESS', ...result }), {
+              status: 200,
+              headers: {
+                ...CORS_HEADERS,
+                'Content-Type': 'application/json; charset=utf-8',
+                // A per-key answer is never CDN-cacheable.
+                'Cache-Control': 'private, no-store',
+              },
+            }),
+            { tier: resolved.tier, limit: allowance.limit, keyPrefix: resolved.keyPrefix },
+          );
+        } catch (err: any) {
+          console.error('[API] ioc bulk lookup failed', {
+            site: 'api.iocs.bulk',
+            error: err?.message ?? String(err),
+          });
+          return errorResponse('Bulk lookup temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
       }
 
       // ═════════════════════════════════════════════════════════════════
@@ -916,6 +978,14 @@ const worker = {
           if (anonymousPreview && format !== 'json') {
             return developerError(401, 'API_KEY_REQUIRED', 'csv and stix exports require a bearer token');
           }
+          // PHASE 8A — incremental sync + pagination. `?since=` is an ISO-8601
+          // checkpoint compared against `updated_at`; `?offset=` walks the set.
+          const sinceParam = normalizeSinceParam(url.searchParams.get('since'));
+          if (!sinceParam.ok) {
+            return developerError(400, 'INVALID_SINCE', '`since` must be an ISO-8601 UTC timestamp');
+          }
+          const requestedOffset = Number(url.searchParams.get('offset') ?? 0);
+          const offset = Number.isFinite(requestedOffset) && requestedOffset > 0 ? Math.floor(requestedOffset) : 0;
           try {
             const requestedLimit = Number(url.searchParams.get('limit') ?? 500);
             const feed = await queryIocFeed(env.DB, {
@@ -924,6 +994,8 @@ const worker = {
               minConfidence: Number(url.searchParams.get('min_confidence') ?? 70),
               status: url.searchParams.get('status'),
               limit: anonymousPreview ? Math.min(requestedLimit || 100, 100) : requestedLimit,
+              since: sinceParam.value,
+              offset: anonymousPreview ? 0 : offset,
             });
             const rendered = formatIocFeed(feed.rows, format);
             return withApiKeyHeaders(
@@ -933,6 +1005,7 @@ const worker = {
                   ...CORS_HEADERS,
                   'Content-Type': rendered.contentType,
                   'X-Zayron-Total-Count': String(feed.total),
+                  'X-Zayron-Next-Cursor': feed.nextOffset === null ? '' : String(feed.nextOffset),
                   'X-Content-Type-Options': 'nosniff',
                 },
               }),
@@ -5240,6 +5313,17 @@ const worker = {
               }
             }
 
+            // PHASE 8A — verified public PoC references for this CVE. An empty
+            // array is an honest "none tracked", never a fabricated entry.
+            const pocCveId = String(vulnRow?.cve_id || cleanId || '').toUpperCase();
+            const pocRows = /^CVE-\d{4}-\d{4,}$/.test(pocCveId)
+              ? await env.DB.prepare(
+                  `SELECT cve_id, repo_full_name, html_url, stars, description, discovered_at
+                     FROM cve_pocs WHERE cve_id = ?
+                     ORDER BY stars DESC, COALESCE(discovered_at, synced_at) DESC LIMIT 10`,
+                ).bind(pocCveId).all().catch(() => ({ results: [] }))
+              : { results: [] };
+
             const reportObj = {
               intelligence_id: vulnRow?.cve_id || eventRow?.id || cleanId,
               schema_version: '1.0.0',
@@ -5282,7 +5366,13 @@ const worker = {
               // SEPARATE member: `public_advisory` must stay a pure source-fact
               // projection. Null when no v3 brief has been generated yet.
               strategic_brief: parseStrategicBriefRecord(vulnRow?.strategic_brief_json, vulnRow?.strategic_brief_version),
-              strategic_brief_generated_at: vulnRow?.strategic_brief_generated_at || null
+              strategic_brief_generated_at: vulnRow?.strategic_brief_generated_at || null,
+              // PHASE 8A — EPSS velocity + verified PoCs. Both are facts read from
+              // their own tables; neither is derived by the model.
+              epss_score: vulnRow?.epss_score ?? null,
+              epss_delta: vulnRow?.epss_delta ?? null,
+              previous_epss: vulnRow?.previous_epss ?? null,
+              pocs: pocRows.results || []
             };
             return jsonResponse({ status: 'SUCCESS', report: reportObj });
           }
@@ -5920,6 +6010,14 @@ const worker = {
             iocs = iocRes.results;
           }
 
+          // PHASE 8A — verified public exploit references from the keyless
+          // PoC-in-GitHub index. An empty array is an honest "none tracked".
+          const pocs = await env.DB.prepare(
+            `SELECT cve_id, repo_full_name, html_url, stars, description, discovered_at
+               FROM cve_pocs WHERE cve_id = ?
+               ORDER BY stars DESC, COALESCE(discovered_at, synced_at) DESC LIMIT 10`,
+          ).bind(String((vuln as any).cve_id || cveQuery)).all().catch(() => ({ results: [] }));
+
           return withApiKeyHeaders(
             jsonResponse({
               data: {
@@ -5931,6 +6029,7 @@ const worker = {
                 linked_events: events.results,
                 related_evidence: evidence,
                 related_iocs: iocs,
+                pocs: pocs.results || [],
               },
             }),
             developerContext,

@@ -529,6 +529,19 @@ export interface VulnerabilityDetail {
   public_advisory?: AuthoritativeAdvisory | null;
   /** Phase 4A — additive strategic brief. Null until one has been generated. */
   strategic_brief?: StrategicBrief | null;
+  /** PHASE 8A — EPSS velocity (population-scaled 0..1). */
+  epss_score?: number | null;
+  epss_delta?: number | null;
+  previous_epss?: number | null;
+  /** PHASE 8A — verified public PoC repositories from PoC-in-GitHub. */
+  pocs?: Array<{
+    cve_id?: string;
+    repo_full_name?: string;
+    html_url?: string;
+    stars?: number;
+    description?: string | null;
+    discovered_at?: string | null;
+  }>;
   strategic_brief_generated_at?: string | null;
   knowledge_trace?: any[];
   epistemic_breakdown?: any;
