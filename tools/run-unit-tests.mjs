@@ -94,6 +94,7 @@ const SUITES = [
   // transient-lookup noindex and /llms.txt. Local-only, no network.
   'tests/phase7c_ioc_workspace_seo.test.ts',
   'tests/phase7d_telegram_wire_og.test.ts',
+  'apps/web/tests/phase71_malware_dossier_render.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).
