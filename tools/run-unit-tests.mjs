@@ -126,6 +126,10 @@ const SUITES = [
   // Phase 8C: MITRE extractor/sanitizer, two-tier live correlation, Navigator
   // 4.5 export, CISA KEV quiet-slot isolation and the live threat graph.
   'tests/unit/phase8c_threat_graph.test.ts',
+  // Phase 9A: discriminated reads (no false 404), guaranteed og:image, permanent
+  // Telegram dedupe, Radar quiet-slot isolation, technique edges and the
+  // bidirectional family/CVE attribution.
+  'tests/unit/phase9a_neural_mesh.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

@@ -9,6 +9,7 @@
  * well as in the formatter, so a caller cannot widen it with a query parameter.
  */
 
+import { loadActorsForFamily, type MeshEntityRef } from './neuralMesh';
 import {
   EDL_MIN_CONFIDENCE,
   canonicalType,
@@ -177,6 +178,11 @@ export interface IocLookupResult {
     radar_enriched_at: string | null;
   }) | null;
   candidates: Array<{ type: string; value: string }>;
+  /** PHASE 9A — hub slug when the stored family has a live family hub. */
+  family_slug: string | null;
+  /** PHASE 9A — top actors documented as using this family. */
+  linked_actors: MeshEntityRef[];
+  total_linked_actors: number;
 }
 
 /**
@@ -192,7 +198,16 @@ export async function lookupIoc(db: D1Database, rawQuery: string): Promise<IocLo
   }
 
   if (candidates.length === 0) {
-    return { query, status: 'NOT_FOUND', found: false, data: null, candidates: [] };
+    return {
+      query,
+      status: 'NOT_FOUND',
+      found: false,
+      data: null,
+      candidates: [],
+      family_slug: null,
+      linked_actors: [],
+      total_linked_actors: 0,
+    };
   }
 
   const clauses = candidates.map(() => '(type = ? AND normalized_value = ?)').join(' OR ');
@@ -214,10 +229,20 @@ export async function lookupIoc(db: D1Database, rawQuery: string): Promise<IocLo
       found: false,
       data: null,
       candidates: candidates.map((c) => ({ type: c.type, value: c.value })),
+      family_slug: null,
+      linked_actors: [],
+      total_linked_actors: 0,
     };
   }
 
   const status: IocStatus = String(row.status).toUpperCase() === 'EXPIRED' ? 'EXPIRED' : 'ACTIVE';
+  // PHASE 9A — IOC → family hub → attributed actors. One bounded read, and a
+  // failure here never turns a successful lookup into an error.
+  const storedFamily = typeof row.family === 'string' && row.family.trim() ? row.family.trim() : null;
+  const hubSlug = storedFamily ? familySlug(storedFamily) : null;
+  const attribution = storedFamily && hubSlug
+    ? await loadActorsForFamily(db, storedFamily, hubSlug, 8).catch(() => null)
+    : null;
   return {
     query,
     status,
@@ -234,6 +259,9 @@ export async function lookupIoc(db: D1Database, rawQuery: string): Promise<IocLo
       radar_enriched_at: row.radar_enriched_at,
     },
     candidates: candidates.map((c) => ({ type: c.type, value: c.value })),
+    family_slug: hubSlug,
+    linked_actors: attribution?.actors ?? [],
+    total_linked_actors: attribution?.total_linked_actors ?? 0,
   };
 }
 
@@ -368,6 +396,7 @@ export interface IocBulkMatch {
   defanged: string;
   confidence: number;
   family: string | null;
+  family_slug: string | null;
   sources: string[];
   asn: string | null;
   asn_name: string | null;
@@ -379,6 +408,13 @@ export interface IocBulkResult {
   matched: IocBulkMatch[];
   unmatched: string[];
   summary: { requested: number; found: number; active: number };
+  /** PHASE 9A — one attributed-actor card per distinct family in the batch. */
+  linked_families: Array<{
+    family: string;
+    family_slug: string;
+    actors: MeshEntityRef[];
+    total_linked_actors: number;
+  }>;
 }
 
 const BULK_SELECT = `SELECT id, type, normalized_value, confidence, status, seen_count, sources_json, family,
@@ -462,6 +498,7 @@ export async function bulkLookupIocs(db: D1Database, raw: unknown): Promise<IocB
       defanged: defangIndicator(row.normalized_value),
       confidence: Number(row.confidence) || 0,
       family: row.family,
+      family_slug: typeof row.family === 'string' && row.family.trim() ? familySlug(row.family) : null,
       sources: parseSources(row.sources_json),
       asn: row.asn,
       asn_name: row.asn_name,
@@ -469,6 +506,22 @@ export async function bulkLookupIocs(db: D1Database, raw: unknown): Promise<IocB
       status: String(row.status || '').toUpperCase(),
     });
   }
+
+  const families = [...new Set(matched.map((entry) => entry.family).filter((value): value is string => Boolean(value)))].slice(0, 5);
+  const linkedFamilies = (
+    await Promise.all(
+      families.map((family) =>
+        loadActorsForFamily(db, family, familySlug(family), 6).catch(() => null),
+      ),
+    )
+  )
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    .map((entry) => ({
+      family: entry.family,
+      family_slug: entry.family_slug,
+      actors: entry.actors,
+      total_linked_actors: entry.total_linked_actors,
+    }));
 
   return {
     matched,
@@ -478,6 +531,7 @@ export async function bulkLookupIocs(db: D1Database, raw: unknown): Promise<IocB
       found: matched.length,
       active: matched.filter((entry) => entry.status === 'ACTIVE').length,
     },
+    linked_families: linkedFamilies,
   };
 }
 

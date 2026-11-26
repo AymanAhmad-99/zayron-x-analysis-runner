@@ -4,7 +4,7 @@ import { DeveloperPortal } from "../components/DeveloperPortal";
 import { SiteFooter } from "../components/SiteFooter";
 import { PipelineHealthBadge } from "../components/PipelineHealthBadge";
 import { isPreviewDeployment } from "../lib/siteConfig";
-import { resolvePageRobots } from "../lib/seo";
+import { buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
 export const metadata: Metadata = {
   title: "ZAYRON-X Intelligence API — Developers",
@@ -12,7 +12,12 @@ export const metadata: Metadata = {
     "Source-verified vulnerability intelligence over a versioned OpenAPI 3.1 REST API. Self-serve 48-character bearer tokens, edge rate limits, KEV and EPSS filters.",
   alternates: { canonical: "/developers" },
   robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
-  openGraph: { title: "ZAYRON-X Intelligence API | ZAYRON-X", url: "/developers" },
+  openGraph: buildOpenGraph({
+    title: "ZAYRON-X Intelligence API | ZAYRON-X",
+    description: "Source-verified vulnerability intelligence over a versioned OpenAPI 3.1 REST API.",
+    path: "/developers",
+    type: "website",
+  }),
 };
 
 export default function DevelopersPage() {

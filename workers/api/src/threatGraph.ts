@@ -47,6 +47,10 @@ export interface LinkedCve {
   cve_id: string;
   kev: boolean;
   due_date: string | null;
+  /** True only when `vulnerabilities` holds a public row for this CVE. */
+  in_catalog?: boolean;
+  /** True when a verified public PoC repository is stored for this CVE. */
+  has_poc?: boolean;
 }
 
 export interface StoredThreatActor {
@@ -103,7 +107,10 @@ export interface ThreatActorItem {
   live_malware_families: LiveFamily[];
   linked_kev_count: number;
   linked_cve_count: number;
+  /** CVEs this platform can speak to (catalog row, KEV or PoC). */
   linked_cves: LinkedCve[];
+  /** Every CVE MITRE documents for the actor, each flagged with catalog state. */
+  documented_cves: LinkedCve[];
   first_seen: string | null;
   last_seen: string | null;
 }
@@ -140,6 +147,8 @@ export interface CampaignItem {
   target_regions: string[];
   activity_tier: ActivityTier;
   linked_kev_count: number;
+  /** Every CVE MITRE documents for the campaign, each flagged with catalog state. */
+  documented_cves: LinkedCve[];
   first_seen: string | null;
   last_seen: string | null;
 }
@@ -240,6 +249,7 @@ export function classifyThreatActor(
     cves?: LinkedCve[];
     pocCves?: Set<string>;
     campaignCounts?: Map<string, number>;
+    catalogCves?: Set<string>;
   } = {},
 ): ThreatActorItem | null {
   const slug = String(row?.slug ?? '').trim();
@@ -256,9 +266,23 @@ export function classifyThreatActor(
   const liveC2 = families.reduce((sum, family) => sum + Math.max(0, family.active_count), 0);
 
   const liveCveMap = new Map((context.cves ?? []).map((cve) => [cve.cve_id.toUpperCase(), cve]));
-  const linkedCves = documentedCves
-    .filter((cve) => liveCveMap.has(cve) || context.pocCves?.has(cve))
-    .map((cve) => liveCveMap.get(cve) ?? { cve_id: cve, kev: false, due_date: null })
+  const catalogCves = context.catalogCves;
+  // PHASE 9A (F1) — every documented CVE keeps its catalog verdict so a dossier
+  // can link internally only when a public page actually exists.
+  const documented: LinkedCve[] = documentedCves.map((cve) => {
+    const live = liveCveMap.get(cve);
+    const inCatalog = live !== undefined || Boolean(catalogCves?.has(cve));
+    const hasPoc = Boolean(context.pocCves?.has(cve));
+    return {
+      cve_id: cve,
+      kev: Boolean(live?.kev),
+      due_date: live?.due_date ?? null,
+      in_catalog: inCatalog,
+      has_poc: hasPoc,
+    };
+  });
+  const linkedCves = documented
+    .filter((cve) => cve.in_catalog || cve.kev || cve.has_poc)
     .sort((a, b) => Number(b.kev) - Number(a.kev) || a.cve_id.localeCompare(b.cve_id))
     .slice(0, 40);
   const linkedKev = linkedCves.filter((cve) => cve.kev).length;
@@ -284,6 +308,7 @@ export function classifyThreatActor(
     linked_kev_count: linkedKev,
     linked_cve_count: linkedCves.length,
     linked_cves: linkedCves,
+    documented_cves: documented.slice(0, 40),
     first_seen: typeof row?.first_seen === 'string' ? row.first_seen : null,
     last_seen: typeof row?.last_seen === 'string' ? row.last_seen : null,
   };
@@ -378,6 +403,7 @@ export function classifyCampaign(
   row: StoredCampaign,
   actors: ThreatActorItem[],
   liveCves: LinkedCve[] = [],
+  catalogCves: Set<string> = new Set(),
 ): CampaignItem | null {
   const slug = String(row?.slug ?? '').trim();
   const name = cleanMitreText(row?.name);
@@ -395,6 +421,14 @@ export function classifyCampaign(
     }));
   const cves = parseStringArray(row?.cves_json, 40).map((cve) => cve.toUpperCase());
   const kevSet = new Set(liveCves.filter((cve) => cve.kev).map((cve) => cve.cve_id.toUpperCase()));
+  const liveMap = new Map(liveCves.map((cve) => [cve.cve_id.toUpperCase(), cve]));
+  const documentedCves: LinkedCve[] = cves.map((cve) => ({
+    cve_id: cve,
+    kev: kevSet.has(cve),
+    due_date: liveMap.get(cve)?.due_date ?? null,
+    in_catalog: liveMap.has(cve) || catalogCves.has(cve),
+    has_poc: Boolean(liveMap.get(cve)?.has_poc),
+  }));
   const linkedKev = cves.filter((cve) => kevSet.has(cve)).length;
   const actorLive = resolved.some((actor) => actor.activity_tier === 'LIVE_OBSERVED');
   return {
@@ -412,6 +446,7 @@ export function classifyCampaign(
     target_regions: parseStringArray(row?.target_regions_json, 12),
     activity_tier: actorLive || linkedKev > 0 ? 'LIVE_OBSERVED' : 'CANONICAL_PROFILE',
     linked_kev_count: linkedKev,
+    documented_cves: documentedCves,
     first_seen: typeof row?.first_seen === 'string' ? row.first_seen : null,
     last_seen: typeof row?.last_seen === 'string' ? row.last_seen : null,
   };
@@ -422,9 +457,10 @@ export function buildCampaignIndex(
   actors: ThreatActorItem[],
   liveCves: LinkedCve[] = [],
   params: { q?: string | null; actor?: string | null; sector?: string | null; limit?: number | string | null; offset?: number | string | null } = {},
+  catalogCves: Set<string> = new Set(),
 ): { items: CampaignItem[]; meta: { total: number; limit: number; offset: number } } {
   const all = (Array.isArray(rows) ? rows : [])
-    .map((row) => classifyCampaign(row, actors, liveCves))
+    .map((row) => classifyCampaign(row, actors, liveCves, catalogCves))
     .filter((item): item is CampaignItem => Boolean(item));
   const needle = String(params.q ?? '').trim().toLowerCase();
   const actor = String(params.actor ?? '').trim().toLowerCase();
@@ -615,19 +651,27 @@ export const LIVE_CVES_SQL = `
 
 export const LIVE_POC_CVES_SQL = `SELECT DISTINCT cve_id FROM cve_pocs LIMIT 4000`;
 
+/**
+ * PHASE 9A (F1) — every CVE that has a public advisory page. The dossier UI may
+ * only link internally when a CVE is in this set.
+ */
+export const CATALOG_CVE_IDS_SQL = `SELECT cve_id FROM vulnerabilities LIMIT 8000`;
+
 export async function loadThreatActorContext(db: any): Promise<{
   families: LiveFamily[];
   cves: LinkedCve[];
   pocCves: Set<string>;
+  catalogCves: Set<string>;
   campaignSlugsByActor: Map<string, string[]>;
   campaignCounts: Map<string, number>;
   campaignRows: StoredCampaign[];
 }> {
-  const [familyRows, cveRows, pocRows, campaignRows] = await Promise.all([
+  const [familyRows, cveRows, pocRows, campaignRows, catalogRows] = await Promise.all([
     db.prepare(LIVE_FAMILIES_SQL).all().catch(() => ({ results: [] })),
     db.prepare(LIVE_CVES_SQL).all().catch(() => ({ results: [] })),
     db.prepare(LIVE_POC_CVES_SQL).all().catch(() => ({ results: [] })),
     db.prepare(CAMPAIGNS_SQL).all().catch(() => ({ results: [] })),
+    db.prepare(CATALOG_CVE_IDS_SQL).all().catch(() => ({ results: [] })),
   ]);
   const families: LiveFamily[] = ((familyRows?.results as Record<string, unknown>[]) ?? [])
     .map((row) => {
@@ -654,6 +698,11 @@ export async function loadThreatActorContext(db: any): Promise<{
       .filter(Boolean),
   );
   const campaigns = ((campaignRows?.results as StoredCampaign[]) ?? []).filter(Boolean);
+  const catalogCves = new Set(
+    ((catalogRows?.results as Record<string, unknown>[]) ?? [])
+      .map((row) => String(row.cve_id ?? '').trim().toUpperCase())
+      .filter(Boolean),
+  );
   const campaignSlugsByActor = new Map<string, string[]>();
   const campaignCounts = new Map<string, number>();
   for (const campaign of campaigns) {
@@ -664,7 +713,7 @@ export async function loadThreatActorContext(db: any): Promise<{
       campaignCounts.set(actor, (campaignCounts.get(actor) ?? 0) + 1);
     }
   }
-  return { families, cves, pocCves, campaignSlugsByActor, campaignCounts, campaignRows: campaigns };
+  return { families, cves, pocCves, catalogCves, campaignSlugsByActor, campaignCounts, campaignRows: campaigns };
 }
 
 export async function loadThreatActors(db: any, params: ThreatActorQuery = {}) {
@@ -702,6 +751,7 @@ export async function loadThreatActor(db: any, slug: string): Promise<ThreatActo
     [actor],
     context.cves,
     { limit: CAMPAIGN_MAX_LIMIT },
+    context.catalogCves,
   ).items;
   const hunting = buildHuntingQueries({ name: actor.name, software: actor.software, techniques });
   return {
@@ -739,7 +789,7 @@ export async function loadCampaigns(db: any, params: { q?: string | null; actor?
   const context = await loadThreatActorContext(db);
   const actorRows = await db.prepare(THREAT_ACTORS_SQL).all();
   const actors = buildThreatActorIndex((actorRows?.results as StoredThreatActor[]) ?? [], context, { limit: THREAT_ACTOR_MAX_LIMIT, tier: 'all' }).items;
-  return buildCampaignIndex(context.campaignRows, actors, context.cves, params);
+  return buildCampaignIndex(context.campaignRows, actors, context.cves, params, context.catalogCves);
 }
 
 export interface CampaignDossier {
@@ -756,7 +806,7 @@ export async function loadCampaign(db: any, slug: string): Promise<CampaignDossi
   const context = await loadThreatActorContext(db);
   const actorRows = await db.prepare(THREAT_ACTORS_SQL).all();
   const actors = buildThreatActorIndex((actorRows?.results as StoredThreatActor[]) ?? [], context, { limit: THREAT_ACTOR_MAX_LIMIT }).items;
-  const campaign = classifyCampaign(row as StoredCampaign, actors, context.cves);
+  const campaign = classifyCampaign(row as StoredCampaign, actors, context.cves, context.catalogCves);
   if (!campaign) return null;
   const techniques = parseTechniques((row as StoredCampaign).techniques_json);
   return {

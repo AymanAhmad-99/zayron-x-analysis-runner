@@ -59,8 +59,10 @@ describe('telegram dedupe', () => {
     for (const sql of [TELEGRAM_CVE_SELECTION_SQL, TELEGRAM_MALWARE_SELECTION_SQL]) {
       expect(sql).toContain('base_entity_id');
       expect(sql).toMatch(/d\.entity_id LIKE .* \|\| '@%'/);
-      // The 7-day lock, not a same-minute or same-slot comparison.
-      expect(sql).toContain("datetime('now', '-7 days')");
+      // PHASE 9A — the lock is permanent: any SENT base id is excluded forever,
+      // not for a 7-day window. This is what closes FALLBACK_TO_CVE re-posts.
+      expect(sql).toContain("d.status = 'SENT'");
+      expect(sql).not.toContain("datetime('now', '-7 days')");
       expect(TELEGRAM_DEDUPE_WINDOW_DAYS).toBe(7);
     }
   });

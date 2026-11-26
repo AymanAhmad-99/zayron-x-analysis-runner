@@ -150,8 +150,7 @@ export const TELEGRAM_CVE_SELECTION_SQL = `
          AND (d.base_entity_id = vulnerabilities.cve_id
               OR d.entity_id = vulnerabilities.cve_id
               OR d.entity_id LIKE vulnerabilities.cve_id || '@%')
-         AND d.channel = ? AND d.status IN ('SENT', 'SKIPPED')
-         AND d.dispatched_at >= datetime('now', '-7 days')
+         AND d.channel = ? AND d.status = 'SENT'
     )
   ORDER BY (CASE WHEN is_exploited_in_wild = 1 THEN 0 ELSE 1 END) ASC,
            (CASE json_extract(strategic_brief_json, '$.operational_prioritization.priority')
@@ -183,8 +182,7 @@ export const TELEGRAM_MALWARE_SELECTION_SQL = `
          AND (d.base_entity_id = malware_reports.id
               OR d.entity_id = malware_reports.id
               OR d.entity_id LIKE malware_reports.id || '@%')
-         AND d.channel = ? AND d.status IN ('SENT', 'SKIPPED')
-         AND d.dispatched_at >= datetime('now', '-7 days')
+         AND d.channel = ? AND d.status = 'SENT'
     )
   ORDER BY (CASE WHEN id LIKE 'MAL-2026-%' THEN 0 ELSE 1 END) ASC,
            COALESCE(published_at, created_at) DESC,

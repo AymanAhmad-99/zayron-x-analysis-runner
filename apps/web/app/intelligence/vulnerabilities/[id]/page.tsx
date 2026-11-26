@@ -5,7 +5,7 @@ import { VulnerabilityDetail } from "../../../components/VulnerabilityDetail";
 import { getVulnerabilityDetail, type VulnerabilityDetail as Detail } from "../../../lib/api";
 import { articleJsonLd, serializeJsonLd } from "../../../lib/jsonLd";
 import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
-import { resolvePageRobots, vulnerabilitySeoTitle } from "../../../lib/seo";
+import { buildOpenGraph, resolvePageRobots, vulnerabilitySeoTitle } from "../../../lib/seo";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -88,15 +88,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // Preview ALWAYS wins here: verified CVE or not, a preview host is never indexable.
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
     alternates: { canonical: path },
-    openGraph: {
-      type: "article",
-      url: path,
+    // PHASE 9A (F2) — one builder, so `images` can never be dropped.
+    openGraph: buildOpenGraph({
       title,
-      description,
-      siteName: "ZAYRON-X",
-      // PHASE 7D — programmatic edge card, rendered once and CDN-cached a day.
-      images: [{ url: `/api/og/cve/${encodeURIComponent(identifier)}`, width: 1200, height: 630, alt: title }],
-    },
+      description: description ?? title,
+      path,
+      type: "article",
+      image: `/api/og/cve/${encodeURIComponent(identifier)}`,
+    }),
     twitter: {
       card: "summary_large_image",
       title,
@@ -110,9 +109,11 @@ export default async function VulnerabilityDetailPage({ params }: Props) {
   const { id } = await params;
   const result = await loadVulnerability(id);
 
-  // No record ⇒ a real 404 (never an empty indexable dossier). A transport
-  // failure is NOT a 404: the component renders its explicit error surface.
-  if (result.state === "empty" || (result.state === "success" && !result.data)) notFound();
+  // PHASE 9A (F4) — a confirmed 404 is a 404. A transport failure throws so the
+  // error boundary answers 503 and no false 404 is ever cached.
+  if (result.state === "not_found") notFound();
+  if (result.state === "error") throw new Error("Vulnerability advisory temporarily unavailable");
+  if (result.state !== "success" || !result.data) notFound();
 
   const report = result.data;
   const jsonLd =

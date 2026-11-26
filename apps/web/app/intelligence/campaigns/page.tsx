@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CampaignGraph } from "../../components/CampaignGraph";
 import { getCampaigns } from "../../lib/threatGraph";
 import { getSiteUrl, isPreviewDeployment } from "../../lib/siteConfig";
-import { resolvePageRobots } from "../../lib/seo";
+import { buildOpenGraph, resolvePageRobots } from "../../lib/seo";
 
 /**
  * PHASE 8C — `/intelligence/campaigns`.
@@ -21,7 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description: DESCRIPTION,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
-    openGraph: { title: "Campaign Intelligence | ZAYRON-X", description: DESCRIPTION, url: canonical, type: "website" },
+    openGraph: buildOpenGraph({
+      title: "Campaign Intelligence | ZAYRON-X",
+      description: DESCRIPTION,
+      path: canonical,
+      type: "website",
+    }),
     twitter: { card: "summary_large_image", title: "Campaign Intelligence | ZAYRON-X", description: DESCRIPTION },
   };
 }

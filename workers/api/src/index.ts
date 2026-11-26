@@ -118,6 +118,8 @@ import { buildOpenApiDocument } from './openapi';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import { loadExploitRadar } from './exploits';
 import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from './threatGraph';
+import { loadCveLinks, loadFamilyAttribution } from './neuralMesh';
+import { loadTechnique, loadTechniqueIndex } from './techniques';
 import {
   EDL_PREVIEW_MAX_LINES,
   IOC_BULK_MAX_ITEMS,
@@ -921,7 +923,14 @@ const worker = {
             if (!summary) {
               return developerError(404, 'FAMILY_NOT_FOUND', 'No live indicators are tracked for this family');
             }
-            return jsonResponse({ status: 'SUCCESS', data: summary });
+            // PHASE 9A — M ↔ A / M ↔ C: every actor and campaign that documents
+            // this family as tooling.
+            const attribution = await loadFamilyAttribution(env.DB, summary.family, summary.slug)
+              .catch(() => null);
+            return jsonResponse({
+              status: 'SUCCESS',
+              data: { ...summary, attribution },
+            });
           } catch (err: any) {
             console.error('[API] ioc family failed', { site: 'api.iocs.family', error: err?.message ?? String(err) });
             return errorResponse('Malware family temporarily unavailable', 503, 'STORE_UNAVAILABLE');
@@ -6112,6 +6121,11 @@ const worker = {
             iocs = iocRes.results;
           }
 
+          // PHASE 9A — the bidirectional mesh: actors, campaigns, real detection
+          // rules and radar membership for this CVE.
+          const mesh = await loadCveLinks(env.DB, String((vuln as any).cve_id || cveQuery))
+            .catch(() => null);
+
           // PHASE 8A — verified public exploit references from the keyless
           // PoC-in-GitHub index. An empty array is an honest "none tracked".
           const pocs = await env.DB.prepare(
@@ -6132,6 +6146,10 @@ const worker = {
                 related_evidence: evidence,
                 related_iocs: iocs,
                 pocs: pocs.results || [],
+                linked_actors: mesh?.actors ?? [],
+                linked_campaigns: mesh?.campaigns ?? [],
+                detection_rules: mesh?.detection_rules ?? [],
+                in_exploit_radar: mesh?.in_exploit_radar ?? false,
               },
             }),
             developerContext,
@@ -7014,6 +7032,34 @@ Return ONLY a valid JSON object matching this schema:
             data: { actors: [], vulnerabilities: [], malware: [], iocs: [], events: [], articles: [] },
             meta: { query: q, total_matches: 0, degraded: true, note: dbErr?.message },
           }, 200, 60);
+        }
+      }
+
+      // PHASE 9A — MITRE ATT&CK technique neural backbone.
+      if (path === '/api/v1/techniques' && request.method === 'GET') {
+        try {
+          const payload = await loadTechniqueIndex(env.DB, {
+            q: url.searchParams.get('q'),
+            limit: url.searchParams.get('limit'),
+          });
+          return jsonResponse({ status: 'SUCCESS', ...payload }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] techniques degraded', { site: 'api.techniques', error: err?.message ?? String(err) });
+          return errorResponse('Technique index temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      if (path.startsWith('/api/v1/techniques/') && request.method === 'GET') {
+        const techniqueId = decodeURIComponent(path.slice('/api/v1/techniques/'.length)).trim();
+        try {
+          const dossier = await loadTechnique(env.DB, techniqueId);
+          if (!dossier) {
+            return developerError(404, 'TECHNIQUE_NOT_FOUND', 'No MITRE ATT&CK technique matches this id');
+          }
+          return jsonResponse({ status: 'SUCCESS', ...dossier }, 200, 300);
+        } catch (err: any) {
+          console.error('[API] technique dossier degraded', { site: 'api.technique', error: err?.message ?? String(err) });
+          return errorResponse('Technique dossier temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 

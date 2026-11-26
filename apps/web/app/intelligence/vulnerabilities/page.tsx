@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import { VulnerabilityList } from "../../components/VulnerabilityList";
 import { getVulnerabilities } from "../../lib/api";
+import { buildOpenGraph } from "../../lib/seo";
 
 export const metadata: Metadata = {
   title: "Vulnerabilities",
   description:
     "Assessed vulnerabilities with CVSS, EPSS and CISA KEV truth states, severity, cited evidence and publication status.",
   alternates: { canonical: "/intelligence/vulnerabilities" },
-  openGraph: { title: "Vulnerabilities | ZAYRON-X", url: "/intelligence/vulnerabilities" },
+  openGraph: buildOpenGraph({
+    title: "Vulnerabilities | ZAYRON-X",
+    description: "Assessed vulnerabilities with CVSS, EPSS and CISA KEV truth states.",
+    path: "/intelligence/vulnerabilities",
+    type: "website",
+  }),
 };
 
 export default async function VulnerabilitiesPage() {

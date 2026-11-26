@@ -456,6 +456,20 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
+/** `Cobalt Strike` → `cobalt-strike` — the canonical malware/family hub slug. */
+export function iocFamilySlug(value: unknown): string | null {
+  const raw = String(value ?? '').trim();
+  if (!raw) return null;
+  const slug = raw
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+  return slug || null;
+}
+
 async function writeIocRows(db: D1Database, plans: PlannedIoc[]): Promise<number> {
   if (plans.length === 0) return 0;
   const statements = plans.map((plan) =>
@@ -463,14 +477,15 @@ async function writeIocRows(db: D1Database, plans: PlannedIoc[]): Promise<number
       .prepare(
         `INSERT INTO iocs (
            id, type, normalized_value, confidence, status, seen_count, sources_json,
-           family, asn, asn_name, country, expires_at, created_at, updated_at
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+           family, malware_id, asn, asn_name, country, expires_at, created_at, updated_at
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
          ON CONFLICT(type, normalized_value) DO UPDATE SET
            confidence  = excluded.confidence,
            status      = 'ACTIVE',
            seen_count  = excluded.seen_count,
            sources_json = excluded.sources_json,
            family      = COALESCE(excluded.family, iocs.family),
+           malware_id  = COALESCE(excluded.malware_id, iocs.malware_id),
            asn         = COALESCE(excluded.asn, iocs.asn),
            asn_name    = COALESCE(excluded.asn_name, iocs.asn_name),
            country     = COALESCE(excluded.country, iocs.country),
@@ -486,6 +501,7 @@ async function writeIocRows(db: D1Database, plans: PlannedIoc[]): Promise<number
         plan.seenCount,
         JSON.stringify(plan.sources),
         plan.family,
+        iocFamilySlug(plan.family),
         plan.asn,
         plan.asnName,
         plan.country,

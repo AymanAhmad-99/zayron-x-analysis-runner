@@ -41,9 +41,15 @@ describe("ZX-05 explicit public read allowlist", () => {
   });
 
   test("unlisted reads default-deny to operator trust", () => {
-    expect(requiredTrust("GET", "/api/v1/something/unlisted")).toBe("admin_or_internal");
+    // PHASE 9A (F9) — a READ whose route family does not exist is a 404, so it
+    // is routed as public and the router answers NOT_FOUND.
+    expect(requiredTrust("GET", "/api/v1/something/unlisted")).toBe("public");
+    expect(requiredTrust("GET", "/api/v1/nope")).toBe("public");
+    // Known-but-protected surfaces keep their fail-closed trust.
     expect(requiredTrust("GET", "/api/v1/admin/whatever")).toBe("admin");
+    expect(requiredTrust("GET", "/api/v1/iocs/feed")).toBe("public");
     expect(requiredTrust("POST", "/api/v1/knowledge/search")).toBe("admin_or_internal");
+    expect(requiredTrust("POST", "/api/v1/iocs/bulk")).toBe("admin_or_internal");
   });
 
   test("production default origins exclude localhost and the preview host", () => {

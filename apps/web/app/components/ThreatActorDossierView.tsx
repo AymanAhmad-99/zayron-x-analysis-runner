@@ -181,21 +181,39 @@ export function ThreatActorDossierView({ dossier }: { dossier: ThreatActorDossie
                     <td className="mono">{family.active_count}</td>
                   </tr>
                 ))}
-                {actor.linked_cves.map((cve) => (
+                {(actor.documented_cves ?? actor.linked_cves).map((cve) => (
                   <tr key={cve.cve_id}>
                     <td>
-                      <a
-                        href={`/intelligence/vulnerabilities/${encodeURIComponent(cve.cve_id)}`}
-                        style={{ color: "var(--color-accent)", textDecoration: "none" }}
-                      >
-                        {cve.cve_id}
-                      </a>
+                      {cve.in_catalog ? (
+                        <a
+                          href={`/intelligence/vulnerabilities/${encodeURIComponent(cve.cve_id)}`}
+                          style={{ color: "var(--color-accent)", textDecoration: "none" }}
+                        >
+                          {cve.cve_id}
+                        </a>
+                      ) : (
+                        // PHASE 9A (F1) — no local advisory row, so no internal
+                        // link. The badge stays copyable and the NVD reference is
+                        // external and nofollow.
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <code className="mono">{cve.cve_id}</code>
+                          <a
+                            href={`https://nvd.nist.gov/vuln/detail/${encodeURIComponent(cve.cve_id)}`}
+                            target="_blank"
+                            rel="noopener noreferrer nofollow"
+                            className="ioc-note"
+                            style={{ textDecoration: "none" }}
+                          >
+                            NVD ↗
+                          </a>
+                        </span>
+                      )}
                     </td>
                     <td className="ioc-note">
-                      {cve.kev ? "CISA KEV member" : "Verified public proof-of-concept"}
+                      {cve.kev ? "CISA KEV member" : cve.in_catalog ? "Stored advisory" : "Historical MITRE reference"}
                       {cve.due_date ? ` · remediation due ${formatGraphDate(cve.due_date)}` : ""}
                     </td>
-                    <td className="mono">{cve.kev ? "KEV" : "POC"}</td>
+                    <td className="mono">{cve.kev ? "KEV" : cve.has_poc ? "POC" : cve.in_catalog ? "CVE" : "MITRE"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -262,9 +280,8 @@ export function ThreatActorDossierView({ dossier }: { dossier: ThreatActorDossie
                 {group.techniques.map((technique) => (
                   <a
                     key={`${technique.id}-${group.tactic}`}
-                    href={`https://attack.mitre.org/techniques/${technique.id.replace(".", "/")}`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
+                    // PHASE 9A — the technique backbone is internal now.
+                    href={`/intelligence/techniques/${encodeURIComponent(technique.id)}`}
                     className="ioc-note"
                     style={{ padding: "3px 9px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)", textDecoration: "none" }}
                     title={technique.name}

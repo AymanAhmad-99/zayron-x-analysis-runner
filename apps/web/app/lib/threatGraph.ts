@@ -1,4 +1,5 @@
 import { apiFetch, getApiBaseUrl } from "./siteConfig";
+import { readJsonResult } from "./fetchResult";
 
 /**
  * PHASE 8C — CONNECTED THREAT GRAPH client.
@@ -19,6 +20,8 @@ export interface LinkedCve {
   cve_id: string;
   kev: boolean;
   due_date: string | null;
+  in_catalog?: boolean;
+  has_poc?: boolean;
 }
 
 export interface TechniqueRef {
@@ -47,6 +50,7 @@ export interface ThreatActorItem {
   linked_kev_count: number;
   linked_cve_count: number;
   linked_cves: LinkedCve[];
+  documented_cves: LinkedCve[];
   first_seen: string | null;
   last_seen: string | null;
 }
@@ -83,6 +87,7 @@ export interface CampaignItem {
   target_regions: string[];
   activity_tier: ActivityTier;
   linked_kev_count: number;
+  documented_cves: LinkedCve[];
   first_seen: string | null;
   last_seen: string | null;
 }
@@ -127,8 +132,9 @@ export interface CampaignDossier {
 }
 
 export interface GraphResult<T> {
-  state: "success" | "empty" | "error";
+  state: "success" | "empty" | "not_found" | "error";
   data: T | null;
+  status?: number;
   error?: string;
 }
 
@@ -179,20 +185,15 @@ export async function getThreatActors(params: {
 }
 
 export async function getThreatActor(slug: string): Promise<GraphResult<ThreatActorDossier>> {
-  try {
-    const response = await apiFetch(
-      `${getApiBaseUrl()}/threat-actors/${encodeURIComponent(slug)}`,
-      GRAPH_READ_INIT,
-    );
-    if (response.status === 404) return { state: "empty", data: null, error: "ACTOR_NOT_FOUND" };
-    if (!response.ok) return { state: "error", data: null, error: `Actor dossier returned HTTP ${response.status}` };
-    const payload = (await response.json()) as Partial<ThreatActorDossier>;
-    return payload?.actor
-      ? { state: "success", data: payload as ThreatActorDossier }
-      : { state: "empty", data: null, error: "ACTOR_NOT_FOUND" };
-  } catch {
-    return { state: "error", data: null, error: "The actor dossier is unavailable" };
-  }
+  const result = await readJsonResult<Partial<ThreatActorDossier>>(
+    `${getApiBaseUrl()}/threat-actors/${encodeURIComponent(slug)}`,
+    GRAPH_READ_INIT,
+  );
+  if (result.state === "not_found") return { state: "not_found", data: null, status: 404, error: "ACTOR_NOT_FOUND" };
+  if (result.state === "error") return { state: "error", data: null, status: result.status, error: result.error };
+  return result.data?.actor
+    ? { state: "success", data: result.data as ThreatActorDossier, status: 200 }
+    : { state: "error", data: null, status: 200, error: "Actor dossier payload was empty" };
 }
 
 export interface CampaignIndex {
@@ -221,17 +222,15 @@ export async function getCampaigns(params: { q?: string; actor?: string; sector?
 }
 
 export async function getCampaign(slug: string): Promise<GraphResult<CampaignDossier>> {
-  try {
-    const response = await apiFetch(`${getApiBaseUrl()}/campaigns/${encodeURIComponent(slug)}`, GRAPH_READ_INIT);
-    if (response.status === 404) return { state: "empty", data: null, error: "CAMPAIGN_NOT_FOUND" };
-    if (!response.ok) return { state: "error", data: null, error: `Campaign dossier returned HTTP ${response.status}` };
-    const payload = (await response.json()) as Partial<CampaignDossier>;
-    return payload?.campaign
-      ? { state: "success", data: payload as CampaignDossier }
-      : { state: "empty", data: null, error: "CAMPAIGN_NOT_FOUND" };
-  } catch {
-    return { state: "error", data: null, error: "The campaign dossier is unavailable" };
-  }
+  const result = await readJsonResult<Partial<CampaignDossier>>(
+    `${getApiBaseUrl()}/campaigns/${encodeURIComponent(slug)}`,
+    GRAPH_READ_INIT,
+  );
+  if (result.state === "not_found") return { state: "not_found", data: null, status: 404, error: "CAMPAIGN_NOT_FOUND" };
+  if (result.state === "error") return { state: "error", data: null, status: result.status, error: result.error };
+  return result.data?.campaign
+    ? { state: "success", data: result.data as CampaignDossier, status: 200 }
+    : { state: "error", data: null, status: 200, error: "Campaign dossier payload was empty" };
 }
 
 /** Human label for the two-tier truth model. Never re-derived in the UI. */

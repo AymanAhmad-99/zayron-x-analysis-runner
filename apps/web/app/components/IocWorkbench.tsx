@@ -52,9 +52,14 @@ function CopyButton({ text, label = "Copy defanged" }: { text: string; label?: s
   );
 }
 
-function ttlLabel(expiresAt?: string | null) {
+/**
+ * PHASE 9A (F17) — the clock is injected, never read at render.
+ * `now === null` is the server/first-paint value, so hydration cannot disagree.
+ */
+function ttlLabel(expiresAt: string | null | undefined, now: number | null) {
   if (!expiresAt) return "—";
-  const ms = Date.parse(expiresAt) - Date.now();
+  if (now === null) return "—";
+  const ms = Date.parse(expiresAt) - now;
   if (!Number.isFinite(ms)) return "—";
   if (ms <= 0) return "expired";
   const days = Math.floor(ms / 86_400_000);
@@ -77,8 +82,16 @@ export function IocWorkbench({ initialQuery = "" }: { initialQuery?: string }) {
   const [rowsError, setRowsError] = useState("");
   const [query, setQuery] = useState(initialQuery);
   const [lookup, setLookup] = useState<IocLookupResult | null>(null);
+  // Client-only clock: `null` during SSR and first paint.
+  const [now, setNow] = useState<number | null>(null);
   const [looking, setLooking] = useState(false);
   const [lookupError, setLookupError] = useState("");
+
+  useEffect(() => {
+    setNow(Date.now());
+    const tick = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(tick);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -241,13 +254,41 @@ export function IocWorkbench({ initialQuery = "" }: { initialQuery?: string }) {
                 </div>
                 <dl className="ioc-lookup-facts">
                   <div><dt>TYPE</dt><dd>{lookup.data.type}</dd></div>
-                  <div><dt>FAMILY</dt><dd>{lookup.data.family || "unresolved"}</dd></div>
+                  <div>
+                    <dt>FAMILY</dt>
+                    <dd>
+                      {lookup.data.family && lookup.family_slug ? (
+                        <a href={`/intelligence/malware/families/${lookup.family_slug}`}>{lookup.data.family}</a>
+                      ) : (
+                        lookup.data.family || "unresolved"
+                      )}
+                    </dd>
+                  </div>
                   <div><dt>SOURCES</dt><dd>{lookup.data.sources.length > 0 ? lookup.data.sources.join(", ") : "—"}</dd></div>
                   <div><dt>SEEN</dt><dd>{lookup.data.seen_count}×</dd></div>
                   <div><dt>ASN</dt><dd>{lookup.data.asn ? `${lookup.data.asn}${lookup.data.asn_name ? ` · ${lookup.data.asn_name}` : ""}` : "not enriched"}</dd></div>
                   <div><dt>COUNTRY</dt><dd>{lookup.data.country || "not enriched"}</dd></div>
                   <div><dt>EXPIRES</dt><dd>{lookup.data.expires_at || "—"}</dd></div>
                 </dl>
+                {lookup.linked_actors && lookup.linked_actors.length > 0 ? (
+                  <div style={{ marginTop: 10 }}>
+                    <span className="ioc-note" style={{ display: "block", marginBottom: 6 }}>
+                      ATTRIBUTED THREAT ACTORS ({lookup.total_linked_actors ?? lookup.linked_actors.length})
+                    </span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {lookup.linked_actors.map((actor) => (
+                        <a
+                          key={actor.slug}
+                          className="ioc-note"
+                          style={{ padding: "3px 9px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)", textDecoration: "none" }}
+                          href={`/intelligence/threat-actors/${actor.slug}`}
+                        >
+                          {actor.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </>
             ) : (
               <p className="ioc-note">
@@ -303,7 +344,7 @@ export function IocWorkbench({ initialQuery = "" }: { initialQuery?: string }) {
                     <td>{row.type}</td>
                     <td>{row.confidence}</td>
                     <td>{row.family || "unresolved"}</td>
-                    <td>{ttlLabel(row.expires_at)}</td>
+                    <td>{ttlLabel(row.expires_at, now)}</td>
                     <td>{row.sources.length > 0 ? row.sources.join(", ") : "—"}</td>
                   </tr>
                 ))}

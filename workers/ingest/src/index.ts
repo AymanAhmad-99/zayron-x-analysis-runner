@@ -38,6 +38,8 @@ import { isAuthoritativePulseTick } from './telegramSlots';
 import { runIocIngestPass } from './iocIngest';
 import { isIocIngestSlot } from './detectionRules';
 import { isPocSyncSlot, runPocSync } from './pocSync';
+// PHASE 9A — quiet-hours Radar ASN backfill (01:40 / 03:40 / 05:40 UTC only).
+import { isRadarBackfillSlot, runRadarBackfill } from './radarBackfill';
 // PHASE 8C — the CISA KEV catalog backfill owns the 04:40 quiet tick.
 import { isCisaKevSlot, quietTickBudget, runCisaKevBackfill } from './cisaKevBackfill';
 import { WorkerEntrypoint } from 'cloudflare:workers';
@@ -349,6 +351,21 @@ const ingestHandlers = {
         } catch (error) {
           console.error(JSON.stringify({
             type: 'CISA_KEV_BACKFILL_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 9A — Radar ASN backfill. OWN TICKS ONLY (01:40, 03:40, 05:40), none
+      // of which is used by the IOC pass, the pulse, PoC, KEV or the wire. A
+      // self-counted ceiling of 12 Radar requests per invocation.
+      if (isRadarBackfillSlot(new Date())) {
+        try {
+          const radar = await runRadarBackfill(env as any, {});
+          console.log(JSON.stringify({ type: 'RADAR_ASN_BACKFILL', ...radar }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'RADAR_ASN_BACKFILL_FAILED',
             error: String((error as Error)?.message || error).slice(0, 300),
           }));
         }
@@ -1692,7 +1709,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     const isPocSync = url.pathname === '/internal/poc-sync';
     // PHASE 8C — one bounded CISA KEV catalog backfill. Writes only KEV facts.
     const isCisaKevSync = url.pathname === '/internal/cisa-kev-backfill';
-    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // PHASE 9A — bounded Radar ASN backfill (operator-triggered, <= 12 requests).
+    const isRadarBackfill = url.pathname === '/internal/radar-backfill';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1703,7 +1722,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1735,6 +1754,16 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       const summary = await runPocSync(this.env as any, { force: true });
       return new Response(JSON.stringify(summary), {
         status: summary.status === 'OK' ? 200 : 409,
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      });
+    }
+
+    // PHASE 9A operator hook — one bounded Radar ASN backfill (<= 12 requests).
+    // It writes `iocs.asn/asn_name/country` only and never touches Telegram.
+    if (isRadarBackfill) {
+      const radar = await runRadarBackfill(this.env as any, { force: true });
+      return new Response(JSON.stringify(radar), {
+        status: radar.status === 'OK' ? 200 : 409,
         headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
       });
     }

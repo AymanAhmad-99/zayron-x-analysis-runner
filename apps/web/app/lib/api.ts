@@ -17,7 +17,7 @@ export function formatEpss(epss?: { score?: unknown; percentile?: unknown; statu
   };
 }
 
-export type ApiState = "success" | "empty" | "error";
+export type ApiState = "success" | "empty" | "not_found" | "error";
 
 export interface ApiResult<T> { state: ApiState; data: T | null; error?: string; }
 export interface IntelligenceRecord { id: string; title?: string; summary?: string; severity?: string; status?: string; confidence?: number; type?: string; updatedAt?: string; }
@@ -568,6 +568,20 @@ export interface StrategicBrief {
   };
 }
 
+export interface CveMeshLinks {
+  linked_actors?: MeshEntityRef[];
+  linked_campaigns?: MeshEntityRef[];
+  detection_rules?: Array<{
+    id: string;
+    kind: string;
+    title: string;
+    source_url: string;
+    severity: string | null;
+    source: string;
+  }>;
+  in_exploit_radar?: boolean;
+}
+
 export interface VulnerabilityDetail {
   intelligence_id?: string;
   schema_version?: string;
@@ -609,6 +623,18 @@ export interface VulnerabilityDetail {
   citations?: unknown[];
   source_title?: string;
   source_id?: string;
+  /** PHASE 9A — bidirectional mesh resolved by the API. */
+  linked_actors?: MeshEntityRef[];
+  linked_campaigns?: MeshEntityRef[];
+  detection_rules?: Array<{
+    id: string;
+    kind: string;
+    title: string;
+    source_url: string;
+    severity: string | null;
+    source: string;
+  }>;
+  in_exploit_radar?: boolean;
   created_at?: string;
   updated_at?: string;
   message_timestamp?: string;
@@ -635,6 +661,11 @@ const DETAIL_READ_INIT = { headers: { accept: "application/json" }, cache: "no-s
 export async function getVulnerabilityDetail(id: string): Promise<ApiResult<VulnerabilityDetail>> {
   try {
     const response = await apiFetch(`${getApiBaseUrl()}/intelligence/${encodeURIComponent(id)}`, DETAIL_READ_INIT);
+    // PHASE 9A (F4) — only an explicit 404 may become a page-level `notFound()`.
+    // A 5xx here is a transport failure and is surfaced as `error`.
+    if (response.status >= 500) {
+      return { state: "error", data: null, error: `Vulnerability detail returned HTTP ${response.status}` };
+    }
     if (response.ok) {
       const payload = await response.json() as { report?: VulnerabilityDetail };
       if (payload.report) {
@@ -649,6 +680,9 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
     }
     // Fallback to canonical /vulnerabilities/:id endpoint
     const vulnRes = await apiFetch(`${getApiBaseUrl()}/vulnerabilities/${encodeURIComponent(id)}`, DETAIL_READ_INIT);
+    if (vulnRes.status >= 500) {
+      return { state: "error", data: null, error: `Vulnerability detail returned HTTP ${vulnRes.status}` };
+    }
     if (vulnRes.ok) {
       const vulnPayload = await vulnRes.json() as { data?: Record<string, unknown> };
       if (vulnPayload.data) {
@@ -665,7 +699,8 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
             severity: (d.severity as string) || 'HIGH',
             // Wave 4B — pass the API value through; never synthesize a score.
             confidence: typeof d.confidence === 'number' ? d.confidence : undefined,
-            status: isExploited ? 'EXPLOITED_IN_WILD' : 'VERIFIED',
+            // PHASE 9A (F8) — storage value mapped to English for display.
+            status: isExploited ? 'Exploited in Wild' : 'Verified',
             source_id: 'cisa-kev',
             source_title: 'CISA Known Exploited Vulnerabilities',
             created_at: (d.created_at as string) || undefined,
@@ -675,12 +710,18 @@ export async function getVulnerabilityDetail(id: string): Promise<ApiResult<Vuln
             // renders the deterministic advisory alone, never a placeholder.
             strategic_brief: (d.strategic_brief as StrategicBrief | null | undefined) ?? null,
             evidence: (Array.isArray(d.related_evidence) ? d.related_evidence : []) as VulnerabilityEvidence[],
+            linked_actors: (Array.isArray(d.linked_actors) ? d.linked_actors : []) as MeshEntityRef[],
+            linked_campaigns: (Array.isArray(d.linked_campaigns) ? d.linked_campaigns : []) as MeshEntityRef[],
+            detection_rules: (Array.isArray(d.detection_rules) ? d.detection_rules : []) as VulnerabilityDetail["detection_rules"],
+            in_exploit_radar: Boolean(d.in_exploit_radar),
             relations: [],
           }
         };
       }
     }
-    return { state: "empty", data: null };
+    // Both endpoints answered a real 404: the record does not exist.
+    if (response.status === 404 && vulnRes.status === 404) return { state: "not_found", data: null };
+    return { state: "error", data: null, error: "Vulnerability detail payload was empty" };
   } catch { return { state: "error", data: null, error: "Vulnerability detail API is unavailable" }; }
 }
 
@@ -750,7 +791,7 @@ export async function getVulnerabilities(params: { limit?: number; offset?: numb
         // Wave 4B — no client-side confidence synthesis. The API either returned a
         // confidence or it did not; a derived score is fabricated authority.
         confidence: typeof r.confidence === "number" ? r.confidence : undefined,
-        status: isExploited ? "EXPLOITED_IN_WILD" : "VERIFIED",
+        status: isExploited ? "Exploited in Wild" : "Verified",
         source_title: "CISA KEV",
         source_id: "cisa-kev",
         created_at: (r.created_at as string) || undefined,
@@ -822,6 +863,10 @@ export interface IocLookupResult {
   status: "ACTIVE" | "EXPIRED" | "NOT_FOUND";
   found: boolean;
   data: IocLookupRecord | null;
+  /** PHASE 9A — hub + attributed actors for the stored family. */
+  family_slug?: string | null;
+  linked_actors?: MeshEntityRef[];
+  total_linked_actors?: number;
 }
 
 export interface DetectionRule {
@@ -840,9 +885,25 @@ export interface DetectionRuleMatch {
   synced_at: string | null;
 }
 
+export interface MeshEntityRef {
+  slug: string;
+  name: string;
+  mitre_id?: string | null;
+}
+
+export interface FamilyAttribution {
+  family: string;
+  family_slug: string;
+  actors: MeshEntityRef[];
+  campaigns: MeshEntityRef[];
+  total_linked_actors: number;
+}
+
 export interface MalwareFamilySummary {
   family: string;
   slug: string;
+  /** PHASE 9A — actors and campaigns that document this family as tooling. */
+  attribution?: FamilyAttribution | null;
   active_count: number;
   edl_ready: number;
   by_type: Record<string, number>;
@@ -957,12 +1018,13 @@ export async function getIocFamilies(): Promise<ApiResult<MalwareFamilyIndexEntr
 export async function getIocFamily(slug: string): Promise<ApiResult<MalwareFamilySummary>> {
   try {
     const response = await apiFetch(`${getApiBaseUrl()}/iocs/families/${encodeURIComponent(slug)}`, IOC_READ_INIT);
-    if (response.status === 404) return { state: "empty", data: null, error: "FAMILY_NOT_FOUND" };
+    // PHASE 9A (F4) — 404 is a real verdict; a 5xx/transport failure is NOT.
+    if (response.status === 404) return { state: "not_found", data: null, error: "FAMILY_NOT_FOUND" };
     if (!response.ok) return { state: "error", data: null, error: `Family returned HTTP ${response.status}` };
     const payload = (await response.json()) as { data?: MalwareFamilySummary };
     return payload.data
       ? { state: "success", data: payload.data }
-      : { state: "empty", data: null, error: "FAMILY_NOT_FOUND" };
+      : { state: "error", data: null, error: "Family payload was empty" };
   } catch {
     return { state: "error", data: null, error: "The family summary is unavailable" };
   }

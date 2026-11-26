@@ -138,15 +138,26 @@ export function CampaignDossierView({ dossier }: { dossier: CampaignDossier }) {
           </p>
           {campaign.cves.length ? (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
-              {campaign.cves.map((cve) => (
-                <a
-                  key={cve}
-                  href={`/intelligence/vulnerabilities/${encodeURIComponent(cve)}`}
-                  className="ioc-note mono"
-                  style={{ padding: "3px 9px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)", textDecoration: "none" }}
-                >
-                  {cve}
-                </a>
+              {(campaign.documented_cves ?? []).map((entry) => (
+                entry.in_catalog ? (
+                  <a
+                    key={entry.cve_id}
+                    href={`/intelligence/vulnerabilities/${encodeURIComponent(entry.cve_id)}`}
+                    className="ioc-note mono"
+                    style={{ padding: "3px 9px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)", textDecoration: "none" }}
+                  >
+                    {entry.cve_id}
+                  </a>
+                ) : (
+                  // PHASE 9A (F1) — no local advisory row ⇒ no internal link.
+                  <span
+                    key={entry.cve_id}
+                    className="ioc-note mono"
+                    style={{ padding: "3px 9px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)" }}
+                  >
+                    {entry.cve_id}
+                  </span>
+                )
               ))}
             </div>
           ) : null}
@@ -163,9 +174,8 @@ export function CampaignDossierView({ dossier }: { dossier: CampaignDossier }) {
                 {group.techniques.map((technique) => (
                   <a
                     key={`${technique.id}-${group.tactic}`}
-                    href={`https://attack.mitre.org/techniques/${technique.id.replace(".", "/")}`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
+                    // PHASE 9A — internal technique backbone.
+                    href={`/intelligence/techniques/${encodeURIComponent(technique.id)}`}
                     className="ioc-note"
                     style={{ padding: "3px 9px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)", textDecoration: "none" }}
                   >

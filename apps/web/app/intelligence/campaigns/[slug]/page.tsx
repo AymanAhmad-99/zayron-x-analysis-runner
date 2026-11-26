@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { CampaignDossierView } from "../../../components/CampaignDossierView";
 import { getCampaign } from "../../../lib/threatGraph";
 import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
-import { resolvePageRobots } from "../../../lib/seo";
+import { buildOpenGraph, resolvePageRobots } from "../../../lib/seo";
 
 /**
  * PHASE 8C — campaign dossier (`/intelligence/campaigns/:slug`). Server-rendered;
@@ -28,7 +28,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
-    openGraph: { title: `${campaign.name} — Campaign Dossier`, description, url: canonical, type: "article" },
+    openGraph: buildOpenGraph({
+      title: `${campaign.name} — Campaign Dossier`,
+      description,
+      path: canonical,
+      type: "article",
+    }),
     twitter: { card: "summary_large_image", title: `${campaign.name} — Campaign Dossier`, description },
   };
 }
@@ -36,8 +41,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function CampaignDossierPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await getCampaign(decodeURIComponent(slug));
+  // PHASE 9A (F4) — only a confirmed 404 is a 404.
+  if (result.state === "not_found") notFound();
+  if (result.state === "error") throw new Error("Campaign dossier temporarily unavailable");
   const dossier = result.data;
-  if (!dossier) notFound();
+  if (!dossier) throw new Error("Campaign dossier temporarily unavailable");
 
   const site = getSiteUrl();
   const { campaign } = dossier;

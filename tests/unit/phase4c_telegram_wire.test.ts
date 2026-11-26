@@ -603,7 +603,10 @@ describe('telegram ledger migration', () => {
 
   test('the selection query excludes anything already SENT or SKIPPED', async () => {
     const source = await Bun.file(new URL('../../workers/ingest/src/telegramDispatch.ts', import.meta.url)).text();
-    expect(source).toContain("d.status IN ('SENT', 'SKIPPED')");
+    // PHASE 9A — the window is gone: an all-time SENT base id can never be
+    // selected again, including through FALLBACK_TO_CVE.
+    expect(source).toContain("d.status = 'SENT'");
+    expect(source).not.toContain("datetime('now', '-7 days')");
     expect(source).toContain("strategic_brief_version = 'ai_analyst_assessment.v4'");
     expect(source).toContain("strategic_brief_version = 'malware_strategic_brief.v1'");
   });

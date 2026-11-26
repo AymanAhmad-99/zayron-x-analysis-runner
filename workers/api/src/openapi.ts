@@ -309,6 +309,49 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           },
         },
       },
+      "/techniques": {
+        get: {
+          operationId: "listTechniques",
+          summary: "MITRE ATT&CK technique index (actors and campaigns per technique)",
+          tags: ["Threat Graph"],
+          parameters: [
+            { name: "q", in: "query", description: "Filter by technique id, name or tactic", schema: { type: "string" } },
+            { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 500, default: 50 } },
+          ],
+          responses: {
+            "200": { description: "Technique index", content: { "application/json": { schema: { type: "object" } } } },
+          },
+        },
+      },
+      "/techniques/{id}": {
+        get: {
+          operationId: "getTechnique",
+          summary: "One ATT&CK technique with linked actors, campaigns and hunting starters",
+          tags: ["Threat Graph"],
+          parameters: [
+            { name: "id", in: "path", required: true, description: "Technique id, e.g. T1059 or T1059.001", schema: { type: "string" } },
+          ],
+          responses: {
+            "200": { description: "Technique dossier", content: { "application/json": { schema: { type: "object" } } } },
+            "404": { description: "Unknown technique", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/detection/rules": {
+        get: {
+          operationId: "getDetectionRules",
+          summary: "Verified Nuclei/Sigma rules for one CVE or one malware family",
+          tags: ["Detection"],
+          parameters: [
+            { name: "cve", in: "query", description: "CVE id (mutually exclusive with `family`)", schema: { type: "string" } },
+            { name: "family", in: "query", description: "Malware family keyword", schema: { type: "string" } },
+          ],
+          responses: {
+            "200": { description: "Matched rules", content: { "application/json": { schema: { type: "object" } } } },
+            "400": { description: "Neither `cve` nor `family` supplied", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
       "/vulnerabilities": {
         get: {
           operationId: "listVulnerabilities",

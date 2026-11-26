@@ -595,10 +595,15 @@ describe('Phase 8C — no raw malicious links on the new surfaces', () => {
     }
   });
 
-  test('external MITRE links are permanently defanged with noopener/nofollow', () => {
+  test('technique pills stay inside the mesh; the MITRE exit lives on the hub', () => {
+    // PHASE 9A — a technique pill links to the internal technique hub. The
+    // official attack.mitre.org reference is rendered by that hub only.
     const dossier = read('apps/web/app/components/ThreatActorDossierView.tsx');
-    expect(dossier).toContain('rel="noopener noreferrer nofollow"');
-    expect(dossier).toContain('attack.mitre.org');
+    expect(dossier).toContain('/intelligence/techniques/');
+    expect(dossier).not.toContain('https://attack.mitre.org/techniques/');
+    const hub = read('apps/web/app/intelligence/techniques/[id]/page.tsx');
+    expect(hub).toContain('technique.mitre_url');
+    expect(hub).toContain('rel="noopener noreferrer nofollow"');
   });
 
   test('the dossier only links live families that the API observed', () => {

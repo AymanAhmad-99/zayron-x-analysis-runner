@@ -237,6 +237,8 @@ const PUBLIC_READ_EXACT = new Set<string>([
   // PHASE 8C — the canonical MITRE ATT&CK threat graph is a public catalog.
   "/api/v1/threat-actors",
   "/api/v1/campaigns",
+  // PHASE 9A — the ATT&CK technique backbone is a public catalog.
+  "/api/v1/techniques",
 ]);
 
 /** Collection-detail prefixes that are public for READ methods only. */
@@ -259,6 +261,18 @@ const PUBLIC_READ_PREFIXES = [
   "/api/v1/threat-actors/",
   "/api/v1/campaigns/",
 ];
+
+/**
+ * PHASE 9A — top-level route families the API actually serves. Used only to
+ * distinguish "unknown path" (404) from "known but protected" (401).
+ */
+const KNOWN_API_SEGMENTS = new Set<string>([
+  "health", "openapi.json", "intelligence", "knowledge", "sources", "vulnerabilities",
+  "malware", "actors", "alerts", "articles", "campaigns", "feed", "graph", "iocs",
+  "detection", "regulations", "reports", "search", "threats", "ai", "exploits",
+  "threat-actors", "techniques", "keys", "leads", "sitemap", "canary", "publish",
+  "social", "research", "analyze", "admin", "webhook",
+]);
 
 function isPublicRead(method: string, path: string): boolean {
   const m = method.toUpperCase();
@@ -301,6 +315,15 @@ export function requiredTrust(method: string, path: string): TrustRequirement {
 
   // Explicit anonymous read allowlist.
   if (isPublicRead(m, path)) return "public";
+
+  // PHASE 9A (F9) — an unknown READ path is a plain 404, not an auth challenge.
+  // Only paths whose first segment matches no real route family reach this
+  // branch, and only for GET/HEAD/OPTIONS. Operator surfaces are matched above,
+  // so admin routes keep their 401 and writes keep their own rules.
+  if (isRead && path.startsWith("/api/v1/")) {
+    const segment = path.slice("/api/v1/".length).split("/")[0]?.toLowerCase() ?? "";
+    if (segment && !KNOWN_API_SEGMENTS.has(segment)) return "public";
+  }
 
   // Anything else — including an unlisted GET — fails closed to operator trust.
   return "admin_or_internal";

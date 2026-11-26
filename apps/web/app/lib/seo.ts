@@ -10,6 +10,52 @@
  * what production WOULD advertise.
  */
 
+/**
+ * PHASE 9A (F2) — one OpenGraph builder so a page-level `openGraph` object can
+ * never wipe out `images`. Next.js REPLACES `openGraph` wholesale rather than
+ * merging it with the root layout, which silently dropped `og:image` on 9 of 14
+ * key pages. Every page must build its OpenGraph here.
+ */
+export const DEFAULT_OG_IMAGE = "/og-image.png";
+
+export interface OpenGraphInput {
+  title: string;
+  description: string;
+  path: string;
+  /** Entity card path such as `/api/og/cve/CVE-2026-1`. */
+  image?: string | null;
+  type?: "website" | "article";
+  siteName?: string;
+}
+
+export interface OpenGraphOutput {
+  title: string;
+  description: string;
+  url: string;
+  type: "website" | "article";
+  siteName: string;
+  images: Array<{ url: string; width: number; height: number; alt: string }>;
+}
+
+/** Non-empty, absolute-path image. Never returns `undefined`. */
+export function openGraphImage(image?: string | null): string {
+  const value = typeof image === "string" ? image.trim() : "";
+  if (value && (value.startsWith("/") || /^https?:\/\//.test(value))) return value;
+  return DEFAULT_OG_IMAGE;
+}
+
+export function buildOpenGraph(input: OpenGraphInput): OpenGraphOutput {
+  const url = openGraphImage(input.image);
+  return {
+    title: input.title,
+    description: input.description,
+    url: input.path,
+    type: input.type ?? "article",
+    siteName: input.siteName ?? "ZAYRON-X",
+    images: [{ url, width: 1200, height: 630, alt: input.title }],
+  };
+}
+
 export interface RobotsDirective {
   index: boolean;
   follow: boolean;
