@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { DocTable, InstitutionalDocLayout, type DocSection } from "../components/InstitutionalDocLayout";
 import { PipelineHealthBadge } from "../components/PipelineHealthBadge";
 import { isPreviewDeployment } from "../lib/siteConfig";
-import { resolvePageRobots } from "../lib/seo";
+import { buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
 export const metadata: Metadata = {
   title: "Trust, Security & Vulnerability Disclosure",
@@ -10,7 +10,13 @@ export const metadata: Metadata = {
     "ZAYRON-X trust and security architecture, boundary separation, and formal vulnerability disclosure policy with safe harbor and response service levels.",
   alternates: { canonical: "/security" },
   robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
-  openGraph: { title: "Trust, Security & Vulnerability Disclosure | ZAYRON-X", url: "/security" },
+  openGraph: buildOpenGraph({
+    title: "Trust, Security & Vulnerability Disclosure | ZAYRON-X",
+    description:
+      "ZAYRON-X trust and security architecture, boundary separation, and formal vulnerability disclosure policy with safe harbor and response service levels.",
+    path: "/security",
+    type: "website",
+  }),
 };
 
 const sections: DocSection[] = [

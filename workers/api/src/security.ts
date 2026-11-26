@@ -260,6 +260,8 @@ const PUBLIC_READ_PREFIXES = [
   // PHASE 8C — actor/campaign dossiers and Navigator exports.
   "/api/v1/threat-actors/",
   "/api/v1/campaigns/",
+  // PHASE 9A — technique index and `/techniques/:id` dossiers are public.
+  "/api/v1/techniques/",
 ];
 
 /**

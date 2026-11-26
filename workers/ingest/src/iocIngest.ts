@@ -478,7 +478,7 @@ async function writeIocRows(db: D1Database, plans: PlannedIoc[]): Promise<number
         `INSERT INTO iocs (
            id, type, normalized_value, confidence, status, seen_count, sources_json,
            family, malware_id, asn, asn_name, country, expires_at, created_at, updated_at
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT id FROM malware WHERE slug = ?), ?, ?, ?, ?, datetime('now'), datetime('now'))
          ON CONFLICT(type, normalized_value) DO UPDATE SET
            confidence  = excluded.confidence,
            status      = 'ACTIVE',
