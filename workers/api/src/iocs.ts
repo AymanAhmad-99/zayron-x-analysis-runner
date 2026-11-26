@@ -485,32 +485,83 @@ export interface FamilySummary {
   detection_rules: DetectionRule[];
 }
 
-let familyCache: { at: number; rows: Array<{ family: string; count: number }> } | null = null;
+export interface IocFamilyIndexEntry {
+  family: string;
+  slug: string;
+  active_count: number;
+  /** Most recent observation across the family's active indicators. */
+  last_seen: string | null;
+  /** Every feed that currently contributes an indicator to the family. */
+  sources: string[];
+  /** Verified Sigma rules whose filename names this family (never invented). */
+  sigma_rules: number;
+}
+
+let familyCache: { at: number; rows: IocFamilyIndexEntry[] } | null = null;
 
 /** Distinct families with active indicators, cached in-isolate for 60s. */
-export async function listIocFamilies(db: D1Database): Promise<Array<{ family: string; slug: string; active_count: number }>> {
+export async function listIocFamilies(db: D1Database): Promise<IocFamilyIndexEntry[]> {
   if (familyCache && Date.now() - familyCache.at < 60_000) {
-    return familyCache.rows.map((row) => ({ ...row, slug: familySlug(row.family) }));
+    return familyCache.rows;
   }
   const rows = await db
     .prepare(
-      `SELECT family, COUNT(*) AS count FROM iocs
+      `SELECT family, COUNT(*) AS count, MAX(updated_at) AS last_seen FROM iocs
         WHERE status = 'ACTIVE' AND family IS NOT NULL AND family <> ''
         GROUP BY family ORDER BY count DESC LIMIT 60`,
     )
-    .all<{ family: string; count: number }>();
+    .all<{ family: string; count: number; last_seen: string | null }>();
   const clean = (rows.results || [])
-    .map((row) => ({ family: String(row.family), count: Number(row.count) || 0 }))
+    .map((row) => ({ family: String(row.family), count: Number(row.count) || 0, last_seen: row.last_seen ?? null }))
     .filter((row) => row.family.trim().length > 0);
-  familyCache = { at: Date.now(), rows: clean };
-  return clean.map((row) => ({ ...row, slug: familySlug(row.family), active_count: row.count } as any));
+
+  // Source badges: one bounded read reduced in JS, so the list stays one query.
+  const sourceRows = await db
+    .prepare(
+      `SELECT family, sources_json FROM iocs
+        WHERE status = 'ACTIVE' AND family IS NOT NULL AND family <> ''
+        LIMIT 5000`,
+    )
+    .all<{ family: string; sources_json: string }>()
+    .catch(() => ({ results: [] as Array<{ family: string; sources_json: string }> }));
+  const sourcesByFamily = new Map<string, Set<string>>();
+  for (const row of sourceRows.results || []) {
+    const key = String(row.family).toLowerCase();
+    const set = sourcesByFamily.get(key) ?? new Set<string>();
+    for (const source of parseSources(row.sources_json)) set.add(source);
+    sourcesByFamily.set(key, set);
+  }
+
+  // Sigma coverage: grouped rule counts keyed by the family the filename named.
+  const sigmaRows = await db
+    .prepare(
+      `SELECT match_key, COUNT(*) AS count FROM detection_rules
+        WHERE kind = 'family' GROUP BY match_key`,
+    )
+    .all<{ match_key: string; count: number }>()
+    .catch(() => ({ results: [] as Array<{ match_key: string; count: number }> }));
+  const sigmaByFamily = new Map<string, number>();
+  for (const row of sigmaRows.results || []) {
+    sigmaByFamily.set(String(row.match_key).toLowerCase(), Number(row.count) || 0);
+  }
+
+  const enriched: IocFamilyIndexEntry[] = clean.map((row) => ({
+    family: row.family,
+    slug: familySlug(row.family),
+    active_count: row.count,
+    last_seen: row.last_seen,
+    sources: Array.from(sourcesByFamily.get(row.family.toLowerCase()) ?? []).sort(),
+    sigma_rules: sigmaByFamily.get(row.family.toLowerCase()) ?? 0,
+  }));
+  familyCache = { at: Date.now(), rows: enriched };
+  return enriched;
 }
 
 /** Resolve a slug against the live family list, then build the hub payload. */
 export async function buildFamilySummary(db: D1Database, slug: string): Promise<FamilySummary | null> {
   const wanted = familySlug(slug);
   const families = await listIocFamilies(db);
-  const match = families.find((entry) => (entry as any).slug === wanted);
+  const match = families.find((entry) => entry.slug === wanted);
   if (!match) return null;
 
   const rows = await db

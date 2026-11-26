@@ -98,6 +98,7 @@ const SUITES = [
   // Phase 7.2: Turnstile render + CSP allowlist on /developers, and the
   // corrected Cloudflare Radar L3 pulse endpoint. Local-only reads.
   'tests/unit/phase72_turnstile_and_radar.test.ts',
+  'tests/unit/phase73_malware_workspace.test.ts',
   // Wave 4C: Free-Tier Survival Mode — edge cache fast path (zero D1 on a hit,
   // fail-closed eligibility, CORS safety), ingest cron throttle, sitemap shard
   // cap, and the Gate 1 config fixes (migrations_dir, secret-scan fixture).

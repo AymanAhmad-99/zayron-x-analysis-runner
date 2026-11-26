@@ -115,6 +115,7 @@ import {
   type ApiKeyTier,
 } from './apiKeys';
 import { buildOpenApiDocument } from './openapi';
+import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import {
   EDL_PREVIEW_MAX_LINES,
   buildEdl,
@@ -6052,38 +6053,117 @@ const worker = {
       // must not (and cannot) pass the canonical gate. They are served from
       // their own projection with their own validation (a MAL-* identity), so
       // the canonical surface never has to pretend or be relaxed.
+      // ── One full OpenSSF/OSV advisory dossier ─────────────────────────────
+      // PHASE 7.3 — the list is a projection; this is the complete record the
+      // `/intelligence/malware/advisories/:id` page renders. Edge-cached for
+      // 300s because an advisory is immutable once published.
+      if (path.startsWith('/api/v1/malware/supply-chain/reports/') && request.method === 'GET') {
+        const rawId = decodeURIComponent(path.slice('/api/v1/malware/supply-chain/reports/'.length)).trim();
+        if (!/^MAL-\d{4}-\d+$/i.test(rawId)) {
+          return errorResponse('A MAL-YYYY-NNNNN advisory id is required', 400, 'INVALID_ADVISORY_ID');
+        }
+        try {
+          const row = await env.DB.prepare(
+            `SELECT id, title, family, summary, severity, sha256, report_json, published_at
+               FROM malware_reports
+              WHERE id = ? AND source = 'openssf-osv'
+              LIMIT 1`,
+          )
+            .bind(rawId.toUpperCase())
+            .first<{
+              id: string;
+              title: string | null;
+              family: string | null;
+              summary: string | null;
+              severity: string | null;
+              sha256: string | null;
+              report_json: string | null;
+              published_at: string | null;
+            }>();
+          const dossier = row ? buildSupplyChainDossier(row) : null;
+          if (!dossier) {
+            return errorResponse(`Supply-chain advisory ${rawId} not found`, 404, 'NOT_FOUND');
+          }
+          return new Response(JSON.stringify({ status: 'SUCCESS', data: dossier }), {
+            status: 200,
+            headers: {
+              'content-type': 'application/json; charset=utf-8',
+              'cache-control': 'public, s-maxage=300, stale-while-revalidate=600',
+            },
+          });
+        } catch (dbErr: any) {
+          console.warn('[API] supply-chain dossier degraded:', dbErr?.message);
+          return errorResponse('Supply-chain advisory temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      // ── OpenSSF/OSV supply-chain advisory list ────────────────────────────
       if (path === '/api/v1/malware/supply-chain/reports' && request.method === 'GET') {
         const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || 25, 1), 50);
+        const ecosystemParam = (url.searchParams.get('ecosystem') || '').trim().toLowerCase();
+        const query = (url.searchParams.get('q') || '').trim().toLowerCase();
         try {
+          // Scan a bounded window, not the whole table: the newest advisories must
+          // win even when a filter is applied further down.
           const rows = await env.DB.prepare(
-            `SELECT id, title, family, sha256, severity, published_at
+            `SELECT id, title, family, sha256, severity, published_at, report_json
                FROM malware_reports
               WHERE source = 'openssf-osv' AND id LIKE 'MAL-%'
-              ORDER BY published_at DESC LIMIT ?`,
+              ORDER BY published_at DESC, id DESC LIMIT ?`,
           )
-            .bind(limit)
+            .bind(Math.min(limit * 6 + 60, 300))
             .all<{
               id: string;
-              title: string;
+              title: string | null;
               family: string | null;
               sha256: string | null;
               severity: string | null;
-              published_at: string;
+              published_at: string | null;
+              report_json: string | null;
             }>();
-          const data = (rows.results || [])
-            .filter((row) => /^MAL-\d{4}-\d+$/.test(String(row.id)))
-            .map((row) => ({
+
+          const seenTitles = new Set<string>();
+          const data: Array<Record<string, unknown>> = [];
+          for (const row of rows.results || []) {
+            if (!/^MAL-\d{4}-\d+$/.test(String(row.id))) continue;
+            let record: Record<string, unknown> = {};
+            try {
+              const parsed = JSON.parse(String(row.report_json || '{}'));
+              record = parsed && typeof parsed === 'object' ? parsed : {};
+            } catch {
+              record = {};
+            }
+            const ecosystem = advisoryEcosystem(record, row.title);
+            const title = cleanAdvisoryTitle(row.title ?? record.title ?? record.summary);
+            if (ecosystemParam && ecosystem.toLowerCase() !== ecosystemParam) continue;
+            if (query && !`${title} ${row.id} ${row.family ?? ''}`.toLowerCase().includes(query)) continue;
+            const key = `${title.toLowerCase()}|${ecosystem.toLowerCase()}`;
+            if (seenTitles.has(key)) continue;
+            seenTitles.add(key);
+            data.push({
               report_id: row.id,
-              // The stored title is the OSV summary, e.g.
-              // "Malicious code in @scope/pkg (npm)" — human-readable by design.
-              title: row.title,
+              title,
+              ecosystem,
+              package_name: typeof record.package_name === 'string' ? record.package_name : row.family,
               family: row.family,
               sha256: row.sha256,
               severity: row.severity,
-              published_at: row.published_at,
+              published_at: record.published_at ?? row.published_at,
+              modified_at: record.modified_at ?? null,
               source: 'openssf-osv',
-            }));
-          return jsonResponse({ data, meta: { total: data.length, source: 'openssf-osv' } });
+            });
+            if (data.length >= limit) break;
+          }
+          return jsonResponse({
+            data,
+            meta: {
+              total: data.length,
+              source: 'openssf-osv',
+              ecosystem: ecosystemParam || null,
+              q: query || null,
+              ordered_by: 'published_at_desc',
+            },
+          });
         } catch (dbErr: any) {
           console.warn('[API] supply-chain dossiers degraded:', dbErr?.message);
           return errorResponse('Supply-chain dossiers temporarily unavailable', 503, 'STORE_UNAVAILABLE');

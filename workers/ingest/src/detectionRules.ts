@@ -28,6 +28,14 @@ export const SIGMA_FAMILIES = [
   'asyncrat',
   'redline',
   'cobaltstrike',
+  'cobalt_strike',
+  // PHASE 7.3 — families ingested from the live keyless C2 feeds. A keyword is
+  // only ever a FILENAME match against SigmaHQ's tree; no rule is invented.
+  'sliver',
+  'havoc',
+  'bruteratel',
+  'brute_ratel',
+  'metasploit',
 ] as const;
 
 /** Canonical family labels a Sigma filename keyword maps onto. */
@@ -39,6 +47,12 @@ export const FAMILY_LABELS: Record<string, string> = {
   asyncrat: 'AsyncRAT',
   redline: 'RedLine',
   cobaltstrike: 'Cobalt Strike',
+  cobalt_strike: 'Cobalt Strike',
+  sliver: 'Sliver',
+  havoc: 'Havoc',
+  bruteratel: 'Brute Ratel',
+  brute_ratel: 'Brute Ratel',
+  metasploit: 'Metasploit',
 };
 
 /** Hard caps so one free-tier tick can never write an unbounded index. */

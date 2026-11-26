@@ -53,6 +53,31 @@ export interface IocIngestEnv {
 export const OSV_BUCKET_LIST =
   'https://storage.googleapis.com/storage/v1/b/osv-vulnerabilities/o?prefix=npm/MAL-2026-&maxResults=200';
 export const OSV_MEDIA_BASE = 'https://storage.googleapis.com/download/storage/v1/b/osv-vulnerabilities/o/';
+/**
+ * PHASE 7.3 — freshness fix.
+ *
+ * The bucket lists objects lexicographically, so a `prefix=npm/MAL-2026-`
+ * listing returns `MAL-2026-10`, `MAL-2026-100`… i.e. the oldest ids, which is
+ * why the workspace was stuck on July 2026 while the bucket already held
+ * November advisories. Each object carries an `updated` timestamp, so the fix is
+ * to read one bounded listing per ecosystem and sort by that timestamp.
+ *
+ * Go is deliberately absent: it holds 12 `MAL-*` objects in total and none from
+ * November 2026 (verified live 2026-11-26), so a request would only cost budget.
+ */
+export const OSV_ECOSYSTEMS = ['npm', 'PyPI', 'RubyGems'] as const;
+export function osvListingUrl(ecosystem: string): string {
+  return `https://storage.googleapis.com/storage/v1/b/osv-vulnerabilities/o?prefix=${encodeURIComponent(ecosystem)}/MAL-2026-&maxResults=1000&fields=items(name,updated)`;
+}
+/** Keyless daily C2 infrastructure (Cobalt Strike IPs, CSV with an `ioc` label). */
+export const C2INTEL_IPS =
+  'https://raw.githubusercontent.com/drb-ra/C2IntelFeeds/master/feeds/IPPortC2s-30day.csv';
+/** Keyless per-family IOC feed; `/v1/month/<tag>` is one request per family. */
+export const TWEETFEED_BASE = 'https://api.tweetfeed.live/v1/month';
+export const TWEETFEED_FAMILIES: Array<{ tag: string; family: string }> = [
+  { tag: 'sliver', family: 'Sliver' },
+  { tag: 'cobaltstrike', family: 'Cobalt Strike' },
+];
 export const URLHAUS_RECENT_API = 'https://urlhaus-api.abuse.ch/v1/urls/recent/';
 export const URLHAUS_TEXT_RECENT = 'https://urlhaus.abuse.ch/downloads/text_recent/';
 export const OPENPHISH_FEED = 'https://openphish.com/feed.txt';
@@ -67,7 +92,7 @@ export const RADAR_ATTACK_SUMMARY =
 
 /** Hard caps that keep a single free-tier tick small and predictable. */
 const MAX_ROWS_PER_SOURCE = 200;
-const MAX_OSV_RECORDS = 4;
+const MAX_OSV_RECORDS = 5;
 const MAX_RADAR_IPS = 5;
 
 export class Budget {
@@ -216,6 +241,96 @@ export function selectNewestMalObjectNames(
   return parsed.slice(0, Math.max(0, limit)).map((entry) => entry.name);
 }
 
+/**
+ * PHASE 7.3 — pick the genuinely newest advisories.
+ *
+ * Ids are NOT assigned in date order (`MAL-2026-985` is a November update while
+ * `MAL-2026-10093` is not), so recency comes from the bucket's own `updated`
+ * field. Ties fall back to the id ordinal, then the name, for a stable pick.
+ */
+export function selectNewestMalListings(
+  items: Array<{ name?: string; updated?: string }>,
+  limit: number,
+  alreadyStored: Iterable<string> = [],
+): string[] {
+  const stored = new Set(Array.from(alreadyStored).map((v) => String(v).toUpperCase()));
+  const parsed: Array<{ name: string; ordinal: number; updated: number }> = [];
+  for (const item of items || []) {
+    const name = String(item?.name || '');
+    const match = /^(?:[A-Za-z]+\/)?(MAL-\d{4}-(\d+))\.json$/.exec(name);
+    if (!match) continue;
+    if (stored.has(match[1].toUpperCase())) continue;
+    const updated = Date.parse(String(item?.updated || ''));
+    parsed.push({ name, ordinal: Number(match[2]) || 0, updated: Number.isNaN(updated) ? 0 : updated });
+  }
+  parsed.sort((a, b) => b.updated - a.updated || b.ordinal - a.ordinal || a.name.localeCompare(b.name));
+  return parsed.slice(0, Math.max(0, limit)).map((entry) => entry.name);
+}
+
+/**
+ * `Malicious code in @scope/pkg (npm)` → `Malicious code in @scope/pkg`.
+ * The ecosystem becomes its own field, so the badge is not duplicated in prose.
+ */
+export function cleanSupplyChainTitle(summary: string): string {
+  return String(summary || '')
+    .replace(/\s*\((?:npm|PyPI|Go|RubyGems|Maven|NuGet|Packagist|Hex|Pub|crates\.io|Linux|OSS-Fuzz)\)\s*$/i, '')
+    .trim();
+}
+
+/** Canonical family label from a C2 feed's free-text `ioc` column. */
+export function c2FamilyFromLabel(label: string): string | null {
+  const text = String(label || '').toLowerCase();
+  if (text.includes('cobalt')) return 'Cobalt Strike';
+  if (text.includes('sliver')) return 'Sliver';
+  if (text.includes('havoc')) return 'Havoc';
+  if (text.includes('brute ratel') || text.includes('bruteratel')) return 'Brute Ratel';
+  if (text.includes('metasploit') || text.includes('meterpreter')) return 'Metasploit';
+  if (text.includes('asyncrat')) return 'AsyncRAT';
+  return null;
+}
+
+/**
+ * C2IntelFeeds CSV: `#ip,port,ioc`. One IP may appear on several ports, so the
+ * parser keeps the first occurrence and ignores unlabelled/unknown families
+ * rather than guessing an attribution.
+ */
+export function parseC2IntelFeedsCsv(text: string): Array<{ ip: string; port: string | null; family: string }> {
+  const out: Array<{ ip: string; port: string | null; family: string }> = [];
+  const seen = new Set<string>();
+  for (const line of String(text || '').split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const [rawIp, rawPort, ...rest] = trimmed.split(',');
+    const ip = String(rawIp || '').replace(/"/g, '').trim();
+    if (!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(ip)) continue;
+    const family = c2FamilyFromLabel(rest.join(','));
+    if (!family || seen.has(ip)) continue;
+    seen.add(ip);
+    const port = String(rawPort || '').replace(/"/g, '').trim();
+    out.push({ ip, port: /^\d{1,5}$/.test(port) ? port : null, family });
+  }
+  return out;
+}
+
+/** TweetFeed JSON: `[{ type: 'ip'|'url'|'domain', value, tags }]`. */
+export function parseTweetFeed(
+  payload: unknown,
+  family: string,
+): Array<{ type: 'ip' | 'domain' | 'url'; value: string; family: string }> {
+  const list = Array.isArray(payload) ? payload : [];
+  const out: Array<{ type: 'ip' | 'domain' | 'url'; value: string; family: string }> = [];
+  const seen = new Set<string>();
+  for (const item of list as Array<Record<string, unknown>>) {
+    const type = String(item?.type || '').toLowerCase();
+    const value = String(item?.value || '').trim();
+    if (!value || seen.has(`${type}|${value}`)) continue;
+    if (type !== 'ip' && type !== 'domain' && type !== 'url') continue;
+    seen.add(`${type}|${value}`);
+    out.push({ type, value, family });
+  }
+  return out;
+}
+
 export interface OsvMaliciousMapping {
   report: {
     id: string;
@@ -240,17 +355,35 @@ export function mapOsvMaliciousRecord(record: Record<string, unknown>): OsvMalic
   const ecosystems: string[] = [];
   const packages: string[] = [];
   const hashes: string[] = [];
+  const affectedVersions: Array<{ introduced: string | null; fixed: string | null; last_affected: string | null }> = [];
   for (const entry of affected) {
     const pkg = entry?.package as Record<string, unknown> | undefined;
     const ecosystem = typeof pkg?.ecosystem === 'string' ? pkg.ecosystem : '';
     const name = typeof pkg?.name === 'string' ? pkg.name : '';
     if (ecosystem && !ecosystems.includes(ecosystem)) ecosystems.push(ecosystem);
     if (name && !packages.includes(name)) packages.push(name);
+    const versions = Array.isArray(entry?.versions) ? (entry.versions as unknown[]) : [];
+    for (const version of versions.slice(0, 20)) {
+      const label = String(version || '').trim();
+      // A MAL record lists the exact malicious releases; they are versions, not
+      // commit hashes, so they carry through to the dossier's version table.
+      if (label && !affectedVersions.some((row) => row.introduced === label && !row.fixed)) {
+        affectedVersions.push({ introduced: label, fixed: null, last_affected: label });
+      }
+    }
     const ranges = Array.isArray(entry?.ranges) ? (entry.ranges as Array<Record<string, unknown>>) : [];
     for (const range of ranges) {
       const events = Array.isArray(range?.events) ? (range.events as Array<Record<string, unknown>>) : [];
+      let introduced: string | null = null;
       for (const event of events) {
-        if (typeof event?.fixed === 'string' && /^[a-f0-9]{64}$/i.test(event.fixed)) hashes.push(event.fixed.toLowerCase());
+        if (typeof event?.introduced === 'string') introduced = event.introduced;
+        if (typeof event?.last_affected === 'string' && introduced) {
+          affectedVersions.push({ introduced, fixed: null, last_affected: event.last_affected });
+        }
+        if (typeof event?.fixed === 'string') {
+          if (/^[a-f0-9]{64}$/i.test(event.fixed)) hashes.push(event.fixed.toLowerCase());
+          if (introduced) affectedVersions.push({ introduced, fixed: event.fixed, last_affected: null });
+        }
       }
     }
   }
@@ -261,6 +394,8 @@ export function mapOsvMaliciousRecord(record: Record<string, unknown>): OsvMalic
   const details = typeof record?.details === 'string' ? record.details.trim() : '';
   const ecosystemLabel = ecosystems.length > 0 ? ecosystems.join('/') : 'open-source';
   const published = typeof record?.published === 'string' ? record.published : new Date().toISOString();
+  const modified = typeof record?.modified === 'string' ? record.modified : published;
+  const references = Array.isArray(record?.references) ? (record.references as unknown[]).slice(0, 20) : [];
 
   const iocs: IncomingIoc[] = hashes.map((hash) => ({
     type: 'sha256',
@@ -275,7 +410,7 @@ export function mapOsvMaliciousRecord(record: Record<string, unknown>): OsvMalic
       // Human-readable H1: the OSV summary already reads
       // "Malicious code in @pkg/name (npm)", so prefixing the id would only
       // repeat it. The id stays as copyable metadata in the dossier header.
-      title: summary,
+      title: cleanSupplyChainTitle(summary) || `Malicious package ${packages[0] || id}`,
       sha256: hashes[0] ?? null,
       family: packages[0] ?? null,
       summary: (details || summary).slice(0, 2000),
@@ -284,10 +419,18 @@ export function mapOsvMaliciousRecord(record: Record<string, unknown>): OsvMalic
       report_json: JSON.stringify({
         id,
         summary,
-        details: details.slice(0, 4000),
+        title: cleanSupplyChainTitle(summary),
+        ecosystem: ecosystems[0] ?? 'open-source',
         ecosystems,
+        package_name: packages[0] ?? null,
         packages: packages.slice(0, 10),
-        references: Array.isArray(record?.references) ? record.references : [],
+        affected_versions: affectedVersions.slice(0, 20),
+        published_at: published,
+        modified_at: modified,
+        details: details.slice(0, 6000),
+        references,
+        // Grounded in the OSV record only: the advisory's own database source.
+        provenance: { database: 'OSV.dev', advisory: `https://osv.dev/vulnerability/${id}` },
       }),
       published_at: published,
     },
@@ -403,12 +546,6 @@ export async function runIocIngestPass(
   const openssf: SourceTelemetry = { source: 'openssf-osv', status: 'FAILED', fetched: 0, accepted: 0, rejected: 0 };
   sources.push(openssf);
   try {
-    if (!budget.spend()) throw new Error('SUBREQUEST_BUDGET_EXHAUSTED');
-    const listing = await fetch(OSV_BUCKET_LIST, { headers: { accept: 'application/json' } });
-    if (!listing.ok) throw new Error(`HTTP_${listing.status}`);
-    const listingJson = (await readJson(listing)) as { items?: Array<{ name?: string }> } | null;
-    openssf.fetched = Array.isArray(listingJson?.items) ? listingJson!.items!.length : 0;
-
     const stored = await env.DB.prepare(
       `SELECT id FROM malware_reports WHERE source = 'openssf-osv' ORDER BY published_at DESC LIMIT 500`,
     )
@@ -416,21 +553,36 @@ export async function runIocIngestPass(
       .catch(() => ({ results: [] as Array<{ id: string }> }));
     const storedIds = (stored.results || []).map((row) => String(row.id));
 
-    let picks = selectNewestMalObjectNames(listingJson?.items || [], options.osvLimit ?? MAX_OSV_RECORDS, storedIds);
-    // The listing page is lexicographic; if every pick is already stored, walk
-    // the numeric ids backwards rather than re-reading the same four objects.
-    if (picks.length === 0) {
-      const numeric = (listingJson?.items || [])
-        .map((item) => /^(?:[a-z]+\/)?(MAL-\d{4}-(\d+))\.json$/i.exec(String(item?.name || '')))
-        .filter(Boolean) as RegExpExecArray[];
-      numeric.sort((a, b) => Number(b[2]) - Number(a[2]));
-      picks = numeric
-        .filter((m) => !storedIds.map((s) => s.toUpperCase()).includes(m[1].toUpperCase()))
-        .slice(0, options.osvLimit ?? MAX_OSV_RECORDS)
-        .map((m) => m[0].replace(/^(?:[a-z]+\/)/i, ''));
+    // One bounded listing per ecosystem: the bucket cannot be asked for
+    // "newest", so its `updated` timestamps are collected and sorted here.
+    const listings: Array<{ name?: string; updated?: string }> = [];
+    let listingFailures = 0;
+    for (const ecosystem of OSV_ECOSYSTEMS) {
+      if (!budget.spend()) break;
+      try {
+        const response = await fetch(osvListingUrl(ecosystem), { headers: { accept: 'application/json' } });
+        if (!response.ok) {
+          listingFailures += 1;
+          continue;
+        }
+        const payload = (await readJson(response)) as { items?: Array<{ name?: string; updated?: string }> } | null;
+        if (Array.isArray(payload?.items)) listings.push(...payload.items);
+      } catch {
+        listingFailures += 1;
+      }
+    }
+    openssf.fetched = listings.length;
+    if (openssf.fetched === 0) {
+      throw new Error(listingFailures > 0 ? 'OSV_LISTING_FAILED' : 'OSV_LISTING_EMPTY');
     }
 
+    const picks = selectNewestMalListings(listings, options.osvLimit ?? MAX_OSV_RECORDS, storedIds);
+
     const reportStatements: D1PreparedStatement[] = [];
+    // One advisory per (title, ecosystem): the same package can be re-published
+    // in several ecosystems, and a repeated title is what made the workspace
+    // look duplicated.
+    const seenTitles = new Set<string>();
     for (const objectName of picks) {
       if (!budget.spend()) break;
       const media = `${OSV_MEDIA_BASE}${encodeURIComponent(objectName)}?alt=media`;
@@ -440,6 +592,15 @@ export async function runIocIngestPass(
       if (!record) continue;
       const mapped = mapOsvMaliciousRecord(record);
       if (!mapped) continue;
+      let ecosystem = 'open-source';
+      try {
+        ecosystem = String(JSON.parse(mapped.report.report_json)?.ecosystem || 'open-source');
+      } catch {
+        ecosystem = 'open-source';
+      }
+      const titleKey = `${mapped.report.title.toLowerCase()}|${ecosystem.toLowerCase()}`;
+      if (seenTitles.has(titleKey)) continue;
+      seenTitles.add(titleKey);
       reportStatements.push(
         env.DB.prepare(
           `INSERT INTO malware_reports (id, title, sha256, family, summary, source, severity, report_json, published_at)
@@ -469,7 +630,8 @@ export async function runIocIngestPass(
       await env.DB.batch(chunk);
       malwareReportsWritten += chunk.length;
     }
-    openssf.status = 'OK';
+    openssf.status = openssf.accepted > 0 ? 'OK' : 'FAILED';
+    if (openssf.status === 'FAILED') openssf.error = 'NO_ADVISORY_FETCHED';
   } catch (error) {
     openssf.error = String((error as Error)?.message || error).slice(0, 160);
   }
@@ -531,6 +693,64 @@ export async function runIocIngestPass(
     feodo.status = 'OK';
   } catch (error) {
     feodo.error = String((error as Error)?.message || error).slice(0, 160);
+  }
+
+  // ── 3b. C2IntelFeeds — live keyless Cobalt Strike C2 infrastructure ─────
+  // PHASE 7.3. `montysecurity/C2-Tracker` is ARCHIVED (its `data/` files were
+  // removed and are no longer updated), so it cannot be a live source. This is
+  // the maintained keyless replacement: one CSV, updated daily, with an `ioc`
+  // column naming the family.
+  const c2intel: SourceTelemetry = { source: 'c2intel-feeds', status: 'FAILED', fetched: 0, accepted: 0, rejected: 0 };
+  sources.push(c2intel);
+  try {
+    if (!budget.spend()) throw new Error('SUBREQUEST_BUDGET_EXHAUSTED');
+    const response = await fetch(C2INTEL_IPS, { headers: { accept: 'text/csv' } });
+    if (!response.ok) throw new Error(`HTTP_${response.status}`);
+    const rows = parseC2IntelFeedsCsv(await response.text());
+    c2intel.fetched = rows.length;
+    pushRows(
+      'c2intel-feeds',
+      rows.map((row) => ({
+        type: 'ip' as const,
+        value: row.ip,
+        source: 'c2intel-feeds',
+        family: row.family,
+        confidence: 85,
+      })),
+    );
+    c2intel.status = rows.length > 0 ? 'OK' : 'FAILED';
+    if (rows.length === 0) c2intel.error = 'NO_ROWS';
+  } catch (error) {
+    c2intel.error = String((error as Error)?.message || error).slice(0, 160);
+  }
+
+  // ── 3c. TweetFeed — per-family keyless IOC lists (one request per family) ─
+  const tweetfeed: SourceTelemetry = { source: 'tweetfeed', status: 'SKIPPED', fetched: 0, accepted: 0, rejected: 0 };
+  sources.push(tweetfeed);
+  try {
+    for (const entry of TWEETFEED_FAMILIES) {
+      if (!budget.spend()) break;
+      const response = await fetch(`${TWEETFEED_BASE}/${encodeURIComponent(entry.tag)}`, {
+        headers: { accept: 'application/json' },
+      });
+      if (!response.ok) continue;
+      const rows = parseTweetFeed(await readJson(response), entry.family);
+      tweetfeed.fetched += rows.length;
+      pushRows(
+        'tweetfeed',
+        rows.map((row) => ({
+          type: row.type,
+          value: row.value,
+          source: 'tweetfeed',
+          family: row.family,
+          confidence: 80,
+        })),
+      );
+      tweetfeed.status = 'OK';
+    }
+  } catch (error) {
+    tweetfeed.status = 'FAILED';
+    tweetfeed.error = String((error as Error)?.message || error).slice(0, 160);
   }
 
   // ── 4. Spamhaus DROP CIDRs (baseline confidence 95) ─────────────────────

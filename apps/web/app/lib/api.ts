@@ -787,6 +787,9 @@ export interface MalwareFamilyIndexEntry {
   family: string;
   slug: string;
   active_count: number;
+  last_seen?: string | null;
+  sources?: string[];
+  sigma_rules?: number;
 }
 
 export async function getIocStats(): Promise<ApiResult<IocStats>> {
@@ -899,10 +902,49 @@ export interface SupplyChainDossier {
   report_id: string;
   title: string;
   family: string | null;
+  ecosystem?: string | null;
+  package_name?: string | null;
   sha256: string | null;
   severity: string | null;
   published_at: string;
+  modified_at?: string | null;
   source: string;
+}
+
+export interface SupplyChainAffectedVersion {
+  introduced: string | null;
+  fixed: string | null;
+  last_affected: string | null;
+}
+
+/** Full OSV advisory dossier rendered by `/intelligence/malware/advisories/:id`. */
+export interface SupplyChainDossierDetail extends SupplyChainDossier {
+  ecosystem: string;
+  package_name: string | null;
+  affected_versions: SupplyChainAffectedVersion[];
+  modified_at: string | null;
+  summary: string;
+  details: string;
+  references: Array<{ url: string; type?: string }>;
+  remediation: string[];
+  provenance: { database: string; advisory: string };
+}
+
+export async function getSupplyChainDossier(id: string): Promise<ApiResult<SupplyChainDossierDetail>> {
+  try {
+    const response = await apiFetch(
+      `${getApiBaseUrl()}/malware/supply-chain/reports/${encodeURIComponent(id)}`,
+      IOC_READ_INIT,
+    );
+    if (response.status === 404) return { state: "empty", data: null, error: "Advisory not found" };
+    if (!response.ok) return { state: "error", data: null, error: `Advisory returned HTTP ${response.status}` };
+    const payload = (await response.json()) as { data?: SupplyChainDossierDetail };
+    return payload.data
+      ? { state: "success", data: payload.data }
+      : { state: "error", data: null, error: "Advisory payload was empty" };
+  } catch {
+    return { state: "error", data: null, error: "Advisory is unavailable" };
+  }
 }
 
 /**

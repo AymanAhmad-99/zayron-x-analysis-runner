@@ -35,6 +35,28 @@ export function stixEscape(value: string): string {
   return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+/**
+ * RFC 3339 / ISO-8601 UTC timestamp.
+ *
+ * SQLite (`datetime('now')`) emits `2026-11-26 10:23:58` — space separated and
+ * with no zone. STIX 2.1 requires `YYYY-MM-DDTHH:MM:SS.sssZ`, and OpenCTI/MISP
+ * reject the space form, so every timestamp leaves this module normalized.
+ */
+export function toStixTimestamp(value: string | null | undefined, fallback: Date = new Date()): string {
+  const raw = String(value ?? '').trim();
+  if (!raw) return fallback.toISOString();
+  const candidate = raw.includes('T') ? raw : raw.replace(' ', 'T');
+  const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(candidate) ? candidate : `${candidate}Z`;
+  const parsed = Date.parse(zoned);
+  if (Number.isNaN(parsed)) return fallback.toISOString();
+  return new Date(parsed).toISOString();
+}
+
+/** RFC 3339 UTC with milliseconds — the only shape STIX 2.1 accepts. */
+export function isStixTimestamp(value: unknown): boolean {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value);
+}
+
 /** STIX 2.1 pattern for an indicator, or null for a type with no STIX object. */
 export function stixPatternFor(type: string, value: string): string | null {
   const t = String(type || '').toLowerCase();
@@ -42,10 +64,10 @@ export function stixPatternFor(type: string, value: string): string | null {
   if (t === 'domain') return `[domain-name:value = '${stixEscape(value)}']`;
   if (t === 'url') return `[url:value = '${stixEscape(value)}']`;
   if (t === 'cidr') {
-    // STIX has no CIDR object; a range is expressed as an ipv4-addr with a
-    // belongs-to relationship in full STIX, so the pattern stays a network
-    // literal and the range itself is carried verbatim in the object value.
-    return `[ipv4-addr:value = '${stixEscape(value.split('/')[0])}']`;
+    // STIX 2.1 allows an ipv4-addr literal to carry a CIDR suffix, so the range
+    // stays intact. Stripping `/24` (the previous behaviour) silently widened a
+    // blocklist entry to a single host for every downstream consumer.
+    return `[ipv4-addr:value = '${stixEscape(value)}']`;
   }
   if (t === 'sha256') return `[file:hashes.'SHA-256' = '${stixEscape(value)}']`;
   return null;
@@ -88,7 +110,8 @@ export function toStixBundle(
   records: readonly IocRecord[],
   options: { now?: Date; identityName?: string } = {},
 ): Record<string, unknown> {
-  const now = (options.now ?? new Date()).toISOString();
+  const nowDate = options.now ?? new Date();
+  const now = toStixTimestamp(null, nowDate);
   const objects: Array<Record<string, unknown>> = [stixIdentity()];
 
   for (const record of records) {
@@ -99,8 +122,8 @@ export function toStixBundle(
       type: 'indicator',
       spec_version: STIX_SPEC_VERSION,
       id: `indicator--${stableUuid(`${record.type}|${record.value}`)}`,
-      created: record.firstSeen || now,
-      modified: record.lastSeen || now,
+      created: toStixTimestamp(record.firstSeen, nowDate),
+      modified: toStixTimestamp(record.lastSeen, nowDate),
       name: defangIndicator(record.value),
       description: record.family
         ? `Observed in ${record.family} activity by ${options.identityName ?? 'ZAYRON-X'}.`
@@ -109,7 +132,7 @@ export function toStixBundle(
       pattern,
       pattern_type: 'stix',
       pattern_version: STIX_SPEC_VERSION,
-      valid_from: record.firstSeen || now,
+      valid_from: toStixTimestamp(record.firstSeen ?? record.lastSeen, nowDate),
       confidence: Math.max(0, Math.min(100, Math.round(Number(record.confidence) || 0))),
       labels: ['malicious-activity', ...(record.family ? [String(record.family)] : [])],
       created_by_ref: STIX_IDENTITY_ID,
@@ -137,7 +160,9 @@ export function isValidStixBundle(bundle: unknown): boolean {
     if (object.type === 'indicator') {
       if (object.pattern_type !== 'stix') return false;
       if (typeof object.pattern !== 'string' || !object.pattern.startsWith('[')) return false;
-      if (typeof object.valid_from !== 'string') return false;
+      // Strictly RFC 3339: a space-separated SQLite timestamp is not valid STIX.
+      if (!isStixTimestamp(object.valid_from)) return false;
+      if (!isStixTimestamp(object.created) || !isStixTimestamp(object.modified)) return false;
       const confidence = object.confidence;
       if (typeof confidence !== 'number' || confidence < 0 || confidence > 100) return false;
     }

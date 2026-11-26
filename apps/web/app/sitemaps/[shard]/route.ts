@@ -1,5 +1,5 @@
 import { apiFetch, getApiBaseUrl, getSiteUrl, getSitemapMaxShards } from "../../lib/siteConfig";
-import { getIocFamilies } from "../../lib/api";
+import { getIocFamilies, getSupplyChainDossiers } from "../../lib/api";
 import { familyHubPath } from "../../lib/iocSeo";
 import {
   buildUrlset,
@@ -55,7 +55,16 @@ export async function GET(
     // a soft-404 instead of a page.
     const families = await getIocFamilies();
     const familyEntries = (families.data ?? []).map((entry) => ({ loc: `${getSiteUrl()}${familyHubPath(entry.slug)}` }));
-    return xmlResponse(buildUrlset([...staticSitemapEntries(getSiteUrl()), ...familyEntries]));
+    // PHASE 7.3 — the live supply-chain advisory dossiers are indexable, so the
+    // ones actually served are advertised; a 404ing advisory is never listed.
+    const advisories = await getSupplyChainDossiers(30);
+    const advisoryEntries = (advisories.data ?? []).map((dossier) => ({
+      loc: `${getSiteUrl()}/intelligence/malware/advisories/${encodeURIComponent(dossier.report_id)}`,
+      lastmod: dossier.published_at ?? null,
+    }));
+    return xmlResponse(
+      buildUrlset([...staticSitemapEntries(getSiteUrl()), ...familyEntries, ...advisoryEntries]),
+    );
   }
 
   // Wave 4C — Free-Tier Survival Mode: a shard outside the configured cap is not
