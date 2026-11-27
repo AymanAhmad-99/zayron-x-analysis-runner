@@ -29,6 +29,7 @@ export const PRODUCTION_WEB_IDENTITY = {
     NEXT_PUBLIC_API_BASE_URL: 'https://zayron-x.co/api/v1',
     API_BASE_URL: 'https://api.zayron-x.co/api/v1',
     SITEMAP_MAX_SHARDS: '10',
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: '0x4AAAAAAGSdu64i5QZQpr03',
   },
   apiService: 'zayron-x-api',
 };

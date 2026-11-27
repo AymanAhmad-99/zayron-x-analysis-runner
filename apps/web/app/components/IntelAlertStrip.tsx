@@ -8,13 +8,14 @@ interface TurnstileApi {
     options: {
       sitekey: string;
       theme?: "dark" | "light" | "auto";
-      size?: "normal" | "compact";
+      size?: "normal" | "compact" | "flexible";
       callback?: (token: string) => void;
       "expired-callback"?: () => void;
       "error-callback"?: () => void;
     },
   ): string;
   reset(widgetId?: string): void;
+  remove?(widgetId?: string): void;
 }
 
 type StripMode = "daily" | "critical_kev";
@@ -32,6 +33,7 @@ export function IntelAlertStrip({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [turnstileValue, setTurnstileValue] = useState("");
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
 
   const turnstileRef = useRef<HTMLDivElement>(null);
   const turnstileWidgetId = useRef<string | null>(null);
@@ -48,13 +50,17 @@ export function IntelAlertStrip({
       turnstileWidgetId.current = api.render(container, {
         sitekey: turnstileSiteKey,
         theme: "dark",
-        size: "compact",
+        size: "normal",
         callback: (token: string) => {
           setTurnstileValue(token);
+          setTurnstileError(null);
           setErrorMessage(null);
         },
         "expired-callback": () => setTurnstileValue(""),
-        "error-callback": () => setTurnstileValue(""),
+        "error-callback": () => {
+          setTurnstileValue("");
+          setTurnstileError("Bot verification could not be completed. Reload the page and try again.");
+        },
       });
     };
 
@@ -64,6 +70,16 @@ export function IntelAlertStrip({
       else existing.addEventListener("load", mount);
       return () => {
         cancelled = true;
+        existing.removeEventListener("load", mount);
+        const api = (window as unknown as { turnstile?: TurnstileApi }).turnstile;
+        if (api?.remove && turnstileWidgetId.current) {
+          try {
+            api.remove(turnstileWidgetId.current);
+          } catch {
+            /* widget already removed */
+          }
+        }
+        turnstileWidgetId.current = null;
       };
     }
 
@@ -77,6 +93,16 @@ export function IntelAlertStrip({
 
     return () => {
       cancelled = true;
+      script.removeEventListener("load", mount);
+      const api = (window as unknown as { turnstile?: TurnstileApi }).turnstile;
+      if (api?.remove && turnstileWidgetId.current) {
+        try {
+          api.remove(turnstileWidgetId.current);
+        } catch {
+          /* widget already removed */
+        }
+      }
+      turnstileWidgetId.current = null;
     };
   }, [turnstileSiteKey]);
 
@@ -96,7 +122,7 @@ export function IntelAlertStrip({
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (turnstileSiteKey && !turnstileValue) {
-        setErrorMessage("Complete the verification check before subscribing.");
+        setErrorMessage("Complete the verification check below before subscribing.");
         return;
       }
       setSubmitting(true);
@@ -119,7 +145,7 @@ export function IntelAlertStrip({
         if (!res.ok || !payload?.ok) {
           setErrorMessage(payload?.error?.message || `Subscription failed (HTTP ${res.status})`);
         } else {
-          setStatusMessage("Subscribed. Daily verified briefings will arrive at 09:40 UTC.");
+          setStatusMessage("Check your inbox — your ZAYRON-X Welcome Briefing is on the way.");
           setEmail("");
         }
       } catch {
@@ -149,7 +175,7 @@ export function IntelAlertStrip({
       <div
         style={{
           border: "1px solid rgba(255,255,255,0.12)",
-          background: "rgba(13,13,12,0.72)",
+          background: "#090C10",
           padding: "18px 20px",
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
@@ -190,8 +216,12 @@ export function IntelAlertStrip({
               <button
                 type="submit"
                 className="ioc-cta"
-                disabled={submitting}
-                style={{ cursor: submitting ? "wait" : "pointer", whiteSpace: "nowrap" }}
+                disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileValue)}
+                style={{
+                  cursor: submitting || (Boolean(turnstileSiteKey) && !turnstileValue) ? "not-allowed" : "pointer",
+                  whiteSpace: "nowrap",
+                  opacity: submitting || (Boolean(turnstileSiteKey) && !turnstileValue) ? 0.6 : 1,
+                }}
               >
                 {submitting ? "SUBSCRIBING..." : "SUBSCRIBE"}
               </button>
@@ -225,7 +255,17 @@ export function IntelAlertStrip({
               </button>
             </div>
             {turnstileSiteKey ? (
-              <div ref={turnstileRef} style={{ maxWidth: "100%", overflow: "hidden" }} />
+              <div ref={turnstileRef} data-sitekey={turnstileSiteKey} style={{ maxWidth: "100%", overflow: "hidden" }} />
+            ) : null}
+            {turnstileSiteKey && !turnstileValue && !turnstileError ? (
+              <p className="ioc-note" role="status" style={{ margin: 0 }}>
+                Complete the verification check above to enable subscription.
+              </p>
+            ) : null}
+            {turnstileError ? (
+              <p className="ioc-note" role="alert" style={{ color: "#ff4d2e", margin: 0 }}>
+                {turnstileError}
+              </p>
             ) : null}
             {statusMessage ? (
               <p className="ioc-note" role="status" style={{ color: "#2ecc71", margin: 0 }}>

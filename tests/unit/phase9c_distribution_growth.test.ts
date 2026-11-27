@@ -588,4 +588,21 @@ describe('Phase 9C — RSS 2.0 + WebSub, Sitemap RFC 3339 & Idempotent Migration
     expect(sql).toContain('CREATE TABLE IF NOT EXISTS email_subscribers');
     expect(sql).not.toMatch(/DROP\s+TABLE|ALTER\s+TABLE/i);
   });
+
+  test('Turnstile public site key, CSP, and IntelAlertStrip subscription guards are wired for production', () => {
+    const prodConfig = readFileSync('tools/lib/web-production-config.mjs', 'utf8');
+    expect(prodConfig).toContain("NEXT_PUBLIC_TURNSTILE_SITE_KEY: '0x4AAAAAAGSdu64i5QZQpr03'");
+
+    const middleware = readFileSync('apps/web/middleware.ts', 'utf8');
+    expect(middleware).toContain('https://challenges.cloudflare.com');
+    expect(middleware).toContain("frame-src 'self' https://challenges.cloudflare.com");
+
+    const strip = readFileSync('apps/web/app/components/IntelAlertStrip.tsx', 'utf8');
+    expect(strip).toContain('turnstile/v0/api.js?render=explicit');
+    expect(strip).toContain('theme: "dark"');
+    expect(strip).toContain('#090C10');
+    expect(strip).toContain('disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileValue)}');
+    expect(strip).toContain('Check your inbox — your ZAYRON-X Welcome Briefing is on the way.');
+    expect(strip).toContain('resetTurnstile()');
+  });
 });
