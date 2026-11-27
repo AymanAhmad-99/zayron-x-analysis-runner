@@ -3,8 +3,8 @@ import { Navbar } from "../components/Navbar";
 import { DeveloperPortal } from "../components/DeveloperPortal";
 import { SiteFooter } from "../components/SiteFooter";
 import { PipelineHealthBadge } from "../components/PipelineHealthBadge";
-import { isPreviewDeployment } from "../lib/siteConfig";
-import { buildOpenGraph, resolvePageRobots } from "../lib/seo";
+import { getSiteUrl, isPreviewDeployment } from "../lib/siteConfig";
+import { buildOpenGraph, buildWebPageJsonLd, resolvePageRobots } from "../lib/seo";
 
 export const metadata: Metadata = {
   title: "ZAYRON-X Intelligence API — Developers",
@@ -31,8 +31,20 @@ export default function DevelopersPage() {
   const runtimeEnv = process.env as Record<string, string | undefined>;
   const turnstileSiteKey = (runtimeEnv["NEXT_PUBLIC_" + "TURNSTILE_SITE_KEY"] ?? "").trim();
 
+  // PHASE 9C — the developer portal had no primary node of its own.
+  const jsonLd = buildWebPageJsonLd({
+    siteUrl: getSiteUrl(),
+    path: "/developers",
+    name: "ZAYRON-X Intelligence API — Developers",
+    description:
+      "Source-verified vulnerability intelligence over a versioned OpenAPI 3.1 REST API with self-serve bearer tokens and edge rate limits.",
+  });
   return (
     <main className="site-atmosphere">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
       <div className="page-content">
         <Navbar />
         <PipelineHealthBadge />

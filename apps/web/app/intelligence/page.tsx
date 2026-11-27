@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IntelligenceShell } from "../components/IntelligenceShell";
-import { buildOpenGraph } from "../lib/seo";
+import { buildOpenGraph, buildWebPageJsonLd } from "../lib/seo";
+import { getSiteUrl } from "../lib/siteConfig";
 
 export const metadata: Metadata = {
   title: "Threat intelligence",
@@ -15,4 +16,24 @@ export const metadata: Metadata = {
   }),
 };
 
-export default function IntelligencePage() { return <IntelligenceShell />; }
+const DESCRIPTION =
+  "Evidence-grounded vulnerability, malware, exploit, actor and campaign intelligence with explicit truth states for every claim.";
+
+/** PHASE 9C — hub pages publish their own primary `WebPage` node. */
+export default function IntelligencePage() {
+  const jsonLd = buildWebPageJsonLd({
+    siteUrl: getSiteUrl(),
+    path: "/intelligence",
+    name: "Threat intelligence",
+    description: DESCRIPTION,
+  });
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <IntelligenceShell />
+    </>
+  );
+}

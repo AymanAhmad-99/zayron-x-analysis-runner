@@ -48,16 +48,37 @@ function normalizePath(pathname: string): string {
 /**
  * Baseline enterprise response headers.
  *
- * Applied to every response that leaves the Worker — redirects included — so no
- * path can serve without them. A CSP is deliberately absent: the site inlines a
- * vinext streaming bootstrap script, so a policy here would need a nonce plumbing
- * change rather than a guessed directive.
+ * Applied to every response that leaves the Worker — redirects and
+ * cache-busted origin renders included — so no path can serve without them.
+ * This is the authoritative hardening pass: a `next.config.ts` header rule is
+ * only attached to the routes that config compiled, while middleware runs on
+ * every matched path.
+ *
+ * CSP: inline scripts remain permitted because Next.js emits its own streaming
+ * bootstrap/hydration scripts and the app does not use per-request nonces.
+ * Cloudflare Turnstile (self-serve key form) and Cloudflare Web Analytics are
+ * explicitly allowed, so neither is blocked at runtime.
  */
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev",
+  "frame-src 'self' https://challenges.cloudflare.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+  "Content-Security-Policy": CONTENT_SECURITY_POLICY,
 };
 
 function harden(response: NextResponse): NextResponse {
@@ -78,10 +99,20 @@ function harden(response: NextResponse): NextResponse {
  */
 const PUBLIC_PAGE_CACHE = new Set([
   "/",
+  "/intelligence",
   "/intelligence/vulnerabilities",
   "/intelligence/malware",
   // PHASE 7C — the live IOC workspace and the server-rendered family hubs.
   "/intelligence/iocs",
+  // PHASE 9C — the SSR catalogs that previously re-rendered on every crawl hit
+  // and exhausted the Free-tier CPU ceiling (`Error 1102`). They are identical
+  // for every anonymous visitor and are already revalidated against a 300s API
+  // window, so the edge may serve a repeat request without invoking the Worker.
+  "/intelligence/campaigns",
+  "/intelligence/threat-actors",
+  "/intelligence/exploits",
+  "/intelligence/techniques",
+  "/news",
   "/pricing",
   "/developers",
 ]);
@@ -91,7 +122,15 @@ const PUBLIC_PAGE_CACHE = new Set([
  * document keyed only by its slug, so it inherits the same 300s edge policy as
  * the catalog roots rather than the Worker serving every crawler hit.
  */
-const PUBLIC_PAGE_CACHE_PREFIXES = ["/intelligence/malware/families/"];
+const PUBLIC_PAGE_CACHE_PREFIXES = [
+  "/intelligence/malware/families/",
+  // PHASE 9C — the SSR dossier trees. Each URL is a stable, anonymous document
+  // keyed only by its slug; caching them keeps a crawler burst off the origin.
+  "/intelligence/threat-actors/",
+  "/intelligence/campaigns/",
+  "/intelligence/techniques/",
+  "/news/",
+];
 
 const PUBLIC_PAGE_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
 

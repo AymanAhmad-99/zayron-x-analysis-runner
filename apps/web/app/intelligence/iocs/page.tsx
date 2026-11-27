@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { IocWorkbench } from "../../components/IocWorkbench";
-import { isPreviewDeployment } from "../../lib/siteConfig";
-import { resolvePageRobots } from "../../lib/seo";
+import { getSiteUrl, isPreviewDeployment } from "../../lib/siteConfig";
+import { buildWebPageJsonLd, resolvePageRobots } from "../../lib/seo";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -56,5 +56,25 @@ export default async function IocsPage({
   searchParams?: Promise<SearchParams> | SearchParams;
 }) {
   const resolved = searchParams ? await searchParams : undefined;
-  return <IocWorkbench initialQuery={readQuery(resolved)} />;
+  // PHASE 9C — the workspace had no primary node of its own. A transient
+  // `?q=` lookup is `noindex` at the metadata level, so the node is emitted only
+  // for the stable, indexable tier-1 URL.
+  const query = readQuery(resolved);
+  if (query.length > 0) return <IocWorkbench initialQuery={query} />;
+  const jsonLd = buildWebPageJsonLd({
+    siteUrl: getSiteUrl(),
+    path: "/intelligence/iocs",
+    name: "Live IOC intelligence",
+    description:
+      "Live, defanged indicators of compromise with confidence, decay TTL and firewall-ready EDL counts.",
+  });
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <IocWorkbench initialQuery={query} />
+    </>
+  );
 }

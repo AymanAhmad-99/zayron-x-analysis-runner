@@ -193,8 +193,12 @@ describe("Wave 4B — sitemap XML builders", () => {
       malware: 1,
     });
     expect(entries[0].loc).toBe("https://zayron-x.co/sitemaps/static.xml");
+    // PHASE 9C — `/sitemaps/news.xml` is a fixed, always-served shard and is
+    // listed unconditionally, so it sits between the static shard and the
+    // dynamic ones.
     expect(entries.map((e) => e.loc)).toEqual([
       "https://zayron-x.co/sitemaps/static.xml",
+      "https://zayron-x.co/sitemaps/news.xml",
       "https://zayron-x.co/sitemaps/vulnerabilities-1.xml",
       "https://zayron-x.co/sitemaps/vulnerabilities-2.xml",
       "https://zayron-x.co/sitemaps/malware-1.xml",
@@ -204,9 +208,14 @@ describe("Wave 4B — sitemap XML builders", () => {
     expect(xml).not.toContain("<urlset");
   });
 
-  test("an unreachable API degrades the index to static.xml only", () => {
+  test("an unreachable API degrades the index to the fixed shards only", () => {
+    // PHASE 9C — the fixed set is `static.xml` + `news.xml`; only the DYNAMIC
+    // shards depend on the API manifest.
     const entries = buildSitemapIndexEntries("https://zayron-x.co", null);
-    expect(entries).toEqual([{ loc: "https://zayron-x.co/sitemaps/static.xml" }]);
+    expect(entries).toEqual([
+      { loc: "https://zayron-x.co/sitemaps/static.xml" },
+      { loc: "https://zayron-x.co/sitemaps/news.xml" },
+    ]);
   });
 
   test("shard names are strictly validated (invalid ⇒ 404 path)", () => {

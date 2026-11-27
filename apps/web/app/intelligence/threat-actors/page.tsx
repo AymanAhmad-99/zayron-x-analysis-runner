@@ -37,7 +37,11 @@ function safeJsonLd(value: unknown): string {
 }
 
 export default async function ThreatActorsPage() {
-  const initial = await getThreatActors({ limit: 200 });
+  // PHASE 9C — SSR payload budget. 60 actors cover the first paint and the
+  // ranking head; the remaining catalog rows are loaded on demand. Serialising
+  // all 185 full profiles into the RSC flight payload exceeded the Free-tier
+  // CPU ceiling on this route.
+  const initial = await getThreatActors({ limit: 60 });
   const site = getSiteUrl();
   const summary = initial.data?.summary;
   const jsonLd = buildLinkedJsonLdGraph({

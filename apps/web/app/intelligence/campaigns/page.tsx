@@ -36,7 +36,11 @@ function safeJsonLd(value: unknown): string {
 }
 
 export default async function CampaignsPage() {
-  const initial = await getCampaigns({ limit: 100 });
+  // PHASE 9C — SSR payload budget. The Worker renders the first page only; the
+  // full 56-campaign catalog stays reachable through the API and the client
+  // filter. Rendering every row (with its 1,600-character narrative) on the
+  // first byte was the dominant `Error 1102` cost on this route.
+  const initial = await getCampaigns({ limit: 40 });
   const site = getSiteUrl();
   const jsonLd = {
     "@context": "https://schema.org",

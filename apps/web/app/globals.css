@@ -190,3 +190,15 @@
 .ioc-pivots-label{font-size:9px;letter-spacing:.1em;color:var(--muted)}
 .ioc-pivot{font-size:11px;padding:4px 10px;border:1px solid var(--border);color:var(--text);text-decoration:none}
 .ioc-pivot:hover{border-color:var(--orange);color:var(--orange)}
+
+/* PHASE 9C — mobile horizontal-overflow guard.
+   A 390px viewport must never scroll sideways: a single unbreakable token (a
+   long package name, a defanged URL, a wide monospace block) used to widen the
+   document by 6–9px on `/` and on supply-chain advisories. The document is
+   clipped at the horizontal axis and every replaced/widening element is capped,
+   while genuinely wide tables and code blocks keep their own scroll container. */
+html,body{overflow-x:clip;max-width:100%}
+img,video,canvas,svg,iframe{max-width:100%}
+pre,code{max-width:100%;overflow-wrap:anywhere}
+.ioc-value,.vulnerability-table td,.ioc-telemetry-card small,.mr-subnav{min-width:0;overflow-wrap:anywhere}
+

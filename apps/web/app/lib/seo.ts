@@ -134,6 +134,36 @@ export interface JsonLdGraphInput {
  * primary entity linked to both, and an optional FAQPage. Emitting separate
  * unlinked blocks is what makes answer engines treat the facts as unrelated.
  */
+/**
+ * PHASE 9C — the primary node an indexable page was missing.
+ *
+ * The layout emits the site-wide `#organization` / `#website` graph on every page,
+ * but five hub pages had no page-level node of their own, so an answer engine saw
+ * a site graph with no document. This emits the `WebPage` node and links it back
+ * to the existing graph by `@id` — no duplicate Organization is invented.
+ */
+export function buildWebPageJsonLd(input: {
+  siteUrl: string;
+  path: string;
+  name: string;
+  description: string;
+}): Record<string, unknown> {
+  const site = (input.siteUrl || CANONICAL_SITE_URL).replace(/\/+$/, "");
+  const url = `${site}${input.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${url}#webpage`,
+    url,
+    name: input.name,
+    description: input.description,
+    inLanguage: "en",
+    isAccessibleForFree: true,
+    isPartOf: { "@id": `${site}/#website` },
+    about: { "@id": `${site}/#organization` },
+  };
+}
+
 export function buildLinkedJsonLdGraph(input: JsonLdGraphInput): Record<string, unknown> {
   const site = (input.siteUrl || CANONICAL_SITE_URL).replace(/\/+$/, "");
   const orgId = `${site}/#organization`;

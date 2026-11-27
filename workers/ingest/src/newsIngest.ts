@@ -33,6 +33,53 @@ export const NEWS_MAX_SUBREQUESTS = 6;
 export const NEWS_MAX_ARTICLES_PER_PASS = 5;
 export const NEWS_TITLE_LOCK_HOURS = 72;
 
+/**
+ * PHASE 9C — per-feed allocation ceiling.
+ *
+ * Ranking purely by publication time made the newsroom single-source: whichever
+ * feed published most recently won all five slots, so CISA Advisories, SANS ISC
+ * and CISA News produced zero briefings while The Hacker News produced every one.
+ * A source-fair newsroom allocates round-robin and caps each feed, so one
+ * prolific publisher can never crowd the others out of a pass.
+ */
+export const NEWS_MAX_ARTICLES_PER_FEED = 2;
+
+/**
+ * Round-robin allocation across feeds.
+ *
+ * Within each feed the newest items win; across feeds the pick rotates, one item
+ * per feed per round, and no feed may contribute more than `perFeedCap`. The
+ * result is deterministic for a given input, which is what makes it testable.
+ */
+export function allocateAcrossFeeds(
+  items: NewsItem[],
+  maxArticles: number,
+  perFeedCap: number = NEWS_MAX_ARTICLES_PER_FEED,
+): NewsItem[] {
+  const cap = Math.max(1, Math.floor(perFeedCap));
+  const byFeed = new Map<string, NewsItem[]>();
+  const ordered = [...(Array.isArray(items) ? items : [])].sort(
+    (a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt),
+  );
+  for (const item of ordered) {
+    const key = item.sourceName;
+    const bucket = byFeed.get(key) ?? [];
+    if (bucket.length >= cap) continue;
+    bucket.push(item);
+    byFeed.set(key, bucket);
+  }
+  const feeds = [...byFeed.keys()];
+  const allocated: NewsItem[] = [];
+  for (let round = 0; round < cap; round += 1) {
+    for (const feed of feeds) {
+      if (allocated.length >= maxArticles) return allocated;
+      const bucket = byFeed.get(feed) ?? [];
+      if (bucket.length > round) allocated.push(bucket[round]);
+    }
+  }
+  return allocated;
+}
+
 const USER_AGENT = "ZAYRON-X-Newsroom/1.0 (+https://zayron-x.co)";
 
 /** Pure slot predicate; exported so the unit gate can prove zero overlap. */
@@ -609,11 +656,13 @@ export async function runNewsIngestPass(
     }
   }
 
-  // Freshness: newest first, never future-dated.
-  items.sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt));
+  // PHASE 9C — source-fair candidate pool. The pool is wider than one pass so a
+  // duplicate never starves the allocation, but each feed stays capped and the
+  // write loop below still stops at `limit`.
+  const candidates = allocateAcrossFeeds(items, Math.max(limit * 3, 12));
 
   const withFingerprint: Array<{ item: NewsItem; fingerprint: string }> = [];
-  for (const item of items.slice(0, 60)) {
+  for (const item of candidates) {
     withFingerprint.push({ item, fingerprint: await fingerprintOf(item) });
   }
 

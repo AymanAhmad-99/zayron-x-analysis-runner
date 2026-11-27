@@ -904,6 +904,15 @@ export interface MalwareFamilySummary {
   slug: string;
   /** PHASE 9A — actors and campaigns that document this family as tooling. */
   attribution?: FamilyAttribution | null;
+  /**
+   * PHASE 9C — true when the hub resolves from the canonical `malware` catalog
+   * rather than from live indicators. A canonical hub is a complete page with an
+   * honestly empty indicator set, never a 404.
+   */
+  canonical?: boolean;
+  description?: string | null;
+  /** Stored ATT&CK edges for a canonical family (empty for a live IOC family). */
+  techniques?: Array<{ id: string; name: string; tactic: string }>;
   active_count: number;
   edl_ready: number;
   by_type: Record<string, number>;

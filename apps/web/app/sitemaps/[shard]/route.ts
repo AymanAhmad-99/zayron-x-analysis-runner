@@ -131,6 +131,26 @@ export async function GET(
     });
   }
 
+  // PHASE 9C — the `malware` shard used to advertise only the handful of rows
+  // the report store returned, while the served family hubs and supply-chain
+  // advisory dossiers were never listed. Both are now part of the shard: the
+  // family index resolved by the API (live IOC families + canonical catalog
+  // profiles) and the advisories the app actually renders.
+  const hubEntries: Array<{ loc: string; lastmod?: string | null }> = [];
+  if (parsed.kind === "malware") {
+    const familyIndex = await getIocFamilies();
+    for (const family of familyIndex.data ?? []) {
+      hubEntries.push({ loc: `${getSiteUrl()}${familyHubPath(family.slug)}`, lastmod: family.last_seen ?? null });
+    }
+    const advisories = await getSupplyChainDossiers(30);
+    for (const dossier of advisories.data ?? []) {
+      hubEntries.push({
+        loc: `${getSiteUrl()}/intelligence/malware/advisories/${encodeURIComponent(dossier.report_id)}`,
+        lastmod: dossier.published_at ?? null,
+      });
+    }
+  }
+
   let payload: ShardResponse;
   try {
     const response = await apiFetch(
@@ -154,5 +174,5 @@ export async function GET(
       lastmod: item.updated_at ?? null,
     }));
 
-  return xmlResponse(buildUrlset(entries));
+  return xmlResponse(buildUrlset([...entries, ...hubEntries]));
 }

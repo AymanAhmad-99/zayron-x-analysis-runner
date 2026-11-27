@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { RouteShell } from "../components/RouteShell";
-import { getNewsIndex, getNewsTelemetry, NEWS_CATEGORIES, formatNewsDate, newsHref, severityAccent } from "../lib/news";
+import { getNewsIndex, getNewsTelemetry, NEWS_CATEGORIES, categoryLabel, formatNewsDate, newsHref, severityAccent } from "../lib/news";
 import { getSiteUrl, isPreviewDeployment } from "../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
@@ -145,7 +145,7 @@ export default async function NewsPage({ searchParams }: Props) {
           {items.map((item) => (
             <article key={item.slug} className="ioc-telemetry-card" style={{ borderLeft: `2px solid ${severityAccent(item.severity)}` }}>
               <span className="ioc-note">
-                {item.category} · {item.severity} · {item.source_name} · {formatNewsDate(item.published_at)}
+                {categoryLabel(item.category)} · {item.severity} · {item.source_name} · {formatNewsDate(item.published_at)}
               </span>
               <h3 className="ioc-section-title" style={{ margin: "8px 0" }}>
                 <a href={newsHref(item.slug)}>{item.title}</a>

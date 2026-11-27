@@ -78,6 +78,24 @@ export const NEWS_CATEGORIES = [
   { value: "ADVISORY", label: "Advisory" },
 ] as const;
 
+/**
+ * PHASE 9C — the stored enum is not a display label.
+ *
+ * `SUPPLY_CHAIN` is a database value; a reader must never see it. The map is the
+ * single source of truth for both the filter strip and the card metadata line.
+ */
+export function categoryLabel(value: string): string {
+  const raw = String(value ?? "").trim().toUpperCase();
+  if (!raw) return "Advisory";
+  const match = NEWS_CATEGORIES.find((entry) => entry.value === raw);
+  if (match) return match.label;
+  return raw
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
 const READ_INIT = {
   headers: { accept: "application/json" },
   next: { revalidate: 300 },

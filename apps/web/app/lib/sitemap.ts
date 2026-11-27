@@ -128,12 +128,22 @@ export function buildSitemapIndex(entries: SitemapEntry[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemaps}\n</sitemapindex>\n`;
 }
 
-/** `static.xml` always exists, so the index is never empty (API outage ⇒ 1 entry). */
+/**
+ * `static.xml` always exists, so the index is never empty (API outage ⇒ 2 entries).
+ *
+ * PHASE 9C — `/sitemaps/news.xml` was published and served since Phase 9B but the
+ * index never referenced it, so no crawler could discover the Google News shard.
+ * It is a fixed, always-present route (it degrades to a 503 rather than a bad
+ * feed), so it is listed unconditionally, exactly like `static.xml`.
+ */
 export function buildSitemapIndexEntries(
   siteUrl: string,
   shards: Partial<Record<SitemapKind, number>> | null,
 ): SitemapEntry[] {
-  const entries: SitemapEntry[] = [{ loc: `${siteUrl}/sitemaps/static.xml` }];
+  const entries: SitemapEntry[] = [
+    { loc: `${siteUrl}/sitemaps/static.xml` },
+    { loc: `${siteUrl}/sitemaps/news.xml` },
+  ];
   if (!shards) return entries;
   for (const kind of SITEMAP_KINDS) {
     const count = Math.max(0, Math.floor(Number(shards[kind] ?? 0)));

@@ -655,7 +655,19 @@ export const LIVE_POC_CVES_SQL = `SELECT DISTINCT cve_id FROM cve_pocs LIMIT 400
  * PHASE 9A (F1) — every CVE that has a public advisory page. The dossier UI may
  * only link internally when a CVE is in this set.
  */
-export const CATALOG_CVE_IDS_SQL = `SELECT cve_id FROM vulnerabilities LIMIT 8000`;
+/**
+ * PHASE 9C (P1-10) — the set of CVEs a dossier may link to INTERNALLY.
+ *
+ * This query previously selected every row in `vulnerabilities`, so a
+ * `SYNTHETIC_UNVERIFIED` row (`CVE-2019-19781`, `CVE-2019-11510`, …) counted as
+ * "in catalog" and the dossier emitted an internal link to a page the public
+ * detail route deliberately 404s. The gate must be the SAME gate the detail
+ * route uses: only `AUTHORITATIVE_VERIFIED` rows have a public page.
+ */
+export const CATALOG_CVE_IDS_SQL = `SELECT cve_id FROM vulnerabilities
+   WHERE provenance_state = 'AUTHORITATIVE_VERIFIED'
+     AND cve_id IS NOT NULL AND cve_id <> ''
+   LIMIT 8000`;
 
 export async function loadThreatActorContext(db: any): Promise<{
   families: LiveFamily[];

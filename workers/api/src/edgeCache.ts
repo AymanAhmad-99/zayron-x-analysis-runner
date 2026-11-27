@@ -88,6 +88,21 @@ const PUBLIC_READ_CACHE_EXACT = new Set<string>([
   // PHASE 7C — the OpenSSF dossier list is an anonymous catalog read.
   "/api/v1/malware/supply-chain/reports",
   "/api/v1/feed",
+  // PHASE 9C — AI-discovery files are byte-identical for every caller and are
+  // read by answer engines on every visit; caching them at the edge is what
+  // removes the D1 round trip behind a warm `/llms.txt`.
+  "/api/v1/llms.txt",
+  "/api/v1/llms-full.txt",
+  // PHASE 9B — the programmatic hubs and the newsroom index are shared reads.
+  "/api/v1/news",
+  "/api/v1/news/telemetry",
+  "/api/v1/vendors",
+  "/api/v1/regions",
+  "/api/v1/techniques",
+  "/api/v1/threat-actors",
+  "/api/v1/campaigns",
+  "/api/v1/exploits",
+  "/api/v1/iocs/families",
 ]);
 
 const PUBLIC_READ_CACHE_PREFIXES = [

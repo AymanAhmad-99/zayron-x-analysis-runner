@@ -839,3 +839,133 @@ export async function buildFamilySummary(db: D1Database, slug: string): Promise<
     detection_rules: detection.rules,
   };
 }
+
+/* ── PHASE 9C — canonical malware-family resolution ─────────────────────────── */
+
+export interface FamilyTechniqueRef {
+  id: string;
+  name: string;
+  tactic: string;
+}
+
+export interface CanonicalFamilySummary extends FamilySummary {
+  /** True when the hub is a canonical catalog profile with no live indicators. */
+  canonical: true;
+  description: string | null;
+  techniques: FamilyTechniqueRef[];
+}
+
+export interface CanonicalFamilyHubEntry extends IocFamilyIndexEntry {
+  canonical: true;
+}
+
+/**
+ * PHASE 9C — the canonical `malware` catalog is the second half of the family
+ * namespace.
+ *
+ * `iocs.family` only ever contains families that currently hold an active
+ * indicator. `technique_edges` links instead to canonical `malware.slug` rows,
+ * so a hub for a documented family without live C2 today (lumma, asyncrat,
+ * mimikatz, medusa) used to 404 even though the technique mesh linked to it.
+ * These helpers resolve that half of the namespace from stored facts only —
+ * no indicator, count or technique is ever invented.
+ */
+export async function listCanonicalFamilyHubs(db: D1Database): Promise<CanonicalFamilyHubEntry[]> {
+  const rows = await db
+    .prepare(`SELECT slug, name, updated_at FROM malware ORDER BY name ASC LIMIT 200`)
+    .all<{ slug: string; name: string; updated_at: string | null }>()
+    .catch(() => ({ results: [] as Array<{ slug: string; name: string; updated_at: string | null }> }));
+  const edgeRows = await db
+    .prepare(
+      `SELECT entity_slug, COUNT(*) AS edges FROM technique_edges
+        WHERE entity_type = 'malware' GROUP BY entity_slug`,
+    )
+    .all<{ entity_slug: string; edges: number }>()
+    .catch(() => ({ results: [] as Array<{ entity_slug: string; edges: number }> }));
+  const edgeCounts = new Map<string, number>();
+  for (const row of edgeRows.results || []) {
+    edgeCounts.set(String(row.entity_slug).toLowerCase(), Number(row.edges) || 0);
+  }
+  return (rows.results || [])
+    .map((row) => {
+      const slug = familySlug(row.slug);
+      if (!slug) return null;
+      return {
+        family: String(row.name ?? row.slug),
+        slug,
+        active_count: 0,
+        last_seen: row.updated_at ?? null,
+        sources: [],
+        sigma_rules: edgeCounts.get(slug) ?? 0,
+        canonical: true as const,
+      };
+    })
+    .filter((entry): entry is CanonicalFamilyHubEntry => Boolean(entry));
+}
+
+/**
+ * Resolve a slug against the canonical `malware` catalog.
+ *
+ * Returns `null` when the family is not catalogued, so the caller can answer a
+ * real 404. A catalogued family always resolves — its `iocs` array is simply
+ * empty and its counts are zero, which is the honest state, not a missing page.
+ */
+export async function buildCanonicalFamilySummary(
+  db: D1Database,
+  slug: string,
+): Promise<CanonicalFamilySummary | null> {
+  const wanted = familySlug(slug);
+  const raw = String(slug ?? "").trim().toLowerCase();
+  if (!wanted || !raw) return null;
+
+  const row = await db
+    .prepare(
+      `SELECT name, slug, description, created_at, updated_at FROM malware
+        WHERE LOWER(slug) = ? OR LOWER(name) = ? LIMIT 1`,
+    )
+    .bind(wanted, raw)
+    .first<{
+      name: string;
+      slug: string;
+      description: string | null;
+      created_at: string | null;
+      updated_at: string | null;
+    }>();
+  if (!row) return null;
+
+  const canonicalSlug = familySlug(row.slug) || wanted;
+  const techniqueRows = await db
+    .prepare(
+      `SELECT technique_id, technique_name, tactic FROM technique_edges
+        WHERE entity_type = 'malware' AND entity_slug = ?
+        ORDER BY technique_id ASC LIMIT 200`,
+    )
+    .bind(canonicalSlug)
+    .all<{ technique_id: string; technique_name: string; tactic: string }>()
+    .catch(() => ({ results: [] as Array<{ technique_id: string; technique_name: string; tactic: string }> }));
+  const techniques: FamilyTechniqueRef[] = (techniqueRows.results || []).map((technique) => ({
+    id: String(technique.technique_id),
+    name: String(technique.technique_name ?? technique.technique_id),
+    tactic: String(technique.tactic ?? "unmapped"),
+  }));
+
+  const detection = await queryDetectionRules(db, { family: row.name }).catch(() => ({
+    rules: [] as DetectionRule[],
+  }));
+
+  return {
+    family: String(row.name),
+    slug: canonicalSlug,
+    active_count: 0,
+    edl_ready: 0,
+    by_type: {},
+    sources: [],
+    first_seen: row.created_at ?? null,
+    last_seen: row.updated_at ?? null,
+    iocs: [],
+    detection_rules: detection.rules,
+    canonical: true,
+    description: row.description ?? null,
+    techniques,
+  };
+}

@@ -21,7 +21,11 @@ const securityHeaders = [
       // from challenges.cloudflare.com, frames the challenge in an iframe and
       // calls back to that origin. Without these three directives the widget is
       // blocked by CSP and the form submits with no token.
-      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+      // PHASE 9C — Cloudflare Web Analytics injects `static.cloudflareinsights.com`
+      // and beacons to `cloudflareinsights.com`. Without both the beacon is blocked
+      // and every page logs a CSP violation. Kept in lockstep with
+      // `middleware.ts`, which applies the same policy on every path.
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
   },
 ];
 

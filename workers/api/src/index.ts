@@ -126,9 +126,11 @@ import { buildLlmsFullTxt, buildLlmsTxt, collectLlmsData, LLMS_CACHE_SECONDS } f
 import {
   EDL_PREVIEW_MAX_LINES,
   IOC_BULK_MAX_ITEMS,
+  buildCanonicalFamilySummary,
   buildEdl,
   buildFamilySummary,
   buildIocStats,
+  listCanonicalFamilyHubs,
   bulkLookupIocs,
   formatIocFeed,
   listIocFamilies,
@@ -435,6 +437,27 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Content-Type': 'application/json',
 };
+
+/**
+ * PHASE 9C — free-tier CPU guard for index payloads.
+ *
+ * A list row is a card, not a dossier. Shipping the full 1,600-character MITRE
+ * narrative on all 200 actor rows inflated the JSON that the Worker parses, the
+ * RSC flight payload it serialises and the HTML it renders — the three costs
+ * behind `Error 1102`. The dossier route keeps the complete text; the index
+ * carries a bounded excerpt.
+ */
+const LIST_SUMMARY_MAX_CHARS = 220;
+
+function slimListSummaries<T extends { summary?: unknown }>(items: T[]): T[] {
+  if (!Array.isArray(items)) return items;
+  return items.map((item) => {
+    if (!item || typeof item !== 'object') return item;
+    const summary = (item as { summary?: unknown }).summary;
+    if (typeof summary !== 'string' || summary.length <= LIST_SUMMARY_MAX_CHARS) return item;
+    return { ...item, summary: `${summary.slice(0, LIST_SUMMARY_MAX_CHARS).trimEnd()}…` };
+  });
+}
 
 function jsonResponse(data: unknown, status = 200, cacheTtlSeconds = 300) {
   const headers: Record<string, string> = {
@@ -792,8 +815,26 @@ const worker = {
           return new Request(request, { headers });
         })()
       : request;
+    // PHASE 9C — HEAD parity.
+    //
+    // The router matches on `request.method === 'GET'`, so a HEAD used to fall
+    // through every public read and answer with a boundary-level
+    // `private, no-store` while the identical GET answered `public, max-age=300`.
+    // A HEAD is by definition the GET without a body, so it is dispatched as one
+    // (hitting the same edge cache entry) and the body is stripped afterwards.
+    const isHead = request.method.toUpperCase() === 'HEAD';
+    const dispatch = isHead
+      ? async (req: Request) => {
+          const response = await worker.dispatch(new Request(req, { method: 'GET' }), env, ctx);
+          return new Response(null, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+          });
+        }
+      : (req: Request) => worker.dispatch(req, env, ctx);
     // Wave 4C: `ctx.waitUntil` keeps the edge-cache write off the response path.
-    return withSecurityBoundary(inboundRequest, env, (req) => worker.dispatch(req, env, ctx), undefined, {
+    return withSecurityBoundary(inboundRequest, env, dispatch, undefined, {
       waitUntil: (promise) => ctx.waitUntil(promise),
     });
   },
@@ -908,7 +949,16 @@ const worker = {
         if (path === '/api/v1/iocs/families') {
           try {
             const families = await listIocFamilies(env.DB);
-            return jsonResponse({ status: 'SUCCESS', count: families.length, data: families });
+            // PHASE 9C — the family namespace is the union of families with a
+            // live indicator set and the canonical `malware` catalog that the
+            // ATT&CK technique mesh links to. Without the union the sitemap and
+            // the hub index could not advertise a served page.
+            const liveSlugs = new Set(families.map((entry) => entry.slug));
+            const canonical = (await listCanonicalFamilyHubs(env.DB).catch(() => [])).filter(
+              (entry) => !liveSlugs.has(entry.slug),
+            );
+            const merged = [...families, ...canonical];
+            return jsonResponse({ status: 'SUCCESS', count: merged.length, data: merged });
           } catch (err: any) {
             console.error('[API] ioc families failed', { site: 'api.iocs.families', error: err?.message ?? String(err) });
             return errorResponse('Malware families temporarily unavailable', 503, 'STORE_UNAVAILABLE');
@@ -922,9 +972,16 @@ const worker = {
             return developerError(400, 'INVALID_FAMILY', 'A family slug is required');
           }
           try {
-            const summary = await buildFamilySummary(env.DB, slug);
+            // PHASE 9C — unified family resolution. A family with active
+            // indicators is built from `iocs`; a documented catalog family with
+            // no live C2 today is built from the canonical `malware` row plus
+            // its stored ATT&CK edges. Only a family in NEITHER namespace is a
+            // real 404.
+            const summary =
+              (await buildFamilySummary(env.DB, slug)) ??
+              (await buildCanonicalFamilySummary(env.DB, slug));
             if (!summary) {
-              return developerError(404, 'FAMILY_NOT_FOUND', 'No live indicators are tracked for this family');
+              return developerError(404, 'FAMILY_NOT_FOUND', 'No live indicators or canonical profile are tracked for this family');
             }
             // PHASE 9A — M ↔ A / M ↔ C: every actor and campaign that documents
             // this family as tooling.
@@ -5921,7 +5978,11 @@ const worker = {
             limit: url.searchParams.get('limit'),
             offset: url.searchParams.get('offset'),
           });
-          return jsonResponse({ status: 'SUCCESS', ...payload }, 200, 300);
+          return jsonResponse(
+            { status: 'SUCCESS', ...payload, items: slimListSummaries(payload.items) },
+            200,
+            300,
+          );
         } catch (err: any) {
           console.error('[API] threat actors degraded', { site: 'api.threat-actors', error: err?.message ?? String(err) });
           return errorResponse('Threat graph temporarily unavailable', 503, 'STORE_UNAVAILABLE');
@@ -5959,7 +6020,11 @@ const worker = {
             limit: url.searchParams.get('limit'),
             offset: url.searchParams.get('offset'),
           });
-          return jsonResponse({ status: 'SUCCESS', ...payload }, 200, 300);
+          return jsonResponse(
+            { status: 'SUCCESS', ...payload, items: slimListSummaries(payload.items) },
+            200,
+            300,
+          );
         } catch (err: any) {
           console.error('[API] campaigns degraded', { site: 'api.campaigns', error: err?.message ?? String(err) });
           return errorResponse('Campaign index temporarily unavailable', 503, 'STORE_UNAVAILABLE');
