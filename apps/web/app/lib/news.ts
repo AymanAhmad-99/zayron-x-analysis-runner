@@ -157,6 +157,14 @@ export function newsHref(slug: string): string {
   return `/news/${encodeURIComponent(slug)}`;
 }
 
+/**
+ * PHASE 10A — the deterministic 1200×675 branded cover for a briefing.
+ * Rendered on demand from the article's own metadata; cached at the edge.
+ */
+export function newsCoverUrl(slug: string): string {
+  return `/api/news-cover/${encodeURIComponent(slug)}`;
+}
+
 export function formatNewsDate(value: string): string {
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return value;

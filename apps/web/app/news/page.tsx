@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
 import { RouteShell } from "../components/RouteShell";
 import { IntelAlertStrip } from "../components/IntelAlertStrip";
-import { getNewsIndex, getNewsTelemetry, NEWS_CATEGORIES, categoryLabel, formatNewsDate, newsHref, severityAccent } from "../lib/news";
+import {
+  getNewsIndex,
+  getNewsTelemetry,
+  NEWS_CATEGORIES,
+  categoryLabel,
+  formatNewsDate,
+  newsCoverUrl,
+  newsHref,
+} from "../lib/news";
 import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
 /**
- * PHASE 9B — `/news`, the graph-enriched neural newsroom.
+ * PHASE 10A — `/news`, the editorial newsroom.
  *
- * Every card is a published ZAYRON-X briefing, never a syndicated article body.
- * The telemetry strip reads the live API so a "briefings" count can never be a
- * hardcoded number.
+ * Every briefing carries its own branded cover, rendered on demand by
+ * `/api/news-cover/[slug]` from that briefing's metadata. The lead story uses a
+ * 16:9 editorial split, the grid uses the same asset at a fixed aspect ratio so
+ * nothing shifts while an image loads, and the subscribe strip stays below.
  */
 
 type Props = { searchParams: Promise<{ category?: string; q?: string }> };
@@ -45,6 +54,7 @@ export default async function NewsPage({ searchParams }: Props) {
   ]);
 
   const items = index.state === "ok" ? index.data?.items ?? [] : [];
+  const [lead, ...rest] = items;
   const site = getSiteUrl();
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: site,
@@ -68,54 +78,39 @@ export default async function NewsPage({ searchParams }: Props) {
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
 
-      <div className="ioc-telemetry" aria-label="Newsroom telemetry">
-        <div className="ioc-telemetry-card">
+      <div className="ns-meta">
+        <div>
           <span>PUBLISHED BRIEFINGS</span>
           <strong>{telemetry.data?.published_briefings ?? 0}</strong>
-          <small>verified briefings</small>
         </div>
-        <div className="ioc-telemetry-card">
+        <div>
           <span>LINKED ENTITIES</span>
           <strong>{telemetry.data?.linked_entities ?? 0}</strong>
-          <small>neural mention edges</small>
         </div>
-        <div className="ioc-telemetry-card">
+        <div>
           <span>SOURCES TRACKED</span>
           <strong>{telemetry.data?.sources_tracked ?? 0}</strong>
-          <small>official publishers</small>
         </div>
-        <div className="ioc-telemetry-card">
-          <span>LAST INGEST</span>
-          <strong style={{ fontSize: 16 }}>
-            {telemetry.data?.last_ingest ? formatNewsDate(telemetry.data.last_ingest) : "—"}
-          </strong>
-          <small>UTC</small>
+        <div>
+          <span>LAST INGEST (UTC)</span>
+          <strong>{telemetry.data?.last_ingest ? formatNewsDate(telemetry.data.last_ingest) : "—"}</strong>
         </div>
       </div>
 
-      <section className="ioc-table-section" aria-label="Newsroom filters">
-        <div className="ioc-table-head">
-          <h2 className="ioc-section-title">Filter the newsroom</h2>
-          <span className="ioc-note">{index.state === "ok" ? `${index.data?.total ?? 0} briefing(s)` : "index unavailable"}</span>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+      <section className="ns-filters" aria-label="Newsroom filters">
+        <div className="ns-filter-row">
+          <span className="ns-filter-label">CATEGORY</span>
           {NEWS_CATEGORIES.map((entry) => {
             const active = entry.value === category || (entry.value === "" && category === "");
             const href = entry.value ? `/news?category=${encodeURIComponent(entry.value)}` : "/news";
             return (
-              <a
-                key={entry.label}
-                className="ioc-cta"
-                href={href}
-                aria-current={active ? "page" : undefined}
-                style={active ? { borderColor: "var(--color-accent)", color: "var(--color-accent)" } : undefined}
-              >
+              <a key={entry.label} className={`ns-filter${active ? " active" : ""}`} href={href} aria-current={active ? "page" : undefined}>
                 {entry.label}
               </a>
             );
           })}
         </div>
-        <form method="get" action="/news" role="search" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <form method="get" action="/news" role="search" className="ns-search">
           {category ? <input type="hidden" name="category" value={category} /> : null}
           <input
             type="search"
@@ -123,11 +118,8 @@ export default async function NewsPage({ searchParams }: Props) {
             defaultValue={query}
             placeholder="Search briefings by title, verdict or summary"
             aria-label="Search briefings"
-            style={{ flex: "1 1 280px", padding: "10px 12px" }}
           />
-          <button type="submit" className="ioc-cta">
-            SEARCH
-          </button>
+          <button type="submit">Search</button>
         </form>
       </section>
 
@@ -142,23 +134,74 @@ export default async function NewsPage({ searchParams }: Props) {
           <span>No published briefing matches this filter yet. The newsroom fills on the next scheduled ingest pass.</span>
         </div>
       ) : (
-        <div className="ioc-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
-          {items.map((item) => (
-            <article key={item.slug} className="ioc-telemetry-card" style={{ borderLeft: `2px solid ${severityAccent(item.severity)}` }}>
-              <span className="ioc-note">
-                {categoryLabel(item.category)} · {item.severity} · {item.source_name} · {formatNewsDate(item.published_at)}
-              </span>
-              <h3 className="ioc-section-title" style={{ margin: "8px 0" }}>
-                <a href={newsHref(item.slug)}>{item.title}</a>
-              </h3>
-              <p>{item.verdict}</p>
-              <a className="ioc-cta" href={newsHref(item.slug)}>
-                OPEN BRIEFING →
+        <>
+          {lead ? (
+            <article className="ns-lead">
+              <a className="ns-lead-media" href={newsHref(lead.slug)} tabIndex={-1} aria-hidden="true">
+                <img
+                  src={newsCoverUrl(lead.slug)}
+                  alt=""
+                  width={1200}
+                  height={675}
+                  loading="eager"
+                  decoding="async"
+                />
               </a>
+              <div className="ns-lead-body">
+                <span className="ns-kicker">
+                  LEAD BRIEFING · {categoryLabel(lead.category)} · {lead.severity}
+                </span>
+                <h2>
+                  <a href={newsHref(lead.slug)}>{lead.title}</a>
+                </h2>
+                <p>{lead.verdict}</p>
+                <div className="ns-meta-line">
+                  <span>{lead.source_name}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{formatNewsDate(lead.published_at)}</span>
+                </div>
+                <a className="ns-cta" href={newsHref(lead.slug)}>
+                  Read the briefing <span aria-hidden="true">→</span>
+                </a>
+              </div>
             </article>
-          ))}
-        </div>
+          ) : null}
+
+          {rest.length > 0 ? (
+            <div className="ns-grid">
+              {rest.map((item) => (
+                <article key={item.slug} className="ns-card">
+                  <a className="ns-card-media" href={newsHref(item.slug)} tabIndex={-1} aria-hidden="true">
+                    <img
+                      src={newsCoverUrl(item.slug)}
+                      alt=""
+                      width={1200}
+                      height={675}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                  <div className="ns-card-body">
+                    <span className="ns-kicker">
+                      {categoryLabel(item.category)} · {item.severity}
+                    </span>
+                    <h3>
+                      <a href={newsHref(item.slug)}>{item.title}</a>
+                    </h3>
+                    <p>{item.verdict}</p>
+                    <div className="ns-meta-line">
+                      <span>{item.source_name}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{formatNewsDate(item.published_at)}</span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </>
       )}
+
       <IntelAlertStrip turnstileSiteKey={getTurnstileSiteKey()} />
     </RouteShell>
   );

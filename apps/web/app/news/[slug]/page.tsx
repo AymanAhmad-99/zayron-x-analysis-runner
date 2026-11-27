@@ -4,7 +4,7 @@ import { RouteShell } from "../../components/RouteShell";
 import { CodeTabs } from "../../components/CodeTabs";
 import { CopyBriefButton } from "../../components/CopyBriefButton";
 import { IntelAlertStrip } from "../../components/IntelAlertStrip";
-import { getNewsArticle, formatNewsDate, newsHref, severityAccent } from "../../lib/news";
+import { getNewsArticle, formatNewsDate, newsCoverUrl, newsHref, severityAccent } from "../../lib/news";
 import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../../lib/seo";
 
@@ -47,7 +47,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
   const article = result.data;
   const canonical = `/news/${article.slug}`;
-  const image = `/api/og/news/${encodeURIComponent(article.slug)}`;
+  // PHASE 10A — the branded editorial cover, so shared links render a
+  // ZAYRON-X card on X, LinkedIn and Telegram instead of a generic thumbnail.
+  const image = newsCoverUrl(article.slug);
   const openGraph = buildOpenGraph({
     title: article.title,
     description: article.verdict,
@@ -119,6 +121,17 @@ export default async function NewsArticlePage({ params }: Props) {
       contextNotice="This briefing states what the named publisher reported, then attaches only catalog-verified telemetry. Absence of a KEV listing is not evidence of safety."
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
+
+      <figure className="ns-cover">
+        <img
+          src={newsCoverUrl(article.slug)}
+          alt={`${article.title} — ZAYRON-X briefing cover`}
+          width={1200}
+          height={675}
+          loading="eager"
+          decoding="async"
+        />
+      </figure>
 
       <section
         className="ioc-table-section"

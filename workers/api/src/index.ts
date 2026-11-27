@@ -123,6 +123,7 @@ import {
   syncBrevoUnsubscribe,
   unsubscribeBriefing,
 } from './briefings';
+import { InquiryError, dispatchEnterpriseInquiry, submitEnterpriseInquiry } from './inquiries';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import { loadExploitRadar } from './exploits';
 import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from './threatGraph';
@@ -508,14 +509,14 @@ interface DeveloperContext {
 }
 
 /** Bounded JSON body reader: acquisition payloads are tiny by contract. */
-async function readJsonBody(request: Request): Promise<Record<string, unknown> | null> {
+async function readJsonBody(request: Request, maxLength = 4096): Promise<Record<string, unknown> | null> {
   let text = '';
   try {
     text = await request.text();
   } catch {
     return null;
   }
-  if (!text || text.length > 4096) return null;
+  if (!text || text.length > maxLength) return null;
   try {
     const parsed: unknown = JSON.parse(text);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
@@ -865,7 +866,8 @@ const worker = {
       path === '/api/v1/keys/self-serve' ||
       path === '/api/v1/leads' ||
       path === '/api/v1/briefings/subscribe' ||
-      path === '/api/v1/briefings/unsubscribe';
+      path === '/api/v1/briefings/unsubscribe' ||
+      path === '/api/v1/inquiries';
     // PHASE 8A — the bulk lookup is a READ expressed as POST (a 50-indicator
     // body does not belong in a URL). It writes nothing, so it is exempt from
     // the legacy mutation freeze exactly like the developer acquisition routes.
@@ -1319,6 +1321,54 @@ const worker = {
             error: err?.message ?? String(err),
           });
           return developerError(503, 'LEAD_SERVICE_UNAVAILABLE', 'Access requests are temporarily unavailable');
+        }
+      }
+
+      // ── POST /api/v1/inquiries ──────────────────────────────────────
+      // PHASE 10A — the homepage enterprise intake. Turnstile-gated, persisted
+      // in `enterprise_inquiries`, and fanned out to intel@zayron-x.co plus a
+      // submitter receipt through `ctx.waitUntil` (fail-closed without a key).
+      if (path === '/api/v1/inquiries' && request.method === 'POST') {
+        const body = await readJsonBody(request, 16384);
+        if (!body) return developerError(400, 'MALFORMED_PAYLOAD', 'A JSON object body is required');
+
+        const clientIp = (request.headers.get('CF-Connecting-IP') || 'unknown').trim();
+        const turnstile = await verifyTurnstileToken(env, body.turnstile_token, clientIp);
+        if (!turnstile.ok) {
+          return developerError(403, turnstile.reason || 'TURNSTILE_FAILED', 'Bot verification failed');
+        }
+
+        try {
+          const result = await submitEnterpriseInquiry({
+            db: env.DB,
+            company: body.company,
+            email: body.email,
+            inquiry: body.inquiry,
+            clientIp,
+          });
+
+          ctx.waitUntil(
+            dispatchEnterpriseInquiry({ record: result.record, brevoApiKey: env.BREVO_API_KEY })
+              .then((outcome) => {
+                console.log(JSON.stringify({ type: 'ENTERPRISE_INQUIRY', email_suppressed: true, ...outcome }));
+              })
+              .catch((err: any) => {
+                console.error('[API] enterprise inquiry dispatch failed', {
+                  site: 'api.inquiries.dispatch',
+                  error: err?.message ?? String(err),
+                });
+              }),
+          );
+
+          return jsonResponse({ ok: true, reference_id: result.reference_id }, 201);
+        } catch (err: any) {
+          if (err instanceof InquiryError) return developerError(err.status, err.code, err.message);
+          console.error('[API] enterprise inquiry failed', {
+            site: 'api.inquiries.create',
+            cf_ray: request.headers.get('cf-ray'),
+            error: err?.message ?? String(err),
+          });
+          return developerError(503, 'INQUIRY_SERVICE_UNAVAILABLE', 'Inquiry intake is temporarily unavailable');
         }
       }
 

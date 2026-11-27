@@ -143,6 +143,10 @@ const SUITES = [
   // PHASE 9C-MAIL-PRO — Brevo transactional pipeline, Welcome Briefing,
   // digest messageVersions batching and the inbound desk anti-loop shield.
   'tests/unit/phase9c_mail_pro.test.ts',
+  // PHASE 10A — enterprise inquiry intake (validation, D1 persistence, Brevo
+  // alert + receipt), the deterministic editorial cover renderer, and the
+  // /developers + /news token and wiring integrity.
+  'tests/unit/phase10a_enterprise_inquiries_newsroom.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

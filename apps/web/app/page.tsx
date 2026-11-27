@@ -3,8 +3,9 @@ import { Hero } from "./components/HeroPrecision";
 import { TrustStrip } from "./components/TrustStrip";
 import { IntelligenceFoundry } from "./components/intelligence-foundry/IntelligenceFoundry";
 import { LatestIntelligence } from "./components/LatestIntelligence";
-import { FinalCtaFooter } from "./components/FinalCtaFooter";
-import { getSiteUrl } from "./lib/siteConfig";
+import { EnterpriseInquiry } from "./components/EnterpriseInquiry";
+import { SiteFooter } from "./components/SiteFooter";
+import { getSiteUrl, getTurnstileSiteKey } from "./lib/siteConfig";
 import { buildWebPageJsonLd } from "./lib/seo";
 
 /**
@@ -39,7 +40,10 @@ export default function Home() {
         <TrustStrip />
         <IntelligenceFoundry />
         <LatestIntelligence />
-        <FinalCtaFooter />
+        {/* PHASE 10A — the homepage closes on a real enterprise intake form,
+            not an email strip. The briefing subscribe strip stays on /news. */}
+        <EnterpriseInquiry turnstileSiteKey={getTurnstileSiteKey()} />
+        <SiteFooter />
       </div>
     </main>
   );

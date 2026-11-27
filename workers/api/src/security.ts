@@ -287,6 +287,7 @@ const KNOWN_API_SEGMENTS = new Set<string>([
   "detection", "regulations", "reports", "search", "threats", "ai", "exploits",
   "threat-actors", "techniques", "keys", "leads", "sitemap", "canary", "publish",
   "social", "research", "analyze", "admin", "webhook", "news", "vendors", "regions", "llms.txt", "llms-full.txt", "briefings",
+  "inquiries",
 ]);
 
 function isPublicRead(method: string, path: string): boolean {
@@ -330,7 +331,8 @@ export function requiredTrust(method: string, path: string): TrustRequirement {
     path === "/api/v1/keys/self-serve" ||
     path === "/api/v1/leads" ||
     path === "/api/v1/briefings/subscribe" ||
-    path === "/api/v1/briefings/unsubscribe"
+    path === "/api/v1/briefings/unsubscribe" ||
+    path === "/api/v1/inquiries"
   ) return "public";
 
   // Explicit anonymous read allowlist.
@@ -359,7 +361,8 @@ export function classifyEndpoint(method: string, path: string, hasSearchQuery = 
   if (
     path === "/api/v1/keys/self-serve" ||
     path === "/api/v1/leads" ||
-    path === "/api/v1/briefings/subscribe"
+    path === "/api/v1/briefings/subscribe" ||
+    path === "/api/v1/inquiries"
   ) return "public_write";
   if (path === "/api/v1/search" || path === "/api/v1/knowledge/search") return "search";
   // Wave 4A: `/feed?q=...` runs an unindexed LIKE scan, so a search-bearing
