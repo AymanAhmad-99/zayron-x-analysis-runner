@@ -140,6 +140,9 @@ const SUITES = [
   // PHASE 9C — live IndexNow, sitemap Googlebot hardening, X & LinkedIn
   // distribution, email briefings & Telegram funnel, and RSS/WebSub.
   'tests/unit/phase9c_distribution_growth.test.ts',
+  // PHASE 9C-MAIL-PRO — Brevo transactional pipeline, Welcome Briefing,
+  // digest messageVersions batching and the inbound desk anti-loop shield.
+  'tests/unit/phase9c_mail_pro.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

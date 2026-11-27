@@ -1,28 +1,45 @@
 /**
  * PHASE 9C — Daily Email Intelligence Digest (`09:40 UTC`).
  *
- * Secret-gated (`RESEND_API_KEY`) & fail-closed: exits with 0 subrequests if
- * key is absent or there are 0 active subscribers. Batches up to 100 emails per
- * Resend API POST, capped at <= 5 subrequests/run.
+ * PHASE 9C-MAIL-PRO migration: Brevo Transactional API
+ * (`POST https://api.brevo.com/v3/smtp/email`) replaces Resend.
+ *
+ * - Secret-gated (`BREVO_API_KEY`) & fail-closed: zero subrequests if the key is
+ *   absent or there are no active subscribers.
+ * - Batches recipients into Brevo `messageVersions` chunks of <= 50 and caps the
+ *   run at <= 5 POSTs (`EMAIL_DIGEST_MAX_SUBREQUESTS`).
+ * - HTML/text come from the shared institutional templates, so the digest uses
+ *   the same obsidian masthead, orange accent and hosted PNG wordmark as the
+ *   Welcome Briefing.
  */
-import { isEmailDigestSlot, SITE_ORIGIN } from './socialDispatch';
+import {
+  BREVO_DIGEST_BATCH_SIZE,
+  BREVO_SMTP_EMAIL_URL,
+  ZX_FROM,
+  brevoApiKey,
+  buildDigestMessageVersions,
+  buildEmailDigestHtml,
+  buildEmailDigestText,
+  parseSenderAddress,
+  sendBrevoTransactional,
+  type EmailDigestContent,
+} from '@zayron/intelligence';
+import { isEmailDigestSlot } from './socialDispatch';
 
-export const RESEND_BATCH_URL = 'https://api.resend.com/emails/batch';
+export { BREVO_SMTP_EMAIL_URL, buildEmailDigestHtml, buildEmailDigestText };
+export type { EmailDigestContent };
+
+/** Reserved for callers that still import the old symbol name. */
+export const RESEND_BATCH_URL = BREVO_SMTP_EMAIL_URL;
 export const DEFAULT_BRIEFING_FROM = 'ZAYRON-X Intelligence <intel@zayron-x.co>';
 export const EMAIL_DIGEST_MAX_SUBREQUESTS = 5;
+export const EMAIL_DIGEST_BATCH_SIZE = BREVO_DIGEST_BATCH_SIZE;
 
 export interface EmailDigestEnv {
   DB: any;
-  RESEND_API_KEY?: string;
+  BREVO_API_KEY?: string;
   BRIEFING_FROM_EMAIL?: string;
   [key: string]: unknown;
-}
-
-export interface EmailDigestContent {
-  dateLabel: string;
-  news: Array<{ slug: string; title: string; severity: string; source_name: string; verdict: string }>;
-  kevs: Array<{ cve_id: string; severity: string; affected_vendor: string | null; affected_product: string | null; cvss_score: number | null }>;
-  malware: Array<{ id: string; title: string; severity: string }>;
 }
 
 export interface EmailDigestResult {
@@ -33,92 +50,93 @@ export interface EmailDigestResult {
   errors: string[];
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
+/**
+ * Operator-only preview: send ONE digest email to an explicit address.
+ * Never touches the subscriber list and never marks anyone as sent.
+ */
+export async function sendDigestPreview(
+  env: EmailDigestEnv,
+  options: { to: string; when?: Date; fetchFn?: typeof fetch },
+): Promise<{ status: 'SENT' | 'SKIPPED_NO_CREDS' | 'INVALID_RECIPIENT' | 'NO_CONTENT' | 'FAILED'; subrequestsUsed: number; errors: string[]; messageId?: string }> {
+  const to = String(options.to ?? '').trim().toLowerCase();
+  if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/.test(to) || /[\r\n]/.test(to)) {
+    return { status: 'INVALID_RECIPIENT', subrequestsUsed: 0, errors: ['INVALID_RECIPIENT'] };
+  }
+  const apiKey = brevoApiKey(env?.BREVO_API_KEY);
+  if (!apiKey) return { status: 'SKIPPED_NO_CREDS', subrequestsUsed: 0, errors: [] };
 
-export function buildUnsubscribeUrl(token: string): string {
-  return `https://api.zayron-x.co/api/v1/briefings/unsubscribe?token=${encodeURIComponent(token)}`;
-}
+  const when = options.when ?? new Date();
+  const fetchFn = options.fetchFn ?? fetch;
+  const sinceIso = new Date(when.getTime() - 24 * 60 * 60 * 1000).toISOString();
 
-export function buildEmailDigestHtml(content: EmailDigestContent, unsubscribeUrl: string): string {
-  const newsItems = content.news
-    .map(
-      (n) =>
-        `<li style="margin-bottom:10px;"><strong style="color:#ff5500;">[${escapeHtml(n.severity)}]</strong> <a href="${SITE_ORIGIN}/news/${encodeURIComponent(n.slug)}" style="color:#f4f4f6;text-decoration:underline;">${escapeHtml(n.title)}</a><br><span style="color:#a1a1aa;font-size:13px;">${escapeHtml(n.source_name)} — ${escapeHtml(n.verdict)}</span></li>`,
+  const [newsRes, kevRes, malRes] = await Promise.all([
+    env.DB.prepare(
+      `SELECT slug, title, severity, source_name, verdict
+         FROM news_articles
+        WHERE status = 'PUBLISHED' AND published_at >= ?
+        ORDER BY published_at DESC LIMIT 6`,
     )
-    .join('');
-
-  const kevItems = content.kevs
-    .map((k) => {
-      const target = [k.affected_vendor, k.affected_product].filter(Boolean).join(' ');
-      const cvss = k.cvss_score !== null ? ` · CVSS ${k.cvss_score.toFixed(1)}` : '';
-      return `<li style="margin-bottom:8px;"><a href="${SITE_ORIGIN}/intelligence/vulnerabilities/${encodeURIComponent(k.cve_id)}" style="color:#f4f4f6;text-decoration:underline;"><strong>${escapeHtml(k.cve_id)}</strong></a> <span style="color:#a1a1aa;">(${escapeHtml(k.severity)}${cvss}${target ? ` · ${escapeHtml(target)}` : ''})</span></li>`;
-    })
-    .join('');
-
-  const malItems = content.malware
-    .map(
-      (m) =>
-        `<li style="margin-bottom:8px;"><a href="${SITE_ORIGIN}/intelligence/malware/advisories/${encodeURIComponent(m.id)}" style="color:#f4f4f6;text-decoration:underline;"><strong>${escapeHtml(m.id)}</strong></a> — ${escapeHtml(m.title)}</li>`,
+      .bind(sinceIso)
+      .all()
+      .catch(() => ({ results: [] })),
+    env.DB.prepare(
+      `SELECT cve_id, severity, affected_vendor, affected_product, cvss_score
+         FROM vulnerabilities
+        WHERE provenance_state = 'AUTHORITATIVE_VERIFIED'
+          AND is_exploited_in_wild = 1
+          AND COALESCE(updated_at, created_at) >= ?
+        ORDER BY COALESCE(cvss_score, 0) DESC LIMIT 6`,
     )
-    .join('');
+      .bind(sinceIso)
+      .all()
+      .catch(() => ({ results: [] })),
+    env.DB.prepare(
+      `SELECT id, title, severity
+         FROM malware_reports
+        WHERE id LIKE 'MAL-%' AND COALESCE(published_at, created_at) >= ?
+        ORDER BY COALESCE(published_at, created_at) DESC LIMIT 5`,
+    )
+      .bind(sinceIso)
+      .all()
+      .catch(() => ({ results: [] })),
+  ]);
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<body style="margin:0;padding:24px;background:#050505;color:#f4f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <div style="max-width:640px;margin:0 auto;background:#0d0d10;border:1px solid #222228;padding:24px;">
-    <div style="font-size:11px;letter-spacing:0.12em;color:#ff5500;text-transform:uppercase;">ZAYRON-X DAILY THREAT BRIEFING · ${escapeHtml(content.dateLabel)}</div>
-    <h1 style="font-size:20px;margin:8px 0 16px;color:#ffffff;">Verified Intelligence Summary (24h)</h1>
-    ${newsItems ? `<h2 style="font-size:14px;color:#d4d4d8;border-bottom:1px solid #222228;padding-bottom:6px;">Neural Newsroom</h2><ul style="padding-left:18px;">${newsItems}</ul>` : ''}
-    ${kevItems ? `<h2 style="font-size:14px;color:#d4d4d8;border-bottom:1px solid #222228;padding-bottom:6px;">CISA KEV Additions</h2><ul style="padding-left:18px;">${kevItems}</ul>` : ''}
-    ${malItems ? `<h2 style="font-size:14px;color:#d4d4d8;border-bottom:1px solid #222228;padding-bottom:6px;">Supply-Chain Advisories (MAL-*)</h2><ul style="padding-left:18px;">${malItems}</ul>` : ''}
-    <div style="margin-top:24px;padding-top:14px;border-top:1px solid #222228;font-size:12px;color:#8a8a96;">
-      Live alerts: <a href="https://t.me/zayronxai" style="color:#ff5500;">t.me/zayronxai</a> ·
-      RSS: <a href="${SITE_ORIGIN}/news/rss.xml" style="color:#a1a1aa;">${SITE_ORIGIN}/news/rss.xml</a> ·
-      <a href="${escapeHtml(unsubscribeUrl)}" style="color:#a1a1aa;">Unsubscribe</a>
-    </div>
-  </div>
-</body>
-</html>`;
-}
+  const content: EmailDigestContent = {
+    dateLabel: `${when.toISOString().slice(0, 10)} (TEST)`,
+    news: (newsRes.results ?? []) as EmailDigestContent['news'],
+    kevs: (kevRes.results ?? []) as EmailDigestContent['kevs'],
+    malware: (malRes.results ?? []) as EmailDigestContent['malware'],
+  };
+  if (content.news.length === 0 && content.kevs.length === 0 && content.malware.length === 0) {
+    return { status: 'NO_CONTENT', subrequestsUsed: 0, errors: [] };
+  }
 
-export function buildEmailDigestText(content: EmailDigestContent, unsubscribeUrl: string): string {
-  const lines: string[] = [
-    `ZAYRON-X DAILY THREAT BRIEFING (${content.dateLabel})`,
-    '================================================',
-    '',
-  ];
-  if (content.news.length > 0) {
-    lines.push('NEURAL NEWSROOM');
-    for (const n of content.news) {
-      lines.push(`- [${n.severity}] ${n.title} (${n.source_name})`);
-      lines.push(`  ${SITE_ORIGIN}/news/${encodeURIComponent(n.slug)}`);
-    }
-    lines.push('');
-  }
-  if (content.kevs.length > 0) {
-    lines.push('CISA KEV ADDITIONS');
-    for (const k of content.kevs) {
-      lines.push(`- ${k.cve_id} (${k.severity}) — ${SITE_ORIGIN}/intelligence/vulnerabilities/${encodeURIComponent(k.cve_id)}`);
-    }
-    lines.push('');
-  }
-  if (content.malware.length > 0) {
-    lines.push('SUPPLY-CHAIN ADVISORIES');
-    for (const m of content.malware) {
-      lines.push(`- ${m.id}: ${m.title} — ${SITE_ORIGIN}/intelligence/malware/advisories/${encodeURIComponent(m.id)}`);
-    }
-    lines.push('');
-  }
-  lines.push(`Live wire: https://t.me/zayronxai`);
-  lines.push(`Unsubscribe: ${unsubscribeUrl}`);
-  return lines.join('\n');
+  const unsubscribeUrl = 'https://zayron-x.co/developers';
+  const sender = parseSenderAddress(
+    String(env?.BRIEFING_FROM_EMAIL ?? '').trim() || DEFAULT_BRIEFING_FROM,
+    ZX_FROM.intel.name,
+  );
+  const result = await sendBrevoTransactional({
+    apiKey,
+    sender,
+    to: [{ email: to }],
+    replyTo: sender,
+    subject: `[TEST] ZAYRON-X Daily Threat Briefing — ${content.dateLabel}`,
+    htmlContent: buildEmailDigestHtml(content, unsubscribeUrl),
+    textContent: buildEmailDigestText(content, unsubscribeUrl),
+    headers: {
+      'List-Unsubscribe': `<${unsubscribeUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    },
+    fetchFn,
+  });
+
+  return {
+    status: result.ok ? 'SENT' : 'FAILED',
+    subrequestsUsed: 1,
+    errors: result.ok ? [] : [result.error ?? 'BREVO_SEND_FAILED'],
+    messageId: result.messageId,
+  };
 }
 
 export async function runEmailDigestPass(
@@ -138,8 +156,8 @@ export async function runEmailDigestPass(
     };
   }
 
-  const resendKey = String(env?.RESEND_API_KEY ?? '').trim();
-  if (!resendKey) {
+  const apiKey = brevoApiKey(env?.BREVO_API_KEY);
+  if (!apiKey) {
     return {
       status: 'SKIPPED_NO_CREDS',
       subscribers_targeted: 0,
@@ -156,10 +174,16 @@ export async function runEmailDigestPass(
       ORDER BY subscribed_at ASC
       LIMIT 500`,
   )
-    .all<{ id: string; email: string; frequency: string; focus: string; unsubscribe_token: string }>()
+    .all()
     .catch(() => ({ results: [] as any[] }));
 
-  const subscribers = subRows.results ?? [];
+  const subscribers = ((subRows as any)?.results ?? []) as Array<{
+    id: string;
+    email: string;
+    frequency: string;
+    focus: string;
+    unsubscribe_token: string;
+  }>;
   if (subscribers.length === 0) {
     return {
       status: 'NO_SUBSCRIBERS',
@@ -220,48 +244,52 @@ export async function runEmailDigestPass(
     };
   }
 
-  const from = String(env?.BRIEFING_FROM_EMAIL ?? '').trim() || DEFAULT_BRIEFING_FROM;
+  const sender = parseSenderAddress(
+    String(env?.BRIEFING_FROM_EMAIL ?? '').trim() || DEFAULT_BRIEFING_FROM,
+    ZX_FROM.intel.name,
+  );
+  const subject = `ZAYRON-X Daily Threat Briefing — ${content.dateLabel}`;
+
   let subrequestsUsed = 0;
   let emailsSent = 0;
   const errors: string[] = [];
   const deliveredIds: string[] = [];
 
-  for (let i = 0; i < subscribers.length; i += 100) {
+  const versions = buildDigestMessageVersions(subscribers, content);
+  for (const chunk of versions) {
     if (subrequestsUsed >= EMAIL_DIGEST_MAX_SUBREQUESTS) break;
-    const chunk = subscribers.slice(i, i + 100);
-    const messages = chunk.map((sub) => {
-      const unsubUrl = buildUnsubscribeUrl(sub.unsubscribe_token);
-      return {
-        from,
-        to: [sub.email],
-        subject: `ZAYRON-X Daily Threat Briefing — ${content.dateLabel}`,
-        html: buildEmailDigestHtml(content, unsubUrl),
-        text: buildEmailDigestText(content, unsubUrl),
-        headers: {
-          'List-Unsubscribe': `<${unsubUrl}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      };
-    });
+    const unsubscribeUrl = `https://api.zayron-x.co/api/v1/briefings/unsubscribe?token=${encodeURIComponent(
+      subscribers[Math.min(subrequestsUsed * EMAIL_DIGEST_BATCH_SIZE, subscribers.length - 1)]?.unsubscribe_token ?? '',
+    )}`;
 
     subrequestsUsed += 1;
-    try {
-      const res = await fetchFn(RESEND_BATCH_URL, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(messages),
-      });
-      if (!res.ok) {
-        errors.push(`RESEND_HTTP_${res.status}`);
-        continue;
-      }
-      emailsSent += chunk.length;
-      for (const sub of chunk) deliveredIds.push(sub.id);
-    } catch (error) {
-      errors.push(`RESEND_ERROR:${String((error as Error)?.message || error).slice(0, 80)}`);
+    const result = await sendBrevoTransactional({
+      apiKey,
+      sender,
+      subject,
+      // Base content is overridden per recipient by messageVersions, but Brevo
+      // requires the top-level fields, and they keep non-version-aware clients
+      // from receiving an empty body.
+      htmlContent: buildEmailDigestHtml(content, unsubscribeUrl),
+      textContent: buildEmailDigestText(content, unsubscribeUrl),
+      replyTo: sender,
+      messageVersions: chunk,
+      headers: {
+        'List-Unsubscribe': `<${unsubscribeUrl}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
+      fetchFn,
+    });
+
+    if (!result.ok) {
+      errors.push(result.error ?? `BREVO_HTTP_${result.status}`);
+      continue;
+    }
+    emailsSent += chunk.length;
+    for (const version of chunk) {
+      const recipient = version.to?.[0]?.email;
+      const sub = subscribers.find((s: { id: string; email: string }) => s.email === recipient);
+      if (sub) deliveredIds.push(sub.id);
     }
   }
 

@@ -483,7 +483,7 @@ describe('Phase 9C — IndexNow Batching, Key File, Briefings API & Email Digest
     expect(apiSource).toContain('verifyTurnstileToken(env, body.turnstile_token, clientIp)');
   });
 
-  test('emailDigest fails closed without RESEND_API_KEY and sends batched Resend emails with List-Unsubscribe', async () => {
+  test('emailDigest fails closed without BREVO_API_KEY and sends batched Brevo messageVersions with List-Unsubscribe', async () => {
     const db = createInMemoryDistributionDb();
     let fetches = 0;
     const noCreds = await runEmailDigestPass(
@@ -500,7 +500,7 @@ describe('Phase 9C — IndexNow Batching, Key File, Briefings API & Email Digest
     expect(fetches).toBe(0);
 
     const noSubs = await runEmailDigestPass(
-      { DB: db, RESEND_API_KEY: 're_test' },
+      { DB: db, BREVO_API_KEY: 'xkeysib-test' },
       { when: utc(9, 40), fetchFn: (async () => new Response('{}')) as unknown as typeof fetch },
     );
     expect(noSubs.status).toBe('NO_SUBSCRIBERS');
@@ -508,20 +508,22 @@ describe('Phase 9C — IndexNow Batching, Key File, Briefings API & Email Digest
     await subscribeBriefing({ db, email: 'analyst@example.com' });
     const sentPayloads: any[] = [];
     const sent = await runEmailDigestPass(
-      { DB: db, RESEND_API_KEY: 're_test' },
+      { DB: db, BREVO_API_KEY: 'xkeysib-test' },
       {
         when: utc(9, 40),
         fetchFn: (async (_url: RequestInfo | URL, init?: RequestInit) => {
-          sentPayloads.push(JSON.parse(String(init?.body ?? '[]')));
-          return new Response(JSON.stringify({ data: [{ id: 'email_1' }] }), { status: 200 });
+          sentPayloads.push(JSON.parse(String(init?.body ?? '{}')));
+          return new Response(JSON.stringify({ messageId: 'brevo_1' }), { status: 201 });
         }) as unknown as typeof fetch,
       },
     );
     expect(sent.status).toBe('SENT');
     expect(sent.emails_sent).toBe(1);
     expect(sent.subrequestsUsed).toBe(1);
-    expect(sentPayloads[0][0].headers['List-Unsubscribe']).toContain('https://api.zayron-x.co/api/v1/briefings/unsubscribe?token=');
-    expect(sentPayloads[0][0].headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
+    const version = sentPayloads[0].messageVersions[0];
+    expect(version.headers['List-Unsubscribe']).toContain('https://api.zayron-x.co/api/v1/briefings/unsubscribe?token=');
+    expect(version.headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
+    expect(version.htmlContent).toContain('ZAYRON-X');
 
     const html = buildEmailDigestHtml(
       {

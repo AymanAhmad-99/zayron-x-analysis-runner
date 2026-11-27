@@ -48,7 +48,7 @@ import { isNewsIngestSlot, runNewsIngestPass } from './newsIngest';
 import { isEmailDigestSlot, isLinkedInPublishSlot, isXPublishSlot } from './socialDispatch';
 import { runXPublishPass } from './xPublisher';
 import { runLinkedInPublishPass } from './linkedinPublisher';
-import { runEmailDigestPass } from './emailDigest';
+import { runEmailDigestPass, sendDigestPreview } from './emailDigest';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -147,7 +147,11 @@ export interface Env {
   LINKEDIN_ACCESS_TOKEN?: string;
   LINKEDIN_AUTHOR_URN?: string;
   RESEND_API_KEY?: string;
+  /** PHASE 9C-MAIL-PRO — Brevo Transactional API key (digest + previews). */
+  BREVO_API_KEY?: string;
   BRIEFING_FROM_EMAIL?: string;
+  /** Where the inbound mail desk forwards legitimate non-self mail. */
+  FOUNDER_FORWARD_EMAIL?: string;
 }
 
 interface IngestionMessagePayload {
@@ -1785,7 +1789,10 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     const isRadarBackfill = url.pathname === '/internal/radar-backfill';
     // PHASE 9B — bounded newsroom ingest (4 feeds + <= 1 IndexNow POST).
     const isNewsIngest = url.pathname === '/internal/news-ingest';
-    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && !isNewsIngest && url.pathname !== '/internal/authoritative-cve-ingest') {
+    // PHASE 9C-MAIL-PRO — operator-only, single-recipient Brevo digest preview.
+    // Never sends to a subscriber and never marks anyone as sent.
+    const isEmailDigestTest = url.pathname === '/internal/email-digest-test';
+    if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && !isNewsIngest && !isEmailDigestTest && url.pathname !== '/internal/authoritative-cve-ingest') {
       return new Response(JSON.stringify({ error: 'NOT_FOUND' }), { status: 404, headers: { 'content-type': 'application/json' } });
     }
     if (request.method !== 'POST') {
@@ -1796,7 +1803,7 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
       // pass. It is never a public write trigger — it requires the operator
       // bearer token AND an open authoritative pulse. The ingestion write route
       // stays Preview-only, and no legacy path becomes reachable.
-      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && !isNewsIngest) {
+      if (!isStrategic && !isEnrichment && !isTelegramDispatch && !isIocIngest && !isPocSync && !isCisaKevSync && !isRadarBackfill && !isNewsIngest && !isEmailDigestTest) {
         return new Response(JSON.stringify({ error: 'NOT_AVAILABLE_IN_PRODUCTION' }), { status: 403, headers: { 'content-type': 'application/json' } });
       }
       if (this.env.AUTHORITATIVE_CVE_CRON_ENABLED !== 'true') {
@@ -1898,6 +1905,25 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
         status: enrichment.enriched > 0 || (strategic && strategic.generated > 0) ? 200 : 202,
         headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
       });
+    }
+
+    // PHASE 9C-MAIL-PRO operator hook — ONE Brevo digest email to an explicit
+    // address (`?to=owner@example.com`). The payment is an operator token, so
+    // this can never be triggered by a website visitor or a scheduler tick.
+    if (isEmailDigestTest) {
+      const to = (url.searchParams.get('to') || '').trim();
+      try {
+        const summary = await sendDigestPreview(this.env as any, { to, when: new Date() });
+        return new Response(JSON.stringify(summary), {
+          status: summary.status === 'SENT' ? 200 : summary.status === 'SKIPPED_NO_CREDS' ? 503 : 422,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: String((error as Error)?.message || error).slice(0, 300) }), {
+          status: 502,
+          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+        });
+      }
     }
 
     // PHASE 7B operator hook — one bounded bulk IOC pass. Reads/writes the IOC

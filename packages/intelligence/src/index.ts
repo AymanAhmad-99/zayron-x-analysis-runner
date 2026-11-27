@@ -190,3 +190,7 @@ export * from './sources/cwe_catalog';
 
 export * from './iocs/hygiene';
 export * from './iocs/stix';
+
+// PHASE 9C-MAIL-PRO — shared institutional email system (Brevo transactional
+// templates, desk auto-responders and the anti-loop shield).
+export * from './email';

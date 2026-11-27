@@ -115,7 +115,14 @@ import {
   type ApiKeyTier,
 } from './apiKeys';
 import { buildOpenApiDocument } from './openapi';
-import { BriefingError, subscribeBriefing, unsubscribeBriefing } from './briefings';
+import {
+  BriefingError,
+  dispatchWelcomeBriefing,
+  loadEmailByUnsubscribeToken,
+  subscribeBriefing,
+  syncBrevoUnsubscribe,
+  unsubscribeBriefing,
+} from './briefings';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import { loadExploitRadar } from './exploits';
 import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from './threatGraph';
@@ -212,6 +219,10 @@ export interface Env {
   PREVIEW_PRIMARY_FAILURE_DRILL_CVE_ID?: string;
   /** Shared secret for the Telegram webhook. Webhook fails closed when unset. */
   TELEGRAM_WEBHOOK_SECRET?: string;
+  /** PHASE 9C-MAIL-PRO — Brevo Transactional API key. Welcome mail fails closed when unset. */
+  BREVO_API_KEY?: string;
+  /** Optional From override for briefing mail (defaults to ZAYRON-X Intelligence). */
+  BRIEFING_FROM_EMAIL?: string;
   /** Comma-separated allow-list overriding the default CORS origins. */
   ALLOWED_ORIGINS?: string;
   /**
@@ -1219,6 +1230,31 @@ const worker = {
             frequency: body.frequency,
             focus: body.focus,
           });
+
+          // PHASE 9C-MAIL-PRO — after the subscriber row is durable, sync the
+          // Brevo contact and dispatch the Welcome Briefing off the response
+          // path. Fail-closed: no key means zero network calls, and no failure
+          // here can ever change the subscriber's HTTP result.
+          const subscriberEmail = String(body.email ?? '').trim().toLowerCase();
+          ctx.waitUntil(
+            dispatchWelcomeBriefing({
+              db: env.DB,
+              email: subscriberEmail,
+              frequency: result.frequency,
+              focus: result.focus,
+              brevoApiKey: env.BREVO_API_KEY,
+            })
+              .then((outcome) => {
+                console.log(JSON.stringify({ type: 'WELCOME_BRIEFING', email_suppressed: true, ...outcome }));
+              })
+              .catch((err: any) => {
+                console.error('[API] welcome briefing dispatch failed', {
+                  site: 'api.briefings.welcome',
+                  error: err?.message ?? String(err),
+                });
+              }),
+          );
+
           return jsonResponse(result, 200);
         } catch (err: any) {
           if (err instanceof BriefingError) return developerError(err.status, err.code, err.message);
@@ -1236,6 +1272,17 @@ const worker = {
         const token = url.searchParams.get('token') ?? '';
         try {
           const result = await unsubscribeBriefing({ db: env.DB, token });
+
+          // Mirror the 1-click unsubscribe into Brevo so a suppressed contact
+          // is never re-mailed by a campaign outside this database.
+          if (result.updated) {
+            ctx.waitUntil(
+              loadEmailByUnsubscribeToken(env.DB, token)
+                .then((email) => syncBrevoUnsubscribe({ email, brevoApiKey: env.BREVO_API_KEY }))
+                .catch(() => undefined),
+            );
+          }
+
           const accept = (request.headers.get('Accept') || '').toLowerCase();
           if (request.method === 'GET' && accept.includes('text/html')) {
             return new Response(

@@ -1,0 +1,16 @@
+{
+  "name": "@zayron/worker-mail",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "node -e \"console.error('[deploy] generic deploy is disabled. Production is a separate, explicitly authorized process.'); process.exit(1)\""
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250815.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.96.0"
+  }
+}

@@ -1,0 +1,28 @@
+name = "zayron-x-mail"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# PHASE 9C-MAIL-PRO — dedicated inbound desk for intel@ and security@.
+# Kept OUT of workers/api (< 1.2 MiB gzip budget) and workers/ingest so an
+# inbound mail burst can never consume an ingestion or API invocation.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+migrations_dir = "../../db/migrations"
+
+[vars]
+ENVIRONMENT = "production"
+MAIL_DESK_ENABLED = "true"
+
+[observability]
+enabled = true
+
+# Required secrets (set out-of-band, never committed):
+#   BREVO_API_KEY         - Brevo Transactional API key used for auto-replies
+#   FOUNDER_FORWARD_EMAIL - verified destination for forwarded inbound mail
+#
+# Email Routing (Cloudflare dashboard) must point intel@ and security@ at this
+# Worker. `message.forward()` only accepts a verified destination address.
