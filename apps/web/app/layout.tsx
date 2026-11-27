@@ -45,12 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: DEFAULT_TITLE, template: `%s | ${SITE_NAME}` },
     description: SITE_DESCRIPTION,
     applicationName: SITE_NAME,
-    alternates: {
-      canonical: "/",
-      types: {
-        "application/rss+xml": [{ url: "/news/rss.xml", title: "ZAYRON-X Intelligence Newsroom" }],
-      },
-    },
+    alternates: { canonical: "/" },
     robots: isPreview
       ? { index: false, follow: false, nocache: true }
       : { index: true, follow: true },
@@ -93,6 +88,14 @@ export const viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="ZAYRON-X Intelligence Newsroom"
+          href="/news/rss.xml"
+        />
+      </head>
       <body>
         {children}
         {/* Site-wide entity graph. Inline JSON-LD is permitted by the CSP
