@@ -4,8 +4,10 @@ import {
   BREVO_DIGEST_BATCH_SIZE,
   BREVO_MAX_SUBREQUESTS,
   BREVO_SMTP_EMAIL_URL,
+  ZX_COLORS,
   ZX_EMAIL_LOGO_URL,
   ZX_FREE_TIER,
+  ZX_FROM,
   buildDigestMessageVersions,
   buildEmailDigestHtml,
   buildListUnsubscribeHeaders,
@@ -121,25 +123,38 @@ describe('Phase 9C-Mail-Pro — Welcome Briefing', () => {
   const unsub = buildUnsubscribeUrl('a'.repeat(32));
   const email = buildWelcomeBriefingEmail({ unsubscribeUrl: unsub });
 
-  test('subject and preheader are the exact briefing lines', () => {
-    expect(email.subject).toBe('Welcome to ZAYRON-X — Your Neural Threat Graph & Free API Are Live');
-    expect(email.preheader).toContain('15-second triage, live KQL/SPL');
-    expect(email.preheader).toContain('zero noise, zero paywall.');
+  test('subject, preheader, and sender names match institutional standard', () => {
+    expect(email.subject).toBe('Welcome to ZAYRON-X');
+    expect(email.preheader).toBe('Your ZAYRON-X Intelligence access is active.');
+    expect(ZX_FROM.intel).toEqual({ email: 'intel@zayron-x.co', name: 'ZAYRON-X' });
+    expect(ZX_FROM.security).toEqual({ email: 'security@zayron-x.co', name: 'ZAYRON-X Security' });
   });
 
-  test('uses the hosted PNG wordmark (never inline SVG) with alt fallback', () => {
+  test('uses the hosted PNG wordmark at height=24 (never inline SVG) with alt fallback', () => {
     expect(ZX_EMAIL_LOGO_URL).toBe('https://zayron-x.co/brand/zayron-email-logo.png');
     expect(email.html).toContain(`src="${ZX_EMAIL_LOGO_URL}"`);
+    expect(email.html).toContain('height="24"');
     expect(email.html).toContain('alt="ZAYRON-X"');
     expect(email.html).not.toContain('<svg');
   });
 
-  test('600px table layout with inline CSS and no flexbox/grid', () => {
-    expect(email.html).toContain('width="600"');
+  test('580px table layout matches exact website tokens with zero off-brand navy or red', () => {
+    expect(email.html).toContain('width="580"');
     expect(email.html).toContain('role="presentation"');
-    expect(email.html).toContain('#FF4D00');
-    expect(email.html).toContain('#0B0F17');
-    expect(email.html).toContain('Truth Is the Perimeter.');
+    expect(ZX_COLORS.bg).toBe('#050505');
+    expect(ZX_COLORS.surface).toBe('#0d0d0c');
+    expect(ZX_COLORS.border).toBe('#282724');
+    expect(ZX_COLORS.text).toBe('#f7f7f4');
+    expect(ZX_COLORS.muted).toBe('#a5a39c');
+    expect(ZX_COLORS.accent).toBe('#ff6b00');
+    expect(email.html).toContain('#050505');
+    expect(email.html).toContain('#0d0d0c');
+    expect(email.html).toContain('#282724');
+    expect(email.html).toContain('#ff6b00');
+    expect(email.html).not.toContain('#0B0F17');
+    expect(email.html).not.toContain('#111827');
+    expect(email.html).not.toContain('#1F2A37');
+    expect(email.html).not.toContain('#FF4D00');
     expect(email.html.toLowerCase()).not.toContain('display:flex');
     expect(email.html.toLowerCase()).not.toContain('display: flex');
     expect(email.html.toLowerCase()).not.toContain('display:grid');
@@ -147,41 +162,42 @@ describe('Phase 9C-Mail-Pro — Welcome Briefing', () => {
     expect(email.html).not.toContain('<link');
   });
 
-  test('cites only the live free-tier numbers read from the codebase', () => {
-    expect(ZX_FREE_TIER.endpointCount).toBe(27);
-    expect(ZX_FREE_TIER.requestsPerMinute).toBe(30);
-    expect(ZX_FREE_TIER.dailyQuota).toBe(500);
-    expect(ZX_FREE_TIER.bulkIocLimit).toBe(50);
-    expect(email.html).toContain('27 endpoints');
-    expect(email.html).toContain('30 requests / 60s');
-    expect(email.html).toContain('500 records / day');
-    expect(email.html).toContain('50 indicators / request');
-    expect(email.html).toContain('STIX 2.1');
-    expect(email.html).toContain('Palo Alto');
+  test('maintains <= 95-word editorial discipline and links to /intelligence and /about', () => {
+    const coreText = email.text.split('ZAYRON-X · Cyber Threat Intelligence Platform')[0].trim();
+    const words = coreText.split(/\s+/).filter(Boolean);
+    expect(words.length).toBeLessThanOrEqual(95);
+    expect(email.html).toContain('https://zayron-x.co/intelligence');
+    expect(email.html).toContain('Open Platform');
+    expect(email.html).toContain('https://zayron-x.co/about');
+    expect(email.html).toContain('Explore what ZAYRON-X does and delivers');
   });
 
   test('never invents an endpoint count above the live OpenAPI paths', () => {
     const spec = readFileSync('workers/api/src/openapi.ts', 'utf8');
     const paths = spec.match(/^ +"\/[a-z]/gm) ?? [];
-    // 29 documented paths minus /openapi.json and /llms.txt = 27 data endpoints.
-    expect(paths.length).toBe(29);
     expect(ZX_FREE_TIER.endpointCount).toBe(paths.length - 2);
   });
 
-  test('renders, and escapes, the unsubscribe URL in HTML and text', () => {
+  test('renders, and escapes, the unsubscribe URL and complete institutional footer', () => {
     expect(email.html).toContain(escapeHtml(unsub));
     expect(email.text).toContain(unsub);
+    expect(email.html).toContain('https://zayron-x.co/about');
+    expect(email.html).toContain('https://zayron-x.co/developers');
+    expect(email.html).toContain('https://zayron-x.co/.well-known/security.txt');
+    expect(email.html).toContain('https://zayron-x.co/privacy');
+    expect(email.html).toContain('ZAYRON-X will never ask for passwords or API secret keys by email.');
+    expect(email.html).toContain('All rights reserved.');
     const hostile = buildWelcomeBriefingHtml({ unsubscribeUrl: 'https://x.test/?t="><script>alert(1)</script>' });
     expect(hostile).not.toContain('<script>alert(1)</script>');
     expect(hostile).toContain('&quot;&gt;&lt;script&gt;');
   });
 
-  test('text body mirrors the HTML CTAs', () => {
+  test('text body mirrors the HTML CTAs and footer channels', () => {
     expect(email.text).toContain('https://zayron-x.co/intelligence');
+    expect(email.text).toContain('https://zayron-x.co/about');
     expect(email.text).toContain('https://zayron-x.co/developers');
-    expect(email.text).toContain('https://t.me/zayronxai');
-    expect(email.text).toContain('https://zayron-x.co/news');
     expect(email.text).toContain('intel@zayron-x.co');
+    expect(email.text).toContain('security@zayron-x.co');
   });
 
   test('List-Unsubscribe headers are RFC 8058 one-click', () => {
@@ -256,8 +272,8 @@ describe('Phase 9C-Mail-Pro — Brevo Contacts & Welcome Dispatch', () => {
     expect(contactCall.body.updateEnabled).toBe(true);
 
     expect(sendCall.url).toBe(BREVO_SMTP_EMAIL_URL);
-    expect(sendCall.body.sender.email).toBe('intel@zayron-x.co');
-    expect(sendCall.body.subject).toContain('Your Neural Threat Graph');
+    expect(sendCall.body.sender).toEqual({ email: 'intel@zayron-x.co', name: 'ZAYRON-X' });
+    expect(sendCall.body.subject).toBe('Welcome to ZAYRON-X');
     expect(sendCall.body.headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
     expect(sendCall.body.htmlContent).toContain(ZX_EMAIL_LOGO_URL);
     expect(String(sendCall.headers['api-key'])).toBe('xkeysib-secret');
@@ -431,10 +447,32 @@ describe('Phase 9C-Mail-Pro — Brevo Digest Batching', () => {
     );
   });
 
-  test('digest HTML shares the obsidian masthead and logo', () => {
+  test('preview sends welcome template when requested', async () => {
+    const posts: any[] = [];
+    const sent = await sendDigestPreview(
+      { DB: fakeDigestDb(), BREVO_API_KEY: 'xkeysib-test' },
+      {
+        to: 'owner@zayron-x.co',
+        template: 'welcome',
+        fetchFn: (async (_url: RequestInfo | URL, init?: RequestInit) => {
+          posts.push(JSON.parse(String(init?.body ?? '{}')));
+          return new Response(JSON.stringify({ messageId: 'welcome_1' }), { status: 201 });
+        }) as unknown as typeof fetch,
+      },
+    );
+    expect(sent.status).toBe('SENT');
+    expect(posts).toHaveLength(1);
+    expect(posts[0].subject).toBe('Welcome to ZAYRON-X');
+    expect(posts[0].sender).toEqual({ email: 'intel@zayron-x.co', name: 'ZAYRON-X' });
+  });
+
+  test('digest HTML shares the site-matched editorial palette and logo', () => {
     const html = buildEmailDigestHtml(content, 'https://x.test/unsub');
-    expect(html).toContain('#0B0F17');
-    expect(html).toContain('#FF4D00');
+    expect(html).toContain('#050505');
+    expect(html).toContain('#0d0d0c');
+    expect(html).toContain('#ff6b00');
+    expect(html).not.toContain('#0B0F17');
+    expect(html).not.toContain('#FF4D00');
     expect(html).toContain(ZX_EMAIL_LOGO_URL);
     expect(html.toLowerCase()).not.toContain('display: fle');
     expect(html).not.toContain('<svg');
@@ -521,8 +559,9 @@ describe('Phase 9C-Mail-Pro — Inbound Desk (intel@ / security@)', () => {
     });
     expect(intel.subject).toContain('ZX-INTEL-20261127-AB12');
     expect(intel.html).toContain('Analyst response within 1 business day');
-    expect(intel.html).toContain('Neural Threat Graph');
-    expect(intel.text).toContain('Free API');
+    expect(intel.html).toContain('https://zayron-x.co/about');
+    expect(intel.html).toContain('https://zayron-x.co/intelligence');
+    expect(intel.text).toContain('About ZAYRON-X: https://zayron-x.co/about');
 
     const security = buildMailDeskReceipt({
       desk: 'security',
@@ -532,7 +571,8 @@ describe('Phase 9C-Mail-Pro — Inbound Desk (intel@ / security@)', () => {
       senderEmail: 'researcher@acme.com',
     });
     expect(security.html).toContain('Initial triage within 4 hours for critical security reports');
-    expect(security.html.toLowerCase()).toContain('send raw credentials');
+    expect(security.html).toContain('https://zayron-x.co/.well-known/security.txt');
+    expect(security.html.toLowerCase()).toContain('do not send raw credentials');
     expect(security.html).not.toContain('<script>alert(1)</script>');
     expect(security.html).toContain('&lt;/td&gt;&lt;script&gt;');
   });

@@ -1912,8 +1912,9 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
     // this can never be triggered by a website visitor or a scheduler tick.
     if (isEmailDigestTest) {
       const to = (url.searchParams.get('to') || '').trim();
+      const template = url.searchParams.get('template') === 'welcome' ? 'welcome' : 'digest';
       try {
-        const summary = await sendDigestPreview(this.env as any, { to, when: new Date() });
+        const summary = await sendDigestPreview(this.env as any, { to, template, when: new Date() });
         return new Response(JSON.stringify(summary), {
           status: summary.status === 'SENT' ? 200 : summary.status === 'SKIPPED_NO_CREDS' ? 503 : 422,
           headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },

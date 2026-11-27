@@ -20,6 +20,8 @@ import {
   buildDigestMessageVersions,
   buildEmailDigestHtml,
   buildEmailDigestText,
+  buildListUnsubscribeHeaders,
+  buildWelcomeBriefingEmail,
   parseSenderAddress,
   sendBrevoTransactional,
   type EmailDigestContent,
@@ -31,7 +33,7 @@ export type { EmailDigestContent };
 
 /** Reserved for callers that still import the old symbol name. */
 export const RESEND_BATCH_URL = BREVO_SMTP_EMAIL_URL;
-export const DEFAULT_BRIEFING_FROM = 'ZAYRON-X Intelligence <intel@zayron-x.co>';
+export const DEFAULT_BRIEFING_FROM = 'ZAYRON-X <intel@zayron-x.co>';
 export const EMAIL_DIGEST_MAX_SUBREQUESTS = 5;
 export const EMAIL_DIGEST_BATCH_SIZE = BREVO_DIGEST_BATCH_SIZE;
 
@@ -56,7 +58,7 @@ export interface EmailDigestResult {
  */
 export async function sendDigestPreview(
   env: EmailDigestEnv,
-  options: { to: string; when?: Date; fetchFn?: typeof fetch },
+  options: { to: string; when?: Date; template?: 'digest' | 'welcome'; fetchFn?: typeof fetch },
 ): Promise<{ status: 'SENT' | 'SKIPPED_NO_CREDS' | 'INVALID_RECIPIENT' | 'NO_CONTENT' | 'FAILED'; subrequestsUsed: number; errors: string[]; messageId?: string }> {
   const to = String(options.to ?? '').trim().toLowerCase();
   if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/.test(to) || /[\r\n]/.test(to)) {
@@ -67,6 +69,33 @@ export async function sendDigestPreview(
 
   const when = options.when ?? new Date();
   const fetchFn = options.fetchFn ?? fetch;
+
+  if (options.template === 'welcome') {
+    const unsubscribeUrl = 'https://zayron-x.co/developers';
+    const welcome = buildWelcomeBriefingEmail({ unsubscribeUrl });
+    const sender = parseSenderAddress(
+      String(env?.BRIEFING_FROM_EMAIL ?? '').trim() || DEFAULT_BRIEFING_FROM,
+      ZX_FROM.intel.name,
+    );
+    const result = await sendBrevoTransactional({
+      apiKey,
+      sender,
+      to: [{ email: to }],
+      replyTo: sender,
+      subject: welcome.subject,
+      htmlContent: welcome.html,
+      textContent: welcome.text,
+      headers: buildListUnsubscribeHeaders(unsubscribeUrl),
+      fetchFn,
+    });
+    return {
+      status: result.ok ? 'SENT' : 'FAILED',
+      subrequestsUsed: 1,
+      errors: result.ok ? [] : [result.error ?? 'BREVO_SEND_FAILED'],
+      messageId: result.messageId,
+    };
+  }
+
   const sinceIso = new Date(when.getTime() - 24 * 60 * 60 * 1000).toISOString();
 
   const [newsRes, kevRes, malRes] = await Promise.all([
