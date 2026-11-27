@@ -4,7 +4,9 @@ import { RouteShell } from "../../components/RouteShell";
 import { CodeTabs } from "../../components/CodeTabs";
 import { CopyBriefButton } from "../../components/CopyBriefButton";
 import { IntelAlertStrip } from "../../components/IntelAlertStrip";
+import { EditorialNewsArtwork } from "../../components/EditorialNewsArtwork";
 import { getNewsArticle, formatNewsDate, newsCoverUrl, newsHref, severityAccent } from "../../lib/news";
+import { newsArtEntity } from "../../lib/newsArt";
 import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../../lib/seo";
 
@@ -123,14 +125,7 @@ export default async function NewsArticlePage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <figure className="ns-cover">
-        <img
-          src={newsCoverUrl(article.slug)}
-          alt={`${article.title} — ZAYRON-X briefing cover`}
-          width={1200}
-          height={675}
-          loading="eager"
-          decoding="async"
-        />
+        <EditorialNewsArtwork slug={article.slug} category={article.category} entity={newsArtEntity(article)} />
       </figure>
 
       <section

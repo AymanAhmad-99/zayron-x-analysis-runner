@@ -18,8 +18,16 @@ interface TurnstileApi {
   remove?(widgetId?: string): void;
 }
 
-type StripMode = "daily" | "critical_kev";
+type StripCadence = "daily" | "weekly";
 
+/**
+ * PHASE 10A-POLISH — the briefing subscribe strip.
+ *
+ * Rebuilt on the site's own tokens: a `#0d0d0c` panel with a whisper of accent
+ * ambient light, editorial copy on the left, and one unified dark control column
+ * on the right. No raw white buttons, no off-brand blue surface. The Turnstile
+ * gate, the reset-on-finish behaviour and the endpoint contract are unchanged.
+ */
 export function IntelAlertStrip({
   turnstileSiteKey = "",
   contained = false,
@@ -28,7 +36,7 @@ export function IntelAlertStrip({
   contained?: boolean;
 }) {
   const [email, setEmail] = useState("");
-  const [mode, setMode] = useState<StripMode>("daily");
+  const [cadence, setCadence] = useState<StripCadence>("daily");
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -134,8 +142,8 @@ export function IntelAlertStrip({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: email.trim(),
-            frequency: "daily",
-            focus: mode === "critical_kev" ? "critical_kev" : "all",
+            frequency: cadence,
+            focus: "all",
             turnstile_token: turnstileSiteKey ? turnstileValue : undefined,
           }),
         });
@@ -155,161 +163,88 @@ export function IntelAlertStrip({
         if (turnstileSiteKey) resetTurnstile();
       }
     },
-    [email, mode, resetTurnstile, turnstileSiteKey, turnstileValue],
+    [cadence, email, resetTurnstile, turnstileSiteKey, turnstileValue],
   );
 
   return (
-    <section
-      className="ioc-table-section"
-      aria-label="Threat intelligence briefing alerts"
-      style={{
-        marginTop: 28,
-        marginBottom: contained ? 36 : 0,
-        maxWidth: contained ? 1100 : "100%",
-        marginInline: contained ? "auto" : undefined,
-        paddingInline: contained ? "clamp(16px, 4vw, 32px)" : undefined,
-        boxSizing: "border-box",
-        overflowX: "clip",
-      }}
-    >
-      <div
-        style={{
-          border: "1px solid rgba(255,255,255,0.12)",
-          background: "#090C10",
-          padding: "18px 20px",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
-          gap: 20,
-          alignItems: "center",
-          boxSizing: "border-box",
-          maxWidth: "100%",
-        }}
-      >
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--color-accent)", marginBottom: 6 }}>
-            EMAIL INTELLIGENCE BRIEFINGS
-          </div>
-          <p className="ioc-note" style={{ margin: "0 0 12px" }}>
-            Daily 09:40 UTC summary of verified KEV additions, supply-chain advisories, and newsroom briefs.
+    <section className={`ia${contained ? " ia-contained" : ""}`} aria-label="Threat intelligence briefing alerts">
+      <div className="ia-panel">
+        <div className="ia-copy">
+          <span className="ia-eyebrow">Intelligence Briefing</span>
+          <h2>Stay ahead of verified threats.</h2>
+          <p>
+            Curated CVE advisories, threat actor dossiers, and live KQL/SPL hunting updates — delivered cleanly to your
+            inbox. Zero spam.
           </p>
-          <form onSubmit={handleSubmit} style={{ display: "grid", gap: 10, minWidth: 0 }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="secops@organization.com"
-                aria-label="Work email for intelligence briefings"
-                style={{
-                  flex: "1 1 180px",
-                  minWidth: 0,
-                  maxWidth: "100%",
-                  padding: "9px 12px",
-                  background: "#070706",
-                  color: "var(--color-text)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  fontSize: 13,
-                  boxSizing: "border-box",
-                }}
-              />
-              <button
-                type="submit"
-                className="ioc-cta"
-                disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileValue)}
-                style={{
-                  cursor: submitting || (Boolean(turnstileSiteKey) && !turnstileValue) ? "not-allowed" : "pointer",
-                  whiteSpace: "nowrap",
-                  opacity: submitting || (Boolean(turnstileSiteKey) && !turnstileValue) ? 0.6 : 1,
-                }}
-              >
-                {submitting ? "SUBSCRIBING..." : "SUBSCRIBE"}
-              </button>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-              <button
-                type="button"
-                className="ioc-cta"
-                onClick={() => setMode("daily")}
-                aria-pressed={mode === "daily"}
-                style={
-                  mode === "daily"
-                    ? { borderColor: "var(--color-accent)", color: "var(--color-accent)", cursor: "pointer" }
-                    : { cursor: "pointer" }
-                }
-              >
-                Daily Brief
-              </button>
-              <button
-                type="button"
-                className="ioc-cta"
-                onClick={() => setMode("critical_kev")}
-                aria-pressed={mode === "critical_kev"}
-                style={
-                  mode === "critical_kev"
-                    ? { borderColor: "var(--color-accent)", color: "var(--color-accent)", cursor: "pointer" }
-                    : { cursor: "pointer" }
-                }
-              >
-                Critical KEV
-              </button>
-            </div>
-            {turnstileSiteKey ? (
-              <div ref={turnstileRef} data-sitekey={turnstileSiteKey} style={{ maxWidth: "100%", overflow: "hidden" }} />
-            ) : null}
-            {turnstileSiteKey && !turnstileValue && !turnstileError ? (
-              <p className="ioc-note" role="status" style={{ margin: 0 }}>
-                Complete the verification check above to enable subscription.
-              </p>
-            ) : null}
-            {turnstileError ? (
-              <p className="ioc-note" role="alert" style={{ color: "#ff4d2e", margin: 0 }}>
-                {turnstileError}
-              </p>
-            ) : null}
-            {statusMessage ? (
-              <p className="ioc-note" role="status" style={{ color: "#2ecc71", margin: 0 }}>
-                {statusMessage}
-              </p>
-            ) : null}
-            {errorMessage ? (
-              <p className="ioc-note" role="alert" style={{ color: "#ff4d2e", margin: 0 }}>
-                {errorMessage}
-              </p>
-            ) : null}
-          </form>
+          <div className="ia-wire">
+            <a href="https://t.me/zayronxai" target="_blank" rel="noopener noreferrer">
+              Telegram live wire ↗
+            </a>
+            <span aria-hidden="true">·</span>
+            <a href="/news/rss.xml">RSS 2.0</a>
+          </div>
         </div>
 
-        <div
-          style={{
-            minWidth: 0,
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            paddingTop: 14,
-            display: "grid",
-            gap: 10,
-          }}
-        >
-          <div style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--color-subtle)" }}>
-            REAL-TIME WIRE &amp; SYNDICATION
-          </div>
-          <p style={{ margin: 0, fontSize: 14, color: "var(--color-text)", lineHeight: 1.45 }}>
-            Get zero-day KEV &amp; supply-chain alerts the second they drop.
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <a
-              className="ioc-cta"
-              href="https://t.me/zayronxai"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ borderColor: "var(--color-accent)", color: "var(--color-accent)" }}
+        <form className="ia-form" onSubmit={handleSubmit}>
+          <div className="ia-segmented" role="group" aria-label="Briefing cadence">
+            <button
+              type="button"
+              className={`ia-seg${cadence === "daily" ? " active" : ""}`}
+              aria-pressed={cadence === "daily"}
+              onClick={() => setCadence("daily")}
             >
-              TELEGRAM LIVE WIRE (@zayronxai) ↗
-            </a>
-            <a className="ioc-cta" href="/news/rss.xml">
-              RSS 2.0 FEED (/news/rss.xml)
-            </a>
+              Daily
+            </button>
+            <button
+              type="button"
+              className={`ia-seg${cadence === "weekly" ? " active" : ""}`}
+              aria-pressed={cadence === "weekly"}
+              onClick={() => setCadence("weekly")}
+            >
+              Weekly
+            </button>
           </div>
-        </div>
+
+          <div className="ia-field">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="secops@organization.com"
+              aria-label="Work email for intelligence briefings"
+              autoComplete="email"
+            />
+            <button
+              type="submit"
+              className="ia-submit"
+              disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileValue)}
+            >
+              {submitting ? "Subscribing…" : "Subscribe"}
+            </button>
+          </div>
+
+          {turnstileSiteKey ? <div ref={turnstileRef} className="ia-turnstile" data-sitekey={turnstileSiteKey} /> : null}
+
+          {turnstileSiteKey && !turnstileValue && !turnstileError ? (
+            <p className="ia-status">Verification keeps the wire clean — one check, no puzzles after it.</p>
+          ) : null}
+          {turnstileError ? (
+            <p className="ia-status err" role="alert">
+              {turnstileError}
+            </p>
+          ) : null}
+          {statusMessage ? (
+            <p className="ia-status ok" role="status">
+              {statusMessage}
+            </p>
+          ) : null}
+          {errorMessage ? (
+            <p className="ia-status err" role="alert">
+              {errorMessage}
+            </p>
+          ) : null}
+        </form>
       </div>
     </section>
   );

@@ -20,15 +20,13 @@ import {
   NEWS_COVER_CACHE_CONTROL,
   NEWS_COVER_HEIGHT,
   NEWS_COVER_WIDTH,
-  coverTitleLines,
-  measureCoverText,
   newsCoverMotifForCategory,
   newsCoverResponse,
   newsCoverSpecFromArticle,
   paintNewsCover,
   renderNewsCoverPng,
-  sanitizeCoverText,
 } from '../../apps/web/app/lib/newsCover';
+import { newsArtEntity, newsArtLabel, newsArtMotif, newsArtRandom, newsArtSeed } from '../../apps/web/app/lib/newsArt';
 import { API_BASE_URL, API_ENDPOINT_COUNT, API_ENDPOINT_GROUPS } from '../../apps/web/app/lib/apiCatalog';
 
 /**
@@ -73,6 +71,8 @@ function stubFetch(status = 201) {
 }
 
 const NOW = new Date('2026-11-27T10:00:00.000Z');
+
+const readSource = (path: string) => readFileSync(path, 'utf8');
 
 describe('enterprise inquiry — validation', () => {
   test('company shorter than 2 characters is rejected', () => {
@@ -268,21 +268,29 @@ describe('editorial cover — motif and escaping', () => {
     expect(newsCoverMotifForCategory('SOMETHING_NEW')).toBe('ADVISORY');
   });
 
-  test('cover text strips markup and control characters', () => {
-    const clean = sanitizeCoverText('<script>alert("x")</script>\u0000', 120);
-    expect(clean).not.toContain('<');
-    expect(clean).not.toContain('>');
-    expect(clean).not.toContain('"');
-    expect(clean).not.toContain('\u0000');
+  test('the bitmap font encoder is gone from the cover pipeline', () => {
+    const source = readFileSync('apps/web/app/lib/newsCover.ts', 'utf8');
+    for (const banned of ['GLYPHS', 'glyphFor', 'coverGlyphAdvance', 'measureCoverText', 'coverTitleLines', 'FALLBACK_GLYPH']) {
+      expect(source).not.toContain(banned);
+    }
+    expect(source).not.toContain('canvas.text(');
+    expect(source).not.toContain('textFit');
   });
 
-  test('title wrapping is bounded and deterministic', () => {
-    const title =
-      'A very long briefing headline that keeps going well past a single line of the cover layout and then continues';
-    const lines = coverTitleLines(title, 3);
-    expect(lines.length).toBeLessThanOrEqual(3);
-    expect(coverTitleLines(title, 3)).toEqual(lines);
-    expect(lines.join(' ').length).toBeGreaterThan(10);
+  test('the cover carries no article headline at all', () => {
+    const spec = {
+      category: 'MALWARE',
+      severity: 'HIGH',
+      title: 'Unique marker headline that must never be rasterised',
+      entity: 'CVE-2026-99999',
+      source: 'CISA',
+      publishedAt: '2026-11-20T00:00:00.000Z',
+      seed: 'marker',
+    };
+    const a = paintNewsCover(spec);
+    const b = paintNewsCover({ ...spec, title: 'A completely different headline entirely' });
+    // The title is metadata only: it cannot change a single pixel.
+    expect(Array.from(a)).toEqual(Array.from(b));
   });
 
   test('punctuation-heavy headlines render without throwing', () => {
@@ -297,9 +305,18 @@ describe('editorial cover — motif and escaping', () => {
     expect(paintNewsCover(spec)).toHaveLength(NEWS_COVER_WIDTH * NEWS_COVER_HEIGHT * 3);
   });
 
-  test('the glyph measure grows linearly with scale', () => {
-    expect(measureCoverText('ABC', 2)).toBe(3 * 6 * 2 - 2);
-    expect(measureCoverText('', 4)).toBe(0);
+  test('distinct slugs of the same category still get distinct artwork', () => {
+    const spec = {
+      category: 'EXPLOITATION',
+      severity: 'CRITICAL',
+      title: 'Same category, different briefing',
+      entity: null,
+      source: 'CISA',
+      publishedAt: '2026-11-20T00:00:00.000Z',
+    };
+    expect(Array.from(paintNewsCover({ ...spec, seed: 'alpha' }))).not.toEqual(
+      Array.from(paintNewsCover({ ...spec, seed: 'beta' })),
+    );
   });
 });
 
@@ -360,7 +377,7 @@ describe('editorial cover — rendering', () => {
       mentions: [{ entity_type: 'actor', entity_label: 'APT-Test', in_catalog: 1 }],
       graph_enrichment: { cves: [{ cve_id: 'CVE-2026-0001', cisa_kev: true }] },
     });
-    expect(withCve.entity).toBe('CVE-2026-0001 · CISA KEV');
+    expect(withCve.entity).toBe('CVE-2026-0001 · KEV');
     expect(withCve.seed).toBe('s1');
 
     const withActor = newsCoverSpecFromArticle({
@@ -434,18 +451,23 @@ describe('surface integrity — token parity and wiring', () => {
     expect(home).not.toContain('FinalCtaFooter');
   });
 
-  test('the newsroom index wires a cover into the lead and every card', () => {
+  test('the newsroom index wires the vector artwork into the lead and every card', () => {
     const news = read('apps/web/app/news/page.tsx');
-    expect(news).toContain('newsCoverUrl');
+    expect(news).toContain('EditorialNewsArtwork');
     expect(news).toContain('ns-lead');
     expect(news).toContain('ns-card');
-    expect(news).toContain('width={1200}');
     expect(news).toContain('IntelAlertStrip');
+    // No bitmap cover images left on the index, and no empty KPI bar.
+    expect(news).not.toContain('newsCoverUrl');
+    expect(news).not.toContain('<img');
+    expect(news).not.toContain('ns-meta"');
+    expect(news).not.toContain('PUBLISHED BRIEFINGS');
   });
 
-  test('the briefing detail page uses the cover for its hero and og:image', () => {
+  test('the briefing detail page uses vector artwork for its hero and the PNG for og:image', () => {
     const detail = read('apps/web/app/news/[slug]/page.tsx');
     expect(detail).toContain('newsCoverUrl(article.slug)');
+    expect(detail).toContain('EditorialNewsArtwork');
     expect(detail).toContain('ns-cover');
     expect(detail).toContain('twitter: { card: "summary_large_image"');
   });
@@ -462,5 +484,86 @@ describe('surface integrity — token parity and wiring', () => {
     expect(portal).toContain('API_ENDPOINT_GROUPS');
     expect(portal).toContain('Authorization: Bearer');
     expect(portal).toContain('/api/v1/keys/self-serve');
+  });
+
+  test('the subscribe strip wears the site tokens and keeps the Turnstile gate', () => {
+    const strip = read('apps/web/app/components/IntelAlertStrip.tsx');
+    expect(strip).not.toContain('#090C10');
+    expect(strip).not.toContain('#ffffff');
+    expect(strip).toContain('disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileValue)}');
+    expect(strip).toContain('resetTurnstile()');
+    expect(strip).toContain('turnstile/v0/api.js?render=explicit');
+    expect(strip).toContain('theme: "dark"');
+    expect(strip).toContain('ia-segmented');
+    expect(strip).toContain('frequency: cadence');
+
+    const css = read('apps/web/app/globals.css');
+    const panel = css.slice(css.indexOf('.ia-panel{'), css.indexOf('@media(max-width:900px){\n  .ia-panel'));
+    expect(panel).toContain('background:#0d0d0c');
+    expect(panel).toContain('background:#050505');
+    expect(panel).toContain('background:#ff6b00');
+    expect(panel).toContain('border:1px solid #282724');
+    expect(panel).toContain('#100b07');
+    expect(panel).not.toContain('#ffffff');
+    expect(panel).not.toContain('rgb(255, 255, 255)');
+  });
+
+  test('the newsroom renders no zero-value KPI box', () => {
+    const news = read('apps/web/app/news/page.tsx');
+    expect(news).toContain('ns-subhead');
+    expect(news).toContain('Verified Briefings');
+    expect(news).not.toMatch(/<strong>\{0\}<\/strong>/);
+    expect(news).not.toContain('LINKED ENTITIES');
+  });
+});
+
+describe('editorial artwork — retina vector covers', () => {
+  test('every category resolves to its own motif and pill label', () => {
+    expect(newsArtMotif('EXPLOITATION')).toBe('KEV');
+    expect(newsArtMotif('THREAT_ACTOR')).toBe('ACTOR');
+    expect(newsArtMotif('SUPPLY_CHAIN')).toBe('SUPPLY_CHAIN');
+    expect(newsArtMotif('SOMETHING_NEW')).toBe('ADVISORY');
+    expect(newsArtLabel('EXPLOITATION')).toBe('CISA KEV');
+    expect(newsArtLabel('THREAT_ACTOR')).toBe('THREAT ACTOR');
+  });
+
+  test('the seeded composition is deterministic', () => {
+    const runA = newsArtRandom(newsArtSeed('cve-2026-0001|MALWARE'));
+    const runB = newsArtRandom(newsArtSeed('cve-2026-0001|MALWARE'));
+    expect([runA(), runA(), runA()]).toEqual([runB(), runB(), runB()]);
+  });
+
+  test('no two briefings share a composition seed', () => {
+    const slugs = Array.from({ length: 17 }, (_, index) => `briefing-${index}-cve-2026-${1000 + index}`);
+    const seeds = new Set(slugs.map((slug) => newsArtSeed(`${slug}|VULNERABILITY`)));
+    expect(seeds.size).toBe(slugs.length);
+  });
+
+  test('the entity chip prefers a KEV CVE, then a catalog-verified mention', () => {
+    expect(
+      newsArtEntity({
+        graph_enrichment: { cves: [{ cve_id: 'CVE-2026-0001', cisa_kev: true }] },
+        mentions: [{ entity_label: 'APT-Test', in_catalog: 1 }],
+      }),
+    ).toBe('CVE-2026-0001 · KEV');
+    expect(
+      newsArtEntity({
+        mentions: [{ entity_label: 'Uncatalogued', in_catalog: 0 }, { entity_label: 'APT-Test', in_catalog: 1 }],
+      }),
+    ).toBe('APT-Test');
+    expect(newsArtEntity({})).toBeNull();
+  });
+
+  test('the component draws inline SVG only and never repeats the headline', () => {
+    const art = readSource('apps/web/app/components/EditorialNewsArtwork.tsx');
+    expect(art).toContain('viewBox="0 0 1200 675"');
+    expect(art).toContain('<svg');
+    expect(art).not.toContain('<img');
+    expect(art).not.toContain('newsCoverUrl');
+    expect(art).not.toContain('.title');
+    expect(art).not.toContain('GLYPHS');
+    // Two overlays only: the category pill and an optional entity chip.
+    expect(art).toContain('ena-pill');
+    expect(art).toContain('entity ?');
   });
 });

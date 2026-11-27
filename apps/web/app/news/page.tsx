@@ -1,25 +1,26 @@
 import type { Metadata } from "next";
 import { RouteShell } from "../components/RouteShell";
 import { IntelAlertStrip } from "../components/IntelAlertStrip";
+import { EditorialNewsArtwork } from "../components/EditorialNewsArtwork";
 import {
   getNewsIndex,
   getNewsTelemetry,
   NEWS_CATEGORIES,
   categoryLabel,
   formatNewsDate,
-  newsCoverUrl,
   newsHref,
 } from "../lib/news";
+import { newsArtEntity } from "../lib/newsArt";
 import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
 /**
- * PHASE 10A — `/news`, the editorial newsroom.
+ * PHASE 10A-POLISH — `/news`, the editorial newsroom.
  *
- * Every briefing carries its own branded cover, rendered on demand by
- * `/api/news-cover/[slug]` from that briefing's metadata. The lead story uses a
- * 16:9 editorial split, the grid uses the same asset at a fixed aspect ratio so
- * nothing shifts while an image loads, and the subscribe strip stays below.
+ * Every briefing carries its own retina-sharp vector cover, seeded from its slug
+ * and composed by category. The lead story is a 52/48 split, the grid is a
+ * three-up card wall, and the only masthead metric is the real published count —
+ * there is no empty KPI bar and no zero on the page.
  */
 
 type Props = { searchParams: Promise<{ category?: string; q?: string }> };
@@ -55,9 +56,11 @@ export default async function NewsPage({ searchParams }: Props) {
 
   const items = index.state === "ok" ? index.data?.items ?? [] : [];
   const [lead, ...rest] = items;
-  const site = getSiteUrl();
+  const published = telemetry.data?.published_briefings ?? index.data?.total ?? items.length;
+  const sources = telemetry.data?.sources_tracked ?? 0;
+
   const jsonLd = buildLinkedJsonLdGraph({
-    siteUrl: site,
+    siteUrl: getSiteUrl(),
     path: "/news",
     primary: {
       "@type": "CollectionPage",
@@ -78,33 +81,34 @@ export default async function NewsPage({ searchParams }: Props) {
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
 
-      <div className="ns-meta">
-        <div>
-          <span>PUBLISHED BRIEFINGS</span>
-          <strong>{telemetry.data?.published_briefings ?? 0}</strong>
-        </div>
-        <div>
-          <span>LINKED ENTITIES</span>
-          <strong>{telemetry.data?.linked_entities ?? 0}</strong>
-        </div>
-        <div>
-          <span>SOURCES TRACKED</span>
-          <strong>{telemetry.data?.sources_tracked ?? 0}</strong>
-        </div>
-        <div>
-          <span>LAST INGEST (UTC)</span>
-          <strong>{telemetry.data?.last_ingest ? formatNewsDate(telemetry.data.last_ingest) : "—"}</strong>
-        </div>
-      </div>
+      <p className="ns-subhead">
+        <strong>{published > 0 ? `${published} Verified Briefings` : "Verified briefings"}</strong>
+        <span className="dot" aria-hidden="true">
+          ·
+        </span>
+        <span>Updated continuously</span>
+        {sources > 0 ? (
+          <>
+            <span className="dot" aria-hidden="true">
+              ·
+            </span>
+            <span>{sources} sources tracked</span>
+          </>
+        ) : null}
+      </p>
 
       <section className="ns-filters" aria-label="Newsroom filters">
         <div className="ns-filter-row">
-          <span className="ns-filter-label">CATEGORY</span>
           {NEWS_CATEGORIES.map((entry) => {
             const active = entry.value === category || (entry.value === "" && category === "");
             const href = entry.value ? `/news?category=${encodeURIComponent(entry.value)}` : "/news";
             return (
-              <a key={entry.label} className={`ns-filter${active ? " active" : ""}`} href={href} aria-current={active ? "page" : undefined}>
+              <a
+                key={entry.label}
+                className={`ns-filter${active ? " active" : ""}`}
+                href={href}
+                aria-current={active ? "page" : undefined}
+              >
                 {entry.label}
               </a>
             );
@@ -116,8 +120,8 @@ export default async function NewsPage({ searchParams }: Props) {
             type="search"
             name="q"
             defaultValue={query}
-            placeholder="Search briefings by title, verdict or summary"
-            aria-label="Search briefings"
+            placeholder="Search briefings"
+            aria-label="Search briefings by title, verdict or summary"
           />
           <button type="submit">Search</button>
         </form>
@@ -137,31 +141,26 @@ export default async function NewsPage({ searchParams }: Props) {
         <>
           {lead ? (
             <article className="ns-lead">
-              <a className="ns-lead-media" href={newsHref(lead.slug)} tabIndex={-1} aria-hidden="true">
-                <img
-                  src={newsCoverUrl(lead.slug)}
-                  alt=""
-                  width={1200}
-                  height={675}
-                  loading="eager"
-                  decoding="async"
-                />
+              <a className="ns-lead-media" href={newsHref(lead.slug)} tabIndex={-1}>
+                <EditorialNewsArtwork slug={lead.slug} category={lead.category} entity={newsArtEntity(lead)} />
               </a>
               <div className="ns-lead-body">
                 <span className="ns-kicker">
-                  LEAD BRIEFING · {categoryLabel(lead.category)} · {lead.severity}
+                  Featured briefing · {lead.source_name}
                 </span>
                 <h2>
                   <a href={newsHref(lead.slug)}>{lead.title}</a>
                 </h2>
                 <p>{lead.verdict}</p>
                 <div className="ns-meta-line">
-                  <span>{lead.source_name}</span>
+                  <span>{categoryLabel(lead.category)}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{lead.severity}</span>
                   <span aria-hidden="true">·</span>
                   <span>{formatNewsDate(lead.published_at)}</span>
                 </div>
                 <a className="ns-cta" href={newsHref(lead.slug)}>
-                  Read the briefing <span aria-hidden="true">→</span>
+                  Read full briefing <span aria-hidden="true">→</span>
                 </a>
               </div>
             </article>
@@ -171,28 +170,24 @@ export default async function NewsPage({ searchParams }: Props) {
             <div className="ns-grid">
               {rest.map((item) => (
                 <article key={item.slug} className="ns-card">
-                  <a className="ns-card-media" href={newsHref(item.slug)} tabIndex={-1} aria-hidden="true">
-                    <img
-                      src={newsCoverUrl(item.slug)}
-                      alt=""
-                      width={1200}
-                      height={675}
-                      loading="lazy"
-                      decoding="async"
-                    />
+                  <a className="ns-card-media" href={newsHref(item.slug)} tabIndex={-1}>
+                    <EditorialNewsArtwork slug={item.slug} category={item.category} entity={newsArtEntity(item)} />
                   </a>
                   <div className="ns-card-body">
-                    <span className="ns-kicker">
+                    <span className="ns-card-eyebrow">
                       {categoryLabel(item.category)} · {item.severity}
                     </span>
                     <h3>
                       <a href={newsHref(item.slug)}>{item.title}</a>
                     </h3>
                     <p>{item.verdict}</p>
-                    <div className="ns-meta-line">
-                      <span>{item.source_name}</span>
-                      <span aria-hidden="true">·</span>
-                      <span>{formatNewsDate(item.published_at)}</span>
+                    <div className="ns-card-foot">
+                      <span>
+                        {item.source_name} · {formatNewsDate(item.published_at)}
+                      </span>
+                      <span className="ns-card-arrow" aria-hidden="true">
+                        →
+                      </span>
                     </div>
                   </div>
                 </article>

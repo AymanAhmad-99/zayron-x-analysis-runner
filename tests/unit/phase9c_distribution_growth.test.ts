@@ -600,7 +600,7 @@ describe('Phase 9C — RSS 2.0 + WebSub, Sitemap RFC 3339 & Idempotent Migration
     const strip = readFileSync('apps/web/app/components/IntelAlertStrip.tsx', 'utf8');
     expect(strip).toContain('turnstile/v0/api.js?render=explicit');
     expect(strip).toContain('theme: "dark"');
-    expect(strip).toContain('#090C10');
+    expect(strip).not.toContain('#090C10');
     expect(strip).toContain('disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileValue)}');
     expect(strip).toContain('Check your inbox — your ZAYRON-X Welcome Briefing is on the way.');
     expect(strip).toContain('resetTurnstile()');
