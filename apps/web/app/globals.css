@@ -429,3 +429,60 @@ pre,code{max-width:100%;overflow-wrap:anywhere}
   .ia-field input{flex:1 1 100%}
   .ia-submit{flex:1 1 100%}
 }
+
+/* PHASE 10B-1 — newsroom view switcher. */
+.ns-switch{display:inline-flex;gap:2px;padding:3px;margin:0 0 30px;background:#0d0d0c;border:1px solid #282724;border-radius:10px}
+.ns-switch-tab{padding:8px 18px;border-radius:7px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#77756f;transition:background .16s ease,color .16s ease}
+.ns-switch-tab:hover{color:#f7f7f4}
+.ns-switch-tab.active{background:#1d1c1a;color:#f7f7f4}
+
+/* PHASE 10B-1 — Global Wire. Hairline-divided terminal restraint. */
+.wire{display:grid;gap:28px}
+.wire-eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#77756f}
+.wire-banner{display:grid;gap:10px;background:#0d0d0c;border:1px solid #282724;border-radius:14px;padding:24px 26px}
+.wire-banner p{margin:0;max-width:92ch;color:#a5a39c;font-size:13px;line-height:1.65}
+.wire-banner p strong{color:#f7f7f4;font-weight:500}
+.wire-banner-note{color:#77756f!important;font-size:12px!important;padding-top:10px;border-top:1px solid #1d1c1a}
+.wire-filters{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}
+.wire-filter-row{display:flex;flex-wrap:wrap;gap:6px}
+.wire-filter{display:inline-flex;align-items:center;height:30px;padding:0 13px;border:1px solid #282724;border-radius:999px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#77756f;transition:border-color .16s ease,color .16s ease,background .16s ease}
+.wire-filter:hover{color:#f7f7f4;border-color:#3f3d38}
+.wire-filter.active{background:#141413;border-color:#3f3d38;color:#f7f7f4}
+.wire-counts{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#55534e}
+.wire-convergence{background:#0d0d0c;border:1px solid #282724;border-radius:14px;padding:20px 24px}
+.wire-convergence-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;margin-bottom:12px}
+.wire-convergence-note{font-size:11px;color:#55534e}
+.wire-clusters{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.wire-cluster{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding:9px 0;border-top:1px solid #1d1c1a;font-size:12px;color:#a5a39c}
+.wire-cluster:first-child{border-top:0}
+.wire-cluster-regions{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:.14em;color:#f7f7f4}
+.wire-cluster-dot{color:#3f3d38}
+.wire-cluster-headline{flex:1 1 100%;color:#a5a39c;font-size:13px;line-height:1.5}
+.wire-cluster-headline a:hover{color:#ff6b00}
+.wire-tier{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#77756f}
+.wire-tier.is-corroborated{color:#ff6b00}
+.wire-feed{border-top:1px solid #282724}
+.wire-feed-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:14px 0 4px}
+.wire-feed-meta{font-size:11px;color:#55534e}
+.wire-row{display:grid;gap:8px;padding:22px 0;border-bottom:1px solid #1d1c1a}
+.wire-row-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}
+.wire-region{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:.14em;color:#77756f}
+.wire-row-time{margin-left:auto;font-size:11px;color:#55534e}
+.wire-row-title{margin:0;font-size:17px;line-height:1.32;letter-spacing:-.01em;font-weight:600;color:#f7f7f4}
+.wire-row-title a{transition:color .16s ease}
+.wire-row-title a:hover{color:#ff6b00}
+.wire-row-summary{margin:0;max-width:88ch;color:#a5a39c;font-size:13px;line-height:1.6}
+.wire-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.wire-chip{display:inline-flex;align-items:center;height:24px;padding:0 9px;border:1px solid #282724;border-radius:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;letter-spacing:.06em;color:#a5a39c;transition:border-color .16s ease,color .16s ease}
+.wire-chip:hover{border-color:#ff6b00;color:#f7f7f4}
+.wire-chip.is-static{cursor:default}
+.wire-ioc{display:inline-flex;align-items:center;height:24px;padding:0 9px;border:1px dashed #282724;border-radius:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;color:#77756f;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wire-row-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:11px;color:#55534e}
+
+@media(max-width:640px){
+  .ns-switch{width:100%}
+  .ns-switch-tab{flex:1 1 0;text-align:center;padding:8px 10px}
+  .wire-banner{padding:20px}
+  .wire-row{padding:18px 0}
+  .wire-row-title{font-size:16px}
+}

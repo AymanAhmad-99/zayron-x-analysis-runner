@@ -248,6 +248,8 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/llms-full.txt",
   // PHASE 9C — one-click email briefing unsubscribe link.
   "/api/v1/briefings/unsubscribe",
+  // PHASE 10B-1 — the multilingual OSINT wire is an anonymous, read-only feed.
+  "/api/v1/wire",
 ]);
 
 /** Collection-detail prefixes that are public for READ methods only. */
@@ -287,7 +289,7 @@ const KNOWN_API_SEGMENTS = new Set<string>([
   "detection", "regulations", "reports", "search", "threats", "ai", "exploits",
   "threat-actors", "techniques", "keys", "leads", "sitemap", "canary", "publish",
   "social", "research", "analyze", "admin", "webhook", "news", "vendors", "regions", "llms.txt", "llms-full.txt", "briefings",
-  "inquiries",
+  "inquiries", "wire",
 ]);
 
 function isPublicRead(method: string, path: string): boolean {

@@ -130,6 +130,8 @@ import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from '
 import { loadCveLinks, loadFamilyAttribution } from './neuralMesh';
 import { loadTechnique, loadTechniqueIndex } from './techniques';
 import { loadNewsArticle, loadNewsIndex, loadNewsTelemetry, loadRelatedNews, NEWS_CACHE_SECONDS } from './newsroom';
+// PHASE 10B-1 — multilingual OSINT wire read model (isolated observation store).
+import { loadWireFeed, WIRE_CACHE_SECONDS } from './wire';
 import { loadRegion, loadRegions, loadVendor, loadVendors, isRegionCode } from './programmaticHubs';
 import { buildLlmsFullTxt, buildLlmsTxt, collectLlmsData, LLMS_CACHE_SECONDS } from './llmsTxt';
 import {
@@ -7329,6 +7331,23 @@ Return ONLY a valid JSON object matching this schema:
         } catch (err: any) {
           console.error('[API] news briefing degraded', { site: 'api.news.article', error: err?.message ?? String(err) });
           return errorResponse('Briefing temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
+      }
+
+      // ── PHASE 10B-1 — MULTILINGUAL GLOBAL WIRE ─────────────────────
+      // Raw, single-source OSINT. Deliberately separate from the briefing
+      // newsroom: this read never promotes a signal and never triggers IndexNow.
+      if (path === '/api/v1/wire' && request.method === 'GET') {
+        try {
+          const feed = await loadWireFeed(env.DB, {
+            region: url.searchParams.get('region'),
+            tier: url.searchParams.get('tier'),
+            limit: url.searchParams.get('limit'),
+          });
+          return jsonResponse({ status: 'SUCCESS', ...feed }, 200, WIRE_CACHE_SECONDS);
+        } catch (err: any) {
+          console.error('[API] wire feed degraded', { site: 'api.wire', error: err?.message ?? String(err) });
+          return errorResponse('Global wire temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 

@@ -103,6 +103,8 @@ const PUBLIC_READ_CACHE_EXACT = new Set<string>([
   "/api/v1/campaigns",
   "/api/v1/exploits",
   "/api/v1/iocs/families",
+  // PHASE 10B-1 — the OSINT wire feed is a shared, credential-free read.
+  "/api/v1/wire",
 ]);
 
 const PUBLIC_READ_CACHE_PREFIXES = [

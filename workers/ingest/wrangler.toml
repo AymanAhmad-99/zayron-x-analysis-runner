@@ -104,6 +104,10 @@ TELEGRAM_MAX_DAILY_DISPATCHES = "10"
 # impossible. `/internal/telegram-dispatch` is exempt: an explicit operator
 # invocation is the authorised override, still bounded by the 6/day cap.
 TELEGRAM_MAX_PER_TICK = "1"
+# PHASE 10B-1 — MULTILINGUAL OSINT WIRE. Runs on its own free `:40` ticks
+# (10:40 / 14:40 / 18:40 / 22:40 UTC), polls at most 12 public sources per cycle
+# and writes only the isolated `osint_*` tables. Purge this line to disable.
+OSINT_WIRE_ENABLED = "true"
 
 [env.preview]
 name = "zayron-x-ingest-preview"

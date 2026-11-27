@@ -147,6 +147,11 @@ const SUITES = [
   // alert + receipt), the deterministic editorial cover renderer, and the
   // /developers + /news token and wiring integrity.
   'tests/unit/phase10a_enterprise_inquiries_newsroom.test.ts',
+  // PHASE 10B-1 — multilingual OSINT wire: public Telegram HTML parser, noise
+  // filtering, defanging, script detection, provenance firewall, cross-lingual
+  // convergence, fail-closed translation, the signed webhook, the read model,
+  // the Global Wire surface and the 200-channel importer. Local-only.
+  'tests/unit/phase10b_osint_global_wire.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

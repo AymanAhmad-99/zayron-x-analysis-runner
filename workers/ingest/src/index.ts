@@ -44,6 +44,8 @@ import { isRadarBackfillSlot, runRadarBackfill } from './radarBackfill';
 import { isCisaKevSlot, quietTickBudget, runCisaKevBackfill } from './cisaKevBackfill';
 // PHASE 9B — graph-enriched neural newsroom (own :40 ticks, <= 6 subrequests).
 import { isNewsIngestSlot, runNewsIngestPass } from './newsIngest';
+// PHASE 10B-1 — multilingual OSINT wire (own :40 ticks, <= 12 sources/cycle).
+import { handleOsintWebhook, isOsintWireSlot, runOsintWirePass } from './osintWire';
 // PHASE 9C — unified X & LinkedIn distribution + daily Email digest on verified-free :40 slots.
 import { isEmailDigestSlot, isLinkedInPublishSlot, isXPublishSlot } from './socialDispatch';
 import { runXPublishPass } from './xPublisher';
@@ -102,6 +104,10 @@ export interface Env {
   POC_SYNC_ENABLED?: string;
   /** PHASE 8C — one-request CISA KEV catalog backfill on the `04:40` tick. */
   CISA_KEV_SYNC_ENABLED?: string;
+  /** PHASE 10B-1 — multilingual OSINT wire. Purge the flag to disable the pass. */
+  OSINT_WIRE_ENABLED?: string;
+  /** Optional HMAC secret for the future private-channel collector webhook. */
+  OSINT_WIRE_SIGNING_SECRET?: string;
   IOC_INGEST_ENABLED?: string;
   IOC_INGEST_MAX_SUBREQUESTS?: string;
   /**
@@ -403,6 +409,23 @@ const ingestHandlers = {
         } catch (error) {
           console.error(JSON.stringify({
             type: 'NEWS_INGEST_PASS_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 10B-1 — multilingual OSINT wire. OWN TICKS ONLY (10:40, 14:40,
+      // 18:40, 22:40 UTC): every other `:40` tick already belongs to the
+      // newsroom, PoC, KEV, Radar, email, X or LinkedIn pass. The pass polls at
+      // most 12 sources with one fetch each and writes only the isolated
+      // `osint_*` store, so it can never touch an authoritative fact.
+      if (env.OSINT_WIRE_ENABLED !== 'false' && isOsintWireSlot(new Date())) {
+        try {
+          const wire = await runOsintWirePass(env as any, {});
+          console.log(JSON.stringify({ type: 'OSINT_GLOBAL_WIRE', ...wire }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'OSINT_GLOBAL_WIRE_FAILED',
             error: String((error as Error)?.message || error).slice(0, 300),
           }));
         }
@@ -1771,6 +1794,13 @@ export default class IngestWorker extends WorkerEntrypoint<Env> {
    */
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
+    // PHASE 10B-1 — signed off-edge receiver for the future private-channel
+    // (MTProto) collector. It authenticates on its own (bearer OR HMAC) and
+    // writes only the isolated `osint_*` store, so it is reachable in
+    // production without opening any legacy path or the frozen pipeline.
+    if (url.pathname === '/internal/osint-wire/ingest') {
+      return handleOsintWebhook(request, this.env as any);
+    }
     const isStrategic = url.pathname === '/internal/strategic-cve-analysis';
     // Phase 5A — bounded backfill: enrich the existing authoritative corpus and
     // re-brief rows that still carry a superseded contract version.
