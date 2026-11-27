@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { buildCanonicalFamilySummary, listCanonicalFamilyHubs } from "../../workers/api/src/iocs";
 import { CATALOG_CVE_IDS_SQL } from "../../workers/api/src/threatGraph";
 import { isEdgeCacheEligible } from "../../workers/api/src/edgeCache";
+import { buildOpenApiDocument } from "../../workers/api/src/openapi";
 import {
   NEWS_MAX_ARTICLES_PER_FEED,
   allocateAcrossFeeds,
@@ -237,6 +238,22 @@ describe("P1-10 — internal CVE links are gated on the same provenance as the d
   it("only treats AUTHORITATIVE_VERIFIED rows as catalog entries", () => {
     expect(CATALOG_CVE_IDS_SQL).toContain("provenance_state = 'AUTHORITATIVE_VERIFIED'");
     expect(CATALOG_CVE_IDS_SQL).not.toMatch(/FROM vulnerabilities\s+LIMIT/i);
+  });
+});
+
+describe("P1-6 — the published OpenAPI document describes every live route", () => {
+  it("lists the Phase 9B paths in `paths`, not inside `components`", () => {
+    const document = buildOpenApiDocument({ origin: "https://zayron-x.co" }) as {
+      paths: Record<string, unknown>;
+      components: Record<string, unknown>;
+    };
+    const paths = Object.keys(document.paths);
+    for (const expected of ["/news", "/news/{slug}", "/vendors", "/vendors/{slug}", "/regions", "/regions/{code}", "/llms.txt"]) {
+      expect(paths).toContain(expected);
+    }
+    // A malformed object put path keys under `components`, where no generator
+    // could ever see them.
+    expect(Object.keys(document.components).sort()).toEqual(["schemas", "securitySchemes"]);
   });
 });
 

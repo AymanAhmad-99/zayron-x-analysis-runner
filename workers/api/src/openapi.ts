@@ -785,17 +785,7 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           },
         },
       },
-    },
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "zx_live_<8>_<31>",
-          description: BEARER_DESCRIPTION,
-        },
-      },
-      // PHASE 9B — neural newsroom, programmatic hubs and AI discovery files.
+
       "/news": {
         get: {
           operationId: "getNewsIndex",
@@ -882,6 +872,16 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           tags: ["Discovery"],
           security: [],
           responses: { "200": { description: "Markdown index", content: { "text/plain": { schema: { type: "string" } } } } },
+        },
+      },
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "zx_live_<8>_<31>",
+          description: BEARER_DESCRIPTION,
         },
       },
       schemas: {
