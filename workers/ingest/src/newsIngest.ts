@@ -857,7 +857,12 @@ export async function runNewsIngestPass(
 
   let indexnow = "DISABLED";
   if (env.INDEXNOW_KEY && writtenUrls.length > 0) {
-    indexnow = await pingIndexNow(writtenUrls, env.INDEXNOW_KEY, { budget, fetchImpl });
+    indexnow = await pingIndexNow([...writtenUrls, "https://zayron-x.co/news"], env.INDEXNOW_KEY, {
+      budget,
+      fetchImpl,
+    });
+  } else if (!env.INDEXNOW_KEY) {
+    console.log(JSON.stringify({ type: "INDEXNOW_PING", status: "INDEXNOW_DISABLED", source: "news" }));
   }
 
   return {
@@ -875,6 +880,43 @@ export async function runNewsIngestPass(
 /* ─────────────────────────────── IndexNow ───────────────────────────────── */
 
 /**
+ * PHASE 9C — build deduplicated IndexNow URL batches (max 100 per POST)
+ * for Newsroom briefings, authoritative CVEs/KEVs/PoCs, and MAL-* advisories.
+ */
+export function buildIndexNowUrls(input: {
+  newsSlugs?: string[];
+  cveIds?: string[];
+  malwareIds?: string[];
+  includeExploitsHub?: boolean;
+  siteOrigin?: string;
+}): string[] {
+  const origin = (input.siteOrigin ?? "https://zayron-x.co").replace(/\/+$/, "");
+  const urls: string[] = [];
+  if (input.newsSlugs && input.newsSlugs.length > 0) {
+    for (const slug of input.newsSlugs) {
+      const clean = String(slug ?? "").trim();
+      if (clean) urls.push(`${origin}/news/${encodeURIComponent(clean)}`);
+    }
+    urls.push(`${origin}/news`);
+  }
+  if (input.cveIds && input.cveIds.length > 0) {
+    for (const cve of input.cveIds) {
+      const clean = String(cve ?? "").trim().toUpperCase();
+      if (clean) urls.push(`${origin}/intelligence/vulnerabilities/${encodeURIComponent(clean)}`);
+    }
+    if (input.includeExploitsHub !== false) urls.push(`${origin}/intelligence/exploits`);
+  }
+  if (input.malwareIds && input.malwareIds.length > 0) {
+    for (const id of input.malwareIds) {
+      const clean = String(id ?? "").trim();
+      if (clean) urls.push(`${origin}/intelligence/malware/advisories/${encodeURIComponent(clean)}`);
+    }
+    urls.push(`${origin}/intelligence/malware`);
+  }
+  return Array.from(new Set(urls)).slice(0, 100);
+}
+
+/**
  * One bounded POST when `INDEXNOW_KEY` is configured; a graceful no-op
  * otherwise (no throw, no request, no log noise in production).
  */
@@ -884,7 +926,13 @@ export async function pingIndexNow(
   options: { budget?: NewsBudget; fetchImpl?: typeof fetch; siteOrigin?: string } = {},
 ): Promise<string> {
   const cleanKey = String(key ?? "").trim();
-  if (!cleanKey || urls.length === 0) return "DISABLED";
+  const dedupedUrls = Array.from(new Set(urls.map((u) => String(u ?? "").trim()).filter(Boolean))).slice(0, 100);
+  if (!cleanKey || dedupedUrls.length === 0) {
+    if (!cleanKey) {
+      console.log(JSON.stringify({ type: "INDEXNOW_PING", status: "INDEXNOW_DISABLED" }));
+    }
+    return "DISABLED";
+  }
   const budget = options.budget;
   if (budget && !budget.take()) return "BUDGET_EXHAUSTED";
   const fetchImpl = options.fetchImpl ?? fetch;
@@ -897,12 +945,19 @@ export async function pingIndexNow(
         host: new URL(origin).host,
         key: cleanKey,
         keyLocation: `${origin}/${cleanKey}.txt`,
-        urlList: urls.slice(0, 10),
+        urlList: dedupedUrls,
       }),
       signal: AbortSignal.timeout(5000),
     });
+    const statusLabel =
+      response.status === 200 || response.status === 202
+        ? `INDEXNOW_OK:${response.status}`
+        : `INDEXNOW_HTTP:${response.status}`;
+    console.log(JSON.stringify({ type: "INDEXNOW_PING", status: statusLabel, count: dedupedUrls.length }));
     return `HTTP_${response.status}`;
   } catch (error) {
-    return `ERROR:${String((error as Error)?.message ?? error).slice(0, 80)}`;
+    const msg = String((error as Error)?.message ?? error).slice(0, 80);
+    console.warn(JSON.stringify({ type: "INDEXNOW_PING", status: "INDEXNOW_ERROR", error: msg }));
+    return `ERROR:${msg}`;
   }
 }

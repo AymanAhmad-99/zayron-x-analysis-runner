@@ -259,12 +259,12 @@ describe("Wave 4B — sitemap XML builders", () => {
       expect(paths).not.toContain(placeholder);
     }
     expect(staticSitemapEntries("https://zayron-x.co")[0].loc).toBe("https://zayron-x.co/");
-    expect(WEB_SITEMAP_CACHE_CONTROL).toContain("s-maxage=3600");
+    expect(WEB_SITEMAP_CACHE_CONTROL).toContain("s-maxage=300");
   });
 
   test("sitemap response headers are explicit and cacheable", () => {
     expect(SITEMAP_XML_CONTENT_TYPE).toBe("application/xml; charset=utf-8");
-    expect(WEB_SITEMAP_CACHE_CONTROL).toBe("public, max-age=300, s-maxage=3600");
+    expect(WEB_SITEMAP_CACHE_CONTROL).toBe("public, s-maxage=300, stale-while-revalidate=600");
     const robotsRoute = readFileSync("apps/web/app/robots.txt/route.ts", "utf8");
     expect(robotsRoute).toContain("text/plain; charset=utf-8");
     expect(robotsRoute).toContain("public, max-age=300, s-maxage=3600");
@@ -279,6 +279,7 @@ describe("Wave 4B — sitemap XML builders", () => {
     expect(prod).toContain("Disallow: /api/");
     expect(prod).toContain("Disallow: /search?*");
     expect(prod).toContain("Sitemap: https://zayron-x.co/sitemap.xml");
+    expect(prod).toContain("Sitemap: https://zayron-x.co/sitemaps/news.xml");
   });
 });
 

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { RouteShell } from "../components/RouteShell";
+import { IntelAlertStrip } from "../components/IntelAlertStrip";
 import { getNewsIndex, getNewsTelemetry, NEWS_CATEGORIES, categoryLabel, formatNewsDate, newsHref, severityAccent } from "../lib/news";
-import { getSiteUrl, isPreviewDeployment } from "../lib/siteConfig";
+import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
 /**
@@ -158,6 +159,7 @@ export default async function NewsPage({ searchParams }: Props) {
           ))}
         </div>
       )}
+      <IntelAlertStrip turnstileSiteKey={getTurnstileSiteKey()} />
     </RouteShell>
   );
 }

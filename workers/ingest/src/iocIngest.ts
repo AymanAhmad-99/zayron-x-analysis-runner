@@ -27,6 +27,7 @@
  */
 
 import { syncDetectionRules } from './detectionRules';
+import { buildIndexNowUrls, pingIndexNow } from './newsIngest';
 import {
   MAX_SUBREQUESTS_PER_RUN,
   baseConfidenceFor,
@@ -44,6 +45,7 @@ export interface IocIngestEnv {
   DB: D1Database;
   CF_RADAR_TOKEN?: string;
   ABUSECH_AUTH_KEY?: string;
+  INDEXNOW_KEY?: string;
   /** Optional per-run hard override; clamped to the free-tier ceiling. */
   IOC_INGEST_MAX_SUBREQUESTS?: string;
   IOC_INGEST_ENABLED?: string;
@@ -597,6 +599,7 @@ export async function runIocIngestPass(
     const picks = selectNewestMalListings(listings, options.osvLimit ?? MAX_OSV_RECORDS, storedIds);
 
     const reportStatements: D1PreparedStatement[] = [];
+    const writtenMalwareIds: string[] = [];
     // One advisory per (title, ecosystem): the same package can be re-published
     // in several ecosystems, and a repeated title is what made the workspace
     // look duplicated.
@@ -619,6 +622,7 @@ export async function runIocIngestPass(
       const titleKey = `${mapped.report.title.toLowerCase()}|${ecosystem.toLowerCase()}`;
       if (seenTitles.has(titleKey)) continue;
       seenTitles.add(titleKey);
+      writtenMalwareIds.push(mapped.report.id);
       reportStatements.push(
         env.DB.prepare(
           `INSERT INTO malware_reports (id, title, sha256, family, summary, source, severity, report_json, published_at)
@@ -647,6 +651,12 @@ export async function runIocIngestPass(
       const chunk = reportStatements.slice(i, i + 25);
       await env.DB.batch(chunk);
       malwareReportsWritten += chunk.length;
+    }
+    if (env.INDEXNOW_KEY && writtenMalwareIds.length > 0 && budget.spend()) {
+      await pingIndexNow(
+        buildIndexNowUrls({ malwareIds: writtenMalwareIds }),
+        env.INDEXNOW_KEY,
+      ).catch(() => undefined);
     }
     openssf.status = openssf.accepted > 0 ? 'OK' : 'FAILED';
     if (openssf.status === 'FAILED') openssf.error = 'NO_ADVISORY_FETCHED';

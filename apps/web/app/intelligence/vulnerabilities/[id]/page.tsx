@@ -4,9 +4,10 @@ import { cache } from "react";
 import { VulnerabilityDetail } from "../../../components/VulnerabilityDetail";
 import { getVulnerabilityDetail, type VulnerabilityDetail as Detail } from "../../../lib/api";
 import { RelatedBriefings } from "../../../components/RelatedBriefings";
+import { IntelAlertStrip } from "../../../components/IntelAlertStrip";
 import { getRelatedNewsForEntity } from "../../../lib/news";
 import { articleJsonLd, serializeJsonLd } from "../../../lib/jsonLd";
-import { getSiteUrl, isPreviewDeployment } from "../../../lib/siteConfig";
+import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../../../lib/siteConfig";
 import { buildOpenGraph, resolvePageRobots, vulnerabilitySeoTitle } from "../../../lib/seo";
 
 type Props = { params: Promise<{ id: string }> };
@@ -147,6 +148,7 @@ export default async function VulnerabilityDetailPage({ params }: Props) {
       ) : null}
       <VulnerabilityDetail id={id} initial={result} />
       <RelatedBriefings items={relatedNews} />
+      <IntelAlertStrip turnstileSiteKey={getTurnstileSiteKey()} contained />
     </>
   );
 }

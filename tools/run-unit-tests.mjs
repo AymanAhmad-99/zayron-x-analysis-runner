@@ -137,6 +137,9 @@ const SUITES = [
   // source-fair newsroom allocation, category labels, sitemap completeness, the
   // catalog-CVE link gate and edge-cache coverage for the new read surfaces.
   'tests/unit/phase9c_release_hardening.test.ts',
+  // PHASE 9C — live IndexNow, sitemap Googlebot hardening, X & LinkedIn
+  // distribution, email briefings & Telegram funnel, and RSS/WebSub.
+  'tests/unit/phase9c_distribution_growth.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

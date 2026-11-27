@@ -45,7 +45,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: DEFAULT_TITLE, template: `%s | ${SITE_NAME}` },
     description: SITE_DESCRIPTION,
     applicationName: SITE_NAME,
-    alternates: { canonical: "/" },
+    alternates: {
+      canonical: "/",
+      types: {
+        "application/rss+xml": [{ url: "/news/rss.xml", title: "ZAYRON-X Intelligence Newsroom" }],
+      },
+    },
     robots: isPreview
       ? { index: false, follow: false, nocache: true }
       : { index: true, follow: true },

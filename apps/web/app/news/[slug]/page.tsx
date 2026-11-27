@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { RouteShell } from "../../components/RouteShell";
 import { CodeTabs } from "../../components/CodeTabs";
 import { CopyBriefButton } from "../../components/CopyBriefButton";
+import { IntelAlertStrip } from "../../components/IntelAlertStrip";
 import { getNewsArticle, formatNewsDate, newsHref, severityAccent } from "../../lib/news";
-import { getSiteUrl, isPreviewDeployment } from "../../lib/siteConfig";
+import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "../../lib/siteConfig";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../../lib/seo";
 
 /**
@@ -243,6 +244,8 @@ export default async function NewsArticlePage({ params }: Props) {
           {article.source_name} — original publication ↗
         </a>
       </section>
+
+      <IntelAlertStrip turnstileSiteKey={getTurnstileSiteKey()} />
     </RouteShell>
   );
 }

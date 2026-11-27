@@ -136,6 +136,11 @@ const PUBLIC_PAGE_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=
 
 function withPageCache(response: NextResponse, pathname: string): NextResponse {
   const path = normalizePath(pathname);
+  if (path === "/52217d0bead0f27974ed75fe089329e2.txt") {
+    response.headers.set("Content-Type", "text/plain; charset=utf-8");
+    response.headers.set("Cache-Control", "public, max-age=86400");
+    return response;
+  }
   if (PUBLIC_PAGE_CACHE.has(path) || PUBLIC_PAGE_CACHE_PREFIXES.some((prefix) => path.startsWith(prefix))) {
     response.headers.set("Cache-Control", PUBLIC_PAGE_CACHE_CONTROL);
   }

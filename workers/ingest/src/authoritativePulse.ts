@@ -16,6 +16,7 @@
  */
 import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
 import { runCtiEnrichmentPass, type CtiEnrichmentSummary } from './ctiEnrichment';
+import { buildIndexNowUrls, pingIndexNow } from './newsIngest';
 import { runStrategicPass, type StrategicSummary } from './strategicCveAnalysis';
 
 export const AUTHORITATIVE_CRON_FLAG = 'AUTHORITATIVE_CVE_CRON_ENABLED';
@@ -29,6 +30,7 @@ export interface PulseEnv {
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
   ENVIRONMENT?: string;
+  INDEXNOW_KEY?: string;
   STRATEGIC_ANALYST?: { analyze(input: { limit?: number }): Promise<StrategicSummary> };
   [key: string]: unknown;
 }
@@ -115,6 +117,14 @@ export async function runAuthoritativePulse(
     });
   } catch (error) {
     summary.errors.push(`STRATEGIC_FAILED:${String((error as Error)?.message || error).slice(0, 160)}`);
+  }
+
+  if (env.INDEXNOW_KEY && summary.cves.length > 0) {
+    await pingIndexNow(
+      buildIndexNowUrls({ cveIds: summary.cves, includeExploitsHub: summary.kev_matched > 0 }),
+      env.INDEXNOW_KEY,
+      { fetchImpl: options.fetchFn },
+    ).catch(() => undefined);
   }
 
   summary.duration_ms = Date.now() - started;

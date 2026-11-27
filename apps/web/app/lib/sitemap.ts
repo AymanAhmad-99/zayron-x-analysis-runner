@@ -106,10 +106,29 @@ export interface SitemapEntry {
   changefreq?: string | null;
 }
 
+/**
+ * PHASE 9C — normalize timestamps into strict W3C Datetime / RFC 3339 (`YYYY-MM-DDTHH:MM:SSZ`)
+ * or `YYYY-MM-DD`. SQLite `datetime('now')` emits `YYYY-MM-DD HH:MM:SS` (space separator,
+ * no timezone), which causes Google Search Console to reject `<lastmod>` or fail sitemap fetch.
+ */
+export function normalizeSitemapLastmod(raw: string | null | undefined): string | null {
+  const value = typeof raw === "string" ? raw.trim() : "";
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return Number.isFinite(Date.parse(`${value}T00:00:00Z`)) ? value : null;
+  }
+  const normalized = value.includes("T") ? value : value.replace(" ", "T");
+  const withTz = /[Zz]$|[+-]\d{2}:\d{2}$/.test(normalized) ? normalized : `${normalized}Z`;
+  const parsed = Date.parse(withTz);
+  if (!Number.isFinite(parsed)) return null;
+  return new Date(parsed).toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
 export function buildUrlset(entries: SitemapEntry[]): string {
   const urls = entries
     .map((entry) => {
-      const lastmod = entry.lastmod ? `\n    <lastmod>${escapeXml(entry.lastmod)}</lastmod>` : "";
+      const normalizedLastmod = normalizeSitemapLastmod(entry.lastmod);
+      const lastmod = normalizedLastmod ? `\n    <lastmod>${escapeXml(normalizedLastmod)}</lastmod>` : "";
       const priority = entry.priority ? `\n    <priority>${escapeXml(entry.priority)}</priority>` : "";
       const changefreq = entry.changefreq ? `\n    <changefreq>${escapeXml(entry.changefreq)}</changefreq>` : "";
       return `  <url>\n    <loc>${escapeXml(entry.loc)}</loc>${lastmod}${changefreq}${priority}\n  </url>`;
@@ -121,7 +140,8 @@ export function buildUrlset(entries: SitemapEntry[]): string {
 export function buildSitemapIndex(entries: SitemapEntry[]): string {
   const sitemaps = entries
     .map((entry) => {
-      const lastmod = entry.lastmod ? `\n    <lastmod>${escapeXml(entry.lastmod)}</lastmod>` : "";
+      const normalizedLastmod = normalizeSitemapLastmod(entry.lastmod);
+      const lastmod = normalizedLastmod ? `\n    <lastmod>${escapeXml(normalizedLastmod)}</lastmod>` : "";
       return `  <sitemap>\n    <loc>${escapeXml(entry.loc)}</loc>${lastmod}\n  </sitemap>`;
     })
     .join("\n");
@@ -221,7 +241,7 @@ export function robotsText(isPreview: boolean, siteUrl: string): string {
   for (const crawler of NAMED_CRAWLERS) {
     lines.push("", `User-agent: ${crawler}`, "Allow: /", ...CRAWLABLE_ASSET_PATHS.map((p) => `Allow: ${p}`), ...operators);
   }
-  lines.push("", `Sitemap: ${siteUrl}/sitemap.xml`, "");
+  lines.push("", `Sitemap: ${siteUrl}/sitemap.xml`, `Sitemap: ${siteUrl}/sitemaps/news.xml`, "");
   return lines.join("\n");
 }
 
@@ -256,4 +276,4 @@ export function isNewsSitemapFresh(publishedAt: string, now = Date.now()): boole
 }
 
 export const SITEMAP_XML_CONTENT_TYPE = "application/xml; charset=utf-8";
-export const SITEMAP_CACHE_CONTROL = "public, max-age=300, s-maxage=3600";
+export const SITEMAP_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";

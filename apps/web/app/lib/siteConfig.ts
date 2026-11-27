@@ -222,3 +222,10 @@ export function absoluteUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) return path;
   return `${getSiteUrl()}/${path.replace(/^\/+/, "")}`;
 }
+
+/** Runtime Turnstile site key (dynamic property read prevents build-time inlining). */
+export function getTurnstileSiteKey(): string {
+  if (typeof process === "undefined" || !process.env) return "";
+  const runtimeEnv = process.env as Record<string, string | undefined>;
+  return (runtimeEnv["NEXT_PUBLIC_" + "TURNSTILE_SITE_KEY"] ?? "").trim();
+}

@@ -25,6 +25,8 @@
  *   the ceiling.
  */
 
+import { buildIndexNowUrls, pingIndexNow } from './newsIngest';
+
 export const POC_REPO = 'nomi-sec/PoC-in-GitHub';
 export const POC_BRANCH = 'master';
 export const POC_MAX_SUBREQUESTS = 6;
@@ -109,6 +111,7 @@ export interface PocSyncSummary {
 export interface PocSyncEnv {
   DB: any;
   POC_SYNC_ENABLED?: string;
+  INDEXNOW_KEY?: string;
   [key: string]: unknown;
 }
 
@@ -209,6 +212,14 @@ export async function runPocSync(
         summary.errors.push(`WRITE_FAILED:${cveId}:${String((error as Error)?.message || error).slice(0, 60)}`);
       }
     }
+  }
+
+  if (env?.INDEXNOW_KEY && summary.pocs_written > 0 && summary.cvss.length > 0) {
+    await pingIndexNow(
+      buildIndexNowUrls({ cveIds: summary.cvss, includeExploitsHub: true }),
+      env.INDEXNOW_KEY,
+      { fetchImpl: fetchFn },
+    ).catch(() => undefined);
   }
 
   return summary;

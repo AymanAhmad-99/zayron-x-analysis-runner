@@ -246,6 +246,8 @@ const PUBLIC_READ_EXACT = new Set<string>([
   "/api/v1/regions",
   "/api/v1/llms.txt",
   "/api/v1/llms-full.txt",
+  // PHASE 9C — one-click email briefing unsubscribe link.
+  "/api/v1/briefings/unsubscribe",
 ]);
 
 /** Collection-detail prefixes that are public for READ methods only. */
@@ -284,7 +286,7 @@ const KNOWN_API_SEGMENTS = new Set<string>([
   "malware", "actors", "alerts", "articles", "campaigns", "feed", "graph", "iocs",
   "detection", "regulations", "reports", "search", "threats", "ai", "exploits",
   "threat-actors", "techniques", "keys", "leads", "sitemap", "canary", "publish",
-  "social", "research", "analyze", "admin", "webhook", "news", "vendors", "regions", "llms.txt", "llms-full.txt",
+  "social", "research", "analyze", "admin", "webhook", "news", "vendors", "regions", "llms.txt", "llms-full.txt", "briefings",
 ]);
 
 function isPublicRead(method: string, path: string): boolean {
@@ -322,9 +324,14 @@ export function requiredTrust(method: string, path: string): TrustRequirement {
   if (!isRead && EXPENSIVE_PATHS.has(path)) return "admin_or_internal";
 
   // PHASE 7A — anonymous developer acquisition writes. These are the only
-  // public non-GET surfaces: self-serve key issuance and procurement intake.
+  // public non-GET surfaces: self-serve key issuance, procurement intake, and briefings.
   // Both are rate limited by client IP in the `public_write` class.
-  if (path === "/api/v1/keys/self-serve" || path === "/api/v1/leads") return "public";
+  if (
+    path === "/api/v1/keys/self-serve" ||
+    path === "/api/v1/leads" ||
+    path === "/api/v1/briefings/subscribe" ||
+    path === "/api/v1/briefings/unsubscribe"
+  ) return "public";
 
   // Explicit anonymous read allowlist.
   if (isPublicRead(m, path)) return "public";
@@ -349,7 +356,11 @@ export function classifyEndpoint(method: string, path: string, hasSearchQuery = 
   if (trust === "webhook") return "webhook";
   if (trust === "admin") return "admin";
   if (trust === "internal") return "internal";
-  if (path === "/api/v1/keys/self-serve" || path === "/api/v1/leads") return "public_write";
+  if (
+    path === "/api/v1/keys/self-serve" ||
+    path === "/api/v1/leads" ||
+    path === "/api/v1/briefings/subscribe"
+  ) return "public_write";
   if (path === "/api/v1/search" || path === "/api/v1/knowledge/search") return "search";
   // Wave 4A: `/feed?q=...` runs an unindexed LIKE scan, so a search-bearing
   // feed request is rate-limited as `search`, not as a cheap public list read.

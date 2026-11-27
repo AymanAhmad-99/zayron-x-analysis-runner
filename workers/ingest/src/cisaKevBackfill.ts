@@ -16,6 +16,8 @@
  * the PoC sync is given 5 and this pass uses exactly 1.
  */
 
+import { buildIndexNowUrls, pingIndexNow } from './newsIngest';
+
 export const CISA_KEV_URL = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json';
 export const CISA_KEV_SUBREQUESTS = 1;
 export const CISA_KEV_QUIET_SLOT_HOURS: readonly number[] = [4];
@@ -129,6 +131,7 @@ export interface CisaKevSummary {
 export interface CisaKevEnv {
   DB: any;
   CISA_KEV_SYNC_ENABLED?: string;
+  INDEXNOW_KEY?: string;
   [key: string]: unknown;
 }
 
@@ -215,6 +218,14 @@ export async function runCisaKevBackfill(
     } catch (error) {
       summary.errors.push(`WRITE_FAILED:${String((error as Error)?.message || error).slice(0, 80)}`);
     }
+  }
+
+  if (env?.INDEXNOW_KEY && summary.entries_written > 0) {
+    await pingIndexNow(
+      buildIndexNowUrls({ cveIds: entries.map((e) => e.cve), includeExploitsHub: true }),
+      env.INDEXNOW_KEY,
+      { fetchImpl: fetchFn },
+    ).catch(() => undefined);
   }
 
   return summary;

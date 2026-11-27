@@ -115,6 +115,7 @@ import {
   type ApiKeyTier,
 } from './apiKeys';
 import { buildOpenApiDocument } from './openapi';
+import { BriefingError, subscribeBriefing, unsubscribeBriefing } from './briefings';
 import { buildSupplyChainDossier, cleanAdvisoryTitle, advisoryEcosystem } from './supplyChainDossier';
 import { loadExploitRadar } from './exploits';
 import { loadCampaign, loadCampaigns, loadThreatActor, loadThreatActors } from './threatGraph';
@@ -850,7 +851,10 @@ const worker = {
     // Phase 7A developer-acquisition writes are new surfaces on a different,
     // un-frozen table set, so they are exempt rather than dead in production.
     const developerAcquisitionWrite =
-      path === '/api/v1/keys/self-serve' || path === '/api/v1/leads';
+      path === '/api/v1/keys/self-serve' ||
+      path === '/api/v1/leads' ||
+      path === '/api/v1/briefings/subscribe' ||
+      path === '/api/v1/briefings/unsubscribe';
     // PHASE 8A — the bulk lookup is a READ expressed as POST (a 50-indicator
     // body does not belong in a URL). It writes nothing, so it is exempt from
     // the legacy mutation freeze exactly like the developer acquisition routes.
@@ -1194,6 +1198,55 @@ const worker = {
             error: err?.message ?? String(err),
           });
           return developerError(503, 'KEY_SERVICE_UNAVAILABLE', 'Key issuance is temporarily unavailable');
+        }
+      }
+
+      // ── POST /api/v1/briefings/subscribe ─────────────────────────────
+      if (path === '/api/v1/briefings/subscribe' && request.method === 'POST') {
+        const body = await readJsonBody(request);
+        if (!body) return developerError(400, 'MALFORMED_PAYLOAD', 'A JSON object body is required');
+
+        const clientIp = (request.headers.get('CF-Connecting-IP') || 'unknown').trim();
+        const turnstile = await verifyTurnstileToken(env, body.turnstile_token, clientIp);
+        if (!turnstile.ok) {
+          return developerError(403, turnstile.reason || 'TURNSTILE_FAILED', 'Bot verification failed');
+        }
+
+        try {
+          const result = await subscribeBriefing({
+            db: env.DB,
+            email: body.email,
+            frequency: body.frequency,
+            focus: body.focus,
+          });
+          return jsonResponse(result, 200);
+        } catch (err: any) {
+          if (err instanceof BriefingError) return developerError(err.status, err.code, err.message);
+          console.error('[API] briefing subscription failed', {
+            site: 'api.briefings.subscribe',
+            cf_ray: request.headers.get('cf-ray'),
+            error: err?.message ?? String(err),
+          });
+          return developerError(503, 'BRIEFING_SERVICE_UNAVAILABLE', 'Subscription is temporarily unavailable');
+        }
+      }
+
+      // ── GET|POST /api/v1/briefings/unsubscribe ───────────────────────
+      if (path === '/api/v1/briefings/unsubscribe' && (request.method === 'GET' || request.method === 'POST')) {
+        const token = url.searchParams.get('token') ?? '';
+        try {
+          const result = await unsubscribeBriefing({ db: env.DB, token });
+          const accept = (request.headers.get('Accept') || '').toLowerCase();
+          if (request.method === 'GET' && accept.includes('text/html')) {
+            return new Response(
+              `<!DOCTYPE html><html lang="en"><body style="background:#050505;color:#f4f4f6;font-family:sans-serif;padding:48px;max-width:560px;margin:auto;"><h1>Unsubscribed</h1><p>Your email address has been removed from ZAYRON-X intelligence briefings.</p><p><a href="https://zayron-x.co/news" style="color:#ff5500;">Return to ZAYRON-X Newsroom</a></p></body></html>`,
+              { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } },
+            );
+          }
+          return jsonResponse(result, 200);
+        } catch (err: any) {
+          if (err instanceof BriefingError) return developerError(err.status, err.code, err.message);
+          return developerError(503, 'BRIEFING_SERVICE_UNAVAILABLE', 'Unsubscribe is temporarily unavailable');
         }
       }
 

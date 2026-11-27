@@ -586,6 +586,86 @@ export function buildOpenApiDocument(options: OpenApiOptions = {}): Record<strin
           },
         },
       },
+      "/briefings/subscribe": {
+        post: {
+          operationId: "subscribeBriefings",
+          summary: "Subscribe to ZAYRON-X email threat intelligence briefings",
+          description: [
+            "Idempotent subscription to daily or weekly threat briefings.",
+            "Protected by Cloudflare Turnstile when `TURNSTILE_SECRET_KEY` is configured.",
+          ].join("\n"),
+          tags: ["Access"],
+          security: [],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["email"],
+                  properties: {
+                    email: { type: "string", format: "email" },
+                    frequency: { type: "string", enum: ["daily", "weekly"], default: "daily" },
+                    focus: { type: "string", enum: ["all", "critical_kev", "supply_chain"], default: "all" },
+                    turnstile_token: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            "200": {
+              description: "Subscription active",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    required: ["ok", "status"],
+                    properties: {
+                      ok: { type: "boolean" },
+                      status: { type: "string", enum: ["ACTIVE"] },
+                      frequency: { type: "string", enum: ["daily", "weekly"] },
+                      focus: { type: "string", enum: ["all", "critical_kev", "supply_chain"] },
+                    },
+                  },
+                },
+              },
+            },
+            "400": { description: "Malformed body or invalid email", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "403": { description: "Turnstile verification failed", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+            "429": { description: "Rate limit exceeded", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
+      "/briefings/unsubscribe": {
+        get: {
+          operationId: "unsubscribeBriefings",
+          summary: "One-click RFC 8058 / CAN-SPAM briefing unsubscribe",
+          tags: ["Access"],
+          security: [],
+          parameters: [
+            { name: "token", in: "query", required: true, schema: { type: "string", minLength: 32, maxLength: 128 } },
+          ],
+          responses: {
+            "200": {
+              description: "Unsubscribed",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    required: ["ok", "status"],
+                    properties: {
+                      ok: { type: "boolean" },
+                      status: { type: "string", enum: ["UNSUBSCRIBED"] },
+                    },
+                  },
+                },
+              },
+            },
+            "400": { description: "Invalid unsubscribe token", content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } },
+          },
+        },
+      },
       // ── PHASE 7B — IOC / EDL / STIX ──────────────────────────────────
       "/iocs/stats": {
         get: {

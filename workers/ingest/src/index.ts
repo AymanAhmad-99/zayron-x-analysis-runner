@@ -44,6 +44,11 @@ import { isRadarBackfillSlot, runRadarBackfill } from './radarBackfill';
 import { isCisaKevSlot, quietTickBudget, runCisaKevBackfill } from './cisaKevBackfill';
 // PHASE 9B — graph-enriched neural newsroom (own :40 ticks, <= 6 subrequests).
 import { isNewsIngestSlot, runNewsIngestPass } from './newsIngest';
+// PHASE 9C — unified X & LinkedIn distribution + daily Email digest on verified-free :40 slots.
+import { isEmailDigestSlot, isLinkedInPublishSlot, isXPublishSlot } from './socialDispatch';
+import { runXPublishPass } from './xPublisher';
+import { runLinkedInPublishPass } from './linkedinPublisher';
+import { runEmailDigestPass } from './emailDigest';
 import { WorkerEntrypoint } from 'cloudflare:workers';
 
 export interface Env {
@@ -134,6 +139,15 @@ export interface Env {
     }>;
   };
   ENVIRONMENT: string;
+  /** PHASE 9C — secret-gated X, LinkedIn, and Resend email briefing channels. */
+  X_API_KEY?: string;
+  X_API_SECRET?: string;
+  X_ACCESS_TOKEN?: string;
+  X_ACCESS_TOKEN_SECRET?: string;
+  LINKEDIN_ACCESS_TOKEN?: string;
+  LINKEDIN_AUTHOR_URN?: string;
+  RESEND_API_KEY?: string;
+  BRIEFING_FROM_EMAIL?: string;
 }
 
 interface IngestionMessagePayload {
@@ -403,6 +417,45 @@ const ingestHandlers = {
         } catch (error) {
           console.error(JSON.stringify({
             type: 'POC_IN_GITHUB_SYNC_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 9C — X Auto-Publisher (07:40, 11:40, 15:40, 19:40, 21:40, 23:40 UTC).
+      if (isXPublishSlot(new Date())) {
+        try {
+          const xRes = await runXPublishPass(env as any, { when: new Date() });
+          console.log(JSON.stringify({ type: 'X_PUBLISH_PASS', ...xRes }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'X_PUBLISH_PASS_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 9C — LinkedIn Executive Publisher (13:40, 17:40 UTC).
+      if (isLinkedInPublishSlot(new Date())) {
+        try {
+          const liRes = await runLinkedInPublishPass(env as any, { when: new Date() });
+          console.log(JSON.stringify({ type: 'LINKEDIN_PUBLISH_PASS', ...liRes }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'LINKEDIN_PUBLISH_PASS_FAILED',
+            error: String((error as Error)?.message || error).slice(0, 300),
+          }));
+        }
+      }
+
+      // PHASE 9C — Daily Email Intelligence Digest (09:40 UTC).
+      if (isEmailDigestSlot(new Date())) {
+        try {
+          const emailRes = await runEmailDigestPass(env as any, { when: new Date() });
+          console.log(JSON.stringify({ type: 'EMAIL_DIGEST_PASS', ...emailRes }));
+        } catch (error) {
+          console.error(JSON.stringify({
+            type: 'EMAIL_DIGEST_PASS_FAILED',
             error: String((error as Error)?.message || error).slice(0, 300),
           }));
         }

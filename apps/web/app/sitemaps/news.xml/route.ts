@@ -1,11 +1,7 @@
 import { getSiteUrl } from "../../lib/siteConfig";
 import { getNewsIndex } from "../../lib/news";
-import {
-  buildNewsSitemap,
-  isNewsSitemapFresh,
-  SITEMAP_CACHE_CONTROL,
-  SITEMAP_XML_CONTENT_TYPE,
-} from "../../lib/sitemap";
+import { buildNewsSitemap, isNewsSitemapFresh } from "../../lib/sitemap";
+import { serveXmlWithEdgeCache } from "../../lib/sitemapCache";
 
 /**
  * PHASE 9B — Google News sitemap.
@@ -16,27 +12,25 @@ import {
  */
 export const revalidate = 300;
 
-export async function GET(): Promise<Response> {
-  const result = await getNewsIndex({ limit: 50 });
-  if (result.state !== "ok") {
-    return new Response("News sitemap feed temporarily unavailable", {
-      status: 503,
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
-    });
-  }
-  const site = getSiteUrl();
-  const entries = (result.data?.items ?? [])
-    .filter((item) => isNewsSitemapFresh(item.published_at))
-    .map((item) => ({
-      loc: `${site}/news/${item.slug}`,
-      title: item.title,
-      publishedAt: item.published_at,
-      sourceName: item.source_name,
-    }));
-  return new Response(buildNewsSitemap(entries, site), {
-    headers: {
-      "Content-Type": SITEMAP_XML_CONTENT_TYPE,
-      "Cache-Control": SITEMAP_CACHE_CONTROL,
-    },
+export async function GET(request?: Request): Promise<Response> {
+  return serveXmlWithEdgeCache(request, async () => {
+    const result = await getNewsIndex({ limit: 50 });
+    if (result.state !== "ok") {
+      return { status: 503, body: "News sitemap feed temporarily unavailable" };
+    }
+    const site = getSiteUrl();
+    const entries = (result.data?.items ?? [])
+      .filter((item) => isNewsSitemapFresh(item.published_at))
+      .map((item) => ({
+        loc: `${site}/news/${item.slug}`,
+        title: item.title,
+        publishedAt: item.published_at,
+        sourceName: item.source_name,
+      }));
+    return { status: 200, body: buildNewsSitemap(entries, site) };
   });
+}
+
+export async function HEAD(request?: Request): Promise<Response> {
+  return GET(request);
 }
