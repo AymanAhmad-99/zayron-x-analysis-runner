@@ -285,6 +285,18 @@ describe('editorial cover — motif and escaping', () => {
     expect(lines.join(' ').length).toBeGreaterThan(10);
   });
 
+  test('punctuation-heavy headlines render without throwing', () => {
+    const spec = {
+      category: 'ADVISORY',
+      severity: 'INFO',
+      title: 'ThreatsDay: 10M NGINX Services at Risk, 250+ Malicious Extensions, AI Server Hijacking + 17 More Stories',
+      entity: null,
+      source: 'The Hacker News',
+      publishedAt: '2026-11-26T19:39:57.000Z',
+    };
+    expect(paintNewsCover(spec)).toHaveLength(NEWS_COVER_WIDTH * NEWS_COVER_HEIGHT * 3);
+  });
+
   test('the glyph measure grows linearly with scale', () => {
     expect(measureCoverText('ABC', 2)).toBe(3 * 6 * 2 - 2);
     expect(measureCoverText('', 4)).toBe(0);

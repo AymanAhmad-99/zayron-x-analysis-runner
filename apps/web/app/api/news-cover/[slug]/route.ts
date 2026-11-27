@@ -1,5 +1,5 @@
-import { getNewsArticle } from "../../../../lib/news";
-import { newsCoverResponse, newsCoverSpecFromArticle } from "../../../../lib/newsCover";
+import { getNewsArticle } from "../../../lib/news";
+import { newsCoverResponse, newsCoverSpecFromArticle } from "../../../lib/newsCover";
 
 /**
  * PHASE 10A — `/api/news-cover/[slug]`.
