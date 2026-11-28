@@ -53,6 +53,7 @@ export interface PlatformPublishResult {
   itemId: string | null;
   externalUri: string | null;
   externalUrl: string | null;
+  d1Logged?: boolean;
   payload?: unknown;
   error: string | null;
 }

@@ -162,17 +162,18 @@ const SAMPLE_ITEM: SyndicationItem = {
 };
 
 describe("PHASE 14 — Multi-platform Syndication Worker (zayron-x-syndicate)", () => {
-  test("1. Bluesky rich-text facets compute exact UTF-8 byte offsets with multi-byte Unicode + <= 300 graphemes", () => {
+  test("1. Bluesky post uses sleek 3-block typography (no raw URLs), exact UTF-8 #tag facets & <= 300 graphemes", () => {
     const payload = buildBlueskyPostPayload(SAMPLE_ITEM);
     expect(graphemeLength(payload.text)).toBeLessThanOrEqual(300);
+    expect(payload.text).not.toMatch(/https?:\/\//i);
+
+    const blocks = payload.text.split("\n\n");
+    expect(blocks.length).toBe(3);
+    expect(blocks[0]).toContain("CVE-2026-44012");
+    expect(blocks[1]).toContain("edge gateways");
+    expect(blocks[2]).toBe("#ThreatIntel #CISAKEV");
 
     const bytes = Buffer.from(payload.text, "utf8");
-    const linkFacet = payload.facets.find((f) => f.features[0]?.$type === "app.bsky.richtext.facet#link");
-    expect(linkFacet).toBeDefined();
-    expect(bytes.subarray(linkFacet!.index.byteStart, linkFacet!.index.byteEnd).toString("utf8")).toBe(
-      SAMPLE_ITEM.url,
-    );
-
     const tagFacets = payload.facets.filter((f) => f.features[0]?.$type === "app.bsky.richtext.facet#tag");
     expect(tagFacets.length).toBe(2);
     expect(bytes.subarray(tagFacets[0].index.byteStart, tagFacets[0].index.byteEnd).toString("utf8")).toBe(
@@ -186,7 +187,7 @@ describe("PHASE 14 — Multi-platform Syndication Worker (zayron-x-syndicate)", 
     expect(payload.embed.external.uri).toBe(SAMPLE_ITEM.url);
     expect(payload.embed.external.title).toContain("CVE-2026-44012");
 
-    // Ultra-long title + summary still stays <= 300 graphemes without slicing the canonical URL.
+    // Ultra-long title + summary trims cleanly within <= 300 graphemes without URLs or mid-word truncation of hashtags.
     const longItem: SyndicationItem = {
       ...SAMPLE_ITEM,
       title: "Critical Vulnerability ".repeat(14).trim(),
@@ -194,7 +195,8 @@ describe("PHASE 14 — Multi-platform Syndication Worker (zayron-x-syndicate)", 
     };
     const longPayload = buildBlueskyPostPayload(longItem);
     expect(graphemeLength(longPayload.text)).toBeLessThanOrEqual(300);
-    expect(longPayload.text).toContain(longItem.url);
+    expect(longPayload.text).not.toMatch(/https?:\/\//i);
+    expect(longPayload.text).toContain("#ThreatIntel #CISAKEV");
   });
 
   test("2. Bluesky publisher handles createSession, graceful OG fallback, createRecord, and web URL construction", async () => {
@@ -530,5 +532,149 @@ describe("PHASE 14 — Multi-platform Syndication Worker (zayron-x-syndicate)", 
     const profiles = socialProfiles({});
     expect(profiles).toContain("https://t.me/zayronxai");
     expect(profiles).toContain("https://bsky.app/profile/zayron-x.co");
+  });
+
+  test("9. PHASE 14B — Auto-fetches meta og:image from target HTML and uploads blob thumb", async () => {
+    const mockBlob = {
+      $type: "blob",
+      ref: { $link: "bafyreiogimageblob" },
+      mimeType: "image/png",
+      size: 4,
+    };
+
+    const mockFetch: typeof fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.endsWith("/xrpc/com.atproto.server.createSession")) {
+        return new Response(
+          JSON.stringify({ accessJwt: "jwt-og", did: "did:plc:z1", handle: "zayron-x.co" }),
+          { status: 200 },
+        );
+      }
+      if (url === "https://zayron-x.co/platform") {
+        return new Response(
+          '<html><head><meta property="og:image" content="/og-image.png" /></head></html>',
+          { status: 200, headers: { "Content-Type": "text/html" } },
+        );
+      }
+      if (url === "https://zayron-x.co/og-image.png") {
+        return new Response(new Uint8Array([137, 80, 78, 71]), {
+          status: 200,
+          headers: { "Content-Type": "image/png" },
+        });
+      }
+      if (url.endsWith("/xrpc/com.atproto.repo.uploadBlob")) {
+        return new Response(JSON.stringify({ blob: mockBlob }), { status: 200 });
+      }
+      if (url.endsWith("/xrpc/com.atproto.repo.createRecord")) {
+        const body = JSON.parse(String(init?.body ?? "{}"));
+        expect(body.record.embed.external.thumb).toEqual(mockBlob);
+        expect(body.record.text).not.toMatch(/https?:\/\//i);
+        return new Response(
+          JSON.stringify({ uri: "at://did:plc:z1/app.bsky.feed.post/3kogthumb1", cid: "cidog" }),
+          { status: 200 },
+        );
+      }
+      return new Response("", { status: 404 });
+    }) as typeof fetch;
+
+    const noImageItem: SyndicationItem = {
+      ...SAMPLE_ITEM,
+      imageUrl: null,
+      url: "https://zayron-x.co/platform",
+    };
+
+    const out = await publishBlueskyPost(
+      noImageItem,
+      { identifier: "zayron-x.co", appPassword: "app-pw-value" },
+      mockFetch,
+    );
+    expect(out.webUrl).toBe("https://bsky.app/profile/zayron-x.co/post/3kogthumb1");
+    expect(out.payload.embed.external.thumb).toEqual(mockBlob);
+  });
+
+  test("10. PHASE 14B — Explicit testPost succeeds on D1 quota failure (d1Logged: false) while cron stays strictly fail-closed", async () => {
+    const quotaBrokenDb = {
+      prepare() {
+        const stmt = {
+          bind() {
+            return stmt;
+          },
+          async run() {
+            throw new Error("D1_ERROR: exceeded daily row reads quota");
+          },
+          async all() {
+            throw new Error("D1_ERROR: exceeded daily row reads quota");
+          },
+        };
+        return stmt;
+      },
+    } as unknown as D1Database;
+
+    const env: SyndicateEnv = {
+      DB: quotaBrokenDb,
+      SYNDICATE_ADMIN_TOKEN: "admin-tok",
+      BLUESKY_IDENTIFIER: "zayron-x.co",
+      BLUESKY_APP_PASSWORD: "bsky-password",
+    };
+
+    let publishCalls = 0;
+    const mockFetch: typeof fetch = (async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith("/news/rss.xml")) {
+        return new Response(
+          `<?xml version="1.0"?><rss><channel><item><title>RSS Item</title><link>https://zayron-x.co/news/rss-item</link><description>Defense summary.</description></item></channel></rss>`,
+          { status: 200 },
+        );
+      }
+      if (url.endsWith("/xrpc/com.atproto.server.createSession")) {
+        return new Response(
+          JSON.stringify({ accessJwt: "jwt", did: "did:plc:z1", handle: "zayron-x.co" }),
+          { status: 200 },
+        );
+      }
+      if (url.endsWith("/xrpc/com.atproto.repo.createRecord")) {
+        publishCalls++;
+        return new Response(
+          JSON.stringify({ uri: "at://did:plc:z1/app.bsky.feed.post/3ktestquota", cid: "cidq" }),
+          { status: 200 },
+        );
+      }
+      return new Response("", { status: 404 });
+    }) as typeof fetch;
+
+    // 1) Cron cycle (no testPost) MUST stay fail-closed and NEVER publish when D1 dedupe fails
+    const cronReport = await runSyndicationCycle(env, { dryRun: false, fetchFn: mockFetch });
+    const cronBsky = cronReport.results.find((r) => r.platform === "bluesky");
+    expect(cronBsky?.status).toBe("failed");
+    expect(cronBsky?.error).toContain("D1_DEDUPE_FAILED");
+    expect(cronBsky?.d1Logged).toBe(false);
+    expect(publishCalls).toBe(0);
+
+    // 2) Explicit testPost bypasses D1 quota/dedupe reads and succeeds with d1Logged: false
+    const res = await handleSyndicateRequest(
+      new Request("https://syndicate.local/admin/syndicate", {
+        method: "POST",
+        headers: { Authorization: "Bearer admin-tok" },
+        body: JSON.stringify({
+          platforms: ["bluesky"],
+          dryRun: false,
+          limit: 1,
+          testPost: {
+            title: "ZAYRON-X Launches Live Intelligence Feed",
+            summary: "Continuous CISA KEV advisories and vulnerability dossiers are now active.",
+            url: "https://zayron-x.co/platform",
+            tags: ["ThreatIntel", "InfoSec"],
+          },
+        }),
+      }),
+      env,
+      mockFetch,
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as any;
+    expect(body.results[0].status).toBe("posted");
+    expect(body.results[0].externalUrl).toBe("https://bsky.app/profile/zayron-x.co/post/3ktestquota");
+    expect(body.results[0].d1Logged).toBe(false);
+    expect(publishCalls).toBe(1);
   });
 });

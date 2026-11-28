@@ -142,16 +142,29 @@ function formatPreviewPayload(platform: PlatformName, item: SyndicationItem): un
   return { text: formatLinkedInPost(item) };
 }
 
+async function bestEffortLog(
+  db: D1Database | undefined,
+  entry: Parameters<typeof recordSyndicationLog>[1],
+): Promise<boolean> {
+  if (!db) return false;
+  try {
+    await recordSyndicationLog(db, entry);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function runSinglePlatform(input: {
   platform: PlatformName;
   env: SyndicateEnv;
   candidates: SyndicationItem[];
   dryRun: boolean;
   now: Date;
-  ignoreCooldown: boolean;
+  isManualTest: boolean;
   fetchFn: typeof fetch;
 }): Promise<PlatformPublishResult> {
-  const { platform, env, candidates, dryRun, now, ignoreCooldown, fetchFn } = input;
+  const { platform, env, candidates, dryRun, now, isManualTest, fetchFn } = input;
   const configured = platformConfiguredMap(env)[platform];
 
   if (dryRun) {
@@ -191,24 +204,61 @@ async function runSinglePlatform(input: {
     };
   }
 
-  const dailyCap =
-    platform === "bluesky" ? BSKY_DAILY_CAP : platform === "x" ? X_DAILY_CAP : LINKEDIN_DAILY_CAP;
-  const cooldownMinutes = !ignoreCooldown && platform === "bluesky" ? BSKY_COOLDOWN_MINUTES : 0;
+  let candidate: SyndicationItem | null = null;
+  if (isManualTest) {
+    // Explicit testPost bypasses D1 quota/dedupe reads so manual verification still works
+    // when D1 daily read quotas are exhausted.
+    candidate = candidates[0] ?? null;
+  } else {
+    // Scheduled cron runs stay strictly fail-closed on D1 dedupe errors so the worker
+    // can never double-post while D1 is degraded.
+    if (!env.DB) {
+      return {
+        platform,
+        configured: true,
+        status: "failed",
+        itemId: null,
+        externalUri: null,
+        externalUrl: null,
+        d1Logged: false,
+        error: "D1_DEDUPE_UNAVAILABLE",
+      };
+    }
 
-  const quota = await getPlatformQuotaState(env.DB, platform, now, dailyCap, cooldownMinutes);
-  if (!quota.allowed) {
-    return {
-      platform,
-      configured: true,
-      status: quota.reason === "cooldown" ? "skipped_cooldown" : "skipped_cap",
-      itemId: null,
-      externalUri: null,
-      externalUrl: null,
-      error: `${quota.reason} (today=${quota.countToday}/${dailyCap})`,
-    };
+    const dailyCap =
+      platform === "bluesky" ? BSKY_DAILY_CAP : platform === "x" ? X_DAILY_CAP : LINKEDIN_DAILY_CAP;
+    const cooldownMinutes = platform === "bluesky" ? BSKY_COOLDOWN_MINUTES : 0;
+
+    try {
+      const quota = await getPlatformQuotaState(env.DB, platform, now, dailyCap, cooldownMinutes);
+      if (!quota.allowed) {
+        return {
+          platform,
+          configured: true,
+          status: quota.reason === "cooldown" ? "skipped_cooldown" : "skipped_cap",
+          itemId: null,
+          externalUri: null,
+          externalUrl: null,
+          error: `${quota.reason} (today=${quota.countToday}/${dailyCap})`,
+        };
+      }
+
+      candidate = await selectUnpostedCandidate(env.DB, platform, candidates);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        platform,
+        configured: true,
+        status: "failed",
+        itemId: null,
+        externalUri: null,
+        externalUrl: null,
+        d1Logged: false,
+        error: `D1_DEDUPE_FAILED: ${message}`,
+      };
+    }
   }
 
-  const candidate = await selectUnpostedCandidate(env.DB, platform, candidates);
   if (!candidate) {
     return {
       platform,
@@ -225,7 +275,7 @@ async function runSinglePlatform(input: {
     if (platform === "bluesky") {
       const creds = resolveBlueskyCreds(env)!;
       const out = await publishBlueskyPost(candidate, creds, fetchFn);
-      await recordSyndicationLog(env.DB, {
+      const d1Logged = await bestEffortLog(env.DB, {
         itemId: candidate.itemId,
         itemType: candidate.itemType,
         platform,
@@ -233,7 +283,7 @@ async function runSinglePlatform(input: {
         externalUri: out.atUri,
         externalUrl: out.webUrl,
         postedAt: now.toISOString(),
-      }).catch(() => undefined);
+      });
       return {
         platform,
         configured: true,
@@ -241,6 +291,7 @@ async function runSinglePlatform(input: {
         itemId: candidate.itemId,
         externalUri: out.atUri,
         externalUrl: out.webUrl,
+        d1Logged,
         payload: out.payload,
         error: null,
       };
@@ -249,7 +300,7 @@ async function runSinglePlatform(input: {
     if (platform === "x") {
       const creds = resolveXCreds(env)!;
       const out = await publishXThread(candidate, creds, fetchFn);
-      await recordSyndicationLog(env.DB, {
+      const d1Logged = await bestEffortLog(env.DB, {
         itemId: candidate.itemId,
         itemType: candidate.itemType,
         platform,
@@ -257,7 +308,7 @@ async function runSinglePlatform(input: {
         externalUri: out.tweetId,
         externalUrl: out.tweetUrl,
         postedAt: now.toISOString(),
-      }).catch(() => undefined);
+      });
       return {
         platform,
         configured: true,
@@ -265,6 +316,7 @@ async function runSinglePlatform(input: {
         itemId: candidate.itemId,
         externalUri: out.tweetId,
         externalUrl: out.tweetUrl,
+        d1Logged,
         payload: out.thread,
         error: null,
       };
@@ -272,7 +324,7 @@ async function runSinglePlatform(input: {
 
     const creds = resolveLinkedInCreds(env)!;
     const out = await publishLinkedInPost(candidate, creds, fetchFn);
-    await recordSyndicationLog(env.DB, {
+    const d1Logged = await bestEffortLog(env.DB, {
       itemId: candidate.itemId,
       itemType: candidate.itemType,
       platform,
@@ -280,7 +332,7 @@ async function runSinglePlatform(input: {
       externalUri: out.postId,
       externalUrl: out.postUrl,
       postedAt: now.toISOString(),
-    }).catch(() => undefined);
+    });
     return {
       platform,
       configured: true,
@@ -288,19 +340,20 @@ async function runSinglePlatform(input: {
       itemId: candidate.itemId,
       externalUri: out.postId,
       externalUrl: out.postUrl,
+      d1Logged,
       payload: { text: out.text },
       error: null,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    await recordSyndicationLog(env.DB, {
+    const d1Logged = await bestEffortLog(env.DB, {
       itemId: candidate.itemId,
       itemType: candidate.itemType,
       platform,
       status: "failed",
       errorMessage: message.slice(0, 300),
       postedAt: now.toISOString(),
-    }).catch(() => undefined);
+    });
     return {
       platform,
       configured: true,
@@ -308,6 +361,7 @@ async function runSinglePlatform(input: {
       itemId: candidate.itemId,
       externalUri: null,
       externalUrl: null,
+      d1Logged,
       error: message,
     };
   }
@@ -368,7 +422,7 @@ export async function runSyndicationCycle(
           candidates,
           dryRun,
           now: new Date(now.getTime() + pass * 1000),
-          ignoreCooldown: isManualTest,
+          isManualTest,
           fetchFn,
         }),
       ),
