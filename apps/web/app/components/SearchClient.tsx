@@ -1,0 +1,70 @@
+"use client";
+import { useState } from "react";
+import type React from "react";
+import { searchIntelligence, type IntelligenceRecord } from "../lib/api";
+import { RouteShell } from "../components/RouteShell";
+
+export function SearchClient() {
+  const [query, setQuery] = useState("");
+  const [items, setItems] = useState<IntelligenceRecord[]>([]);
+  const [state, setState] = useState("idle");
+
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!query.trim()) return;
+    setState("loading");
+    searchIntelligence(query)
+      .then((result) => {
+        setItems(result.data?.items ?? []);
+        setState(result.state);
+      })
+      .catch(() => setState("error"));
+  };
+
+  return (
+    <RouteShell
+      title="Search"
+      eyebrow="DISCOVERY / SEARCH"
+      description="Search the connected intelligence index using the same API client as the global search overlay."
+    >
+      <form className="vulnerability-filters" onSubmit={submit}>
+        <label>
+          <span>QUERY</span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search intelligence..."
+            aria-label="Search intelligence"
+          />
+        </label>
+        <button type="submit">SEARCH</button>
+      </form>
+      {state === "loading" && (
+        <div className="workspace-state">
+          <strong>SEARCHING THE INTELLIGENCE INDEX</strong>
+        </div>
+      )}
+      {state === "error" && (
+        <div className="workspace-state error">
+          <strong>SEARCH CURRENTLY UNAVAILABLE</strong>
+        </div>
+      )}
+      {state === "empty" && (
+        <div className="workspace-state">
+          <strong>NO MATCHES FROM THE CONNECTED API</strong>
+        </div>
+      )}
+      {items.length > 0 && (
+        <div className="shell-records">
+          {items.map((item, index) => (
+            <article key={item.id || index}>
+              <span>{item.type || "RECORD"}</span>
+              <h3>{item.title || item.id}</h3>
+              <small>{item.summary || "Source record available"}</small>
+            </article>
+          ))}
+        </div>
+      )}
+    </RouteShell>
+  );
+}

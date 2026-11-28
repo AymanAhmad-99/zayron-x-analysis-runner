@@ -155,6 +155,9 @@ const SUITES = [
   // PHASE 10-SEO-FORENSICS — canonical hosts, query-isolated ?view=wire cache
   // guard, crawler allowlists, title-template dedupe, and NewsArticle image.
   'tests/unit/phase10_seo_forensics.test.ts',
+  // PHASE 11-SEO-RECOVERY (v2) — 410/301 legacy purge, utility noindex,
+  // SSR intelligence hub, pagination, KQL clone removal, and honest sitemap curation.
+  'tests/unit/phase11_seo_recovery.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

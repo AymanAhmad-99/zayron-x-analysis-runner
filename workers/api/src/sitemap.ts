@@ -58,19 +58,39 @@ export interface SitemapQuery {
  * exactly as `/api/v1/intelligence?category=` uses them, so the sitemap's
  * vulnerability population and the public listing cannot drift apart.
  */
+/**
+ * PHASE 11-SEO-RECOVERY — High-signal curation filter for `vulnerabilities-*.xml`.
+ *
+ * Keeps all remaining CVE detail pages 200 OK & `index, follow` (no mass
+ * `noindex`) while curating the submitted sitemap exclusively to enriched or
+ * actively weaponized CVEs: CISA KEV, tracked PoCs, verified detection rules,
+ * linked MITRE threat actors/campaigns, or published Neural Newsroom briefings.
+ */
+export const CURATED_VULNERABILITY_SITEMAP_WHERE = `provenance_state = 'AUTHORITATIVE_VERIFIED'
+  AND cve_id IS NOT NULL
+  AND cve_id <> ''
+  AND (
+    is_exploited_in_wild = 1
+    OR (kev_due_date IS NOT NULL AND TRIM(kev_due_date) <> '')
+    OR EXISTS (SELECT 1 FROM cve_pocs p WHERE p.cve_id = vulnerabilities.cve_id)
+    OR EXISTS (SELECT 1 FROM detection_rules d WHERE d.kind = 'cve' AND d.match_key = vulnerabilities.cve_id)
+    OR EXISTS (SELECT 1 FROM threat_actors a WHERE EXISTS (SELECT 1 FROM json_each(a.cves_json) WHERE UPPER(value) = vulnerabilities.cve_id))
+    OR EXISTS (SELECT 1 FROM threat_campaigns c WHERE EXISTS (SELECT 1 FROM json_each(c.cves_json) WHERE UPPER(value) = vulnerabilities.cve_id))
+    OR EXISTS (
+      SELECT 1 FROM entity_mentions m
+      JOIN news_articles n ON n.id = m.news_id AND n.status = 'PUBLISHED'
+      WHERE m.entity_type = 'cve' AND UPPER(m.entity_slug) = vulnerabilities.cve_id
+    )
+  )`;
+
 export function sitemapRowsQuery(kind: SitemapKind, tokens: string[], limit: number, offset: number): SitemapQuery {
   if (kind === "vulnerabilities") {
-    // Gate 3A.3 — the sitemap and the public vulnerability detail route now
-    // read the SAME corpus and the SAME gate. The previous query projected
-    // `intelligence_reports` while the detail route served `vulnerabilities`,
-    // so the two populations could drift apart (prod advertised 0 CVE URLs while
-    // detail pages existed). Only NVD/KEV/EPSS-verified rows are advertised;
-    // `tokens` is intentionally unused because a verified CVE belongs to the
-    // vulnerability domain by construction.
     void tokens;
     return {
-      sql: `SELECT cve_id AS id, updated_at FROM vulnerabilities
-        WHERE provenance_state = 'AUTHORITATIVE_VERIFIED' AND cve_id IS NOT NULL AND cve_id <> ''
+      sql: `SELECT cve_id AS id,
+          COALESCE(NULLIF(TRIM(modified_at), ''), NULLIF(TRIM(published_at), '')) AS updated_at
+        FROM vulnerabilities
+        WHERE ${CURATED_VULNERABILITY_SITEMAP_WHERE}
         ORDER BY cve_id ASC LIMIT ? OFFSET ?`,
       params: [limit, offset],
     };
@@ -97,7 +117,7 @@ export function sitemapCountQuery(kind: SitemapKind, tokens: string[]): SitemapQ
     void tokens;
     return {
       sql: `SELECT COUNT(*) AS total FROM vulnerabilities
-        WHERE provenance_state = 'AUTHORITATIVE_VERIFIED' AND cve_id IS NOT NULL AND cve_id <> ''`,
+        WHERE ${CURATED_VULNERABILITY_SITEMAP_WHERE}`,
       params: [],
     };
   }

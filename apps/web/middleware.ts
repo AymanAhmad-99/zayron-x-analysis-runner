@@ -65,7 +65,7 @@ const CONTENT_SECURITY_POLICY = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev",
+  "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://zayron-x.co https://www.zayron-x.co",
   "frame-src 'self' https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -112,6 +112,8 @@ const PUBLIC_PAGE_CACHE = new Set([
   "/intelligence/threat-actors",
   "/intelligence/exploits",
   "/intelligence/techniques",
+  "/intelligence/vendors",
+  "/intelligence/regions",
   "/news",
   "/about",
   "/security",
@@ -155,12 +157,17 @@ function withPageCache(response: NextResponse, url: URL, host: string): NextResp
     return response;
   }
 
-  // Keep `?view=wire` (and filtered query views on `/news`) out of the shared
-  // edge cache so `noindex, follow` never leaks to canonical `/news`.
+  // Keep `?view=wire` (and filtered query views on `/news` or `/intelligence/vulnerabilities?q=`)
+  // out of the shared edge cache so `noindex, follow` never leaks to canonical URLs.
   if (path === "/news" && url.search.length > 0) {
     if (url.searchParams.get("view") === "wire") {
       response.headers.set("X-Robots-Tag", "noindex, follow");
     }
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
+
+  if (path === "/intelligence/vulnerabilities" && (url.searchParams.has("q") || url.searchParams.has("severity"))) {
     response.headers.set("Cache-Control", "private, no-store");
     return response;
   }
@@ -171,19 +178,62 @@ function withPageCache(response: NextResponse, url: URL, host: string): NextResp
   return response;
 }
 
+function legacyGoneResponse(request: NextRequest): NextResponse {
+  const isHead = request.method.toUpperCase() === "HEAD";
+  const response = new NextResponse(
+    isHead ? null : "This legacy ZAYRON-X intelligence path has been permanently retired.",
+    {
+      status: 410,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "public, max-age=86400",
+      },
+    },
+  );
+  return harden(response);
+}
+
+function legacyRedirectPath(pathname: string): string | null {
+  const normalized = normalizePath(pathname);
+  const direct = PATH_REDIRECTS[normalized];
+  if (direct) return direct;
+  if (normalized === "/actors") return "/intelligence/threat-actors";
+  if (normalized.startsWith("/actors/")) {
+    return `/intelligence/threat-actors${normalized.slice("/actors".length)}`;
+  }
+  if (normalized === "/vulnerabilities") return "/intelligence/vulnerabilities";
+  if (normalized.startsWith("/vulnerabilities/")) {
+    return `/intelligence/vulnerabilities${normalized.slice("/vulnerabilities".length)}`;
+  }
+  return null;
+}
+
 export function middleware(request: NextRequest): NextResponse {
   const url = new URL(request.url);
   const host = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
+  const normalized = normalizePath(url.pathname);
+  const lowerPath = normalized.toLowerCase();
 
+  // Purge 3,332 retired /threats/* event URLs and dead /intelligence/intel_* URLs.
+  if (
+    lowerPath === "/threats" ||
+    lowerPath.startsWith("/threats/") ||
+    lowerPath.startsWith("/intelligence/intel_")
+  ) {
+    return legacyGoneResponse(request);
+  }
+
+  const destination = legacyRedirectPath(url.pathname);
   if (REDIRECT_HOSTS.has(host)) {
-    const target = new URL(`https://${CANONICAL_HOST}${url.pathname}`);
+    const target = new URL(`https://${CANONICAL_HOST}${destination ?? url.pathname}`);
     target.search = url.search;
     return harden(NextResponse.redirect(target, 301));
   }
 
-  const destination = PATH_REDIRECTS[normalizePath(url.pathname)];
   if (destination) {
-    const target = new URL(destination, url.origin);
+    const canonicalOrigin = host === CANONICAL_HOST || host === "" ? `https://${CANONICAL_HOST}` : url.origin;
+    const target = new URL(destination, canonicalOrigin);
     target.search = url.search;
     return harden(NextResponse.redirect(target, 301));
   }

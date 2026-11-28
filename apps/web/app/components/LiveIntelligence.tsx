@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-const API = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_BASE_URL) || "https://zayron-x-api-preview.aabusabih.workers.dev/api/v1";
+const API = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_BASE_URL) || "/api/v1";
 type RecordItem = { id:string; title?:string; summary?:string; severity?:string; status?:string; type?:string };
 
 export function LiveLatest(){

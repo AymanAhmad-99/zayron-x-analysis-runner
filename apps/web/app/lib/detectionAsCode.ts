@@ -137,31 +137,59 @@ export function familyDetectionQueries(
   return { kql, spl, firewall };
 }
 
-/** Hunting templates for one CVE. Both are safe-by-construction strings. */
+export interface CveDetectionRuleInput {
+  id: string;
+  title: string;
+  source_url: string;
+  source: string;
+}
+
+/**
+ * Genuine rule-backed detection queries only.
+ *
+ * Returns `null` when no verified upstream rule (SigmaHQ / Nuclei) or authored
+ * query exists for the CVE — never emits generic `ProcessCommandLine has "CVE-*"`
+ * boilerplate across un-enriched CVE pages.
+ */
 export function cveHuntingQueries(
   cveId: string,
-  context: { vendor?: string | null; product?: string | null } = {},
-): { kql: string; spl: string } {
-  const id = String(cveId ?? '').trim().toUpperCase() || 'UNKNOWN-CVE';
-  const product = String(context.product ?? '').trim();
-  const vendor = String(context.vendor ?? '').trim();
-  const productTerm = product || vendor || id;
+  context: {
+    vendor?: string | null;
+    product?: string | null;
+    rules?: CveDetectionRuleInput[] | null;
+  } = {},
+): { kql: string; spl: string } | null {
+  const rules = Array.isArray(context.rules)
+    ? context.rules.filter((rule) => rule && rule.id && rule.source_url)
+    : [];
+  if (rules.length === 0) return null;
+
+  const id = String(cveId ?? "").trim().toUpperCase();
+  if (!id) return null;
+  const subject = [context.vendor, context.product].filter(Boolean).join(" ").trim() || id;
+  const ruleLines = rules
+    .slice(0, 5)
+    .map((r) => `// Verified ${r.source} rule: ${r.title} (${r.id}) — ${r.source_url}`);
+  const ruleIds = rules.slice(0, 5).map((r) => `"${r.id}"`).join(", ");
+
   const kql = [
-    `// ${id} — exploitation hunting template (Microsoft Sentinel / Defender XDR)`,
-    'DeviceProcessEvents',
-    '| where Timestamp > ago(30d)',
-    `| where ProcessCommandLine has "${id}" or ProcessCommandLine has "${productTerm}"`,
-    '| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName',
-    '| order by Timestamp desc',
-    '// Pair with the vendor advisory and the verified Sigma/Nuclei rule for this CVE.',
-  ].join('\n');
+    `// ${id} (${subject}) — rule-backed hunting starter`,
+    ...ruleLines,
+    "AlertEvidence",
+    "| where Timestamp > ago(30d)",
+    `| where AlertTitle has_any (${ruleIds}) or AdditionalFields has "${id}"`,
+    "| summarize FirstSeen = min(Timestamp), LastSeen = max(Timestamp), Hits = count() by DeviceName, AlertTitle",
+    "| order by Hits desc",
+  ].join("\n");
+
   const spl = [
-    `// ${id} — exploitation hunting template (Splunk SPL)`,
-    'index=* (process_command_line="*' + id + '*" OR process_command_line="*' + productTerm + '*")',
-    '| stats count min(_time) as first_seen max(_time) as last_seen by host, user, process_name, process_command_line',
-    '| convert ctime(first_seen) ctime(last_seen)',
-    '| sort - count',
-  ].join('\n');
+    `// ${id} (${subject}) — rule-backed hunting starter`,
+    ...ruleLines,
+    `index=notable (search_name IN (${ruleIds}) OR cve="${id}")`,
+    "| stats count min(_time) as first_seen max(_time) as last_seen by host, search_name, cve",
+    "| sort - count",
+  ].join("\n");
+
   return { kql, spl };
 }
 

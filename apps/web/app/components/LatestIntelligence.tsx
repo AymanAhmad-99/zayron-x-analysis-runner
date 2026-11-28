@@ -3,7 +3,20 @@ import { useEffect, useState } from "react";
 import { getCanonicalMalwareReports, getIntelligence, getVulnerabilities, type IntelligenceRecord } from "../lib/api";
 import { formatAdvisoryTitle } from "../lib/seo";
 
-function formatTimestamp(value?: string) { if (!value) return null; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(date); }
+function formatTimestamp(value?: string) {
+  if (!value) return null;
+  const trimmed = value.trim();
+  const normalized =
+    /^\d{4}-\d{2}-\d{2}$/.test(trimmed)
+      ? `${trimmed}T00:00:00Z`
+      : /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(trimmed)
+        ? `${trimmed.replace(" ", "T")}Z`
+        : trimmed;
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(date);
+}
 function Skeleton() { return <div className="latest-intelligence-skeleton" aria-label="Loading latest intelligence" aria-busy="true">{[1, 2, 3].map((item) => <div className="latest-skeleton-row" key={item}><i /><div><b /><span /><span /></div><em /><em /></div>)}</div>; }
 function RecordRow({ item }: { item: IntelligenceRecord }) {
   const severity = item.severity?.toUpperCase();

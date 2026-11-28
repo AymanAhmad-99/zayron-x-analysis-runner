@@ -301,11 +301,24 @@ describe('detection-as-code', () => {
     expect(empty.kql).toContain('no active indicator');
   });
 
-  test('CVE hunting templates are safe strings', () => {
-    const hunt = cveHuntingQueries('cve-2026-1234', { product: 'Example Server' });
-    expect(hunt.kql).toContain('CVE-2026-1234');
-    expect(hunt.kql).toContain('Example Server');
-    expect(hunt.spl).toContain('index=*');
+  test('CVE hunting templates omit generic boilerplate and require verified detection rules', () => {
+    expect(cveHuntingQueries('cve-2026-1234', { product: 'Example Server' })).toBeNull();
+    const hunt = cveHuntingQueries('cve-2026-1234', {
+      product: 'Example Server',
+      rules: [
+        {
+          id: 'sigma-ex-1234',
+          title: 'Example Server RCE Attempt',
+          source: 'sigma',
+          source_url: 'https://github.com/SigmaHQ/sigma/blob/master/rules/ex.yml',
+        },
+      ],
+    });
+    expect(hunt).not.toBeNull();
+    expect(hunt!.kql).toContain('CVE-2026-1234');
+    expect(hunt!.kql).toContain('sigma-ex-1234');
+    expect(hunt!.kql).not.toContain('ProcessCommandLine has "CVE-');
+    expect(hunt!.spl).toContain('index=notable');
   });
 
   test('MITRE mapping uses documented IDs only', () => {

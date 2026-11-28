@@ -6272,7 +6272,19 @@ const worker = {
           countParams.push(cveLike, like, like);
         }
 
-        query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+        if (q) {
+          query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+        } else {
+          query += ` ORDER BY
+            (CASE WHEN is_exploited_in_wild = 1 THEN 0 ELSE 1 END) ASC,
+            (CASE WHEN EXISTS (SELECT 1 FROM cve_pocs p WHERE p.cve_id = vulnerabilities.cve_id) THEN 0 ELSE 1 END) ASC,
+            (CASE WHEN EXISTS (SELECT 1 FROM detection_rules d WHERE d.kind = 'cve' AND d.match_key = vulnerabilities.cve_id) THEN 0 ELSE 1 END) ASC,
+            (CASE WHEN EXISTS (SELECT 1 FROM threat_actors a WHERE EXISTS (SELECT 1 FROM json_each(a.cves_json) WHERE UPPER(value) = vulnerabilities.cve_id)) THEN 0 ELSE 1 END) ASC,
+            COALESCE(epss_score, 0) DESC,
+            COALESCE(cvss_score, 0) DESC,
+            created_at DESC
+            LIMIT ? OFFSET ?`;
+        }
         params.push(limit, offset);
 
         try {

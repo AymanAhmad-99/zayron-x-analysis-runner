@@ -25,7 +25,7 @@ const securityHeaders = [
       // and beacons to `cloudflareinsights.com`. Without both the beacon is blocked
       // and every page logs a CSP violation. Kept in lockstep with
       // `middleware.ts`, which applies the same policy on every path.
-      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://zayron-x.co https://www.zayron-x.co https://zayron-x-api-preview.aabusabih.workers.dev; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://zayron-x.co https://www.zayron-x.co; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
   },
 ];
 

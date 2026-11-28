@@ -60,7 +60,6 @@ export async function GET(
     if (parsed.kind === "static") {
       const [
         families,
-        advisories,
         actors,
         campaignIndex,
         techniqueIndex,
@@ -69,27 +68,20 @@ export async function GET(
         regionIndex,
       ] = await Promise.all([
         getIocFamilies(),
-        getSupplyChainDossiers(30),
         getThreatActors({ limit: 200 }),
         getCampaigns({ limit: 100 }),
-        getTechniques({ limit: 100 }),
+        getTechniques({ limit: 250 }),
         getNewsIndex({ limit: 50 }),
         getVendors(),
         getRegions(),
       ]);
 
       const familyEntries = (families.data ?? []).map((entry) => ({ loc: `${site}${familyHubPath(entry.slug)}` }));
-      const advisoryEntries = (advisories.data ?? []).map((dossier) => ({
-        loc: `${site}/intelligence/malware/advisories/${encodeURIComponent(dossier.report_id)}`,
-        lastmod: dossier.published_at ?? null,
-      }));
       const actorEntries = (actors.data?.items ?? []).map((actor) => ({
         loc: `${site}/intelligence/threat-actors/${encodeURIComponent(actor.slug)}`,
-        lastmod: actor.last_seen ?? null,
       }));
       const campaignEntries = (campaignIndex.data?.items ?? []).map((campaign) => ({
         loc: `${site}/intelligence/campaigns/${encodeURIComponent(campaign.slug)}`,
-        lastmod: campaign.last_seen ?? null,
       }));
       const techniqueEntries = (techniqueIndex.data?.items ?? []).map((technique) => ({
         loc: `${site}/intelligence/techniques/${encodeURIComponent(technique.id)}`,
@@ -118,7 +110,6 @@ export async function GET(
         body: buildUrlset([
           ...staticSitemapEntries(site),
           ...familyEntries,
-          ...advisoryEntries,
           ...actorEntries,
           ...campaignEntries,
           ...techniqueEntries,

@@ -447,7 +447,7 @@ describe("Wave 4B — sitemap id parity and D1 row-read safety", () => {
     // `/intelligence/vulnerabilities/[id]` → GET /api/v1/intelligence/:id arrives
     // at the CANONICAL CVE row (`WHERE cve_id = ?`) after the verified-corpus
     // cross-resolution. The shard must emit that same identifier.
-    expect(rows.sql).toContain("SELECT cve_id AS id, updated_at");
+    expect(rows.sql).toContain("SELECT cve_id AS id,");
     const detailRoute = readFileSync("workers/api/src/index.ts", "utf8");
     expect(detailRoute).toContain("FROM vulnerabilities WHERE cve_id = ?");
     const detailPage = readFileSync("apps/web/app/intelligence/vulnerabilities/[id]/page.tsx", "utf8");
