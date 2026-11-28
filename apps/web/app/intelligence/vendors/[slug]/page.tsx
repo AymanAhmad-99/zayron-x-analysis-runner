@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const result = await getVendor(decodeURIComponent(slug));
   if (result.state !== "ok" || !result.data) {
     return {
-      title: "Vendor hub not found | ZAYRON-X",
+      title: "Vendor hub not found",
       robots: { index: false, follow: false },
       alternates: { canonical: `/intelligence/vendors/${encodeURIComponent(slug)}` },
     };
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const vendor = result.data;
   const description = `${vendor.verified_cves} authoritative ${vendor.name} CVEs with CISA KEV status, BOD 22-01 due dates and ${vendor.poc_count} indexed public proof(s) of concept.`;
   return {
-    title: `${vendor.name} Vulnerability & Exploitation Hub | ZAYRON-X`,
+    title: `${vendor.name} Vulnerability & Exploitation Hub`,
     description,
     alternates: { canonical: `/intelligence/vendors/${vendor.slug}` },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

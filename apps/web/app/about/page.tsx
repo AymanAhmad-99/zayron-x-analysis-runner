@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
 import { InstitutionalDocLayout, type DocSection } from "../components/InstitutionalDocLayout";
 import { isPreviewDeployment } from "../lib/siteConfig";
-import { resolvePageRobots } from "../lib/seo";
+import { buildOpenGraph, resolvePageRobots } from "../lib/seo";
+
+const ABOUT_DESCRIPTION =
+  "ZAYRON-X is an independent global cyber threat intelligence platform unifying authoritative CVEs, CISA KEV advisories, threat actors, MITRE ATT&CK techniques, and malware telemetry into one verified graph.";
 
 export const metadata: Metadata = {
   title: "About ZAYRON-X — Cyber Threat Intelligence Platform",
-  description:
-    "ZAYRON-X is an independent global cyber threat intelligence platform unifying authoritative CVEs, CISA KEV advisories, threat actors, MITRE ATT&CK techniques, and malware telemetry into one verified graph.",
+  description: ABOUT_DESCRIPTION,
   alternates: { canonical: "/about" },
   robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
-  openGraph: { title: "About ZAYRON-X", url: "/about" },
+  openGraph: buildOpenGraph({
+    title: "About ZAYRON-X — Cyber Threat Intelligence Platform",
+    description: ABOUT_DESCRIPTION,
+    path: "/about",
+    type: "website",
+  }),
 };
 
 const sections: DocSection[] = [

@@ -14,7 +14,7 @@ import { resolvePageRobots } from "../../lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Connected Threat Graph — MITRE ATT&CK Groups | ZAYRON-X",
+    title: "Connected Threat Graph — MITRE ATT&CK Groups",
     description:
       "The complete MITRE ATT&CK Enterprise threat-group catalog with live ZAYRON-X correlation.",
     alternates: { canonical: "/intelligence/threat-actors" },

@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const result = await getCampaign(decodeURIComponent(slug));
   const campaign = result.data?.campaign;
   if (!campaign) {
-    return { title: "Campaign not found | ZAYRON-X", robots: { index: false, follow: false } };
+    return { title: "Campaign not found", robots: { index: false, follow: false } };
   }
   const canonical = `/intelligence/campaigns/${campaign.slug}`;
   const description = `${campaign.name}${campaign.mitre_id ? ` (${campaign.mitre_id})` : ""} — ${campaign.technique_count} documented MITRE ATT&CK techniques${campaign.actors.length ? `, attributed to ${campaign.actors.map((actor) => actor.name).join(", ")}` : ""}.`;
   return {
-    title: `${campaign.name} — Campaign Dossier | ZAYRON-X`,
+    title: `${campaign.name} — Campaign Dossier`,
     description,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

@@ -17,7 +17,7 @@ const DESCRIPTION =
 export async function generateMetadata(): Promise<Metadata> {
   const canonical = "/intelligence/campaigns";
   return {
-    title: "Campaign Intelligence — MITRE ATT&CK | ZAYRON-X",
+    title: "Campaign Intelligence — MITRE ATT&CK",
     description: DESCRIPTION,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

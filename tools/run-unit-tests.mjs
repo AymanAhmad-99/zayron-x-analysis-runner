@@ -152,6 +152,9 @@ const SUITES = [
   // convergence, fail-closed translation, the signed webhook, the read model,
   // the Global Wire surface and the 200-channel importer. Local-only.
   'tests/unit/phase10b_osint_global_wire.test.ts',
+  // PHASE 10-SEO-FORENSICS — canonical hosts, query-isolated ?view=wire cache
+  // guard, crawler allowlists, title-template dedupe, and NewsArticle image.
+  'tests/unit/phase10_seo_forensics.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

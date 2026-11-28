@@ -23,7 +23,7 @@ const DESCRIPTION =
 export async function generateMetadata(): Promise<Metadata> {
   const canonical = "/intelligence/techniques";
   return {
-    title: "MITRE ATT&CK Technique Index | ZAYRON-X",
+    title: "MITRE ATT&CK Technique Index",
     description: DESCRIPTION,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

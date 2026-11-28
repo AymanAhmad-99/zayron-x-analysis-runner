@@ -164,7 +164,7 @@ async function get(path, init = {}) {
   let reverse = false;
   let candidates = [];
   try {
-    const body = JSON.parse((await get('/api/v1/news?limit=5')).text);
+    const body = JSON.parse((await get('/api/v1/news?limit=20')).text);
     candidates = (body.items || []).map((item) => item.slug);
   } catch { /* none */ }
   for (const candidate of candidates) {
@@ -174,10 +174,11 @@ async function get(path, init = {}) {
     let entitySlug = '';
     try {
       const data = JSON.parse(article.text).data || {};
-      const first = (data.mentions || []).find((m) => m.in_catalog === 1 && m.entity_type !== 'vendor');
-      if (first) {
-        entityType = first.entity_type;
-        entitySlug = first.entity_slug;
+      const mentions = (data.mentions || []).filter((m) => m.in_catalog === 1);
+      const preferred = mentions.find((m) => m.entity_type !== 'vendor') || mentions[0];
+      if (preferred) {
+        entityType = preferred.entity_type;
+        entitySlug = preferred.entity_slug;
       }
     } catch { /* none */ }
     if (entityType && entitySlug) {
@@ -190,7 +191,9 @@ async function get(path, init = {}) {
               ? `/api/v1/techniques/${encodeURIComponent(entitySlug)}`
               : entityType === 'malware_family'
                 ? `/api/v1/iocs/families/${encodeURIComponent(entitySlug)}`
-                : '';
+                : entityType === 'vendor'
+                  ? `/api/v1/vendors/${encodeURIComponent(entitySlug)}`
+                  : '';
       if (endpoint) {
         const entity = await get(endpoint);
         try {

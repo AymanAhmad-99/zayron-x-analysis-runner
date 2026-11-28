@@ -38,7 +38,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const description =
     "Source-verified cybersecurity briefings with the ZAYRON-X connected threat graph attached: CVSS, EPSS, CISA KEV state, linked actors, malware families and ATT&CK techniques.";
   return {
-    title: "Neural Newsroom — Verified Cybersecurity Briefings | ZAYRON-X",
+    title: "Neural Newsroom — Verified Cybersecurity Briefings",
     description,
     alternates: { canonical: "/news" },
     // SEO PROTECTION GATE: the Global Wire tab is a provenance-labelled raw feed,

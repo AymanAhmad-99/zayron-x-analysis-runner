@@ -29,7 +29,7 @@ export async function generateMetadata({
   const query = readQuery(resolved);
   const transientState = query.length > 0;
   return {
-    title: transientState ? "Indicator lookup — ZAYRON-X" : "Live IOC intelligence — ZAYRON-X",
+    title: transientState ? "Indicator lookup" : "Live IOC intelligence",
     description:
       "Live, defanged indicators of compromise from OpenSSF/OSV, Feodo Tracker, Spamhaus DROP and OpenPhish — with confidence, decay TTL and firewall-ready EDL counts.",
     alternates: { canonical: "/intelligence/iocs" },

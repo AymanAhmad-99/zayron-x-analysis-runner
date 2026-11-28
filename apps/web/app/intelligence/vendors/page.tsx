@@ -12,7 +12,7 @@ export function generateMetadata(): Metadata {
   const description =
     "Vendor security hubs generated strictly from authoritative, catalog-verified CVEs: KEV status, BOD 22-01 due dates and public proof-of-concept coverage per vendor.";
   return {
-    title: "Vendor Security Hubs | ZAYRON-X",
+    title: "Vendor Security Hubs",
     description,
     alternates: { canonical: "/intelligence/vendors" },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

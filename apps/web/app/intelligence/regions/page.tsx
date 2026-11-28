@@ -12,7 +12,7 @@ export function generateMetadata(): Metadata {
   const description =
     "Regional cyber threat posture computed from live Radar-enriched C2 infrastructure and the MITRE target regions documented for threat actors and campaigns.";
   return {
-    title: "Regional Threat Posture Hubs | ZAYRON-X",
+    title: "Regional Threat Posture Hubs",
     description,
     alternates: { canonical: "/intelligence/regions" },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

@@ -24,14 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const actor = result.data?.actor;
   if (!actor) {
     return {
-      title: "Threat actor not found | ZAYRON-X",
+      title: "Threat actor not found",
       robots: { index: false, follow: false },
     };
   }
   const canonical = `/intelligence/threat-actors/${actor.slug}`;
   const description = `${actor.name}${actor.mitre_id ? ` (${actor.mitre_id})` : ""} — ${actor.motivation}. ${actor.technique_count} documented MITRE ATT&CK techniques, ${actor.live_c2_count} active indicators in the ZAYRON-X live graph.`;
   return {
-    title: `${actor.name} — Threat Actor Dossier | ZAYRON-X`,
+    title: `${actor.name} — Threat Actor Dossier`,
     description,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

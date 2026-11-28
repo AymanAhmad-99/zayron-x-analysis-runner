@@ -37,12 +37,17 @@ function safeJsonLd(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
 }
 
+function clampMetaDescription(value: string): string {
+  const clean = value.replace(/\s+/g, " ").trim();
+  return clean.length <= 160 ? clean : `${clean.slice(0, 157).trimEnd()}…`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const result = await getNewsArticle(decodeURIComponent(slug));
   if (result.state !== "ok" || !result.data) {
     return {
-      title: "Briefing not found | ZAYRON-X",
+      title: "Briefing not found",
       robots: { index: false, follow: false },
       alternates: { canonical: `/news/${encodeURIComponent(slug)}` },
     };
@@ -52,20 +57,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // PHASE 10A — the branded editorial cover, so shared links render a
   // ZAYRON-X card on X, LinkedIn and Telegram instead of a generic thumbnail.
   const image = newsCoverUrl(article.slug);
+  const description = clampMetaDescription(article.verdict || article.summary);
   const openGraph = buildOpenGraph({
     title: article.title,
-    description: article.verdict,
+    description,
     path: canonical,
     image,
     type: "article",
   });
   return {
-    title: `${article.title} | ZAYRON-X Newsroom`,
-    description: article.verdict,
+    title: `${article.title} — Newsroom`,
+    description,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
     openGraph: { ...openGraph, publishedTime: article.published_at, section: article.category },
-    twitter: { card: "summary_large_image", title: article.title, description: article.verdict, images: [image] },
+    twitter: { card: "summary_large_image", title: article.title, description, images: [image] },
   };
 }
 
@@ -78,6 +84,7 @@ export default async function NewsArticlePage({ params }: Props) {
   const site = getSiteUrl();
   const path = `/news/${article.slug}`;
   const enrichment = article.graph_enrichment ?? {};
+  const imageUrl = `${site.replace(/\/+$/, "")}${newsCoverUrl(article.slug)}`;
 
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: site,
@@ -86,6 +93,7 @@ export default async function NewsArticlePage({ params }: Props) {
       "@type": "NewsArticle",
       headline: article.title,
       description: article.verdict,
+      image: [imageUrl],
       datePublished: article.published_at,
       dateModified: article.ingested_at,
       articleSection: article.category,

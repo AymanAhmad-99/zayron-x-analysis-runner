@@ -18,7 +18,7 @@ const DESCRIPTION =
 export async function generateMetadata(): Promise<Metadata> {
   const canonical = "/intelligence/threat-actors";
   return {
-    title: "Connected Threat Graph — MITRE ATT&CK Groups | ZAYRON-X",
+    title: "Connected Threat Graph — MITRE ATT&CK Groups",
     description: DESCRIPTION,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

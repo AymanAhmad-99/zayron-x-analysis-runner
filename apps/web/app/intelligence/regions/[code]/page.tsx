@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const result = await getRegion(decodeURIComponent(code));
   if (result.state !== "ok" || !result.data) {
     return {
-      title: "Region not found | ZAYRON-X",
+      title: "Region not found",
       robots: { index: false, follow: false },
       alternates: { canonical: `/intelligence/regions/${encodeURIComponent(code)}` },
     };
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const region = result.data;
   const description = `${region.name} threat posture: ${region.active_c2} active C2 indicators hosted in region, ${region.actors} documented actors and ${region.campaigns} campaigns targeting it.`;
   return {
-    title: `${region.name} Threat Posture | ZAYRON-X`,
+    title: `${region.name} Threat Posture`,
     description,
     alternates: { canonical: `/intelligence/regions/${region.code}` },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),

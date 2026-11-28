@@ -113,6 +113,12 @@ const PUBLIC_PAGE_CACHE = new Set([
   "/intelligence/exploits",
   "/intelligence/techniques",
   "/news",
+  "/about",
+  "/security",
+  "/methodology",
+  "/privacy",
+  "/legal",
+  "/signal-index",
   "/pricing",
   "/developers",
 ]);
@@ -123,6 +129,7 @@ const PUBLIC_PAGE_CACHE = new Set([
  * the catalog roots rather than the Worker serving every crawler hit.
  */
 const PUBLIC_PAGE_CACHE_PREFIXES = [
+  "/intelligence/vulnerabilities/",
   "/intelligence/malware/families/",
   // PHASE 9C — the SSR dossier trees. Each URL is a stable, anonymous document
   // keyed only by its slug; caching them keeps a crawler burst off the origin.
@@ -134,13 +141,30 @@ const PUBLIC_PAGE_CACHE_PREFIXES = [
 
 const PUBLIC_PAGE_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
 
-function withPageCache(response: NextResponse, pathname: string): NextResponse {
-  const path = normalizePath(pathname);
+function withPageCache(response: NextResponse, url: URL, host: string): NextResponse {
+  if (host.endsWith(".workers.dev")) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
+
+  const path = normalizePath(url.pathname);
   if (path === "/52217d0bead0f27974ed75fe089329e2.txt") {
     response.headers.set("Content-Type", "text/plain; charset=utf-8");
     response.headers.set("Cache-Control", "public, max-age=86400");
     return response;
   }
+
+  // Keep `?view=wire` (and filtered query views on `/news`) out of the shared
+  // edge cache so `noindex, follow` never leaks to canonical `/news`.
+  if (path === "/news" && url.search.length > 0) {
+    if (url.searchParams.get("view") === "wire") {
+      response.headers.set("X-Robots-Tag", "noindex, follow");
+    }
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
+
   if (PUBLIC_PAGE_CACHE.has(path) || PUBLIC_PAGE_CACHE_PREFIXES.some((prefix) => path.startsWith(prefix))) {
     response.headers.set("Cache-Control", PUBLIC_PAGE_CACHE_CONTROL);
   }
@@ -164,7 +188,7 @@ export function middleware(request: NextRequest): NextResponse {
     return harden(NextResponse.redirect(target, 301));
   }
 
-  return withPageCache(harden(NextResponse.next()), url.pathname);
+  return withPageCache(harden(NextResponse.next()), url, host);
 }
 
 export const config = {

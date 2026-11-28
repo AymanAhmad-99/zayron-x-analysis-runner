@@ -220,7 +220,14 @@ export function staticSitemapEntries(siteUrl: string): SitemapEntry[] {
  * group — can never narrow what Googlebot or Bingbot is allowed to fetch: once a
  * bot has its own group, only that group applies to it.
  */
-export const NAMED_CRAWLERS = ["Googlebot", "Googlebot-Image", "Bingbot"] as const;
+export const NAMED_CRAWLERS = [
+  "Googlebot",
+  "Googlebot-Image",
+  "Bingbot",
+  "OAI-SearchBot",
+  "PerplexityBot",
+  "ClaudeBot",
+] as const;
 
 /** Icon and manifest paths that must stay fetchable for every crawler. */
 export const CRAWLABLE_ASSET_PATHS = [

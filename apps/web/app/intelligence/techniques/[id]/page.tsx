@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const result = await getTechnique(decodeURIComponent(id));
   if (result.state !== "success" || !result.data) {
     return {
-      title: "Technique not found | ZAYRON-X",
+      title: "Technique not found",
       robots: { index: false, follow: false },
       alternates: { canonical: `/intelligence/techniques/${encodeURIComponent(id)}` },
     };
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonical = `/intelligence/techniques/${technique.id}`;
   const description = `${technique.id} — ${technique.name} (${tacticLabel(technique.tactic)}). ${technique.actors.length} documented threat actors and ${technique.campaigns.length} campaigns in the ZAYRON-X connected threat graph, with KQL and SPL hunting starters.`;
   return {
-    title: `${technique.id} — ${technique.name} | MITRE ATT&CK | ZAYRON-X`,
+    title: `${technique.id} — ${technique.name} | MITRE ATT&CK`,
     description,
     alternates: { canonical },
     robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
