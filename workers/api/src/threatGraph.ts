@@ -679,11 +679,11 @@ export async function loadThreatActorContext(db: any): Promise<{
   campaignRows: StoredCampaign[];
 }> {
   const [familyRows, cveRows, pocRows, campaignRows, catalogRows] = await Promise.all([
-    db.prepare(LIVE_FAMILIES_SQL).all().catch(() => ({ results: [] })),
-    db.prepare(LIVE_CVES_SQL).all().catch(() => ({ results: [] })),
-    db.prepare(LIVE_POC_CVES_SQL).all().catch(() => ({ results: [] })),
-    db.prepare(CAMPAIGNS_SQL).all().catch(() => ({ results: [] })),
-    db.prepare(CATALOG_CVE_IDS_SQL).all().catch(() => ({ results: [] })),
+    db.prepare(LIVE_FAMILIES_SQL).all(),
+    db.prepare(LIVE_CVES_SQL).all(),
+    db.prepare(LIVE_POC_CVES_SQL).all(),
+    db.prepare(CAMPAIGNS_SQL).all(),
+    db.prepare(CATALOG_CVE_IDS_SQL).all(),
   ]);
   const families: LiveFamily[] = ((familyRows?.results as Record<string, unknown>[]) ?? [])
     .map((row) => {
@@ -751,7 +751,7 @@ export interface ThreatActorDossier {
 }
 
 export async function loadThreatActor(db: any, slug: string): Promise<ThreatActorDossier | null> {
-  const row = await db.prepare(THREAT_ACTOR_SQL).bind(slug, slug.toUpperCase(), slug).first().catch(() => null);
+  const row = await db.prepare(THREAT_ACTOR_SQL).bind(slug, slug.toUpperCase(), slug).first();
   if (!row) return null;
   const context = await loadThreatActorContext(db);
   const actor = classifyThreatActor(row as StoredThreatActor, context);
@@ -813,7 +813,7 @@ export interface CampaignDossier {
 }
 
 export async function loadCampaign(db: any, slug: string): Promise<CampaignDossier | null> {
-  const row = await db.prepare(CAMPAIGN_SQL).bind(slug, slug.toUpperCase(), slug).first().catch(() => null);
+  const row = await db.prepare(CAMPAIGN_SQL).bind(slug, slug.toUpperCase(), slug).first();
   if (!row) return null;
   const context = await loadThreatActorContext(db);
   const actorRows = await db.prepare(THREAT_ACTORS_SQL).all();

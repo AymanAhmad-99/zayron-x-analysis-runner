@@ -154,7 +154,7 @@ export const TECHNIQUE_INDEX_SQL = `SELECT technique_id, MIN(technique_name) AS 
 export async function loadTechnique(db: any, rawId: string): Promise<TechniqueDossier | null> {
   const id = normalizeTechniqueId(rawId);
   if (!id) return null;
-  const rows = await db.prepare(TECHNIQUE_EDGES_FOR_SQL).bind(id).all().catch(() => ({ results: [] }));
+  const rows = await db.prepare(TECHNIQUE_EDGES_FOR_SQL).bind(id).all();
   return buildTechniqueDossier(id, (rows?.results as TechniqueEdgeRow[]) ?? []);
 }
 
@@ -166,7 +166,7 @@ export async function loadTechniqueIndex(
   const limit = Number.isFinite(requested)
     ? Math.min(TECHNIQUE_MAX_LIMIT, Math.max(1, requested))
     : TECHNIQUE_DEFAULT_LIMIT;
-  const rows = await db.prepare(TECHNIQUE_INDEX_SQL).bind(TECHNIQUE_MAX_LIMIT).all().catch(() => ({ results: [] }));
+  const rows = await db.prepare(TECHNIQUE_INDEX_SQL).bind(TECHNIQUE_MAX_LIMIT).all();
   const needle = String(params.q ?? '').trim().toLowerCase();
   const items = ((rows?.results as Record<string, unknown>[]) ?? [])
     .map((row) => {

@@ -113,6 +113,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/news",
+        headers: [
+          { key: "Cache-Control", value: "public, s-maxage=300, stale-while-revalidate=600" },
+        ],
+      },
+      {
         // PHASE 7.3 — an already-published advisory is immutable, so the dossier
         // is cacheable for 5 minutes with a stale fallback instead of being
         // re-rendered on every crawl hit.

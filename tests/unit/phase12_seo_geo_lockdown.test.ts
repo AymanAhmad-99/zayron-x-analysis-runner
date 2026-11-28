@@ -32,6 +32,8 @@ import { NAMED_CRAWLERS, robotsText, STATIC_PATHS } from "../../apps/web/app/lib
 import { GET as rssAliasGet } from "../../apps/web/app/rss.xml/route";
 import { GET as shardGet } from "../../apps/web/app/sitemaps/[shard]/route";
 import { pingWebSub, WEBSUB_HUB_URL } from "../../workers/ingest/src/newsIngest";
+import { loadTechnique, loadTechniqueIndex } from "../../workers/api/src/techniques";
+import { loadCampaign, loadThreatActor } from "../../workers/api/src/threatGraph";
 
 describe("PHASE 12-EXECUTE — D1 row-read rescue, Kill List, canonicals & 2028 GEO lockdown", () => {
   test("1. loadLinkedThreatCves caches actor/campaign CVEs in isolate memory (0 correlated json_each SQL)", async () => {
@@ -384,6 +386,32 @@ describe("PHASE 12-EXECUTE — D1 row-read rescue, Kill List, canonicals & 2028 
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+
+  test("7. D1 outage propagates (503) instead of masking into 404 on techniques, actors, and campaigns", async () => {
+    const brokenDb = {
+      prepare() {
+        return {
+          bind() {
+            return this;
+          },
+          async first() {
+            throw new Error("D1_ERROR: daily read limit exceeded");
+          },
+          async all() {
+            throw new Error("D1_ERROR: daily read limit exceeded");
+          },
+        };
+      },
+    } as any;
+
+    await expect(loadTechnique(brokenDb, "T1059.001")).rejects.toThrow("D1_ERROR");
+    await expect(loadTechniqueIndex(brokenDb)).rejects.toThrow("D1_ERROR");
+    await expect(loadThreatActor(brokenDb, "apt29")).rejects.toThrow("D1_ERROR");
+    await expect(loadCampaign(brokenDb, "solarwinds")).rejects.toThrow("D1_ERROR");
+
+    const nextCfg = readFileSync("apps/web/next.config.ts", "utf8");
+    expect(nextCfg).toContain('source: "/news"');
   });
 });
 
