@@ -161,6 +161,9 @@ const SUITES = [
   // PHASE 12-EXECUTE — D1 row-read rescue, outage shield, Kill List, canonicals,
   // Depth-0 SSR homepage, WebSub push, and 2028 GEO/JSON-LD lockdown.
   'tests/unit/phase12_seo_geo_lockdown.test.ts',
+  // PHASE 13 — self-serve pricing: three tiers, annual arithmetic, sticky
+  // comparison matrix, tooltips and Offer/FAQPage JSON-LD.
+  'tests/unit/phase13_pricing_architecture.test.tsx',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

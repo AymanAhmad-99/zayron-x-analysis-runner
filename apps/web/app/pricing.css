@@ -1,0 +1,854 @@
+/* ── PHASE 13 — self-serve pricing ─────────────────────────────────────────── */
+/* Scoped under .zx- so no rule here can leak into another surface. */
+
+.zx-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.zx-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.zx-hero {
+  padding-block: clamp(52px, 6vw, 88px) clamp(28px, 3vw, 40px);
+  display: grid;
+  gap: 18px;
+  max-width: 940px;
+}
+
+.zx-eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.zx-hero h1 {
+  margin: 0;
+  font-size: clamp(38px, 5.1vw, 64px);
+  line-height: 1.03;
+  letter-spacing: -.045em;
+  font-weight: 600;
+  max-width: 17ch;
+  color: var(--color-text);
+}
+
+.zx-hero-sub {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--color-muted);
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.65;
+}
+
+/* ── Billing toggle ───────────────────────────────────────────────────────── */
+.zx-plans {
+  padding-block: 0;
+}
+
+.zx-billing-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.zx-billing {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border: var(--border-thin);
+  border-radius: var(--radius-control);
+  background: rgba(13, 13, 12, .72);
+}
+
+.zx-billing-option {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 9px 18px;
+  border-radius: 1px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: background var(--motion-fast), color var(--motion-fast);
+}
+
+.zx-billing-option:hover {
+  color: var(--color-text);
+}
+
+.zx-billing-option[aria-pressed="true"] {
+  background: var(--color-text);
+  color: #080808;
+  font-weight: 700;
+}
+
+.zx-billing-option:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.zx-save {
+  color: var(--color-accent);
+  border: 1px solid rgba(255, 107, 0, .38);
+  padding: 5px 9px;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.zx-billing-note {
+  margin: 0;
+  color: var(--color-subtle);
+  font-size: 11.5px;
+  letter-spacing: .02em;
+}
+
+/* ── Plan cards ───────────────────────────────────────────────────────────── */
+.zx-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.zx-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: var(--border-thin);
+  border-radius: var(--radius-panel);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .022), transparent 42%), rgba(13, 13, 12, .74);
+  padding: 26px 24px 24px;
+}
+
+.zx-card--rec {
+  border-color: rgba(255, 107, 0, .46);
+  background: linear-gradient(180deg, rgba(255, 107, 0, .06), transparent 46%), rgba(15, 14, 12, .9);
+}
+
+.zx-card--rec::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-accent) 22%, var(--color-accent) 78%, transparent);
+}
+
+.zx-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 22px;
+}
+
+.zx-plan-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: var(--color-text);
+}
+
+.zx-badge {
+  color: var(--color-accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 107, 0, .38);
+  padding: 4px 7px;
+}
+
+.zx-persona {
+  margin: 14px 0 0;
+  color: var(--color-muted);
+  font-size: 12.5px;
+  line-height: 1.55;
+  min-height: 40px;
+}
+
+.zx-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.zx-price-amount {
+  font-size: clamp(38px, 3.6vw, 46px);
+  line-height: 1;
+  letter-spacing: -.05em;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.zx-price-unit {
+  color: var(--color-subtle);
+  font-size: 11px;
+  letter-spacing: .03em;
+  max-width: 92px;
+  line-height: 1.4;
+}
+
+.zx-price-note {
+  margin: 8px 0 0;
+  min-height: 30px;
+  color: var(--color-subtle);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.zx-inherits {
+  margin: 16px 0 0;
+  color: var(--color-text);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.zx-features {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  flex: 1;
+}
+
+.zx-features li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.zx-check {
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  color: var(--color-accent);
+  flex: 0 0 auto;
+}
+
+.zx-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 13px 15px;
+  border: 1px solid rgba(247, 247, 244, .34);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  font-size: 12px;
+  letter-spacing: .06em;
+  transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast);
+}
+
+.zx-cta span {
+  font-size: 15px;
+  color: inherit;
+}
+
+.zx-cta:hover,
+.zx-cta:focus-visible {
+  border-color: var(--color-text);
+  background: rgba(247, 247, 244, .06);
+}
+
+.zx-cta--primary {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: #080808;
+  font-weight: 600;
+}
+
+.zx-cta--primary:hover,
+.zx-cta--primary:focus-visible {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+/* ── Trust strip ──────────────────────────────────────────────────────────── */
+.zx-trust {
+  margin-top: 28px;
+}
+
+.zx-trust ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: var(--border-thin);
+  border-bottom: var(--border-thin);
+}
+
+.zx-trust li {
+  padding: 16px 18px;
+  color: var(--color-muted);
+  font-size: 11px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+.zx-trust li + li {
+  border-left: 1px solid rgba(255, 255, 255, .07);
+}
+
+/* ── Section headings ─────────────────────────────────────────────────────── */
+.zx-compare,
+.zx-position,
+.zx-faq {
+  padding-block: clamp(56px, 6vw, 84px) 0;
+}
+
+.zx-section-head {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.zx-section-head h2 {
+  margin: 0;
+  font-size: clamp(26px, 2.8vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  font-weight: 600;
+}
+
+.zx-section-head p {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--color-muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+/* ── Comparison matrix ────────────────────────────────────────────────────── */
+.zx-table-wrap {
+  position: relative;
+  border: var(--border-thin);
+  border-radius: var(--radius-panel);
+  background: rgba(10, 10, 9, .6);
+}
+
+.zx-table-wrap:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.zx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.zx-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #080807;
+  border-bottom: 1px solid var(--color-border);
+  padding: 14px 16px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+.zx-table thead th.zx-th-label {
+  text-align: left;
+  color: var(--color-subtle);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.zx-th-name {
+  display: block;
+  color: var(--color-text);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.zx-th-price {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-subtle);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+}
+
+.zx-th--rec .zx-th-name {
+  color: var(--color-accent);
+}
+
+.zx-group-row th {
+  padding: 30px 16px 10px;
+  text-align: left;
+  color: var(--color-accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+}
+
+.zx-group-row:first-child th {
+  border-top: 0;
+}
+
+.zx-tr th {
+  padding: 11px 16px;
+  text-align: left;
+  font-weight: 400;
+  color: var(--color-muted);
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+}
+
+.zx-tr td {
+  padding: 11px 16px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+  vertical-align: middle;
+}
+
+.zx-tr:hover th,
+.zx-tr:hover td {
+  background: rgba(255, 255, 255, .018);
+}
+
+.zx-val {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 18px;
+}
+
+.zx-val--text {
+  color: var(--color-text);
+  font-size: 12px;
+  letter-spacing: .01em;
+}
+
+.zx-val--yes {
+  color: var(--color-accent);
+}
+
+.zx-val--no {
+  color: var(--color-subtle);
+  font-size: 13px;
+}
+
+/* Hairline tooltip: hover and keyboard focus, no JavaScript. */
+.zx-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-bottom: 1px dotted rgba(247, 247, 244, .28);
+  cursor: help;
+}
+
+.zx-tip:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.zx-tip-bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 6;
+  width: 262px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: #15130f;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .55);
+  color: var(--color-muted);
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--motion-fast);
+}
+
+.zx-tip:hover .zx-tip-bubble,
+.zx-tip:focus-visible .zx-tip-bubble,
+.zx-tip:focus-within .zx-tip-bubble {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Mobile plan switcher ─────────────────────────────────────────────────── */
+.zx-mobile-tabs,
+.zx-mobile-cards {
+  display: none;
+}
+
+.zx-mobile-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  gap: 2px;
+  padding: 6px;
+  border: var(--border-thin);
+  border-radius: var(--radius-control);
+  background: rgba(8, 8, 7, .94);
+  backdrop-filter: blur(8px);
+}
+
+.zx-mobile-tab {
+  flex: 1;
+  appearance: none;
+  border: 0;
+  border-radius: 1px;
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 11px 6px;
+  cursor: pointer;
+}
+
+.zx-mobile-tab[aria-pressed="true"] {
+  background: var(--color-text);
+  color: #080808;
+  font-weight: 700;
+}
+
+.zx-mobile-group {
+  border: var(--border-thin);
+  border-radius: var(--radius-panel);
+  padding: 18px 16px 8px;
+  margin-top: 12px;
+  background: rgba(13, 13, 12, .7);
+}
+
+.zx-mobile-group h3 {
+  margin: 0 0 6px;
+  color: var(--color-accent);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.zx-mobile-group dl {
+  margin: 0;
+}
+
+.zx-mobile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+}
+
+.zx-mobile-row dt {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.zx-mobile-row dd {
+  margin: 0;
+  flex: 0 0 auto;
+  text-align: right;
+  max-width: 46%;
+}
+
+.zx-mobile-row .zx-tip-bubble {
+  left: auto;
+  right: 0;
+  width: min(262px, 74vw);
+}
+
+/* ── Positioning ──────────────────────────────────────────────────────────── */
+.zx-position-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.zx-position-card {
+  border: var(--border-thin);
+  border-radius: var(--radius-panel);
+  padding: 24px;
+  background: rgba(13, 13, 12, .6);
+}
+
+.zx-position-card h3 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--color-subtle);
+}
+
+.zx-position-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.zx-position-card li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.zx-position-card li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 7px;
+  height: 1px;
+  background: var(--color-subtle);
+}
+
+.zx-position-card--self {
+  border-color: rgba(255, 107, 0, .38);
+  background: linear-gradient(180deg, rgba(255, 107, 0, .05), transparent 60%), rgba(15, 14, 12, .8);
+}
+
+.zx-position-card--self h3 {
+  color: var(--color-text);
+}
+
+.zx-position-card--self li {
+  color: var(--color-text);
+}
+
+.zx-position-card--self li::before {
+  background: var(--color-accent);
+  width: 9px;
+}
+
+/* ── FAQ ──────────────────────────────────────────────────────────────────── */
+.zx-faq-list {
+  border-top: var(--border-thin);
+}
+
+.zx-faq-item {
+  border-bottom: var(--border-thin);
+}
+
+.zx-faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 2px;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.zx-faq-item summary:hover {
+  color: var(--color-accent);
+}
+
+.zx-faq-item summary:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.zx-faq-mark {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+}
+
+.zx-faq-mark::before,
+.zx-faq-mark::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 1px;
+  background: currentColor;
+}
+
+.zx-faq-mark::after {
+  transform: rotate(90deg);
+  transition: transform var(--motion-fast);
+}
+
+.zx-faq-item[open] .zx-faq-mark::after {
+  transform: rotate(0deg);
+}
+
+.zx-faq-item p {
+  margin: 0;
+  padding: 0 40px 20px 2px;
+  max-width: 76ch;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.zx-legal-note {
+  margin: 22px 0 0;
+  padding-bottom: clamp(56px, 6vw, 84px);
+  color: var(--color-subtle);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.zx-legal-note a {
+  color: var(--color-muted);
+  border-bottom: 1px solid rgba(247, 247, 244, .24);
+}
+
+.zx-legal-note a:hover {
+  color: var(--color-accent);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .zx-grid {
+    gap: 12px;
+  }
+
+  .zx-card {
+    padding: 22px 20px 20px;
+  }
+}
+
+@media (max-width: 960px) {
+  .zx-grid {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+  }
+
+  .zx-persona,
+  .zx-price-note {
+    min-height: 0;
+  }
+
+  .zx-trust ul {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .zx-trust li:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .07);
+  }
+
+  .zx-trust li:nth-child(4) {
+    border-top: 1px solid rgba(255, 255, 255, .07);
+  }
+}
+
+@media (max-width: 767px) {
+  .zx-hero {
+    padding-block: 40px 24px;
+  }
+
+  .zx-hero h1 {
+    font-size: clamp(34px, 9.6vw, 46px);
+    max-width: 100%;
+  }
+
+  .zx-billing-row {
+    gap: 10px;
+  }
+
+  .zx-billing {
+    width: 100%;
+  }
+
+  .zx-billing-option {
+    flex: 1;
+    padding: 11px 14px;
+  }
+
+  .zx-billing-note {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .zx-grid {
+    max-width: none;
+    margin-top: 20px;
+  }
+
+  .zx-table-wrap {
+    display: none;
+  }
+
+  .zx-mobile-tabs {
+    display: flex;
+  }
+
+  .zx-mobile-cards {
+    display: block;
+  }
+
+  .zx-position-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .zx-faq-item summary {
+    font-size: 13.5px;
+    gap: 16px;
+  }
+
+  .zx-faq-item p {
+    padding-right: 8px;
+  }
+
+  .zx-trust li {
+    padding: 14px 12px;
+    font-size: 10px;
+  }
+}

@@ -12,6 +12,7 @@ import "./hero-rebuild.css";
 import "./malware-report.css";
 import "./legal.css";
 import "./institutional.css";
+import "./pricing.css";
 import { getSiteUrl, isPreviewDeployment } from "./lib/siteConfig";
 import { serializeJsonLd } from "./lib/jsonLd";
 import { buildSiteJsonLdGraph } from "./lib/seo";

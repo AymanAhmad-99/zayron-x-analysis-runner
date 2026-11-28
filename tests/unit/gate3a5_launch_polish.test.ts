@@ -147,15 +147,20 @@ describe('Gate 3A.5 — trust surfaces', () => {
     expect(file).not.toContain('2027-10-04');
   });
 
-  it('labels paid tiers as waitlist instead of a dead checkout', () => {
-    const pricing = fs.readFileSync(path.join(root, 'apps/web/app/components/PricingSection.tsx'), 'utf-8');
-    // Phase 6 — the four institutional tiers, with paid access still gated.
-    for (const tier of ['Public Intelligence', 'Analyst', 'SOC & Vulnerability Teams', 'Enterprise & Custom Feeds']) {
-      expect(pricing).toContain(tier);
+  it('keeps pricing self-serve: three tiers, no enterprise or sales path', () => {
+    // PHASE 13 replaced the institutional four-tier layout with three pure
+    // self-serve tiers. A sales-assisted tier must not return.
+    const data = fs.readFileSync(path.join(root, 'apps/web/app/components/pricing/pricingData.ts'), 'utf-8');
+    for (const tier of ['Free', 'Analyst', 'Operator']) {
+      expect(data).toContain(`name: "${tier}"`);
     }
-    expect(pricing).toContain('waitlist: true');
-    expect(pricing).toContain('No checkout and no charge today');
-    expect(pricing).not.toContain('href="#contact"');
-    expect(pricing).toContain('ctaHref: "/intelligence"');
+    expect(data).toContain('monthly: 0');
+    expect(data).toContain('monthly: 19');
+    expect(data).toContain('monthly: 39');
+    expect(data).toContain('annualMonthly: 15');
+    expect(data).toContain('annualMonthly: 31');
+    expect(data).toContain('href: "/intelligence"');
+    expect(data).not.toMatch(/name: "Enterprise"|Enterprise plan|Enterprise tier/i);
+    expect(data).not.toMatch(/contact sales|book a demo|talk to sales|custom pricing/i);
   });
 });
