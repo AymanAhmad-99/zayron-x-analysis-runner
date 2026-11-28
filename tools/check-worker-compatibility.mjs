@@ -20,6 +20,7 @@ const CONFIG_FILES = [
   "workers/api/wrangler.toml",
   "workers/ingest/wrangler.toml",
   "workers/mail/wrangler.toml",
+  "workers/syndicate/wrangler.toml",
   "workers/malware-validation/wrangler.toml",
   "workers/source-fabric/wrangler.toml",
   "workers/telegram-collector-do/wrangler.toml",

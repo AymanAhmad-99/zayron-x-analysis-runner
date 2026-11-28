@@ -383,7 +383,11 @@ describe("PHASE 9B — linked JSON-LD @graph", () => {
       NEXT_PUBLIC_SOCIAL_X_URL: "javascript:alert(1)",
       NEXT_PUBLIC_SOCIAL_LINKEDIN_URL: "https://www.linkedin.com/company/zayronx",
     });
-    expect(profiles).toEqual(["https://t.me/zayronxai", "https://www.linkedin.com/company/zayronx"]);
+    expect(profiles).toEqual([
+      "https://t.me/zayronxai",
+      "https://bsky.app/profile/zayron-x.co",
+      "https://www.linkedin.com/company/zayronx",
+    ]);
   });
 
   test("opengraph always carries an image", () => {

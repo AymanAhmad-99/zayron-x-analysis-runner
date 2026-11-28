@@ -164,6 +164,9 @@ const SUITES = [
   // PHASE 13 — self-serve pricing: three tiers, annual arithmetic, sticky
   // comparison matrix, tooltips and Offer/FAQPage JSON-LD.
   'tests/unit/phase13_pricing_architecture.test.tsx',
+  // PHASE 14 — multi-platform syndication worker (Bluesky ATProto live,
+  // X OAuth1 threads, LinkedIn executive briefs, D1/RSS signal gate & sameAs).
+  'tests/unit/phase14_syndicate_worker.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

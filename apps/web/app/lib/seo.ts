@@ -70,7 +70,7 @@ export const CANONICAL_SITE_URL = "https://zayron-x.co";
  * `sameAs` at all, so an unset variable contributes nothing.
  */
 export function socialProfiles(env: Record<string, string | undefined> = typeof process === "undefined" || !process.env ? {} : (process.env as Record<string, string | undefined>)): string[] {
-  const profiles = ["https://t.me/zayronxai"];
+  const profiles = ["https://t.me/zayronxai", "https://bsky.app/profile/zayron-x.co"];
   for (const key of [
     "NEXT_PUBLIC_SOCIAL_X_URL",
     "NEXT_PUBLIC_SOCIAL_LINKEDIN_URL",

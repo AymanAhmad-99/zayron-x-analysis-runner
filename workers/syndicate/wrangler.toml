@@ -1,0 +1,34 @@
+name = "zayron-x-syndicate"
+main = "src/index.ts"
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# PHASE 14 — Isolated Multi-Platform Syndication Worker (Bluesky live + X / LinkedIn plug-and-play)
+[triggers]
+crons = ["*/30 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zayron-x-db"
+database_id = "c19c8f45-801b-4034-bd76-402e5e5389b5"
+migrations_dir = "../../db/migrations"
+
+[vars]
+ENVIRONMENT = "production"
+BLUESKY_IDENTIFIER = "zayron-x.co"
+SYNDICATE_SITE_URL = "https://zayron-x.co"
+
+[observability]
+enabled = true
+
+# Configured out-of-band via `wrangler secret put` (never committed):
+#   SYNDICATE_ADMIN_TOKEN  - Bearer token protecting POST /admin/syndicate
+#   BLUESKY_APP_PASSWORD   - App password enabling live @zayron-x.co AT Protocol posts
+#   BLUESKY_IDENTIFIER     - Optional override (defaults to BLUESKY_IDENTIFIER var)
+#   X_API_KEY              - X (Twitter) OAuth 1.0a Consumer Key
+#   X_API_SECRET           - X (Twitter) OAuth 1.0a Consumer Secret
+#   X_ACCESS_TOKEN         - X (Twitter) OAuth 1.0a Access Token
+#   X_ACCESS_SECRET        - X (Twitter) OAuth 1.0a Access Token Secret
+#   LINKEDIN_ACCESS_TOKEN  - LinkedIn OAuth 2.0 Bearer Token
+#   LINKEDIN_ORG_URN       - LinkedIn Organization / Author URN
