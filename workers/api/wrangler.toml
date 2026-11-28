@@ -253,7 +253,7 @@ PUBLIC_EDGE_CACHE_TTL_SECONDS = "300"
 # Cache generation. Bump it whenever a release changes the SHAPE or MEANING of a
 # cached public record (schema migration, re-enrichment, brief contract), so the
 # new payload is served immediately instead of after the TTL above.
-PUBLIC_EDGE_CACHE_EPOCH = "api-v1-2026-11-27c"
+PUBLIC_EDGE_CACHE_EPOCH = "api-v1-2026-11-28a"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # OPTIONAL DEAD-LETTER QUEUE (env.DLQ)

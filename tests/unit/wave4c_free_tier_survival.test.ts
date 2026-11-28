@@ -545,7 +545,7 @@ describe("Wave 4C — SITEMAP_MAX_SHARDS rollout cap", () => {
     expect(capped.status).toBe(404);
     expect(await capped.text()).toBe("Not Found");
 
-    stubApiFetch({ items: [{ id: "CVE-2026-0001", updated_at: null }] });
+    stubApiFetch({ items: [{ id: "CVE-2026-0001", updated_at: null }], data: [] });
     const served = await shard("vulnerabilities-1.xml");
     expect(served.status).toBe(200);
     expect(await served.text()).toContain(`${SITE}/intelligence/vulnerabilities/CVE-2026-0001`);
@@ -555,6 +555,7 @@ describe("Wave 4C — SITEMAP_MAX_SHARDS rollout cap", () => {
     expect((await shard("vulnerabilities-2.xml")).status).toBe(200);
 
     // static.xml is never capped: the launch surface must always be complete.
+    stubApiFetch({ items: [], data: [], summary: { total_actors: 0 } });
     expect((await shard("static.xml")).status).toBe(200);
   });
 });

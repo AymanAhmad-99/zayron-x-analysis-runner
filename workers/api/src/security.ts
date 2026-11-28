@@ -1156,9 +1156,27 @@ function decorateApiResponse(response: Response, request: Request, url: URL): Re
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
+function withNonProdRobotsTag(response: Response, request: Request): Response {
+  let urlHost = "";
+  try {
+    urlHost = new URL(request.url).hostname.trim().toLowerCase();
+  } catch {
+    urlHost = "";
+  }
+  const headerHost = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
+  const host = headerHost || urlHost;
+  if (host === "api.zayron-x.co" || host.endsWith(".workers.dev") || urlHost.endsWith(".workers.dev")) {
+    const headers = new Headers(response.headers);
+    headers.set("X-Robots-Tag", "noindex, nofollow");
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  }
+  return response;
+}
+
 /**
  * Full API request boundary: OPTIONS → auth → edge cache → rate limit → CORS,
- * plus the Phase 7A correlation/allowance headers on every `/api/v1/*` reply.
+ * plus the Phase 7A correlation/allowance headers on every `/api/v1/*` reply
+ * and `X-Robots-Tag: noindex, nofollow` on non-apex API origins (`api.zayron-x.co`, `*.workers.dev`).
  */
 export async function withSecurityBoundary(
   request: Request,
@@ -1169,7 +1187,7 @@ export async function withSecurityBoundary(
 ): Promise<Response> {
   const response = await runSecurityBoundary(request, env, dispatch, limiter, options);
   const url = new URL(request.url);
-  if (!url.pathname.startsWith("/api/v1/")) return response;
-  return decorateApiResponse(response, request, url);
+  const finalResponse = url.pathname.startsWith("/api/v1/") ? decorateApiResponse(response, request, url) : response;
+  return withNonProdRobotsTag(finalResponse, request);
 }
 

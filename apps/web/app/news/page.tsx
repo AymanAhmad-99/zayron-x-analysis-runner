@@ -75,6 +75,10 @@ export default async function NewsPage({ searchParams }: Props) {
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: getSiteUrl(),
     path: "/news",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "News", path: "/news" },
+    ],
     primary: {
       "@type": "CollectionPage",
       name: "ZAYRON-X Neural Newsroom",

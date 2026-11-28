@@ -3,6 +3,8 @@ import { InstitutionalDocLayout, type DocSection } from "../components/Instituti
 import { isPreviewDeployment } from "../lib/siteConfig";
 import { buildOpenGraph, resolvePageRobots } from "../lib/seo";
 
+export const revalidate = 300;
+
 const ABOUT_DESCRIPTION =
   "ZAYRON-X is an independent global cyber threat intelligence platform unifying authoritative CVEs, CISA KEV advisories, threat actors, MITRE ATT&CK techniques, and malware telemetry into one verified graph.";
 

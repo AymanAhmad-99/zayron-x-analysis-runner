@@ -18,7 +18,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Region not found",
       robots: { index: false, follow: false },
-      alternates: { canonical: `/intelligence/regions/${encodeURIComponent(code)}` },
     };
   }
   const region = result.data;
@@ -43,9 +42,16 @@ export default async function RegionPage({ params }: Props) {
   if (result.state === "not_found") notFound();
   if (result.state === "error" || !result.data) throw new Error("Regional hub temporarily unavailable");
   const region = result.data;
+  const regionPath = `/intelligence/regions/${region.code}`;
   const graph = buildLinkedJsonLdGraph({
     siteUrl: getSiteUrl(),
-    path: `/intelligence/regions/${region.code}`,
+    path: regionPath,
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Intelligence", path: "/intelligence" },
+      { name: "Regions", path: "/intelligence/regions" },
+      { name: region.name, path: regionPath },
+    ],
     primary: {
       "@type": "CollectionPage",
       name: `${region.name} Threat Posture`,

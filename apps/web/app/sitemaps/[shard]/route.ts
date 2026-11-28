@@ -76,29 +76,50 @@ export async function GET(
         getRegions(),
       ]);
 
+      // PHASE 12-EXECUTE — fail closed on upstream outage: never serve a gutted 200 OK static.xml
+      if (
+        families.state === "error" || !families.data ||
+        actors.state === "error" || !actors.data ||
+        campaignIndex.state === "error" || !campaignIndex.data ||
+        techniqueIndex.state === "error" || !techniqueIndex.data ||
+        newsIndex.state === "error" || !newsIndex.data ||
+        vendorIndex.state === "error" || !vendorIndex.data ||
+        regionIndex.state === "error" || !regionIndex.data
+      ) {
+        return { status: 503, body: "Sitemap feed temporarily unavailable" };
+      }
+
       const familyEntries = (families.data ?? []).map((entry) => ({ loc: `${site}${familyHubPath(entry.slug)}` }));
-      const actorEntries = (actors.data?.items ?? []).map((actor) => ({
-        loc: `${site}/intelligence/threat-actors/${encodeURIComponent(actor.slug)}`,
-      }));
-      const campaignEntries = (campaignIndex.data?.items ?? []).map((campaign) => ({
-        loc: `${site}/intelligence/campaigns/${encodeURIComponent(campaign.slug)}`,
-      }));
-      const techniqueEntries = (techniqueIndex.data?.items ?? []).map((technique) => ({
-        loc: `${site}/intelligence/techniques/${encodeURIComponent(technique.id)}`,
-        priority: "0.7",
-        changefreq: "weekly",
-      }));
+      const actorEntries = (actors.data?.items ?? [])
+        .filter((actor) => (actor.linked_cve_count ?? actor.documented_cves?.length ?? 0) >= 1 || (actor.live_c2_count ?? 0) >= 1)
+        .map((actor) => ({
+          loc: `${site}/intelligence/threat-actors/${encodeURIComponent(actor.slug)}`,
+        }));
+      const campaignEntries = (campaignIndex.data?.items ?? [])
+        .filter((campaign) => (campaign.cves?.length ?? 0) >= 1 || (campaign.linked_kev_count ?? 0) >= 1 || campaign.activity_tier === "LIVE_OBSERVED")
+        .map((campaign) => ({
+          loc: `${site}/intelligence/campaigns/${encodeURIComponent(campaign.slug)}`,
+        }));
+      const techniqueEntries = (techniqueIndex.data?.items ?? [])
+        .filter((technique) => (technique.entity_count ?? 0) >= 2 || ((technique.actor_count ?? 0) + (technique.campaign_count ?? 0)) >= 2)
+        .map((technique) => ({
+          loc: `${site}/intelligence/techniques/${encodeURIComponent(technique.id)}`,
+          priority: "0.7",
+          changefreq: "weekly",
+        }));
       const newsEntries = (newsIndex.data?.items ?? []).map((briefing) => ({
         loc: `${site}/news/${encodeURIComponent(briefing.slug)}`,
         lastmod: briefing.published_at ?? null,
         priority: "0.9",
         changefreq: "daily",
       }));
-      const vendorEntries = (vendorIndex.data?.items ?? []).map((vendor) => ({
-        loc: `${site}/intelligence/vendors/${encodeURIComponent(vendor.slug)}`,
-        priority: "0.7",
-        changefreq: "daily",
-      }));
+      const vendorEntries = (vendorIndex.data?.items ?? [])
+        .filter((vendor) => (vendor.verified_cves ?? 0) >= 3 || (vendor.kev_count ?? 0) >= 1 || (vendor.poc_count ?? 0) >= 1)
+        .map((vendor) => ({
+          loc: `${site}/intelligence/vendors/${encodeURIComponent(vendor.slug)}`,
+          priority: "0.7",
+          changefreq: "daily",
+        }));
       const regionEntries = (regionIndex.data?.items ?? []).map((region) => ({
         loc: `${site}/intelligence/regions/${encodeURIComponent(region.code)}`,
         priority: "0.7",

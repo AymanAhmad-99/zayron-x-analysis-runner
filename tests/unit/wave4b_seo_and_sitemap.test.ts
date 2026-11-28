@@ -499,10 +499,10 @@ describe("Wave 4B — SSR single-fetch and route hygiene", () => {
     expect(malware.match(/await getCanonicalMalwareReport\(/g)).toBeNull();
   });
 
-  test("the orphan relationships route is noindexed", () => {
-    const source = readFileSync("apps/web/app/intelligence/relationships/page.tsx", "utf8");
-    expect(source).toContain("index: false");
-    expect(source).toContain("follow: false");
+  test("the retired orphan relationships route is permanently gone (410) in middleware", () => {
+    const mw = readFileSync("apps/web/middleware.ts", "utf8");
+    expect(mw).toContain('"/intelligence/relationships"');
+    expect(mw).toContain("410");
   });
 
   test("root metadata is per-request (generateMetadata, not a frozen const)", () => {
@@ -536,15 +536,10 @@ describe("Wave 4B — clean launch navigation", () => {
     expect(navbar).toContain("routes.pricing");
   });
 
-  test("placeholder routes are noindex but still built", () => {
-    for (const file of [
-      "apps/web/app/research/page.tsx",
-      "apps/web/app/intelligence/graph/page.tsx",
-    ]) {
-      const source = readFileSync(file, "utf8");
-      expect(source).toContain("index: false");
-      expect(source).toContain("follow: false");
-    }
+  test("retired placeholder routes are permanently purged (410) in middleware", () => {
+    const mw = readFileSync("apps/web/middleware.ts", "utf8");
+    expect(mw).toContain('"/research"');
+    expect(mw).toContain('"/intelligence/graph"');
   });
 
   test("PHASE 9B — the newsroom is indexable and canonical", () => {

@@ -348,7 +348,7 @@ describe("PHASE 9B — IndexNow", () => {
 /* ──────────────────────────── SEO / GEO graph ───────────────────────────── */
 
 describe("PHASE 9B — linked JSON-LD @graph", () => {
-  test("emits one graph with Organization, WebSite, entity and FAQPage", () => {
+  test("emits one graph with entity and FAQPage without duplicating Organization/WebSite", () => {
     const graph = buildLinkedJsonLdGraph({
       path: "/news/example",
       primary: { "@type": "NewsArticle", headline: "Example" },
@@ -357,11 +357,25 @@ describe("PHASE 9B — linked JSON-LD @graph", () => {
     }) as any;
     expect(graph["@context"]).toBe("https://schema.org");
     const types = graph["@graph"].map((node: any) => node["@type"]);
-    expect(types).toEqual(["Organization", "WebSite", "NewsArticle", "FAQPage"]);
-    const article = graph["@graph"][2];
+    expect(types).toEqual(["NewsArticle", "FAQPage"]);
+    const article = graph["@graph"][0];
     expect(article.publisher["@id"]).toBe("https://zayron-x.co/#organization");
     expect(article.isPartOf["@id"]).toBe("https://zayron-x.co/#website");
-    expect(graph["@graph"][3].mainEntity[0]["@type"]).toBe("Question");
+    expect(graph["@graph"][1].mainEntity[0]["@type"]).toBe("Question");
+
+    const fullGraph = buildLinkedJsonLdGraph({
+      path: "/news/example",
+      primary: { "@type": "NewsArticle", headline: "Example" },
+      faq: [{ question: "What is affected?", answer: "FortiOS." }],
+      social: ["https://t.me/zayronxai"],
+      includeSiteEntities: true,
+    }) as any;
+    expect(fullGraph["@graph"].map((node: any) => node["@type"])).toEqual([
+      "Organization",
+      "WebSite",
+      "NewsArticle",
+      "FAQPage",
+    ]);
   });
 
   test("sameAs contains only verified absolute https profiles", () => {

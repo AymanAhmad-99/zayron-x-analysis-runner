@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { CompanyPage } from "../../components/CompanyPage";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  robots: { index: false, follow: true },
+};
 
 export default function ContactPage() {
   return (

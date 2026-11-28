@@ -53,9 +53,6 @@ export const STATIC_PATHS = [
   "/privacy",
   "/cookies",
   "/legal",
-  "/company/trust",
-  "/company/contact",
-  "/company/careers",
 ] as const;
 
 /**
@@ -223,9 +220,11 @@ export const NAMED_CRAWLERS = [
   "Googlebot",
   "Googlebot-Image",
   "Bingbot",
+  "Applebot",
   "OAI-SearchBot",
   "PerplexityBot",
   "ClaudeBot",
+  "Claude-SearchBot",
 ] as const;
 
 /** Icon and manifest paths that must stay fetchable for every crawler. */

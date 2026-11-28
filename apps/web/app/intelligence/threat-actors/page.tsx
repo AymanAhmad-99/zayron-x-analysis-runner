@@ -47,6 +47,11 @@ export default async function ThreatActorsPage() {
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: site,
     path: "/intelligence/threat-actors",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Intelligence", path: "/intelligence" },
+      { name: "Threat Actors", path: "/intelligence/threat-actors" },
+    ],
     primary: {
       "@type": "CollectionPage",
       name: "Connected Threat Graph — MITRE ATT&CK Groups",

@@ -112,6 +112,14 @@ const PUBLIC_READ_CACHE_PREFIXES = [
   "/api/v1/intelligence/",
   "/api/v1/vulnerabilities/",
   "/api/v1/malware/intelligence/reports/",
+  "/api/v1/malware/supply-chain/reports/",
+  "/api/v1/vendors/",
+  "/api/v1/regions/",
+  "/api/v1/techniques/",
+  "/api/v1/threat-actors/",
+  "/api/v1/campaigns/",
+  "/api/v1/news/",
+  "/api/v1/iocs/families/",
 ];
 
 /**

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/HeroPrecision";
 import { TrustStrip } from "./components/TrustStrip";
@@ -5,21 +6,32 @@ import { IntelligenceFoundry } from "./components/intelligence-foundry/Intellige
 import { LatestIntelligence } from "./components/LatestIntelligence";
 import { EnterpriseInquiry } from "./components/EnterpriseInquiry";
 import { SiteFooter } from "./components/SiteFooter";
-import { getSiteUrl, getTurnstileSiteKey } from "./lib/siteConfig";
-import { buildWebPageJsonLd } from "./lib/seo";
+import { getSiteUrl, getTurnstileSiteKey, isPreviewDeployment } from "./lib/siteConfig";
+import { buildOpenGraph, buildWebPageJsonLd, resolvePageRobots } from "./lib/seo";
 
 /**
- * PHASE 9C — the homepage now carries its own `WebPage` node.
- *
- * The layout already publishes the site-wide `#organization` / `#website` graph,
- * but the homepage itself had no primary node, so an answer engine received a
- * site graph describing no document. The node links back by `@id`; no duplicate
- * Organization is emitted.
+ * PHASE 12-EXECUTE — SSR Homepage with explicit self-referencing canonical `/`,
+ * 300s revalidation, and Depth-0 live intelligence links.
  */
+export const revalidate = 300;
+
 const HOME_DESCRIPTION =
   "Source-verified vulnerability, malware, exploit, actor and campaign intelligence with explicit provenance, confidence and decay.";
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    alternates: { canonical: "/" },
+    robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: true }),
+    openGraph: buildOpenGraph({
+      title: "ZAYRON-X — Truth Is the Perimeter",
+      description: HOME_DESCRIPTION,
+      path: "/",
+      type: "website",
+    }),
+  };
+}
+
+export default async function Home() {
   const site = getSiteUrl();
   const jsonLd = buildWebPageJsonLd({
     siteUrl: site,

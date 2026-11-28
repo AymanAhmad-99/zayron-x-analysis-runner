@@ -26,7 +26,7 @@ const read = (relative: string) => readFileSync(join(ROOT, relative), "utf8");
 
 const UI = read("apps/web/app/components/CanonicalMalwareReport.tsx");
 const PROJECTION = read("apps/web/app/lib/malwareReportProjection.ts");
-const ROUTE = read("apps/web/app/intelligence/malware/[id]/page.tsx");
+const ROUTE = read("apps/web/app/malware/intelligence/reports/[id]/page.tsx");
 
 /** Required analyst hierarchy: label + the exact source needle that renders it. */
 const REQUIRED_HIERARCHY: [string, string][] = [

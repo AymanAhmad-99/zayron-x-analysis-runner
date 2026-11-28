@@ -3,6 +3,8 @@ import { IocWorkbench } from "../../components/IocWorkbench";
 import { getSiteUrl, isPreviewDeployment } from "../../lib/siteConfig";
 import { buildWebPageJsonLd, resolvePageRobots } from "../../lib/seo";
 
+export const revalidate = 300;
+
 type SearchParams = Record<string, string | string[] | undefined>;
 
 function readQuery(searchParams?: SearchParams): string {

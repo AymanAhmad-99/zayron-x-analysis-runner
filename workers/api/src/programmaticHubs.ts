@@ -100,8 +100,19 @@ function jsonArray(value: unknown): string[] {
   }
 }
 
+const VENDOR_CACHE_TTL_MS = 10 * 60 * 1000;
+const VENDOR_CACHE = new WeakMap<object, { expiresAt: number; items: VendorHubSummary[] }>();
+
 /** Every vendor with at least one authoritative CVE, newest-first by volume. */
 export async function loadVendors(db: D1Database, limit = 100): Promise<VendorHubSummary[]> {
+  const boundedLimit = Math.max(1, Math.min(500, limit));
+  const now = Date.now();
+  const cached = VENDOR_CACHE.get(db as unknown as object);
+  if (cached && cached.expiresAt > now && (cached.items.length >= boundedLimit || cached.items.length < 500)) {
+    return cached.items.slice(0, boundedLimit);
+  }
+
+  const queryLimit = Math.max(boundedLimit, 500);
   const rows = await all<{ vendor: string; cves: number; kev: number }>(
     db,
     `SELECT affected_vendor AS vendor,
@@ -113,7 +124,7 @@ export async function loadVendors(db: D1Database, limit = 100): Promise<VendorHu
       GROUP BY affected_vendor
       ORDER BY cves DESC
       LIMIT ?`,
-    [Math.max(1, Math.min(500, limit))],
+    [queryLimit],
   );
 
   const pocRows = await all<{ vendor: string; n: number }>(
@@ -142,7 +153,8 @@ export async function loadVendors(db: D1Database, limit = 100): Promise<VendorHu
       poc_count: pocByVendor.get(name) ?? 0,
     });
   }
-  return hubs;
+  VENDOR_CACHE.set(db as unknown as object, { expiresAt: now + VENDOR_CACHE_TTL_MS, items: hubs });
+  return hubs.slice(0, boundedLimit);
 }
 
 export async function loadVendor(db: D1Database, slug: string): Promise<VendorHubDetail | null> {

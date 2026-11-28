@@ -49,7 +49,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Briefing not found",
       robots: { index: false, follow: false },
-      alternates: { canonical: `/news/${encodeURIComponent(slug)}` },
     };
   }
   const article = result.data;
@@ -89,6 +88,11 @@ export default async function NewsArticlePage({ params }: Props) {
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: site,
     path,
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "News", path: "/news" },
+      { name: article.title, path },
+    ],
     primary: {
       "@type": "NewsArticle",
       headline: article.title,
@@ -98,6 +102,11 @@ export default async function NewsArticlePage({ params }: Props) {
       dateModified: article.ingested_at,
       articleSection: article.category,
       isAccessibleForFree: true,
+      author: {
+        "@type": "Organization",
+        "@id": `${site.replace(/\/+$/, "")}/#organization`,
+        name: "ZAYRON-X Research Desk",
+      },
       keywords: [article.category, article.severity, article.source_name].join(", "),
       about: article.mentions
         .filter((mention) => mention.in_catalog === 1)

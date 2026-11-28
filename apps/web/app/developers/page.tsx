@@ -6,6 +6,8 @@ import { PipelineHealthBadge } from "../components/PipelineHealthBadge";
 import { getSiteUrl, isPreviewDeployment } from "../lib/siteConfig";
 import { buildOpenGraph, buildWebPageJsonLd, resolvePageRobots } from "../lib/seo";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "ZAYRON-X Intelligence API — Developers",
   description:
@@ -38,6 +40,10 @@ export default function DevelopersPage() {
     name: "ZAYRON-X Intelligence API — Developers",
     description:
       "Source-verified vulnerability intelligence over a versioned OpenAPI 3.1 REST API with self-serve bearer tokens and edge rate limits.",
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Developers", path: "/developers" },
+    ],
   });
   return (
     <main className="site-atmosphere">

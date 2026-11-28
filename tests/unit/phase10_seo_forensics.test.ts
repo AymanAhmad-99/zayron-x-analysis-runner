@@ -55,9 +55,9 @@ describe("PHASE 10-SEO-FORENSICS — Edge & SSR SEO hardening", () => {
     );
   });
 
-  test("/news stays edge-cacheable and indexable while /news?view=wire is noindex, follow and private, no-store", () => {
+  test("/news?view=wire stays private, no-store with noindex, follow; middleware avoids pre-route 404 caching while static routes cache via next.config.ts", () => {
     const newsRes = middleware(new Request("https://zayron-x.co/news", { headers: { host: "zayron-x.co" } }) as any);
-    expect(newsRes.headers.get("Cache-Control")).toBe("public, s-maxage=300, stale-while-revalidate=600");
+    expect(newsRes.headers.get("Cache-Control")).toBeNull();
     expect(newsRes.headers.get("X-Robots-Tag")).toBeNull();
 
     const wireRes = middleware(
@@ -67,11 +67,20 @@ describe("PHASE 10-SEO-FORENSICS — Edge & SSR SEO hardening", () => {
     expect(wireRes.headers.get("Cache-Control")).toBe("private, no-store");
   });
 
-  test("/about and /intelligence/vulnerabilities/* emit public s-maxage cache headers", () => {
-    for (const path of ["/about", "/intelligence/vulnerabilities/CVE-2026-132165", "/news/sample-briefing"]) {
-      const res = middleware(new Request(`https://zayron-x.co${path}`, { headers: { host: "zayron-x.co" } }) as any);
-      expect(res.headers.get("Cache-Control")).toBe("public, s-maxage=300, stale-while-revalidate=600");
-    }
+  test("/about uses next.config.ts public cache headers and detail routes revalidate safely per route", () => {
+    const cveRes = middleware(
+      new Request("https://zayron-x.co/intelligence/vulnerabilities/CVE-2026-132165", {
+        headers: { host: "zayron-x.co" },
+      }) as any,
+    );
+    expect(cveRes.headers.get("Cache-Control")).toBeNull();
+
+    const nextCfg = readFileSync("apps/web/next.config.ts", "utf8");
+    expect(nextCfg).toContain('source: "/about"');
+    expect(nextCfg).toContain("public, s-maxage=300, stale-while-revalidate=600");
+
+    expect(readFileSync("apps/web/app/intelligence/vulnerabilities/[id]/page.tsx", "utf8")).toContain("export const revalidate = 300");
+    expect(readFileSync("apps/web/app/news/[slug]/page.tsx", "utf8")).toContain("export const revalidate = 300");
   });
 
   test("robots.txt explicitly allows Googlebot and AI search crawlers without blocking _next/static", () => {
@@ -134,6 +143,6 @@ describe("PHASE 10-SEO-FORENSICS — Edge & SSR SEO hardening", () => {
       path: "/news/test",
       primary: { "@type": "NewsArticle", headline: "Test", image: ["https://zayron-x.co/api/news-cover/test"] },
     }) as any;
-    expect(graph["@graph"][2].image).toEqual(["https://zayron-x.co/api/news-cover/test"]);
+    expect(graph["@graph"][0].image).toEqual(["https://zayron-x.co/api/news-cover/test"]);
   });
 });

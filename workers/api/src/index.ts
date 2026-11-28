@@ -157,7 +157,9 @@ import {
   buildSitemapManifest,
   clampSitemapLimit,
   clampSitemapPage,
+  formatCveSqlInList,
   isSitemapKind,
+  loadLinkedThreatCves,
   projectSitemapItems,
   sitemapCountQuery,
   sitemapOffset,
@@ -5349,6 +5351,7 @@ const worker = {
         const cleanId = rawId.replace(/^\/?(threats|articles)\//, '').trim();
 
         const upperCve = cleanId.toUpperCase();
+        let d1Failed = false;
 
         // 1. Try D1 query first (returns live analyst-grade dossiers with Schema 2.0.0 structured_report)
         try {
@@ -5435,6 +5438,7 @@ const worker = {
             return jsonResponse({ status: readReport.publication_status === 'WITHHELD' ? 'ANALYSIS_UNAVAILABLE' : 'SUCCESS', report: readReport });
           }
         } catch (dbErr: any) {
+          d1Failed = true;
           console.warn('[API] D1 intelligence report detail error (falling back to DO):', dbErr.message);
         }
 
@@ -5489,13 +5493,13 @@ const worker = {
           const isCve = /^CVE-\d{4}-\d{4,19}$/i.test(cleanId);
           let eventRow: any = await env.DB.prepare(
             'SELECT * FROM intelligence_events WHERE id = ? OR id = ? OR title LIKE ? OR summary LIKE ? ORDER BY created_at DESC LIMIT 1'
-          ).bind(rawId, cleanId, `%${cleanId}%`, `%${cleanId}%`).first().catch(() => null);
+          ).bind(rawId, cleanId, `%${cleanId}%`, `%${cleanId}%`).first();
 
           let vulnRow: any = null;
           if (isCve) {
             vulnRow = await env.DB.prepare(
               'SELECT * FROM vulnerabilities WHERE cve_id = ? OR id = ? LIMIT 1'
-            ).bind(upperCve, cleanId.toLowerCase()).first().catch(() => null);
+            ).bind(upperCve, cleanId.toLowerCase()).first();
           }
 
           // Gate 3A.3 — a quarantined (synthetic/unverified) CVE row is never
@@ -5602,9 +5606,13 @@ const worker = {
             return jsonResponse({ status: 'SUCCESS', report: reportObj });
           }
         } catch (crossErr: any) {
+          d1Failed = true;
           console.warn('[API] D1 cross-resolution fallback error:', crossErr?.message);
         }
 
+        if (d1Failed) {
+          return errorResponse('Intelligence store temporarily unavailable', 503, 'STORE_UNAVAILABLE');
+        }
         return errorResponse(`Intelligence report ${cleanId} not found`, 404, 'NOT_FOUND');
       }
 
@@ -5845,19 +5853,19 @@ const worker = {
           // 1. Check intelligence_events by exact ID or clean slug
           event = await env.DB.prepare(
             'SELECT * FROM intelligence_events WHERE id = ? OR id = ? LIMIT 1'
-          ).bind(rawId, cleanSlug).first().catch(() => null);
+          ).bind(rawId, cleanSlug).first();
 
           // 2. Check articles table by slug (both clean and prefixed), id, or canonical event
           if (!event) {
             let articleQuery = 'SELECT * FROM articles WHERE slug = ? OR slug = ? OR id = ? OR canonical_intel_event_id = ? LIMIT 1';
             const articleParams: any[] = [cleanSlug, prefixedSlug, rawId, rawId];
 
-            const article: any = await env.DB.prepare(articleQuery).bind(...articleParams).first().catch(() => null);
+            const article: any = await env.DB.prepare(articleQuery).bind(...articleParams).first();
             if (article) {
               if (article.canonical_intel_event_id) {
                 event = await env.DB.prepare(
                   'SELECT * FROM intelligence_events WHERE id = ? LIMIT 1'
-                ).bind(article.canonical_intel_event_id).first().catch(() => null);
+                ).bind(article.canonical_intel_event_id).first();
               }
               if (!event) {
                 event = {
@@ -5886,7 +5894,7 @@ const worker = {
             let reportQuery = 'SELECT * FROM intelligence_reports WHERE intelligence_id = ? OR deduplication_key = ? OR content_hash = ? LIMIT 1';
             const reportParams: any[] = [cleanSlug, cleanSlug, cleanSlug];
 
-            const reportRow: any = await env.DB.prepare(reportQuery).bind(...reportParams).first().catch(() => null);
+            const reportRow: any = await env.DB.prepare(reportQuery).bind(...reportParams).first();
             if (reportRow) {
               event = {
                 id: reportRow.intelligence_id,
@@ -5912,7 +5920,7 @@ const worker = {
           if (!event && isCve) {
             const vulnRow: any = await env.DB.prepare(
               'SELECT * FROM vulnerabilities WHERE cve_id = ? OR id = ? LIMIT 1'
-            ).bind(upperCve, cleanSlug.toLowerCase()).first().catch(() => null);
+            ).bind(upperCve, cleanSlug.toLowerCase()).first();
 
             if (vulnRow) {
               event = {
@@ -5961,29 +5969,7 @@ const worker = {
           });
         } catch (dbErr: any) {
           console.warn('[API] D1 threat detail fetch degraded:', dbErr?.message);
-          if (isCve) {
-            return jsonResponse({
-              data: {
-                id: upperCve,
-                type: 'vulnerabilities',
-                title: `${upperCve}: Vulnerability Advisory Record`,
-                summary: `Active threat intelligence and vulnerability assessment for ${upperCve}. Correlated via sovereign telemetry pipeline.`,
-                severity: 'HIGH',
-                confidence: 0.85,
-                status: 'VERIFIED',
-                content_hash: '',
-                first_seen_at: new Date().toISOString(),
-                last_updated_at: new Date().toISOString(),
-                entities_json: JSON.stringify({ cves: [upperCve] }),
-                mitre_matrix: '[]',
-                evidence: [],
-                relations: [],
-                ttps: [],
-                degraded: true,
-              },
-            });
-          }
-          return errorResponse(`Threat database service degraded: ${dbErr?.message}`, 503, 'DB_DEGRADED');
+          return errorResponse('Threat database temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 
@@ -5999,26 +5985,28 @@ const worker = {
           malware: 0,
           articles: 0,
         };
-        const vulnerabilityCount = sitemapCountQuery('vulnerabilities', tokens);
-        const articleCount = sitemapCountQuery('articles', tokens);
         try {
+          const linkedCves = await loadLinkedThreatCves(env.DB);
+          const vulnerabilityCount = sitemapCountQuery('vulnerabilities', tokens, linkedCves.allCves);
+          const articleCount = sitemapCountQuery('articles', tokens);
           const [vulnRow, articleRow, malwareGate] = await Promise.all([
-            env.DB.prepare(vulnerabilityCount.sql).bind(...vulnerabilityCount.params).first<{ total?: number }>().catch(() => null),
-            env.DB.prepare(articleCount.sql).bind(...articleCount.params).first<{ total?: number }>().catch(() => null),
+            env.DB.prepare(vulnerabilityCount.sql).bind(...vulnerabilityCount.params).first<{ total?: number }>(),
+            env.DB.prepare(articleCount.sql).bind(...articleCount.params).first<{ total?: number }>(),
             // Wave 4B audit: the sitemap reads the SAME canonical gate through a
             // lightweight projection (id/sha256/updated_at/report_json only).
-            loadServableMalwareReportIndex(env.DB as unknown as MalwareReportStore).catch(() => null),
+            loadServableMalwareReportIndex(env.DB as unknown as MalwareReportStore),
           ]);
           counts.vulnerabilities = Number(vulnRow?.total ?? 0);
           counts.articles = Number(articleRow?.total ?? 0);
           counts.malware = malwareGate ? malwareGate.rows.length : 0;
+          return sitemapJson(buildSitemapManifest(counts));
         } catch (dbErr: any) {
           console.warn('[API] sitemap manifest degraded', {
             site: 'api.sitemap.manifest',
             error: dbErr?.message ?? String(dbErr),
           });
+          return errorResponse('Sitemap manifest temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
-        return sitemapJson(buildSitemapManifest(counts));
       }
 
       // GET /api/v1/sitemap/:kind?page=N&limit=M → one shard of { id, updated_at }.
@@ -6048,8 +6036,9 @@ const worker = {
               updated_at: row.updated_at,
             }));
           } else {
-            const rowsQuery = sitemapRowsQuery(kindSegment, tokens, limit, offset);
-            const countQuery = sitemapCountQuery(kindSegment, tokens);
+            const linkedCves = kindSegment === 'vulnerabilities' ? await loadLinkedThreatCves(env.DB) : null;
+            const rowsQuery = sitemapRowsQuery(kindSegment, tokens, limit, offset, linkedCves?.allCves);
+            const countQuery = sitemapCountQuery(kindSegment, tokens, linkedCves?.allCves);
             const [rows, counted] = await env.DB.batch<Record<string, unknown>>([
               env.DB.prepare(rowsQuery.sql).bind(...rowsQuery.params),
               env.DB.prepare(countQuery.sql).bind(...countQuery.params),
@@ -6275,11 +6264,16 @@ const worker = {
         if (q) {
           query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
         } else {
+          const linkedThreatCves = await loadLinkedThreatCves(env.DB).catch(() => null);
+          const actorCveInList = formatCveSqlInList(linkedThreatCves?.actorCves);
+          const actorPriorityExpr = actorCveInList
+            ? `(CASE WHEN cve_id IN (${actorCveInList}) THEN 0 ELSE 1 END) ASC,`
+            : '';
           query += ` ORDER BY
             (CASE WHEN is_exploited_in_wild = 1 THEN 0 ELSE 1 END) ASC,
             (CASE WHEN EXISTS (SELECT 1 FROM cve_pocs p WHERE p.cve_id = vulnerabilities.cve_id) THEN 0 ELSE 1 END) ASC,
             (CASE WHEN EXISTS (SELECT 1 FROM detection_rules d WHERE d.kind = 'cve' AND d.match_key = vulnerabilities.cve_id) THEN 0 ELSE 1 END) ASC,
-            (CASE WHEN EXISTS (SELECT 1 FROM threat_actors a WHERE EXISTS (SELECT 1 FROM json_each(a.cves_json) WHERE UPPER(value) = vulnerabilities.cve_id)) THEN 0 ELSE 1 END) ASC,
+            ${actorPriorityExpr}
             COALESCE(epss_score, 0) DESC,
             COALESCE(cvss_score, 0) DESC,
             created_at DESC
@@ -6311,7 +6305,7 @@ const worker = {
             cf_ray: request.headers.get('cf-ray'),
             error: dbErr?.message ?? String(dbErr),
           });
-          return jsonResponse({ data: [], meta: { total: 0, limit, offset, degraded: true, note: 'Vulnerability store temporarily unavailable' } });
+          return errorResponse('Vulnerability store temporarily unavailable', 503, 'STORE_UNAVAILABLE');
         }
       }
 

@@ -104,6 +104,7 @@ export interface ArticleJsonLdInput {
   type?: "TechArticle" | "Report";
   /** Extra optional facts (e.g. severity) — emitted verbatim, never derived. */
   additionalProperty?: Array<{ name: string; value: string }>;
+  breadcrumbs?: Array<{ name: string; path: string }>;
 }
 
 /**
@@ -111,8 +112,8 @@ export interface ArticleJsonLdInput {
  * conditional: a withheld/absent field simply does not appear in the graph.
  */
 export function articleJsonLd(input: ArticleJsonLdInput): JsonLd {
+  const site = input.siteUrl.replace(/\/+$/, "");
   const node: JsonLd = compactJsonLd({
-    "@context": "https://schema.org",
     "@type": input.type ?? "TechArticle",
     mainEntityOfPage: { "@type": "WebPage", "@id": input.url },
     url: input.url,
@@ -121,8 +122,8 @@ export function articleJsonLd(input: ArticleJsonLdInput): JsonLd {
     description: input.description ?? undefined,
     datePublished: input.datePublished ?? undefined,
     dateModified: input.dateModified ?? undefined,
-    isPartOf: { "@type": "WebSite", name: "ZAYRON-X", url: input.siteUrl },
-    publisher: { "@type": "Organization", name: "ZAYRON-X", url: input.siteUrl },
+    isPartOf: { "@id": `${site}/#website` },
+    publisher: { "@id": `${site}/#organization` },
   });
   if (input.additionalProperty && input.additionalProperty.length) {
     node.additionalProperty = input.additionalProperty.map((property) => ({
@@ -131,5 +132,28 @@ export function articleJsonLd(input: ArticleJsonLdInput): JsonLd {
       value: property.value,
     }));
   }
-  return node;
+  if (input.breadcrumbs && input.breadcrumbs.length > 0) {
+    const breadcrumbId = `${input.url}#breadcrumb`;
+    node.breadcrumb = { "@id": breadcrumbId };
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        node,
+        {
+          "@type": "BreadcrumbList",
+          "@id": breadcrumbId,
+          itemListElement: input.breadcrumbs.map((item, idx) => ({
+            "@type": "ListItem",
+            position: idx + 1,
+            name: item.name,
+            item: `${site}${item.path}`,
+          })),
+        },
+      ],
+    };
+  }
+  return {
+    "@context": "https://schema.org",
+    ...node,
+  };
 }

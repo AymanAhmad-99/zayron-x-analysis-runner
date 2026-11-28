@@ -656,7 +656,7 @@ export interface VulnerabilityDetail {
  * the public page contradicted the stored record. The API applies its own short
  * `Cache-Control`; this read bypasses the framework cache entirely.
  */
-const DETAIL_READ_INIT = { headers: { accept: "application/json" }, cache: "no-store" } as unknown as RequestInit;
+const DETAIL_READ_INIT = { headers: { accept: "application/json" }, next: { revalidate: 300 } } as unknown as RequestInit;
 
 export async function getVulnerabilityDetail(id: string): Promise<ApiResult<VulnerabilityDetail>> {
   try {
@@ -825,7 +825,10 @@ export async function searchIntelligence(query: string): Promise<ApiResult<Intel
 // `value` is never requested by the workspace and never rendered.
 // ═══════════════════════════════════════════════════════════════════════════
 
-const IOC_READ_INIT = { headers: { accept: "application/json" } } as RequestInit;
+const IOC_READ_INIT = {
+  headers: { accept: "application/json" },
+  next: { revalidate: 300 },
+} as unknown as RequestInit;
 
 export interface IocStats {
   active_total: number;

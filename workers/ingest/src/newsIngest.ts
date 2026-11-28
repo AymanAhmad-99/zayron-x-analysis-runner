@@ -856,6 +856,10 @@ export async function runNewsIngestPass(
   }
 
   let indexnow = "DISABLED";
+  let websub = "SKIPPED";
+  if (writtenUrls.length > 0) {
+    websub = await pingWebSub("https://zayron-x.co/news/rss.xml", { budget, fetchImpl });
+  }
   if (env.INDEXNOW_KEY && writtenUrls.length > 0) {
     indexnow = await pingIndexNow([...writtenUrls, "https://zayron-x.co/news"], env.INDEXNOW_KEY, {
       budget,
@@ -874,10 +878,42 @@ export async function runNewsIngestPass(
     sources,
     errors,
     indexnow,
+    websub,
   };
 }
 
-/* ─────────────────────────────── IndexNow ───────────────────────────────── */
+/* ──────────────────────────── WebSub + IndexNow ─────────────────────────── */
+
+export const WEBSUB_HUB_URL = "https://pubsubhubbub.appspot.com/";
+
+/**
+ * PHASE 12-EXECUTE — Active WebSub push whenever fresh briefings or KEV advisories
+ * publish to the RSS feed. Fails soft on timeout/error without blocking ingest.
+ */
+export async function pingWebSub(
+  feedUrl = "https://zayron-x.co/news/rss.xml",
+  options: { budget?: NewsBudget; fetchImpl?: typeof fetch } = {},
+): Promise<string> {
+  const cleanFeedUrl = String(feedUrl ?? "").trim();
+  if (!cleanFeedUrl) return "INVALID_URL";
+  const budget = options.budget;
+  if (budget && !budget.take()) return "BUDGET_EXHAUSTED";
+  const fetchImpl = options.fetchImpl ?? fetch;
+  try {
+    const response = await fetchImpl(WEBSUB_HUB_URL, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ "hub.mode": "publish", "hub.url": cleanFeedUrl }).toString(),
+      signal: AbortSignal.timeout(5000),
+    });
+    console.log(JSON.stringify({ type: "WEBSUB_PING", status: `HTTP_${response.status}`, feedUrl: cleanFeedUrl }));
+    return `HTTP_${response.status}`;
+  } catch (error) {
+    const msg = String((error as Error)?.message ?? error).slice(0, 80);
+    console.warn(JSON.stringify({ type: "WEBSUB_PING", status: "WEBSUB_ERROR", error: msg }));
+    return `ERROR:${msg}`;
+  }
+}
 
 /**
  * PHASE 9C — build deduplicated IndexNow URL batches (max 100 per POST)

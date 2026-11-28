@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 import { VulnerabilityList } from "../../components/VulnerabilityList";
 import { getVulnerabilities } from "../../lib/api";
 import { buildLinkedJsonLdGraph, buildOpenGraph, resolvePageRobots } from "../../lib/seo";
@@ -12,9 +14,20 @@ type Props = {
   searchParams?: Promise<{ page?: string; severity?: string; q?: string }>;
 };
 
-function parsePage(raw?: string): number {
-  const n = Math.floor(Number(raw ?? "1"));
-  return Number.isFinite(n) && n >= 1 ? n : 1;
+const loadVulnerabilitiesPage = cache((limit: number, offset: number, severity: string, q: string) =>
+  getVulnerabilities({
+    limit,
+    offset,
+    severity: severity || undefined,
+    q: q || undefined,
+  }),
+);
+
+function parseStrictPage(raw?: string): number | null {
+  if (raw === undefined || raw.trim() === "") return 1;
+  if (!/^\d+$/.test(raw.trim())) return null;
+  const n = Number(raw.trim());
+  return Number.isSafeInteger(n) && n >= 1 ? n : null;
 }
 
 function pageUrl(page: number): string {
@@ -23,8 +36,28 @@ function pageUrl(page: number): string {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = searchParams ? await searchParams : {};
-  const page = parsePage(params.page);
-  const filtered = Boolean((params.severity ?? "").trim() || (params.q ?? "").trim());
+  const page = parseStrictPage(params.page);
+  const severity = (params.severity ?? "").trim().toUpperCase();
+  const query = (params.q ?? "").trim();
+
+  if (page === null) {
+    return {
+      title: "Page Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const filtered = Boolean(severity || query);
+  const initial = await loadVulnerabilitiesPage(PAGE_SIZE, (page - 1) * PAGE_SIZE, severity, query);
+  const total = initial.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (initial.state !== "error" && page > totalPages) {
+    return {
+      title: "Page Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
   const canonical = filtered ? "/intelligence/vulnerabilities" : pageUrl(page);
   const title = page > 1 ? `Vulnerabilities — Page ${page}` : "Vulnerabilities";
   const description =
@@ -46,19 +79,21 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function VulnerabilitiesPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
-  const page = parsePage(params.page);
+  const page = parseStrictPage(params.page);
+  if (page === null) notFound();
+
   const severity = (params.severity ?? "").trim().toUpperCase();
   const query = (params.q ?? "").trim();
   const offset = (page - 1) * PAGE_SIZE;
 
-  const initial = await getVulnerabilities({
-    limit: PAGE_SIZE,
-    offset,
-    severity: severity || undefined,
-    q: query || undefined,
-  });
+  const initial = await loadVulnerabilitiesPage(PAGE_SIZE, offset, severity, query);
+  if (initial.state === "error") {
+    throw new Error("Vulnerability catalog temporarily unavailable");
+  }
 
   const total = initial.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (page > totalPages) notFound();
   const site = getSiteUrl();
   const canonicalPath = pageUrl(page);
   const hasPrev = page > 1 && !severity && !query;
@@ -67,6 +102,11 @@ export default async function VulnerabilitiesPage({ searchParams }: Props) {
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: site,
     path: canonicalPath,
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Intelligence", path: "/intelligence" },
+      { name: "Vulnerabilities", path: "/intelligence/vulnerabilities" },
+    ],
     primary: {
       "@type": "CollectionPage",
       name: page > 1 ? `Vulnerability Intelligence — Page ${page}` : "Vulnerability Intelligence",

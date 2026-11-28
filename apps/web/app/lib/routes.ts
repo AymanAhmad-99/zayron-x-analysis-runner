@@ -53,7 +53,7 @@ export const legalRoutes: Array<{ label: string; href: string }> = [
 /** Company pages. */
 export const companyRoutes: Array<{ label: string; href: string }> = [
   { label: "About", href: "/about" },
-  { label: "Trust Center", href: "/company/trust" },
+  { label: "Trust Center", href: "/security" },
   { label: "Contact", href: "/company/contact" },
   { label: "Careers", href: "/company/careers" },
 ];

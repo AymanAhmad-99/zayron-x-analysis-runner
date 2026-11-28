@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 import { RouteShell } from "../../components/RouteShell";
 import { getVendors, vendorHref } from "../../lib/hubs";
 import { getSiteUrl, isPreviewDeployment } from "../../lib/siteConfig";
@@ -11,9 +13,13 @@ const PAGE_SIZE = 50;
 
 type Props = { searchParams?: Promise<{ page?: string }> };
 
-function parsePage(raw?: string): number {
-  const n = Math.floor(Number(raw ?? "1"));
-  return Number.isFinite(n) && n >= 1 ? n : 1;
+const loadVendors = cache(() => getVendors());
+
+function parseStrictPage(raw?: string): number | null {
+  if (raw === undefined || raw.trim() === "") return 1;
+  if (!/^\d+$/.test(raw.trim())) return null;
+  const n = Number(raw.trim());
+  return Number.isSafeInteger(n) && n >= 1 ? n : null;
 }
 
 function vendorPageUrl(page: number): string {
@@ -22,7 +28,15 @@ function vendorPageUrl(page: number): string {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = searchParams ? await searchParams : {};
-  const page = parsePage(params.page);
+  const page = parseStrictPage(params.page);
+  if (page === null) {
+    return { title: "Page Not Found", robots: { index: false, follow: false } };
+  }
+  const result = await loadVendors();
+  const totalPages = Math.max(1, Math.ceil((result.data?.items ?? []).length / PAGE_SIZE));
+  if (result.state !== "error" && page > totalPages) {
+    return { title: "Page Not Found", robots: { index: false, follow: false } };
+  }
   const canonical = vendorPageUrl(page);
   const title = page > 1 ? `Vendor Security Hubs — Page ${page}` : "Vendor Security Hubs";
   const description =
@@ -38,10 +52,16 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function VendorsPage({ searchParams }: Props) {
   const params = searchParams ? await searchParams : {};
-  const result = await getVendors();
+  const page = parseStrictPage(params.page);
+  if (page === null) notFound();
+
+  const result = await loadVendors();
+  if (result.state === "error") {
+    throw new Error("Vendor hub index temporarily unavailable");
+  }
   const allItems = result.data?.items ?? [];
   const totalPages = Math.max(1, Math.ceil(allItems.length / PAGE_SIZE));
-  const page = Math.min(parsePage(params.page), totalPages);
+  if (page > totalPages) notFound();
   const items = allItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const site = getSiteUrl();
   const canonical = vendorPageUrl(page);
@@ -49,6 +69,11 @@ export default async function VendorsPage({ searchParams }: Props) {
   const graph = buildLinkedJsonLdGraph({
     siteUrl: site,
     path: canonical,
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Intelligence", path: "/intelligence" },
+      { name: "Vendors", path: "/intelligence/vendors" },
+    ],
     primary: {
       "@type": "CollectionPage",
       name: page > 1 ? `Vendor Security Hubs — Page ${page}` : "Vendor Security Hubs",

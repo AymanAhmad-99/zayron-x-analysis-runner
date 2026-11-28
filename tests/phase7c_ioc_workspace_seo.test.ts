@@ -186,8 +186,7 @@ describe('family hub SEO', () => {
   });
 
   test('the hub is edge-cached and the sitemap only lists live families', () => {
-    expect(read('apps/web/middleware.ts')).toContain('"/intelligence/iocs"');
-    expect(read('apps/web/middleware.ts')).toContain('PUBLIC_PAGE_CACHE_PREFIXES');
+    expect(read('apps/web/app/intelligence/iocs/page.tsx')).toContain('export const revalidate = 300');
     const sitemap = read('apps/web/app/sitemaps/[shard]/route.ts');
     expect(sitemap).toContain('getIocFamilies');
     expect(sitemap).toContain('familyHubPath');

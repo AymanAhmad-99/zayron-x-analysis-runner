@@ -89,6 +89,12 @@ export function organizationNode(siteUrl: string, social: string[]): Record<stri
     "@id": `${site}/#organization`,
     name: "ZAYRON-X",
     url: site,
+    logo: {
+      "@type": "ImageObject",
+      url: `${site}/icon-512x512.png`,
+      width: 512,
+      height: 512,
+    },
     description:
       "Source-verified vulnerability, malware and threat-actor intelligence with explicit provenance, confidence and decay.",
     sameAs: social,
@@ -106,8 +112,31 @@ export function websiteNode(siteUrl: string): Record<string, unknown> {
     potentialAction: {
       "@type": "SearchAction",
       target: `${site}/search?q={search_term_string}`,
-      "input": "required name=search_term_string",
+      "query-input": "required name=search_term_string",
     },
+  };
+}
+
+export interface BreadcrumbItem {
+  name: string;
+  path: string;
+}
+
+export function breadcrumbListNode(
+  siteUrl: string,
+  path: string,
+  items: BreadcrumbItem[],
+): Record<string, unknown> {
+  const site = (siteUrl || CANONICAL_SITE_URL).replace(/\/+$/, "");
+  return {
+    "@type": "BreadcrumbList",
+    "@id": `${site}${path}#breadcrumb`,
+    itemListElement: items.map((item, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: item.name,
+      item: `${site}${item.path}`,
+    })),
   };
 }
 
@@ -125,15 +154,13 @@ export interface JsonLdGraphInput {
   path: string;
   /** The page's primary entity (`NewsArticle`, `TechArticle`, `CollectionPage`, …). */
   primary: Record<string, unknown> & { "@type": string };
+  breadcrumbs?: BreadcrumbItem[];
   faq?: Array<{ question: string; answer: string }>;
   social?: string[];
+  /** Default false because layout.tsx already emits the site-wide #organization and #website graph. */
+  includeSiteEntities?: boolean;
 }
 
-/**
- * ONE cohesive `@graph` per page: Organization, WebSite with SearchAction, the
- * primary entity linked to both, and an optional FAQPage. Emitting separate
- * unlinked blocks is what makes answer engines treat the facts as unrelated.
- */
 /**
  * PHASE 9C — the primary node an indexable page was missing.
  *
@@ -147,11 +174,11 @@ export function buildWebPageJsonLd(input: {
   path: string;
   name: string;
   description: string;
+  breadcrumbs?: BreadcrumbItem[];
 }): Record<string, unknown> {
   const site = (input.siteUrl || CANONICAL_SITE_URL).replace(/\/+$/, "");
   const url = `${site}${input.path}`;
-  return {
-    "@context": "https://schema.org",
+  const webPage: Record<string, unknown> = {
     "@type": "WebPage",
     "@id": `${url}#webpage`,
     url,
@@ -162,6 +189,18 @@ export function buildWebPageJsonLd(input: {
     isPartOf: { "@id": `${site}/#website` },
     about: { "@id": `${site}/#organization` },
   };
+  if (input.breadcrumbs && input.breadcrumbs.length > 0) {
+    const breadcrumb = breadcrumbListNode(site, input.path, input.breadcrumbs);
+    webPage.breadcrumb = { "@id": `${url}#breadcrumb` };
+    return {
+      "@context": "https://schema.org",
+      "@graph": [webPage, breadcrumb],
+    };
+  }
+  return {
+    "@context": "https://schema.org",
+    ...webPage,
+  };
 }
 
 export function buildLinkedJsonLdGraph(input: JsonLdGraphInput): Record<string, unknown> {
@@ -170,17 +209,28 @@ export function buildLinkedJsonLdGraph(input: JsonLdGraphInput): Record<string, 
   const websiteId = `${site}/#website`;
   const primaryId = `${site}${input.path}#primary`;
 
-  const graph: Array<Record<string, unknown>> = [
-    organizationNode(site, input.social ?? socialProfiles()),
-    websiteNode(site),
-    {
-      ...input.primary,
-      "@id": primaryId,
-      url: `${site}${input.path}`,
-      publisher: { "@id": orgId },
-      isPartOf: { "@id": websiteId },
-    },
-  ];
+  const graph: Array<Record<string, unknown>> = [];
+  if (input.includeSiteEntities) {
+    graph.push(organizationNode(site, input.social ?? socialProfiles()), websiteNode(site));
+  }
+
+  const primaryNode: Record<string, unknown> = {
+    ...input.primary,
+    "@id": primaryId,
+    url: `${site}${input.path}`,
+    publisher: { "@id": orgId },
+    isPartOf: { "@id": websiteId },
+  };
+
+  if (input.breadcrumbs && input.breadcrumbs.length > 0) {
+    primaryNode.breadcrumb = { "@id": `${site}${input.path}#breadcrumb` };
+  }
+
+  graph.push(primaryNode);
+
+  if (input.breadcrumbs && input.breadcrumbs.length > 0) {
+    graph.push(breadcrumbListNode(site, input.path, input.breadcrumbs));
+  }
 
   if (input.faq && input.faq.length > 0) {
     graph.push({

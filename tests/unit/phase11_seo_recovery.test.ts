@@ -94,12 +94,13 @@ describe("PHASE 11-SEO-RECOVERY (v2) — legacy purge, curation, hubs & hydratio
   });
 
   test("curated vulnerabilities sitemap omits cron updated_at, and static.xml drops advisories & 2026-07-31 stamps", () => {
-    const rows = sitemapRowsQuery("vulnerabilities", [], 2000, 0);
-    const count = sitemapCountQuery("vulnerabilities", []);
+    const rows = sitemapRowsQuery("vulnerabilities", [], 2000, 0, ["CVE-2024-1234"]);
+    const count = sitemapCountQuery("vulnerabilities", [], ["CVE-2024-1234"]);
     expect(rows.sql).toContain("is_exploited_in_wild = 1");
     expect(rows.sql).toContain("cve_pocs");
     expect(rows.sql).toContain("detection_rules");
-    expect(rows.sql).toContain("threat_actors");
+    expect(rows.sql).toContain("CVE-2024-1234");
+    expect(rows.sql).not.toContain("json_each");
     expect(rows.sql).toContain("modified_at");
     expect(rows.sql).not.toMatch(/SELECT cve_id AS id,\s*updated_at FROM vulnerabilities/);
     expect(count.sql).toContain("is_exploited_in_wild = 1");

@@ -29,7 +29,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Technique not found",
       robots: { index: false, follow: false },
-      alternates: { canonical: `/intelligence/techniques/${encodeURIComponent(id)}` },
     };
   }
   const technique = result.data;
@@ -60,9 +59,16 @@ export default async function TechniquePage({ params }: Props) {
   if (!technique) throw new Error("Technique dossier temporarily unavailable");
 
   const site = getSiteUrl();
+  const techPath = `/intelligence/techniques/${technique.id}`;
   const jsonLd = buildLinkedJsonLdGraph({
     siteUrl: site,
-    path: `/intelligence/techniques/${technique.id}`,
+    path: techPath,
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Intelligence", path: "/intelligence" },
+      { name: "Techniques", path: "/intelligence/techniques" },
+      { name: technique.id, path: techPath },
+    ],
     primary: {
       "@type": "TechArticle",
       headline: `${technique.id} — ${technique.name}`,

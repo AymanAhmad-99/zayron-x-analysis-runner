@@ -16,7 +16,7 @@
  * the PoC sync is given 5 and this pass uses exactly 1.
  */
 
-import { buildIndexNowUrls, pingIndexNow } from './newsIngest';
+import { buildIndexNowUrls, pingIndexNow, pingWebSub } from './newsIngest';
 
 export const CISA_KEV_URL = 'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json';
 export const CISA_KEV_SUBREQUESTS = 1;
@@ -226,6 +226,7 @@ export async function runCisaKevBackfill(
       env.INDEXNOW_KEY,
       { fetchImpl: fetchFn },
     ).catch(() => undefined);
+    await pingWebSub('https://zayron-x.co/news/rss.xml', { fetchImpl: fetchFn }).catch(() => undefined);
   }
 
   return summary;

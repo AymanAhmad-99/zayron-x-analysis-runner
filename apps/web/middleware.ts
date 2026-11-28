@@ -18,13 +18,18 @@ import { NextResponse, type NextRequest } from "next/server";
 const CANONICAL_HOST = "zayron-x.co";
 const REDIRECT_HOSTS = new Set(["www.zayron-x.co"]);
 
+const PAGINATED_HUB_PATHS = new Set([
+  "/intelligence/vulnerabilities",
+  "/intelligence/vendors",
+  "/intelligence/techniques",
+]);
+
 /**
- * Phase 6 — permanent path consolidation.
+ * Phase 6 + Phase 12 — permanent path consolidation.
  *
- * Institutional documents moved to canonical top-level routes, and the former
- * "AI Policy" document was replaced by Methodology & Governance. Every legacy URL
- * resolves with a 301 to its successor, so no indexed or externally linked path
- * breaks or returns 404. Query strings are preserved.
+ * Institutional documents moved to canonical top-level routes, legacy actor/trust
+ * aliases consolidated onto canonical routes, and single-segment malware report
+ * aliases permanently redirect to `/malware/intelligence/reports/:id`.
  */
 const PATH_REDIRECTS: Record<string, string> = {
   "/ai-policy": "/methodology",
@@ -35,6 +40,8 @@ const PATH_REDIRECTS: Record<string, string> = {
   "/legal/vulnerability-disclosure": "/security",
   "/legal/terms": "/legal",
   "/company/about": "/about",
+  "/company/trust": "/security",
+  "/intelligence/actors": "/intelligence/threat-actors",
   // `/malware` is the institutional entry point for malware dossiers; the dossier
   // library itself lives under the intelligence tree.
   "/malware": "/intelligence/malware",
@@ -88,63 +95,26 @@ function harden(response: NextResponse): NextResponse {
   return response;
 }
 
+const CANONICAL_CVE_DETAIL_RE = /^(\/intelligence\/vulnerabilities\/)(cve-\d{4}-\d{4,19})$/i;
+
+function applyNonProdRobots(response: NextResponse, host: string): NextResponse {
+  if (host !== "" && host !== CANONICAL_HOST) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    response.headers.set("Cache-Control", "private, no-store");
+  }
+  return response;
+}
+
 /**
- * PHASE 7A — 50K-user edge cache shield for public SSR pages.
+ * PHASE 12-EXECUTE — safe response header pass.
  *
- * These documents are identical for every anonymous visitor and change on an
- * hourly (not second) cadence, so the Cloudflare CDN may serve a repeat request
- * for 300s with a 600s stale-while-revalidate window. That removes the Worker
- * invocation AND the API/D1 read behind it. Only the explicitly public catalog
- * pages are listed: a personalized or operator route must never inherit this.
+ * Pre-route `NextResponse.next()` no longer stamps `Cache-Control: public, s-maxage=300`
+ * before the page executes (which previously poisoned CDN cache with 404s and collided
+ * with ISR `no-store` routes). Cacheability for verified 200 OK routes is emitted by
+ * `next.config.ts` (for guaranteed static routes) and per-route `revalidate = 300`.
  */
-const PUBLIC_PAGE_CACHE = new Set([
-  "/",
-  "/intelligence",
-  "/intelligence/vulnerabilities",
-  "/intelligence/malware",
-  // PHASE 7C — the live IOC workspace and the server-rendered family hubs.
-  "/intelligence/iocs",
-  // PHASE 9C — the SSR catalogs that previously re-rendered on every crawl hit
-  // and exhausted the Free-tier CPU ceiling (`Error 1102`). They are identical
-  // for every anonymous visitor and are already revalidated against a 300s API
-  // window, so the edge may serve a repeat request without invoking the Worker.
-  "/intelligence/campaigns",
-  "/intelligence/threat-actors",
-  "/intelligence/exploits",
-  "/intelligence/techniques",
-  "/intelligence/vendors",
-  "/intelligence/regions",
-  "/news",
-  "/about",
-  "/security",
-  "/methodology",
-  "/privacy",
-  "/legal",
-  "/signal-index",
-  "/pricing",
-  "/developers",
-]);
-
-/**
- * Prefix-cached page families. A family hub is a stable, anonymous, SSR
- * document keyed only by its slug, so it inherits the same 300s edge policy as
- * the catalog roots rather than the Worker serving every crawler hit.
- */
-const PUBLIC_PAGE_CACHE_PREFIXES = [
-  "/intelligence/vulnerabilities/",
-  "/intelligence/malware/families/",
-  // PHASE 9C — the SSR dossier trees. Each URL is a stable, anonymous document
-  // keyed only by its slug; caching them keeps a crawler burst off the origin.
-  "/intelligence/threat-actors/",
-  "/intelligence/campaigns/",
-  "/intelligence/techniques/",
-  "/news/",
-];
-
-const PUBLIC_PAGE_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
-
 function withPageCache(response: NextResponse, url: URL, host: string): NextResponse {
-  if (host.endsWith(".workers.dev")) {
+  if (host !== "" && host !== CANONICAL_HOST) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
     response.headers.set("Cache-Control", "private, no-store");
     return response;
@@ -157,8 +127,8 @@ function withPageCache(response: NextResponse, url: URL, host: string): NextResp
     return response;
   }
 
-  // Keep `?view=wire` (and filtered query views on `/news` or `/intelligence/vulnerabilities?q=`)
-  // out of the shared edge cache so `noindex, follow` never leaks to canonical URLs.
+  // Keep `?view=wire` (and filtered query views on `/news`, `/intelligence/vulnerabilities?q=`,
+  // or `/intelligence/iocs?q=`) out of the shared edge cache so `noindex, follow` never leaks.
   if (path === "/news" && url.search.length > 0) {
     if (url.searchParams.get("view") === "wire") {
       response.headers.set("X-Robots-Tag", "noindex, follow");
@@ -172,9 +142,11 @@ function withPageCache(response: NextResponse, url: URL, host: string): NextResp
     return response;
   }
 
-  if (PUBLIC_PAGE_CACHE.has(path) || PUBLIC_PAGE_CACHE_PREFIXES.some((prefix) => path.startsWith(prefix))) {
-    response.headers.set("Cache-Control", PUBLIC_PAGE_CACHE_CONTROL);
+  if (path === "/intelligence/iocs" && (url.searchParams.get("q") ?? "").trim().length > 0) {
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
   }
+
   return response;
 }
 
@@ -196,46 +168,84 @@ function legacyGoneResponse(request: NextRequest): NextResponse {
 
 function legacyRedirectPath(pathname: string): string | null {
   const normalized = normalizePath(pathname);
-  const direct = PATH_REDIRECTS[normalized];
+  const direct = PATH_REDIRECTS[normalized] ?? PATH_REDIRECTS[normalized.toLowerCase()];
   if (direct) return direct;
   if (normalized === "/actors") return "/intelligence/threat-actors";
   if (normalized.startsWith("/actors/")) {
     return `/intelligence/threat-actors${normalized.slice("/actors".length)}`;
   }
+  if (normalized.startsWith("/intelligence/actors/")) {
+    return `/intelligence/threat-actors${normalized.slice("/intelligence/actors".length)}`;
+  }
   if (normalized === "/vulnerabilities") return "/intelligence/vulnerabilities";
   if (normalized.startsWith("/vulnerabilities/")) {
     return `/intelligence/vulnerabilities${normalized.slice("/vulnerabilities".length)}`;
   }
+  if (normalized.startsWith("/intelligence/malware/")) {
+    const rest = normalized.slice("/intelligence/malware/".length);
+    const firstSeg = rest.split("/")[0]?.toLowerCase() ?? "";
+    if (firstSeg && firstSeg !== "advisories" && firstSeg !== "families") {
+      return `/malware/intelligence/reports/${rest}`;
+    }
+  }
   return null;
+}
+
+function canonicalCvePath(pathname: string): string {
+  const match = CANONICAL_CVE_DETAIL_RE.exec(pathname);
+  if (!match) return pathname;
+  return `${match[1]}${match[2].toUpperCase()}`;
 }
 
 export function middleware(request: NextRequest): NextResponse {
   const url = new URL(request.url);
-  const host = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
+  const headerHost = (request.headers.get("host") ?? "").split(":")[0].trim().toLowerCase();
+  const host = headerHost || url.hostname.trim().toLowerCase();
   const normalized = normalizePath(url.pathname);
   const lowerPath = normalized.toLowerCase();
 
-  // Purge 3,332 retired /threats/* event URLs and dead /intelligence/intel_* URLs.
+  // Purge 3,332 retired /threats/* event URLs, dead /intelligence/intel_* URLs, and Kill List zombies.
   if (
     lowerPath === "/threats" ||
     lowerPath.startsWith("/threats/") ||
-    lowerPath.startsWith("/intelligence/intel_")
+    lowerPath.startsWith("/intelligence/intel_") ||
+    lowerPath === "/research" ||
+    lowerPath.startsWith("/research/") ||
+    lowerPath === "/intelligence/graph" ||
+    lowerPath.startsWith("/intelligence/graph/") ||
+    lowerPath === "/intelligence/relationships" ||
+    lowerPath.startsWith("/intelligence/relationships/")
   ) {
     return legacyGoneResponse(request);
   }
 
   const destination = legacyRedirectPath(url.pathname);
-  if (REDIRECT_HOSTS.has(host)) {
-    const target = new URL(`https://${CANONICAL_HOST}${destination ?? url.pathname}`);
-    target.search = url.search;
-    return harden(NextResponse.redirect(target, 301));
+  let resolvedPath = canonicalCvePath(destination ?? normalized);
+  const skipTrailingSlashRedirect = url.pathname.startsWith("/_next/") || url.pathname.startsWith("/api/");
+  const pathChanged = skipTrailingSlashRedirect
+    ? Boolean(destination)
+    : resolvedPath !== url.pathname;
+
+  const nextSearchParams = new URLSearchParams(url.searchParams);
+  let queryChanged = false;
+  if (PAGINATED_HUB_PATHS.has(resolvedPath) && nextSearchParams.has("page")) {
+    const rawPage = (nextSearchParams.get("page") ?? "").trim();
+    if (/^(?:0+|0*1)$/.test(rawPage)) {
+      nextSearchParams.delete("page");
+      queryChanged = true;
+    }
   }
 
-  if (destination) {
-    const canonicalOrigin = host === CANONICAL_HOST || host === "" ? `https://${CANONICAL_HOST}` : url.origin;
-    const target = new URL(destination, canonicalOrigin);
-    target.search = url.search;
-    return harden(NextResponse.redirect(target, 301));
+  if (REDIRECT_HOSTS.has(host) || pathChanged || queryChanged) {
+    const canonicalOrigin =
+      REDIRECT_HOSTS.has(host) || host === CANONICAL_HOST || host === ""
+        ? `https://${CANONICAL_HOST}`
+        : url.origin;
+    const target = new URL(resolvedPath, canonicalOrigin);
+    const searchStr = nextSearchParams.toString();
+    target.search = searchStr ? `?${searchStr}` : "";
+    const redirectResponse = harden(NextResponse.redirect(target, 301));
+    return REDIRECT_HOSTS.has(host) ? redirectResponse : applyNonProdRobots(redirectResponse, host);
   }
 
   return withPageCache(harden(NextResponse.next()), url, host);

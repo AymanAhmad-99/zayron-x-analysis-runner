@@ -31,9 +31,16 @@ export async function serveXmlWithEdgeCache(
 
   const built = await buildXml();
   if (built.status !== 200) {
+    const errorHeaders: Record<string, string> = {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+    };
+    if (built.status === 503) {
+      errorHeaders["Retry-After"] = "300";
+    }
     return new Response(isHead ? null : built.body, {
       status: built.status,
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      headers: errorHeaders,
     });
   }
 

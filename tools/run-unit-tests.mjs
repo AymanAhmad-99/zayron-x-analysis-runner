@@ -158,6 +158,9 @@ const SUITES = [
   // PHASE 11-SEO-RECOVERY (v2) — 410/301 legacy purge, utility noindex,
   // SSR intelligence hub, pagination, KQL clone removal, and honest sitemap curation.
   'tests/unit/phase11_seo_recovery.test.ts',
+  // PHASE 12-EXECUTE — D1 row-read rescue, outage shield, Kill List, canonicals,
+  // Depth-0 SSR homepage, WebSub push, and 2028 GEO/JSON-LD lockdown.
+  'tests/unit/phase12_seo_geo_lockdown.test.ts',
 ];
 // Explicitly NOT in the gate (network/live-endpoint class, Phase 12.26 baseline):
 // corpus_pipeline_integrity, corpus_scale_test, deployment_guard,

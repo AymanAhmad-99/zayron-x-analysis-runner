@@ -16,7 +16,7 @@
  */
 import { runAuthoritativeVulnIngest } from './authoritativeVulnIngest';
 import { runCtiEnrichmentPass, type CtiEnrichmentSummary } from './ctiEnrichment';
-import { buildIndexNowUrls, pingIndexNow } from './newsIngest';
+import { buildIndexNowUrls, pingIndexNow, pingWebSub } from './newsIngest';
 import { runStrategicPass, type StrategicSummary } from './strategicCveAnalysis';
 
 export const AUTHORITATIVE_CRON_FLAG = 'AUTHORITATIVE_CVE_CRON_ENABLED';
@@ -125,6 +125,7 @@ export async function runAuthoritativePulse(
       env.INDEXNOW_KEY,
       { fetchImpl: options.fetchFn },
     ).catch(() => undefined);
+    await pingWebSub('https://zayron-x.co/news/rss.xml', { fetchImpl: options.fetchFn }).catch(() => undefined);
   }
 
   summary.duration_ms = Date.now() - started;

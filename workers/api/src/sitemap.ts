@@ -59,38 +59,127 @@ export interface SitemapQuery {
  * vulnerability population and the public listing cannot drift apart.
  */
 /**
- * PHASE 11-SEO-RECOVERY — High-signal curation filter for `vulnerabilities-*.xml`.
+ * PHASE 12-EXECUTE — Cache threat_actors + threat_campaigns CVE sets in isolate
+ * memory (10-minute TTL) to eliminate per-CVE correlated `json_each` scans.
+ */
+const CVE_ID_PATTERN = /^CVE-\d{4}-\d{4,19}$/i;
+export const LINKED_THREAT_CVES_TTL_MS = 10 * 60 * 1000;
+
+export interface LinkedThreatCves {
+  actorCves: Set<string>;
+  campaignCves: Set<string>;
+  allCves: Set<string>;
+}
+
+const LINKED_CVE_CACHE = new WeakMap<object, { expiresAt: number; data: LinkedThreatCves }>();
+
+function extractCveIds(raw: unknown, out: Set<string>): void {
+  if (typeof raw !== "string" || !raw.trim()) return;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return;
+    for (const item of parsed) {
+      const candidate = String(item ?? "").trim().toUpperCase();
+      if (CVE_ID_PATTERN.test(candidate)) out.add(candidate);
+    }
+  } catch {
+    // Ignore malformed JSON arrays gracefully.
+  }
+}
+
+export async function loadLinkedThreatCves(
+  db: Pick<D1Database, "prepare">,
+  now = Date.now(),
+): Promise<LinkedThreatCves> {
+  const cached = LINKED_CVE_CACHE.get(db as unknown as object);
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+
+  const [actorsRes, campaignsRes] = await Promise.all([
+    db
+      .prepare("SELECT cves_json FROM threat_actors WHERE cves_json IS NOT NULL AND TRIM(cves_json) <> '' AND TRIM(cves_json) <> '[]'")
+      .all<{ cves_json?: string | null }>(),
+    db
+      .prepare("SELECT cves_json FROM threat_campaigns WHERE cves_json IS NOT NULL AND TRIM(cves_json) <> '' AND TRIM(cves_json) <> '[]'")
+      .all<{ cves_json?: string | null }>(),
+  ]);
+
+  const actorCves = new Set<string>();
+  const campaignCves = new Set<string>();
+  const allCves = new Set<string>();
+
+  for (const row of actorsRes.results ?? []) {
+    extractCveIds(row?.cves_json, actorCves);
+  }
+  for (const row of campaignsRes.results ?? []) {
+    extractCveIds(row?.cves_json, campaignCves);
+  }
+  for (const cve of actorCves) allCves.add(cve);
+  for (const cve of campaignCves) allCves.add(cve);
+
+  const data: LinkedThreatCves = { actorCves, campaignCves, allCves };
+  LINKED_CVE_CACHE.set(db as unknown as object, { expiresAt: now + LINKED_THREAT_CVES_TTL_MS, data });
+  return data;
+}
+
+export function formatCveSqlInList(cveIds?: Iterable<string>, maxItems = 1000): string | null {
+  if (!cveIds) return null;
+  const normalized: string[] = [];
+  const seen = new Set<string>();
+  for (const raw of cveIds) {
+    const cve = String(raw ?? "").trim().toUpperCase();
+    if (!CVE_ID_PATTERN.test(cve) || seen.has(cve)) continue;
+    seen.add(cve);
+    normalized.push(`'${cve}'`);
+    if (normalized.length >= maxItems) break;
+  }
+  return normalized.length > 0 ? normalized.join(", ") : null;
+}
+
+/**
+ * PHASE 11-SEO-RECOVERY + PHASE 12-EXECUTE — High-signal curation filter for `vulnerabilities-*.xml`.
  *
  * Keeps all remaining CVE detail pages 200 OK & `index, follow` (no mass
  * `noindex`) while curating the submitted sitemap exclusively to enriched or
  * actively weaponized CVEs: CISA KEV, tracked PoCs, verified detection rules,
  * linked MITRE threat actors/campaigns, or published Neural Newsroom briefings.
  */
-export const CURATED_VULNERABILITY_SITEMAP_WHERE = `provenance_state = 'AUTHORITATIVE_VERIFIED'
+export function curatedVulnerabilitySitemapWhere(linkedCveIds?: Iterable<string>): string {
+  const cveInList = formatCveSqlInList(linkedCveIds);
+  const linkedClause = cveInList ? `\n    OR vulnerabilities.cve_id IN (${cveInList})` : "";
+  return `provenance_state = 'AUTHORITATIVE_VERIFIED'
   AND cve_id IS NOT NULL
   AND cve_id <> ''
   AND (
     is_exploited_in_wild = 1
     OR (kev_due_date IS NOT NULL AND TRIM(kev_due_date) <> '')
     OR EXISTS (SELECT 1 FROM cve_pocs p WHERE p.cve_id = vulnerabilities.cve_id)
-    OR EXISTS (SELECT 1 FROM detection_rules d WHERE d.kind = 'cve' AND d.match_key = vulnerabilities.cve_id)
-    OR EXISTS (SELECT 1 FROM threat_actors a WHERE EXISTS (SELECT 1 FROM json_each(a.cves_json) WHERE UPPER(value) = vulnerabilities.cve_id))
-    OR EXISTS (SELECT 1 FROM threat_campaigns c WHERE EXISTS (SELECT 1 FROM json_each(c.cves_json) WHERE UPPER(value) = vulnerabilities.cve_id))
+    OR EXISTS (SELECT 1 FROM detection_rules d WHERE d.kind = 'cve' AND d.match_key = vulnerabilities.cve_id)${linkedClause}
     OR EXISTS (
       SELECT 1 FROM entity_mentions m
       JOIN news_articles n ON n.id = m.news_id AND n.status = 'PUBLISHED'
       WHERE m.entity_type = 'cve' AND UPPER(m.entity_slug) = vulnerabilities.cve_id
     )
   )`;
+}
 
-export function sitemapRowsQuery(kind: SitemapKind, tokens: string[], limit: number, offset: number): SitemapQuery {
+export const CURATED_VULNERABILITY_SITEMAP_WHERE = curatedVulnerabilitySitemapWhere();
+
+export function sitemapRowsQuery(
+  kind: SitemapKind,
+  tokens: string[],
+  limit: number,
+  offset: number,
+  linkedCveIds?: Iterable<string>,
+): SitemapQuery {
   if (kind === "vulnerabilities") {
     void tokens;
     return {
       sql: `SELECT cve_id AS id,
           COALESCE(NULLIF(TRIM(modified_at), ''), NULLIF(TRIM(published_at), '')) AS updated_at
         FROM vulnerabilities
-        WHERE ${CURATED_VULNERABILITY_SITEMAP_WHERE}
+        WHERE ${curatedVulnerabilitySitemapWhere(linkedCveIds)}
         ORDER BY cve_id ASC LIMIT ? OFFSET ?`,
       params: [limit, offset],
     };
@@ -112,12 +201,16 @@ export function sitemapRowsQuery(kind: SitemapKind, tokens: string[], limit: num
 }
 
 /** COUNT for the manifest — same WHERE clause as the rows query, no projection. */
-export function sitemapCountQuery(kind: SitemapKind, tokens: string[]): SitemapQuery {
+export function sitemapCountQuery(
+  kind: SitemapKind,
+  tokens: string[],
+  linkedCveIds?: Iterable<string>,
+): SitemapQuery {
   if (kind === "vulnerabilities") {
     void tokens;
     return {
       sql: `SELECT COUNT(*) AS total FROM vulnerabilities
-        WHERE ${CURATED_VULNERABILITY_SITEMAP_WHERE}`,
+        WHERE ${curatedVulnerabilitySitemapWhere(linkedCveIds)}`,
       params: [],
     };
   }

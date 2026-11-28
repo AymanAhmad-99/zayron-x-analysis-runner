@@ -18,7 +18,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Vendor hub not found",
       robots: { index: false, follow: false },
-      alternates: { canonical: `/intelligence/vendors/${encodeURIComponent(slug)}` },
     };
   }
   const vendor = result.data;
@@ -44,9 +43,16 @@ export default async function VendorPage({ params }: Props) {
   if (result.state === "error" || !result.data) throw new Error("Vendor hub temporarily unavailable");
   const vendor = result.data;
   const site = getSiteUrl();
+  const vendorPath = `/intelligence/vendors/${vendor.slug}`;
   const graph = buildLinkedJsonLdGraph({
     siteUrl: site,
-    path: `/intelligence/vendors/${vendor.slug}`,
+    path: vendorPath,
+    breadcrumbs: [
+      { name: "Home", path: "/" },
+      { name: "Intelligence", path: "/intelligence" },
+      { name: "Vendors", path: "/intelligence/vendors" },
+      { name: vendor.name, path: vendorPath },
+    ],
     primary: {
       "@type": "CollectionPage",
       name: `${vendor.name} Security Hub`,

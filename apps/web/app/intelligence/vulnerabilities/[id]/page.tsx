@@ -20,7 +20,7 @@ type Props = { params: Promise<{ id: string }> };
  * applies its own short `Cache-Control`, so rendering per request here costs one
  * in-worker read and removes an entire class of stale intelligence.
  */
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 /**
  * Wave 4B audit — `generateMetadata` and the page body both need this record.
@@ -60,7 +60,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const result = await loadVulnerability(id);
   const report = result.data;
 
-  if (!report || isWithheld(report)) {
+  if (!report) {
+    return {
+      title: "Vulnerability unavailable",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  if (isWithheld(report)) {
     return {
       title: "Vulnerability unavailable",
       robots: resolvePageRobots({ preview: isPreviewDeployment(), indexable: false }),
@@ -119,18 +126,26 @@ export default async function VulnerabilityDetailPage({ params }: Props) {
   if (result.state !== "success" || !result.data) notFound();
 
   const report = result.data;
+  const identifier = report.intelligence_id ?? id;
+  const path = canonicalPath(id);
   const jsonLd =
     report && !isWithheld(report)
       ? articleJsonLd({
           type: "TechArticle",
-          url: `${getSiteUrl()}${canonicalPath(id)}`,
+          url: `${getSiteUrl()}${path}`,
           siteUrl: getSiteUrl(),
-          identifier: report.intelligence_id ?? id,
+          identifier,
           headline: report.title ?? null,
           description: clampDescription(realDescription(report)) ?? null,
           // Real timestamps only — omitted when the API did not provide one.
           datePublished: report.published_at ?? null,
           dateModified: report.updated_at ?? null,
+          breadcrumbs: [
+            { name: "Home", path: "/" },
+            { name: "Intelligence", path: "/intelligence" },
+            { name: "Vulnerabilities", path: "/intelligence/vulnerabilities" },
+            { name: identifier, path },
+          ],
         })
       : null;
 

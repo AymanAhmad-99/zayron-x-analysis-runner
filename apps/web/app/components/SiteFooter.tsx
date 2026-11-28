@@ -15,7 +15,7 @@ const columns: Array<{ title: string; links: Array<{ label: string; href: string
     title: "Intelligence",
     links: [
       { label: "Vulnerabilities", href: "/intelligence/vulnerabilities" },
-      { label: "Malware Dossiers", href: "/malware" },
+      { label: "Malware Dossiers", href: "/intelligence/malware" },
       { label: "Signal Index", href: "/signal-index" },
     ],
   },
